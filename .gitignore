@@ -8,3 +8,5 @@
 /[Mm]emoryCaptures/
 /.idea/
 /.plastic/
+/*.csproj
+/*.sln

@@ -1,0 +1,21 @@
+{
+  "name": "Survivalon.EditModeTests",
+  "rootNamespace": "Survivalon.Tests.EditMode",
+  "references": [
+    "Survivalon.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}
