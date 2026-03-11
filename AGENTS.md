@@ -3,7 +3,7 @@
 ## Source of truth
 - `specs/` is the source of truth for product behavior.
 - Read these first before implementation:
-    - `specs/README.md`
+    - `specs/readme.md`
     - `specs/01_workflow/code_style.md`
     - `specs/01_workflow/codex_delivery_workflow.md`
     - `specs/00_overview/implementation_milestone_plan.md`
