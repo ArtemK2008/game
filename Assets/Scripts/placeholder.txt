@@ -1,0 +1,1 @@
+Placeholder to keep the Scripts folder tracked until real project assets are added.
