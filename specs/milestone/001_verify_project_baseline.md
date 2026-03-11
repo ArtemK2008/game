@@ -8,6 +8,7 @@
 ## Changed
 - Added missing top-level asset folders: `Assets/Scripts`, `Assets/Prefabs`, `Assets/Sprites`, `Assets/Audio`, `Assets/ScriptableObjects`, and `Assets/Tests`.
 - Added Unity folder `.meta` files for the new asset folders.
+- Added tracked placeholder files so the new Unity folders are not committed as empty-directory-only structure.
 - Added this milestone note.
 
 ## Enables

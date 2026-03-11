@@ -1,0 +1,1 @@
+Placeholder to keep the ScriptableObjects folder tracked until real project assets are added.
