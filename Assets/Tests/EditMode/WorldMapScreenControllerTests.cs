@@ -1,0 +1,92 @@
+using System.Collections.Generic;
+using NUnit.Framework;
+using Survivalon.Runtime;
+
+namespace Survivalon.Tests.EditMode
+{
+    public sealed class WorldMapScreenControllerTests
+    {
+        [Test]
+        public void ShouldBuildSelectableOptionsForReachableNodes()
+        {
+            WorldGraph worldGraph = CreateGraph();
+            PersistentWorldState worldState = CreateWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+
+            IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
+
+            AssertNodeOption(nodeOptions, new NodeId("region_001_node_001"), true, false, false);
+            AssertNodeOption(nodeOptions, new NodeId("region_001_node_002"), false, true, false);
+            AssertNodeOption(nodeOptions, new NodeId("region_001_node_003"), false, false, false);
+            AssertNodeOption(nodeOptions, new NodeId("region_002_node_001"), true, false, false);
+            AssertNodeOption(nodeOptions, new NodeId("region_002_node_002"), false, false, false);
+        }
+
+        [Test]
+        public void ShouldAllowSelectingReachableNode()
+        {
+            WorldGraph worldGraph = CreateGraph();
+            PersistentWorldState worldState = CreateWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+            NodeId selectableNodeId = new NodeId("region_002_node_001");
+
+            bool selected = controller.TrySelectNode(selectableNodeId);
+            IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
+
+            Assert.That(selected, Is.True);
+            AssertNodeOption(nodeOptions, selectableNodeId, true, false, true);
+        }
+
+        [Test]
+        public void ShouldRejectSelectingLockedOrUnreachableNodes()
+        {
+            WorldGraph worldGraph = CreateGraph();
+            PersistentWorldState worldState = CreateWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+
+            bool selectedLockedNode = controller.TrySelectNode(new NodeId("region_001_node_003"));
+            bool selectedCurrentNode = controller.TrySelectNode(new NodeId("region_001_node_002"));
+            bool selectedUnreachableNode = controller.TrySelectNode(new NodeId("region_002_node_002"));
+
+            Assert.That(selectedLockedNode, Is.False);
+            Assert.That(selectedCurrentNode, Is.False);
+            Assert.That(selectedUnreachableNode, Is.False);
+            Assert.That(controller.HasSelection, Is.False);
+        }
+
+        private static void AssertNodeOption(
+            IReadOnlyList<WorldMapNodeOption> nodeOptions,
+            NodeId nodeId,
+            bool isSelectable,
+            bool isCurrentContext,
+            bool isSelected)
+        {
+            foreach (WorldMapNodeOption nodeOption in nodeOptions)
+            {
+                if (nodeOption.NodeId != nodeId)
+                {
+                    continue;
+                }
+
+                Assert.That(nodeOption.IsSelectable, Is.EqualTo(isSelectable));
+                Assert.That(nodeOption.IsCurrentContext, Is.EqualTo(isCurrentContext));
+                Assert.That(nodeOption.IsSelected, Is.EqualTo(isSelected));
+                return;
+            }
+
+            Assert.Fail($"World map node option '{nodeId}' was not found.");
+        }
+
+        private static WorldGraph CreateGraph()
+        {
+            BootstrapWorldMapFactory bootstrapWorldMapFactory = new BootstrapWorldMapFactory();
+            return bootstrapWorldMapFactory.CreateWorldGraph();
+        }
+
+        private static PersistentWorldState CreateWorldState()
+        {
+            BootstrapWorldMapFactory bootstrapWorldMapFactory = new BootstrapWorldMapFactory();
+            return bootstrapWorldMapFactory.CreateGameState().WorldState;
+        }
+    }
+}

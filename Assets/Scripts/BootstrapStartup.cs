@@ -6,9 +6,19 @@ namespace Survivalon.Runtime
     {
         private void Awake()
         {
-            PersistentGameState gameState = new PersistentGameState();
+            BootstrapWorldMapFactory worldMapFactory = new BootstrapWorldMapFactory();
+            WorldGraph worldGraph = worldMapFactory.CreateWorldGraph();
+            PersistentGameState gameState = worldMapFactory.CreateGameState();
             GameStartupFlowResolver startupFlowResolver = new GameStartupFlowResolver();
             StartupEntryTarget entryTarget = startupFlowResolver.ResolveInitialEntryTarget(gameState.WorldState);
+
+            if (entryTarget == StartupEntryTarget.WorldViewPlaceholder)
+            {
+                WorldMapScreen worldMapScreen = EnsureWorldMapScreen();
+                worldMapScreen.Show(worldGraph, gameState.WorldState);
+                Debug.Log($"Bootstrap startup flow entered {entryTarget}.");
+                return;
+            }
 
             StartupPlaceholderView placeholderView = EnsurePlaceholderView();
             placeholderView.Show(entryTarget);
@@ -28,6 +38,20 @@ namespace Survivalon.Runtime
             placeholderObject.transform.SetParent(transform, false);
 
             return placeholderObject.AddComponent<StartupPlaceholderView>();
+        }
+
+        private WorldMapScreen EnsureWorldMapScreen()
+        {
+            WorldMapScreen existingWorldMapScreen = GetComponentInChildren<WorldMapScreen>();
+            if (existingWorldMapScreen != null)
+            {
+                return existingWorldMapScreen;
+            }
+
+            GameObject worldMapObject = new GameObject("WorldMapScreen");
+            worldMapObject.transform.SetParent(transform, false);
+
+            return worldMapObject.AddComponent<WorldMapScreen>();
         }
     }
 }
