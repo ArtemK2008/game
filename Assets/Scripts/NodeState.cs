@@ -4,7 +4,8 @@ namespace Survivalon.Runtime
     {
         Locked = 0,
         Available = 1,
-        Cleared = 2,
-        Mastered = 3,
+        InProgress = 2,
+        Cleared = 3,
+        Mastered = 4,
     }
 }
