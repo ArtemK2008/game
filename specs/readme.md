@@ -1,4 +1,4 @@
-# specs/README.md
+# specs/readme.md
 
 ## Path convention
 All paths in this spec are relative to the repository root unless explicitly stated otherwise.
