@@ -31,6 +31,8 @@
 ## Testing
 - Every milestone must add or update tests for introduced behavior.
 - Use clear behavior-style test names such as `ShouldUnlockNextNodeWhenProgressReachesThreshold`.
+- Run batch Edit Mode tests with `tools/run_editmode_tests.ps1`.
+- Do not pass `-quit` to Unity when using `-runTests`; let the Unity Test Framework exit after writing results.
 
 ## Repository hygiene
 - Keep changes scoped to the current milestone only.
