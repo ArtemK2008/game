@@ -45,5 +45,24 @@ namespace Survivalon.Runtime
         {
             lastSafeNodeIdValue = nodeId.Value;
         }
+
+        public void ReplaceReachableNodes(IEnumerable<NodeId> nodeIds)
+        {
+            if (nodeIds == null)
+            {
+                throw new ArgumentNullException(nameof(nodeIds));
+            }
+
+            reachableNodeIdValues.Clear();
+            HashSet<string> uniqueNodeIdValues = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (NodeId nodeId in nodeIds)
+            {
+                if (uniqueNodeIdValues.Add(nodeId.Value))
+                {
+                    reachableNodeIdValues.Add(nodeId.Value);
+                }
+            }
+        }
     }
 }
