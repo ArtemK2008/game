@@ -1,11 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Survivalon.Runtime", "Survivalon.Runtime.csproj", "{c855e89e-078c-1da1-5d75-7ddf55bda012}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Survivalon.EditModeTests", "Survivalon.EditModeTests.csproj", "{ad379e86-24d1-1ca6-c957-f264be3410e6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{dfcf673e-53c2-e75a-0c47-ce3558ea7e4f}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{c855e89e-078c-1da1-5d75-7ddf55bda012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{c855e89e-078c-1da1-5d75-7ddf55bda012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ad379e86-24d1-1ca6-c957-f264be3410e6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ad379e86-24d1-1ca6-c957-f264be3410e6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{dfcf673e-53c2-e75a-0c47-ce3558ea7e4f}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{dfcf673e-53c2-e75a-0c47-ce3558ea7e4f}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
