@@ -65,6 +65,18 @@ namespace Survivalon.Runtime
             return true;
         }
 
+        public bool TryGetSelectedNodeId(out NodeId nodeId)
+        {
+            if (hasSelectedNode)
+            {
+                nodeId = selectedNodeId;
+                return true;
+            }
+
+            nodeId = default;
+            return false;
+        }
+
         private static Dictionary<RegionId, int> CreateRegionOrderLookup(WorldGraph worldGraph)
         {
             Dictionary<RegionId, int> regionOrderById = new Dictionary<RegionId, int>();

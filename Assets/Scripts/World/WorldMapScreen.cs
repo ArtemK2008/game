@@ -12,11 +12,17 @@ namespace Survivalon.Runtime
         private Canvas canvas;
         private Text titleText;
         private Text summaryText;
+        private Button enterSelectedNodeButton;
+        private Text enterSelectedNodeButtonText;
         private RectTransform nodeListContainer;
         private Font uiFont;
         private WorldMapScreenController screenController;
+        private Action<NodeId> onNodeEntryRequested;
 
-        public void Show(WorldGraph worldGraph, PersistentWorldState worldState)
+        public void Show(
+            WorldGraph worldGraph,
+            PersistentWorldState worldState,
+            Action<NodeId> nodeEntryRequested = null)
         {
             if (worldGraph == null)
             {
@@ -29,6 +35,7 @@ namespace Survivalon.Runtime
             }
 
             screenController = new WorldMapScreenController(worldGraph, worldState);
+            onNodeEntryRequested = nodeEntryRequested;
             gameObject.name = "WorldMapScreen";
 
             EnsureEventSystem();
@@ -41,6 +48,7 @@ namespace Survivalon.Runtime
             IReadOnlyList<WorldMapNodeOption> nodeOptions = screenController.BuildNodeOptions();
             titleText.text = "World Map";
             summaryText.text = BuildSummaryText(nodeOptions);
+            RefreshEntryButton();
 
             ClearNodeButtons();
             foreach (WorldMapNodeOption nodeOption in nodeOptions)
@@ -58,6 +66,21 @@ namespace Survivalon.Runtime
 
             Debug.Log($"World map node selected: {nodeId}.");
             Refresh();
+        }
+
+        private void HandleNodeEntryRequest()
+        {
+            if (onNodeEntryRequested == null)
+            {
+                return;
+            }
+
+            if (!screenController.TryGetSelectedNodeId(out NodeId selectedNodeId))
+            {
+                return;
+            }
+
+            onNodeEntryRequested(selectedNodeId);
         }
 
         private void EnsureEventSystem()
@@ -168,6 +191,14 @@ namespace Survivalon.Runtime
             summaryText = CreateText(panelObject.transform, "Summary", 18, FontStyle.Normal, TextAnchor.UpperLeft, new Color(0.88f, 0.90f, 0.94f, 1f));
             AddLayoutElement(summaryText.gameObject, 88f);
 
+            enterSelectedNodeButton = CreateActionButton(
+                panelObject.transform,
+                "EnterSelectedNodeButton",
+                "Select a reachable node to enter",
+                out enterSelectedNodeButtonText);
+            AddLayoutElement(enterSelectedNodeButton.gameObject, 56f);
+            enterSelectedNodeButton.onClick.AddListener(HandleNodeEntryRequest);
+
             GameObject nodeListObject = new GameObject(
                 "NodeList",
                 typeof(RectTransform),
@@ -251,6 +282,45 @@ namespace Survivalon.Runtime
             textRectTransform.localScale = Vector3.one;
         }
 
+        private Button CreateActionButton(Transform parent, string objectName, string label, out Text buttonText)
+        {
+            GameObject buttonObject = new GameObject(
+                objectName,
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button));
+            buttonObject.transform.SetParent(parent, false);
+
+            RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
+            buttonRectTransform.localScale = Vector3.one;
+
+            Image buttonImage = buttonObject.GetComponent<Image>();
+            buttonImage.color = new Color(0.25f, 0.33f, 0.58f, 1f);
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.targetGraphic = buttonImage;
+
+            ColorBlock colors = button.colors;
+            colors.normalColor = buttonImage.color;
+            colors.selectedColor = buttonImage.color;
+            colors.highlightedColor = Color.Lerp(buttonImage.color, Color.white, 0.15f);
+            colors.pressedColor = Color.Lerp(buttonImage.color, Color.black, 0.15f);
+            colors.disabledColor = buttonImage.color * 0.7f;
+            button.colors = colors;
+
+            buttonText = CreateText(buttonObject.transform, "Label", 18, FontStyle.Bold, TextAnchor.MiddleCenter, Color.white);
+            buttonText.text = label;
+
+            RectTransform textRectTransform = buttonText.rectTransform;
+            textRectTransform.anchorMin = Vector2.zero;
+            textRectTransform.anchorMax = Vector2.one;
+            textRectTransform.offsetMin = new Vector2(14f, 8f);
+            textRectTransform.offsetMax = new Vector2(-14f, -8f);
+            textRectTransform.localScale = Vector3.one;
+
+            return button;
+        }
+
         private Text CreateText(Transform parent, string objectName, int fontSize, FontStyle fontStyle, TextAnchor alignment, Color color)
         {
             GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(Text));
@@ -296,6 +366,18 @@ namespace Survivalon.Runtime
             }
 
             throw new InvalidOperationException("WorldMapScreen could not load a Unity-compatible runtime font.");
+        }
+
+        private void RefreshEntryButton()
+        {
+            NodeId selectedNodeId = default;
+            bool canEnterSelection = onNodeEntryRequested != null &&
+                screenController.TryGetSelectedNodeId(out selectedNodeId);
+
+            enterSelectedNodeButton.interactable = canEnterSelection;
+            enterSelectedNodeButtonText.text = canEnterSelection
+                ? $"Enter {selectedNodeId.Value}"
+                : "Select a reachable node to enter";
         }
 
         private static string BuildNodeLabel(WorldMapNodeOption nodeOption)
@@ -347,7 +429,7 @@ namespace Survivalon.Runtime
                 }
             }
 
-            return $"Current node: {currentNodeLabel}\nSelectable destinations: {selectableCount}\nSelected node: {selectedNodeLabel}\nSelect a reachable node to mark the next destination.";
+            return $"Current node: {currentNodeLabel}\nSelectable destinations: {selectableCount}\nSelected node: {selectedNodeLabel}\nSelect a reachable node, then confirm entry to start the placeholder node flow.";
         }
 
         private static Color GetNodeColor(WorldMapNodeOption nodeOption)

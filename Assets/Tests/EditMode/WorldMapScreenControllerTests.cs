@@ -31,9 +31,12 @@ namespace Survivalon.Tests.EditMode
             NodeId selectableNodeId = new NodeId("region_002_node_001");
 
             bool selected = controller.TrySelectNode(selectableNodeId);
+            bool hasSelectedNodeId = controller.TryGetSelectedNodeId(out NodeId selectedNodeId);
             IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
 
             Assert.That(selected, Is.True);
+            Assert.That(hasSelectedNodeId, Is.True);
+            Assert.That(selectedNodeId, Is.EqualTo(selectableNodeId));
             AssertNodeOption(nodeOptions, selectableNodeId, true, false, true);
         }
 
@@ -47,11 +50,13 @@ namespace Survivalon.Tests.EditMode
             bool selectedLockedNode = controller.TrySelectNode(new NodeId("region_001_node_003"));
             bool selectedCurrentNode = controller.TrySelectNode(new NodeId("region_001_node_002"));
             bool selectedUnreachableNode = controller.TrySelectNode(new NodeId("region_002_node_002"));
+            bool hasSelectedNodeId = controller.TryGetSelectedNodeId(out _);
 
             Assert.That(selectedLockedNode, Is.False);
             Assert.That(selectedCurrentNode, Is.False);
             Assert.That(selectedUnreachableNode, Is.False);
             Assert.That(controller.HasSelection, Is.False);
+            Assert.That(hasSelectedNodeId, Is.False);
         }
 
         private static void AssertNodeOption(

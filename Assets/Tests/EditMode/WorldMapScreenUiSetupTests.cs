@@ -69,5 +69,57 @@ namespace Survivalon.Tests.EditMode
                 Object.DestroyImmediate(hostObject);
             }
         }
+
+        [Test]
+        public void Show_ShouldInvokeNodeEntryCallbackWhenSelectedNodeIsConfirmed()
+        {
+            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            bool wasInvoked = false;
+            NodeId enteredNodeId = default;
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    factory.CreateWorldGraph(),
+                    factory.CreateGameState().WorldState,
+                    nodeId =>
+                    {
+                        wasInvoked = true;
+                        enteredNodeId = nodeId;
+                    });
+
+                Button selectableNodeButton = FindButton(hostObject, "region_002_node_001_Button");
+                selectableNodeButton.onClick.Invoke();
+
+                Button enterSelectedNodeButton = FindButton(hostObject, "EnterSelectedNodeButton");
+                Assert.That(enterSelectedNodeButton.interactable, Is.True);
+
+                enterSelectedNodeButton.onClick.Invoke();
+
+                Assert.That(wasInvoked, Is.True);
+                Assert.That(enteredNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        private static Button FindButton(GameObject rootObject, string buttonObjectName)
+        {
+            Button[] buttons = rootObject.GetComponentsInChildren<Button>(true);
+            foreach (Button button in buttons)
+            {
+                if (button.gameObject.name == buttonObjectName)
+                {
+                    return button;
+                }
+            }
+
+            Assert.Fail($"Button '{buttonObjectName}' was not found.");
+            return null;
+        }
     }
 }
