@@ -2,7 +2,8 @@
   "name": "Survivalon.EditModeTests",
   "rootNamespace": "Survivalon.Tests.EditMode",
   "references": [
-    "Survivalon.Runtime"
+    "Survivalon.Runtime",
+    "Unity.InputSystem"
   ],
   "includePlatforms": [
     "Editor"
