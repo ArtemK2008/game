@@ -27,67 +27,121 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void Show_ShouldCreatePlaceholderNodeUiAndInvokeReturnCallback()
+        public void Show_ShouldDisplayPostRunSummaryAndAllowReplay()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
-            RunResult completedRunResult = null;
+            bool returnRequested = false;
+            bool stopRequested = false;
 
             try
             {
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
-                NodePlaceholderState placeholderState = new NodePlaceholderState(
-                    new NodeId("region_002_node_001"),
-                    new RegionId("region_002"),
-                    NodeType.ServiceOrProgression,
-                    NodeState.Available,
-                    new NodeId("region_001_node_002"));
+                NodePlaceholderState placeholderState = CreatePlaceholderState();
 
-                placeholderScreen.Show(placeholderState, runResult => completedRunResult = runResult);
+                placeholderScreen.Show(
+                    placeholderState,
+                    runResult => returnRequested = runResult != null,
+                    runResult => stopRequested = runResult != null);
 
                 Canvas canvas = hostObject.GetComponent<Canvas>();
                 Assert.That(canvas, Is.Not.Null);
                 Assert.That(canvas.renderMode, Is.EqualTo(RenderMode.ScreenSpaceOverlay));
+                Assert.That(ContainsText(hostObject, "Entered from: region_001_node_002"), Is.True);
+                Assert.That(ContainsText(hostObject, "Lifecycle: RunStart"), Is.True);
 
-                Text[] labels = hostObject.GetComponentsInChildren<Text>(true);
-                bool containsEnteredFromLabel = false;
-                bool containsRunStartState = false;
-                foreach (Text label in labels)
-                {
-                    if (label.text.Contains("Entered from: region_001_node_002"))
-                    {
-                        containsEnteredFromLabel = true;
-                    }
-
-                    if (label.text.Contains("Lifecycle: RunStart"))
-                    {
-                        containsRunStartState = true;
-                    }
-                }
-
-                Assert.That(containsEnteredFromLabel, Is.True);
-                Assert.That(containsRunStartState, Is.True);
-
-                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
+                Button replayButton = FindButton(hostObject, "ReplayNodeButton");
                 Button returnButton = FindButton(hostObject, "ReturnToWorldMapButton");
+                Button stopButton = FindButton(hostObject, "StopSessionButton");
 
+                Assert.That(replayButton.interactable, Is.False);
                 Assert.That(returnButton.interactable, Is.False);
+                Assert.That(stopButton.interactable, Is.False);
 
-                advanceRunLifecycleButton.onClick.Invoke();
-                advanceRunLifecycleButton.onClick.Invoke();
-                advanceRunLifecycleButton.onClick.Invoke();
+                AdvanceToPostRun(hostObject);
 
+                Assert.That(replayButton.interactable, Is.True);
                 Assert.That(returnButton.interactable, Is.True);
+                Assert.That(stopButton.interactable, Is.True);
+                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
 
-                returnButton.onClick.Invoke();
+                replayButton.onClick.Invoke();
 
-                Assert.That(completedRunResult, Is.Not.Null);
-                Assert.That(completedRunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
-                Assert.That(completedRunResult.NextActionContext.CanStopSession, Is.True);
+                Assert.That(ContainsText(hostObject, "Lifecycle: RunStart"), Is.True);
+                Assert.That(replayButton.interactable, Is.False);
+                Assert.That(returnRequested, Is.False);
+                Assert.That(stopRequested, Is.False);
             }
             finally
             {
                 Object.DestroyImmediate(hostObject);
             }
+        }
+
+        [Test]
+        public void Show_ShouldInvokeReturnAndStopCallbacksFromPostRunSummary()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            RunResult returnedRunResult = null;
+            RunResult stoppedRunResult = null;
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreatePlaceholderState(),
+                    runResult => returnedRunResult = runResult,
+                    runResult => stoppedRunResult = runResult);
+
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(returnedRunResult, Is.Not.Null);
+                Assert.That(returnedRunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+                Assert.That(returnedRunResult.NextActionContext.CanStopSession, Is.True);
+                Assert.That(stoppedRunResult, Is.Null);
+
+                FindButton(hostObject, "StopSessionButton").onClick.Invoke();
+
+                Assert.That(stoppedRunResult, Is.Not.Null);
+                Assert.That(stoppedRunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        private static NodePlaceholderState CreatePlaceholderState()
+        {
+            return new NodePlaceholderState(
+                new NodeId("region_002_node_001"),
+                new RegionId("region_002"),
+                NodeType.ServiceOrProgression,
+                NodeState.Available,
+                new NodeId("region_001_node_002"));
+        }
+
+        private static void AdvanceToPostRun(GameObject rootObject)
+        {
+            Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
+            advanceRunLifecycleButton.onClick.Invoke();
+            advanceRunLifecycleButton.onClick.Invoke();
+            advanceRunLifecycleButton.onClick.Invoke();
+        }
+
+        private static bool ContainsText(GameObject rootObject, string textFragment)
+        {
+            Text[] labels = rootObject.GetComponentsInChildren<Text>(true);
+            foreach (Text label in labels)
+            {
+                if (label.text.Contains(textFragment))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static Button FindButton(GameObject rootObject, string buttonObjectName)

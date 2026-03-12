@@ -38,6 +38,20 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldEnterPostRunStateOnlyAfterResolvedRun()
+        {
+            RunLifecycleController controller = CreateController();
+
+            controller.TryEnterActiveState();
+            controller.TryResolveRun(RunResolutionState.Succeeded);
+
+            bool enteredPostRun = controller.TryEnterPostRunState();
+
+            Assert.That(enteredPostRun, Is.True);
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
+        }
+
+        [Test]
         public void ShouldRejectOutOfOrderLifecycleTransitions()
         {
             RunLifecycleController controller = CreateController();
