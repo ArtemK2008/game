@@ -57,6 +57,34 @@ namespace Survivalon.Tests.EditMode
             }
         }
 
+        [Test]
+        public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "StopSessionButton").onClick.Invoke();
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(1));
+
+                StartupPlaceholderView placeholderView = hostObject.GetComponentInChildren<StartupPlaceholderView>(true);
+                Assert.That(placeholderView, Is.Not.Null);
+                Assert.That(placeholderView.ActiveTarget, Is.EqualTo(StartupEntryTarget.MainMenuPlaceholder));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
         private static void EnterNodeFromWorldMap(GameObject rootObject, string nodeButtonName)
         {
             FindButton(rootObject, nodeButtonName).onClick.Invoke();
@@ -65,12 +93,16 @@ namespace Survivalon.Tests.EditMode
 
         private static void ReturnToWorldMap(GameObject rootObject)
         {
+            AdvanceToPostRun(rootObject);
+            FindButton(rootObject, "ReturnToWorldMapButton").onClick.Invoke();
+        }
+
+        private static void AdvanceToPostRun(GameObject rootObject)
+        {
             Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
             advanceRunLifecycleButton.onClick.Invoke();
             advanceRunLifecycleButton.onClick.Invoke();
             advanceRunLifecycleButton.onClick.Invoke();
-
-            FindButton(rootObject, "ReturnToWorldMapButton").onClick.Invoke();
         }
 
         private static void AssertScreenCounts(

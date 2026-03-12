@@ -47,7 +47,10 @@ namespace Survivalon.Runtime
 
             NodePlaceholderScreen nodePlaceholderScreen = EnsureNodePlaceholderScreen();
             nodePlaceholderScreen.gameObject.SetActive(true);
-            nodePlaceholderScreen.Show(placeholderState, HandleRunLifecycleCompleted);
+            nodePlaceholderScreen.Show(
+                placeholderState,
+                HandleReturnToWorldRequested,
+                HandleStopSessionRequested);
         }
 
         private void HandleNodeEntryRequested(NodeId nodeId)
@@ -62,10 +65,21 @@ namespace Survivalon.Runtime
             ShowNodePlaceholder(placeholderState);
         }
 
-        private void HandleRunLifecycleCompleted(RunResult runResult)
+        private void HandleReturnToWorldRequested(RunResult runResult)
         {
-            Debug.Log($"Returning from run lifecycle shell to world map after {runResult.ResolutionState} on {runResult.NodeId}.");
+            Debug.Log($"Returning from post-run state to world map after {runResult.ResolutionState} on {runResult.NodeId}.");
             ShowWorldMap();
+        }
+
+        private void HandleStopSessionRequested(RunResult runResult)
+        {
+            Debug.Log($"Stopping session from post-run state after {runResult.ResolutionState} on {runResult.NodeId}.");
+            SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
+            SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
+
+            StartupPlaceholderView placeholderView = EnsurePlaceholderView();
+            placeholderView.gameObject.SetActive(true);
+            placeholderView.Show(StartupEntryTarget.MainMenuPlaceholder);
         }
 
         private StartupPlaceholderView EnsurePlaceholderView()

@@ -10,15 +10,26 @@ namespace Survivalon.Runtime
         private Text titleText;
         private Text summaryText;
         private Text statusText;
+        private GameObject postRunSummaryPanelObject;
+        private Text postRunSummaryText;
         private Button advanceRunLifecycleButton;
         private Text advanceRunLifecycleButtonText;
-        private Button returnButton;
-        private Text returnButtonText;
+        private Button replayButton;
+        private Text replayButtonText;
+        private Button returnToWorldButton;
+        private Text returnToWorldButtonText;
+        private Button stopSessionButton;
+        private Text stopSessionButtonText;
         private Font uiFont;
         private RunLifecycleController runLifecycleController;
-        private Action<RunResult> onRunCompleted;
+        private PostRunStateController postRunStateController;
+        private Action<RunResult> onReturnToWorldRequested;
+        private Action<RunResult> onStopSessionRequested;
 
-        public void Show(NodePlaceholderState placeholderState, Action<RunResult> runCompleted)
+        public void Show(
+            NodePlaceholderState placeholderState,
+            Action<RunResult> returnToWorldRequested,
+            Action<RunResult> stopSessionRequested = null)
         {
             if (placeholderState == null)
             {
@@ -26,7 +37,9 @@ namespace Survivalon.Runtime
             }
 
             runLifecycleController = new RunLifecycleController(placeholderState);
-            onRunCompleted = runCompleted ?? throw new ArgumentNullException(nameof(runCompleted));
+            postRunStateController = null;
+            onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
+            onStopSessionRequested = stopSessionRequested;
             gameObject.name = "NodePlaceholderScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
@@ -40,7 +53,8 @@ namespace Survivalon.Runtime
             titleText.text = $"Run Shell: {placeholderState.NodeId.Value}";
             summaryText.text = BuildSummaryText();
             statusText.text = BuildStatusText();
-            RefreshButtons();
+            RefreshAdvanceButton();
+            RefreshPostRunSummaryPanel();
         }
 
         private void HandleAdvanceRunLifecycleRequested()
@@ -55,6 +69,9 @@ namespace Survivalon.Runtime
                     break;
                 case RunLifecycleState.RunResolved:
                     runLifecycleController.TryEnterPostRunState();
+                    postRunStateController = new PostRunStateController(
+                        runLifecycleController.NodeContext,
+                        runLifecycleController.RunResult);
                     break;
                 case RunLifecycleState.PostRun:
                     return;
@@ -65,14 +82,36 @@ namespace Survivalon.Runtime
             Refresh();
         }
 
-        private void HandleReturnRequested()
+        private void HandleReplayRequested()
         {
-            if (runLifecycleController.CurrentState != RunLifecycleState.PostRun)
+            if (postRunStateController == null || !postRunStateController.CanReplayNode)
             {
                 return;
             }
 
-            onRunCompleted?.Invoke(runLifecycleController.RunResult);
+            runLifecycleController = postRunStateController.CreateReplayLifecycleController();
+            postRunStateController = null;
+            Refresh();
+        }
+
+        private void HandleReturnToWorldRequested()
+        {
+            if (postRunStateController == null || !postRunStateController.CanReturnToWorld)
+            {
+                return;
+            }
+
+            onReturnToWorldRequested?.Invoke(postRunStateController.RunResult);
+        }
+
+        private void HandleStopSessionRequested()
+        {
+            if (postRunStateController == null || !postRunStateController.CanStopSession)
+            {
+                return;
+            }
+
+            onStopSessionRequested?.Invoke(postRunStateController.RunResult);
         }
 
         private void EnsureUi()
@@ -115,8 +154,8 @@ namespace Survivalon.Runtime
             panelImage.color = new Color(0.09f, 0.09f, 0.12f, 0.96f);
 
             RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
-            panelRectTransform.anchorMin = new Vector2(0.18f, 0.18f);
-            panelRectTransform.anchorMax = new Vector2(0.82f, 0.82f);
+            panelRectTransform.anchorMin = new Vector2(0.18f, 0.10f);
+            panelRectTransform.anchorMax = new Vector2(0.82f, 0.90f);
             panelRectTransform.offsetMin = Vector2.zero;
             panelRectTransform.offsetMax = Vector2.zero;
             panelRectTransform.localScale = Vector3.one;
@@ -168,13 +207,59 @@ namespace Survivalon.Runtime
             RuntimeUiSupport.AddLayoutElement(advanceRunLifecycleButton.gameObject, 56f);
             advanceRunLifecycleButton.onClick.AddListener(HandleAdvanceRunLifecycleRequested);
 
-            returnButton = CreateActionButton(
-                panelObject.transform,
+            postRunSummaryPanelObject = new GameObject(
+                "PostRunSummaryPanel",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(VerticalLayoutGroup));
+            postRunSummaryPanelObject.transform.SetParent(panelObject.transform, false);
+            RuntimeUiSupport.AddLayoutElement(postRunSummaryPanelObject, 260f);
+
+            Image postRunPanelImage = postRunSummaryPanelObject.GetComponent<Image>();
+            postRunPanelImage.color = new Color(0.12f, 0.13f, 0.18f, 0.96f);
+
+            VerticalLayoutGroup postRunPanelLayout = postRunSummaryPanelObject.GetComponent<VerticalLayoutGroup>();
+            postRunPanelLayout.padding = new RectOffset(18, 18, 18, 18);
+            postRunPanelLayout.spacing = 10f;
+            postRunPanelLayout.childAlignment = TextAnchor.UpperLeft;
+            postRunPanelLayout.childControlWidth = true;
+            postRunPanelLayout.childControlHeight = true;
+            postRunPanelLayout.childForceExpandWidth = true;
+            postRunPanelLayout.childForceExpandHeight = false;
+
+            postRunSummaryText = RuntimeUiSupport.CreateText(
+                postRunSummaryPanelObject.transform,
+                uiFont,
+                "PostRunSummary",
+                18,
+                FontStyle.Normal,
+                TextAnchor.UpperLeft,
+                new Color(0.90f, 0.92f, 0.97f, 1f));
+            RuntimeUiSupport.AddLayoutElement(postRunSummaryText.gameObject, 126f);
+
+            replayButton = CreateActionButton(
+                postRunSummaryPanelObject.transform,
+                "ReplayNodeButton",
+                "Replay Node",
+                out replayButtonText);
+            RuntimeUiSupport.AddLayoutElement(replayButton.gameObject, 52f);
+            replayButton.onClick.AddListener(HandleReplayRequested);
+
+            returnToWorldButton = CreateActionButton(
+                postRunSummaryPanelObject.transform,
                 "ReturnToWorldMapButton",
                 "Return To World Map",
-                out returnButtonText);
-            RuntimeUiSupport.AddLayoutElement(returnButton.gameObject, 56f);
-            returnButton.onClick.AddListener(HandleReturnRequested);
+                out returnToWorldButtonText);
+            RuntimeUiSupport.AddLayoutElement(returnToWorldButton.gameObject, 52f);
+            returnToWorldButton.onClick.AddListener(HandleReturnToWorldRequested);
+
+            stopSessionButton = CreateActionButton(
+                postRunSummaryPanelObject.transform,
+                "StopSessionButton",
+                "Stop Session",
+                out stopSessionButtonText);
+            RuntimeUiSupport.AddLayoutElement(stopSessionButton.gameObject, 52f);
+            stopSessionButton.onClick.AddListener(HandleStopSessionRequested);
         }
 
         private Button CreateActionButton(Transform parent, string objectName, string label, out Text buttonText)
@@ -258,43 +343,61 @@ namespace Survivalon.Runtime
                 case RunLifecycleState.RunResolved:
                     return "Run resolved. Open the post-run state to review next actions.";
                 case RunLifecycleState.PostRun:
-                    return "Post-run state is active. Return to the world map or stop the session safely.";
+                    return "Post-run summary is active. Replay, return to the world map, or stop the session.";
                 default:
                     throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
             }
         }
 
-        private void RefreshButtons()
+        private void RefreshAdvanceButton()
         {
             switch (runLifecycleController.CurrentState)
             {
                 case RunLifecycleState.RunStart:
                     advanceRunLifecycleButton.interactable = true;
                     advanceRunLifecycleButtonText.text = "Start Placeholder Run";
-                    returnButton.interactable = false;
-                    returnButtonText.text = "Return To World Map";
                     return;
                 case RunLifecycleState.RunActive:
                     advanceRunLifecycleButton.interactable = true;
                     advanceRunLifecycleButtonText.text = "Resolve Placeholder Run";
-                    returnButton.interactable = false;
-                    returnButtonText.text = "Return To World Map";
                     return;
                 case RunLifecycleState.RunResolved:
                     advanceRunLifecycleButton.interactable = true;
                     advanceRunLifecycleButtonText.text = "Enter Post-Run State";
-                    returnButton.interactable = false;
-                    returnButtonText.text = "Return To World Map";
                     return;
                 case RunLifecycleState.PostRun:
                     advanceRunLifecycleButton.interactable = false;
                     advanceRunLifecycleButtonText.text = "Run Lifecycle Complete";
-                    returnButton.interactable = true;
-                    returnButtonText.text = "Return To World Map";
                     return;
                 default:
                     throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
             }
+        }
+
+        private void RefreshPostRunSummaryPanel()
+        {
+            bool isPostRunActive = runLifecycleController.CurrentState == RunLifecycleState.PostRun &&
+                postRunStateController != null;
+
+            postRunSummaryPanelObject.SetActive(isPostRunActive);
+            if (!isPostRunActive)
+            {
+                replayButton.interactable = false;
+                returnToWorldButton.interactable = false;
+                stopSessionButton.interactable = false;
+                return;
+            }
+
+            postRunSummaryText.text = BuildPostRunSummaryText(postRunStateController);
+            replayButton.interactable = postRunStateController.CanReplayNode;
+            replayButtonText.text = "Replay Node";
+            returnToWorldButton.interactable = postRunStateController.CanReturnToWorld;
+            returnToWorldButtonText.text = "Return To World Map";
+            stopSessionButton.interactable =
+                postRunStateController.CanStopSession && onStopSessionRequested != null;
+            stopSessionButtonText.text = onStopSessionRequested == null
+                ? "Stop Session Unavailable"
+                : "Stop Session";
         }
 
         private static string BuildRewardSummary(RunRewardPayload rewardPayload)
@@ -302,10 +405,26 @@ namespace Survivalon.Runtime
             return rewardPayload.HasRewards ? "Placeholder reward payload present" : "None";
         }
 
+        private static string BuildPostRunSummaryText(PostRunStateController postRunStateController)
+        {
+            RunResult runResult = postRunStateController.RunResult;
+            return
+                "Run finished.\n" +
+                $"Node: {runResult.NodeId.Value}\n" +
+                $"Resolution: {runResult.ResolutionState}\n" +
+                $"Rewards: {BuildRewardSummary(runResult.RewardPayload)}\n" +
+                $"Node progress delta: {runResult.NodeProgressDelta}\n" +
+                $"Persistent progression delta: {runResult.PersistentProgressionDelta}\n" +
+                $"Route unlock changed: {FormatYesNo(runResult.DidUnlockRoute)}\n" +
+                "Next actions:\n" +
+                $"- Replay: {FormatYesNo(postRunStateController.CanReplayNode)}\n" +
+                $"- Return to world: {FormatYesNo(postRunStateController.CanReturnToWorld)}\n" +
+                $"- Stop: {FormatYesNo(postRunStateController.CanStopSession)}";
+        }
+
         private static string FormatYesNo(bool value)
         {
             return value ? "Yes" : "No";
         }
-
     }
 }
