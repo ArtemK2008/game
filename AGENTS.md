@@ -19,6 +19,10 @@
 - Add a milestone note in `specs/milestone/` after completion.
 
 ## Unity rules
+- This repo uses Unity `6000.3.10f1`; confirm the current editor version in `ProjectSettings/ProjectVersion.txt` before editor-specific changes.
+- Prefer checking `ProjectSettings/ProjectVersion.txt` before changing package wiring, asmdefs, scenes, serialized assets, or other editor-version-sensitive files.
+- Do not rely on deprecated built-in Unity fonts/resources such as `Arial.ttf` for runtime UI creation.
+- Prefer project-owned font assets for runtime UI; temporary placeholder UI may use Unity-6-compatible fallback resources only when necessary.
 - Keep `MonoBehaviour` scripts thin.
 - Put gameplay logic in small testable C# classes where possible.
 - When changing scenes, prefabs, ScriptableObjects, or assets, include related `.meta` files.
