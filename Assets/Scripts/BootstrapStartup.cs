@@ -70,7 +70,7 @@ namespace Survivalon.Runtime
 
         private StartupPlaceholderView EnsurePlaceholderView()
         {
-            StartupPlaceholderView existingPlaceholderView = GetComponentInChildren<StartupPlaceholderView>();
+            StartupPlaceholderView existingPlaceholderView = GetComponentInChildren<StartupPlaceholderView>(true);
             if (existingPlaceholderView != null)
             {
                 return existingPlaceholderView;
@@ -84,7 +84,7 @@ namespace Survivalon.Runtime
 
         private WorldMapScreen EnsureWorldMapScreen()
         {
-            WorldMapScreen existingWorldMapScreen = GetComponentInChildren<WorldMapScreen>();
+            WorldMapScreen existingWorldMapScreen = GetComponentInChildren<WorldMapScreen>(true);
             if (existingWorldMapScreen != null)
             {
                 return existingWorldMapScreen;
@@ -98,7 +98,7 @@ namespace Survivalon.Runtime
 
         private NodePlaceholderScreen EnsureNodePlaceholderScreen()
         {
-            NodePlaceholderScreen existingNodePlaceholderScreen = GetComponentInChildren<NodePlaceholderScreen>();
+            NodePlaceholderScreen existingNodePlaceholderScreen = GetComponentInChildren<NodePlaceholderScreen>(true);
             if (existingNodePlaceholderScreen != null)
             {
                 return existingNodePlaceholderScreen;
