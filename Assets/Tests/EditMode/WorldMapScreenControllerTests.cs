@@ -18,6 +18,7 @@ namespace Survivalon.Tests.EditMode
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_001"), true, false, false);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_002"), false, true, false);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_003"), false, false, false);
+            AssertNodeOption(nodeOptions, new NodeId("region_001_node_004"), true, false, false);
             AssertNodeOption(nodeOptions, new NodeId("region_002_node_001"), true, false, false);
             AssertNodeOption(nodeOptions, new NodeId("region_002_node_002"), false, false, false);
         }
@@ -57,6 +58,24 @@ namespace Survivalon.Tests.EditMode
             Assert.That(selectedUnreachableNode, Is.False);
             Assert.That(controller.HasSelection, Is.False);
             Assert.That(hasSelectedNodeId, Is.False);
+        }
+
+        [Test]
+        public void ShouldReportForwardBranchChoiceWhenMultipleRoutesAreAvailable()
+        {
+            WorldGraph worldGraph = CreateGraph();
+            PersistentWorldState worldState = CreateWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+
+            IReadOnlyList<NodeId> forwardSelectableNodeIds = controller.GetForwardSelectableNodeIds();
+
+            Assert.That(controller.HasForwardRouteChoice, Is.True);
+            Assert.That(controller.ForwardSelectableNodeCount, Is.EqualTo(2));
+            Assert.That(forwardSelectableNodeIds, Is.EquivalentTo(new[]
+            {
+                new NodeId("region_001_node_004"),
+                new NodeId("region_002_node_001"),
+            }));
         }
 
         private static void AssertNodeOption(

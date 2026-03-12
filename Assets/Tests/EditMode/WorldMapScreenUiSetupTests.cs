@@ -53,16 +53,22 @@ namespace Survivalon.Tests.EditMode
 
                 Text[] labels = hostObject.GetComponentsInChildren<Text>(true);
                 bool containsStateLabel = false;
+                bool containsForwardRouteSummary = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("State:"))
                     {
                         containsStateLabel = true;
-                        break;
+                    }
+
+                    if (label.text.Contains("Forward route options: 2"))
+                    {
+                        containsForwardRouteSummary = true;
                     }
                 }
 
                 Assert.That(containsStateLabel, Is.True);
+                Assert.That(containsForwardRouteSummary, Is.True);
             }
             finally
             {

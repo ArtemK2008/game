@@ -7,6 +7,7 @@ namespace Survivalon.Runtime
         private static readonly NodeId ForestEntryNodeId = new NodeId("region_001_node_001");
         private static readonly NodeId ForestPushNodeId = new NodeId("region_001_node_002");
         private static readonly NodeId ForestGateNodeId = new NodeId("region_001_node_003");
+        private static readonly NodeId ForestFarmNodeId = new NodeId("region_001_node_004");
         private static readonly NodeId CavernServiceNodeId = new NodeId("region_002_node_001");
         private static readonly NodeId CavernGateNodeId = new NodeId("region_002_node_002");
         private static readonly RegionId ForestRegionId = new RegionId("region_001");
@@ -19,6 +20,7 @@ namespace Survivalon.Runtime
                 new WorldNode(ForestEntryNodeId, ForestRegionId, NodeType.Combat, NodeState.Cleared),
                 new WorldNode(ForestPushNodeId, ForestRegionId, NodeType.Combat, NodeState.InProgress),
                 new WorldNode(ForestGateNodeId, ForestRegionId, NodeType.BossOrGate, NodeState.Locked),
+                new WorldNode(ForestFarmNodeId, ForestRegionId, NodeType.Combat, NodeState.Available),
                 new WorldNode(CavernServiceNodeId, CavernRegionId, NodeType.ServiceOrProgression, NodeState.Available),
                 new WorldNode(CavernGateNodeId, CavernRegionId, NodeType.BossOrGate, NodeState.Locked),
             };
@@ -34,6 +36,7 @@ namespace Survivalon.Runtime
                         ForestEntryNodeId,
                         ForestPushNodeId,
                         ForestGateNodeId,
+                        ForestFarmNodeId,
                     },
                     ResourceCategory.RegionMaterial,
                     "frontier"),
@@ -54,6 +57,7 @@ namespace Survivalon.Runtime
             {
                 new WorldNodeConnection(ForestEntryNodeId, ForestPushNodeId),
                 new WorldNodeConnection(ForestPushNodeId, ForestGateNodeId),
+                new WorldNodeConnection(ForestPushNodeId, ForestFarmNodeId),
                 new WorldNodeConnection(ForestPushNodeId, CavernServiceNodeId),
                 new WorldNodeConnection(CavernServiceNodeId, CavernGateNodeId),
             };
