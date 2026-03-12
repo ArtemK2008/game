@@ -9,6 +9,7 @@ namespace Survivalon.Runtime
         private readonly PersistentWorldState worldState;
         private readonly NodeReachabilityResolver nodeReachabilityResolver;
         private readonly Dictionary<RegionId, int> regionOrderById;
+        private readonly HashSet<NodeId> forwardSelectableNodeIds;
         private readonly HashSet<NodeId> selectableNodeIds;
         private bool hasSelectedNode;
         private NodeId selectedNodeId;
@@ -22,10 +23,17 @@ namespace Survivalon.Runtime
             this.worldState = worldState ?? throw new ArgumentNullException(nameof(worldState));
             this.nodeReachabilityResolver = nodeReachabilityResolver ?? new NodeReachabilityResolver();
             regionOrderById = CreateRegionOrderLookup(worldGraph);
-            selectableNodeIds = CreateSelectableNodeIdSet();
+            forwardSelectableNodeIds = CreateSelectableNodeIdSet(
+                this.nodeReachabilityResolver.GetForwardReachableNodes(worldGraph, worldState));
+            selectableNodeIds = CreateSelectableNodeIdSet(
+                this.nodeReachabilityResolver.GetReachableNodes(worldGraph, worldState));
         }
 
         public bool HasSelection => hasSelectedNode;
+
+        public bool HasForwardRouteChoice => forwardSelectableNodeIds.Count > 1;
+
+        public int ForwardSelectableNodeCount => forwardSelectableNodeIds.Count;
 
         public NodeId SelectedNodeId => hasSelectedNode
             ? selectedNodeId
@@ -77,6 +85,13 @@ namespace Survivalon.Runtime
             return false;
         }
 
+        public IReadOnlyList<NodeId> GetForwardSelectableNodeIds()
+        {
+            List<NodeId> nodeIds = new List<NodeId>(forwardSelectableNodeIds);
+            nodeIds.Sort((left, right) => StringComparer.Ordinal.Compare(left.Value, right.Value));
+            return nodeIds;
+        }
+
         private static Dictionary<RegionId, int> CreateRegionOrderLookup(WorldGraph worldGraph)
         {
             Dictionary<RegionId, int> regionOrderById = new Dictionary<RegionId, int>();
@@ -88,10 +103,15 @@ namespace Survivalon.Runtime
             return regionOrderById;
         }
 
-        private HashSet<NodeId> CreateSelectableNodeIdSet()
+        private static HashSet<NodeId> CreateSelectableNodeIdSet(IEnumerable<WorldNode> reachableNodes)
         {
+            if (reachableNodes == null)
+            {
+                throw new ArgumentNullException(nameof(reachableNodes));
+            }
+
             HashSet<NodeId> selectableNodeIds = new HashSet<NodeId>();
-            foreach (WorldNode reachableNode in nodeReachabilityResolver.GetReachableNodes(worldGraph, worldState))
+            foreach (WorldNode reachableNode in reachableNodes)
             {
                 selectableNodeIds.Add(reachableNode.NodeId);
             }

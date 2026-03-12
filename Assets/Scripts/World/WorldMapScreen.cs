@@ -415,6 +415,7 @@ namespace Survivalon.Runtime
             string currentNodeLabel = "unknown";
             string selectedNodeLabel = screenController.HasSelection ? screenController.SelectedNodeId.Value : "none";
             int selectableCount = 0;
+            int forwardSelectableCount = screenController.ForwardSelectableNodeCount;
 
             foreach (WorldMapNodeOption nodeOption in nodeOptions)
             {
@@ -429,7 +430,16 @@ namespace Survivalon.Runtime
                 }
             }
 
-            return $"Current node: {currentNodeLabel}\nSelectable destinations: {selectableCount}\nSelected node: {selectedNodeLabel}\nSelect a reachable node, then confirm entry to start the placeholder node flow.";
+            string routeChoiceLabel = screenController.HasForwardRouteChoice
+                ? "Branch choice available"
+                : "Single forward route";
+
+            return
+                $"Current node: {currentNodeLabel}\n" +
+                $"Selectable destinations: {selectableCount}\n" +
+                $"Forward route options: {forwardSelectableCount} ({routeChoiceLabel})\n" +
+                $"Selected node: {selectedNodeLabel}\n" +
+                "Select a reachable node, then confirm entry to start the placeholder node flow.";
         }
 
         private static Color GetNodeColor(WorldMapNodeOption nodeOption)
