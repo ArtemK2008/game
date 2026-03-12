@@ -30,7 +30,7 @@ namespace Survivalon.Tests.EditMode
         public void Show_ShouldCreatePlaceholderNodeUiAndInvokeReturnCallback()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
-            bool wasInvoked = false;
+            RunResult completedRunResult = null;
 
             try
             {
@@ -42,7 +42,7 @@ namespace Survivalon.Tests.EditMode
                     NodeState.Available,
                     new NodeId("region_001_node_002"));
 
-                placeholderScreen.Show(placeholderState, () => wasInvoked = true);
+                placeholderScreen.Show(placeholderState, runResult => completedRunResult = runResult);
 
                 Canvas canvas = hostObject.GetComponent<Canvas>();
                 Assert.That(canvas, Is.Not.Null);
@@ -50,21 +50,39 @@ namespace Survivalon.Tests.EditMode
 
                 Text[] labels = hostObject.GetComponentsInChildren<Text>(true);
                 bool containsEnteredFromLabel = false;
+                bool containsRunStartState = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("Entered from: region_001_node_002"))
                     {
                         containsEnteredFromLabel = true;
-                        break;
+                    }
+
+                    if (label.text.Contains("Lifecycle: RunStart"))
+                    {
+                        containsRunStartState = true;
                     }
                 }
 
                 Assert.That(containsEnteredFromLabel, Is.True);
+                Assert.That(containsRunStartState, Is.True);
 
+                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
                 Button returnButton = FindButton(hostObject, "ReturnToWorldMapButton");
+
+                Assert.That(returnButton.interactable, Is.False);
+
+                advanceRunLifecycleButton.onClick.Invoke();
+                advanceRunLifecycleButton.onClick.Invoke();
+                advanceRunLifecycleButton.onClick.Invoke();
+
+                Assert.That(returnButton.interactable, Is.True);
+
                 returnButton.onClick.Invoke();
 
-                Assert.That(wasInvoked, Is.True);
+                Assert.That(completedRunResult, Is.Not.Null);
+                Assert.That(completedRunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+                Assert.That(completedRunResult.NextActionContext.CanStopSession, Is.True);
             }
             finally
             {

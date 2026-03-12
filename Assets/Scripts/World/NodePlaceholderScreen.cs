@@ -10,39 +10,69 @@ namespace Survivalon.Runtime
         private Text titleText;
         private Text summaryText;
         private Text statusText;
+        private Button advanceRunLifecycleButton;
+        private Text advanceRunLifecycleButtonText;
         private Button returnButton;
+        private Text returnButtonText;
         private Font uiFont;
-        private Action onReturnRequested;
+        private RunLifecycleController runLifecycleController;
+        private Action<RunResult> onRunCompleted;
 
-        public void Show(NodePlaceholderState placeholderState, Action returnRequested)
+        public void Show(NodePlaceholderState placeholderState, Action<RunResult> runCompleted)
         {
             if (placeholderState == null)
             {
                 throw new ArgumentNullException(nameof(placeholderState));
             }
 
-            onReturnRequested = returnRequested ?? throw new ArgumentNullException(nameof(returnRequested));
+            runLifecycleController = new RunLifecycleController(placeholderState);
+            onRunCompleted = runCompleted ?? throw new ArgumentNullException(nameof(runCompleted));
             gameObject.name = "NodePlaceholderScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
             EnsureUi();
-            Refresh(placeholderState);
+            Refresh();
         }
 
-        private void Refresh(NodePlaceholderState placeholderState)
+        private void Refresh()
         {
-            titleText.text = $"Node Placeholder: {placeholderState.NodeId.Value}";
-            summaryText.text =
-                $"Region: {placeholderState.RegionId.Value}\n" +
-                $"Type: {placeholderState.NodeType}\n" +
-                $"State: {placeholderState.NodeState}\n" +
-                $"Entered from: {placeholderState.OriginNodeId.Value}";
-            statusText.text = "Placeholder node content is active. Resolve this placeholder to return to the world map.";
+            NodePlaceholderState placeholderState = runLifecycleController.NodeContext;
+            titleText.text = $"Run Shell: {placeholderState.NodeId.Value}";
+            summaryText.text = BuildSummaryText();
+            statusText.text = BuildStatusText();
+            RefreshButtons();
+        }
+
+        private void HandleAdvanceRunLifecycleRequested()
+        {
+            switch (runLifecycleController.CurrentState)
+            {
+                case RunLifecycleState.RunStart:
+                    runLifecycleController.TryEnterActiveState();
+                    break;
+                case RunLifecycleState.RunActive:
+                    runLifecycleController.TryResolveRun(RunResolutionState.Succeeded);
+                    break;
+                case RunLifecycleState.RunResolved:
+                    runLifecycleController.TryEnterPostRunState();
+                    break;
+                case RunLifecycleState.PostRun:
+                    return;
+                default:
+                    throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
+            }
+
+            Refresh();
         }
 
         private void HandleReturnRequested()
         {
-            onReturnRequested?.Invoke();
+            if (runLifecycleController.CurrentState != RunLifecycleState.PostRun)
+            {
+                return;
+            }
+
+            onRunCompleted?.Invoke(runLifecycleController.RunResult);
         }
 
         private void EnsureUi()
@@ -130,15 +160,24 @@ namespace Survivalon.Runtime
                 new Color(0.78f, 0.82f, 0.90f, 1f));
             RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 78f);
 
+            advanceRunLifecycleButton = CreateActionButton(
+                panelObject.transform,
+                "AdvanceRunLifecycleButton",
+                "Start Placeholder Run",
+                out advanceRunLifecycleButtonText);
+            RuntimeUiSupport.AddLayoutElement(advanceRunLifecycleButton.gameObject, 56f);
+            advanceRunLifecycleButton.onClick.AddListener(HandleAdvanceRunLifecycleRequested);
+
             returnButton = CreateActionButton(
                 panelObject.transform,
                 "ReturnToWorldMapButton",
-                "Resolve Placeholder Node and Return");
+                "Return To World Map",
+                out returnButtonText);
             RuntimeUiSupport.AddLayoutElement(returnButton.gameObject, 56f);
             returnButton.onClick.AddListener(HandleReturnRequested);
         }
 
-        private Button CreateActionButton(Transform parent, string objectName, string label)
+        private Button CreateActionButton(Transform parent, string objectName, string label, out Text buttonText)
         {
             GameObject buttonObject = new GameObject(
                 objectName,
@@ -164,7 +203,7 @@ namespace Survivalon.Runtime
             colors.disabledColor = buttonImage.color * 0.7f;
             button.colors = colors;
 
-            Text buttonText = RuntimeUiSupport.CreateText(
+            buttonText = RuntimeUiSupport.CreateText(
                 buttonObject.transform,
                 uiFont,
                 "Label",
@@ -182,6 +221,90 @@ namespace Survivalon.Runtime
             textRectTransform.localScale = Vector3.one;
 
             return button;
+        }
+
+        private string BuildSummaryText()
+        {
+            NodePlaceholderState placeholderState = runLifecycleController.NodeContext;
+            string summary =
+                $"Region: {placeholderState.RegionId.Value}\n" +
+                $"Type: {placeholderState.NodeType}\n" +
+                $"Node state: {placeholderState.NodeState}\n" +
+                $"Lifecycle: {runLifecycleController.CurrentState}\n" +
+                $"Entered from: {placeholderState.OriginNodeId.Value}";
+
+            if (!runLifecycleController.HasRunResult)
+            {
+                return summary;
+            }
+
+            RunResult runResult = runLifecycleController.RunResult;
+            return summary + "\n" +
+                $"Resolution: {runResult.ResolutionState}\n" +
+                $"Node progress delta: {runResult.NodeProgressDelta}\n" +
+                $"Persistent progression delta: {runResult.PersistentProgressionDelta}\n" +
+                $"Route unlock changed: {FormatYesNo(runResult.DidUnlockRoute)}\n" +
+                $"Rewards: {BuildRewardSummary(runResult.RewardPayload)}";
+        }
+
+        private string BuildStatusText()
+        {
+            switch (runLifecycleController.CurrentState)
+            {
+                case RunLifecycleState.RunStart:
+                    return "Run shell initialized. Start the placeholder run when ready.";
+                case RunLifecycleState.RunActive:
+                    return "Run is active. Resolve the placeholder run to produce a run result.";
+                case RunLifecycleState.RunResolved:
+                    return "Run resolved. Open the post-run state to review next actions.";
+                case RunLifecycleState.PostRun:
+                    return "Post-run state is active. Return to the world map or stop the session safely.";
+                default:
+                    throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
+            }
+        }
+
+        private void RefreshButtons()
+        {
+            switch (runLifecycleController.CurrentState)
+            {
+                case RunLifecycleState.RunStart:
+                    advanceRunLifecycleButton.interactable = true;
+                    advanceRunLifecycleButtonText.text = "Start Placeholder Run";
+                    returnButton.interactable = false;
+                    returnButtonText.text = "Return To World Map";
+                    return;
+                case RunLifecycleState.RunActive:
+                    advanceRunLifecycleButton.interactable = true;
+                    advanceRunLifecycleButtonText.text = "Resolve Placeholder Run";
+                    returnButton.interactable = false;
+                    returnButtonText.text = "Return To World Map";
+                    return;
+                case RunLifecycleState.RunResolved:
+                    advanceRunLifecycleButton.interactable = true;
+                    advanceRunLifecycleButtonText.text = "Enter Post-Run State";
+                    returnButton.interactable = false;
+                    returnButtonText.text = "Return To World Map";
+                    return;
+                case RunLifecycleState.PostRun:
+                    advanceRunLifecycleButton.interactable = false;
+                    advanceRunLifecycleButtonText.text = "Run Lifecycle Complete";
+                    returnButton.interactable = true;
+                    returnButtonText.text = "Return To World Map";
+                    return;
+                default:
+                    throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
+            }
+        }
+
+        private static string BuildRewardSummary(RunRewardPayload rewardPayload)
+        {
+            return rewardPayload.HasRewards ? "Placeholder reward payload present" : "None";
+        }
+
+        private static string FormatYesNo(bool value)
+        {
+            return value ? "Yes" : "No";
         }
 
     }

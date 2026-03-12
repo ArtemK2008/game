@@ -65,6 +65,11 @@ namespace Survivalon.Tests.EditMode
 
         private static void ReturnToWorldMap(GameObject rootObject)
         {
+            Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
+            advanceRunLifecycleButton.onClick.Invoke();
+            advanceRunLifecycleButton.onClick.Invoke();
+            advanceRunLifecycleButton.onClick.Invoke();
+
             FindButton(rootObject, "ReturnToWorldMapButton").onClick.Invoke();
         }
 
