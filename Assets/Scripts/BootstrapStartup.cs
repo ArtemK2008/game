@@ -47,7 +47,7 @@ namespace Survivalon.Runtime
 
             NodePlaceholderScreen nodePlaceholderScreen = EnsureNodePlaceholderScreen();
             nodePlaceholderScreen.gameObject.SetActive(true);
-            nodePlaceholderScreen.Show(placeholderState, HandleReturnToWorldMapRequested);
+            nodePlaceholderScreen.Show(placeholderState, HandleRunLifecycleCompleted);
         }
 
         private void HandleNodeEntryRequested(NodeId nodeId)
@@ -62,9 +62,9 @@ namespace Survivalon.Runtime
             ShowNodePlaceholder(placeholderState);
         }
 
-        private void HandleReturnToWorldMapRequested()
+        private void HandleRunLifecycleCompleted(RunResult runResult)
         {
-            Debug.Log("Returning from placeholder node flow to world map.");
+            Debug.Log($"Returning from run lifecycle shell to world map after {runResult.ResolutionState} on {runResult.NodeId}.");
             ShowWorldMap();
         }
 
