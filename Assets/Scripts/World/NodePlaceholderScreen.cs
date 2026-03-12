@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace Survivalon.Runtime
@@ -26,7 +24,7 @@ namespace Survivalon.Runtime
             onReturnRequested = returnRequested ?? throw new ArgumentNullException(nameof(returnRequested));
             gameObject.name = "NodePlaceholderScreen";
 
-            EnsureEventSystem();
+            RuntimeUiSupport.EnsureInputSystemEventSystem();
             EnsureUi();
             Refresh(placeholderState);
         }
@@ -47,53 +45,6 @@ namespace Survivalon.Runtime
             onReturnRequested?.Invoke();
         }
 
-        private void EnsureEventSystem()
-        {
-            EventSystem eventSystem = EventSystem.current;
-            if (eventSystem == null)
-            {
-                eventSystem = UnityEngine.Object.FindFirstObjectByType<EventSystem>(FindObjectsInactive.Include);
-            }
-
-            InputSystemUIInputModule inputSystemModule;
-            if (eventSystem == null)
-            {
-                GameObject eventSystemObject = new GameObject("EventSystem");
-                eventSystemObject.SetActive(false);
-                eventSystem = eventSystemObject.AddComponent<EventSystem>();
-                inputSystemModule = eventSystemObject.AddComponent<InputSystemUIInputModule>();
-                eventSystemObject.SetActive(true);
-            }
-            else
-            {
-                inputSystemModule = eventSystem.GetComponent<InputSystemUIInputModule>();
-                if (inputSystemModule == null)
-                {
-                    inputSystemModule = eventSystem.gameObject.AddComponent<InputSystemUIInputModule>();
-                }
-            }
-
-            inputSystemModule.enabled = true;
-
-            BaseInputModule[] inputModules = eventSystem.GetComponents<BaseInputModule>();
-            foreach (BaseInputModule inputModule in inputModules)
-            {
-                if (inputModule == null || inputModule == inputSystemModule)
-                {
-                    continue;
-                }
-
-                inputModule.enabled = false;
-                if (Application.isPlaying)
-                {
-                    Destroy(inputModule);
-                    continue;
-                }
-
-                DestroyImmediate(inputModule);
-            }
-        }
-
         private void EnsureUi()
         {
             if (canvas != null)
@@ -101,12 +52,12 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            uiFont = LoadDefaultFont();
+            uiFont = RuntimeUiSupport.LoadFallbackFont(nameof(NodePlaceholderScreen));
 
-            RectTransform rootRectTransform = GetOrAddComponent<RectTransform>(gameObject);
-            canvas = GetOrAddComponent<Canvas>(gameObject);
-            CanvasScaler canvasScaler = GetOrAddComponent<CanvasScaler>(gameObject);
-            GetOrAddComponent<GraphicRaycaster>(gameObject);
+            RectTransform rootRectTransform = RuntimeUiSupport.GetOrAddComponent<RectTransform>(gameObject);
+            canvas = RuntimeUiSupport.GetOrAddComponent<Canvas>(gameObject);
+            CanvasScaler canvasScaler = RuntimeUiSupport.GetOrAddComponent<CanvasScaler>(gameObject);
+            RuntimeUiSupport.GetOrAddComponent<GraphicRaycaster>(gameObject);
 
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 110;
@@ -149,20 +100,41 @@ namespace Survivalon.Runtime
             panelLayout.childForceExpandWidth = true;
             panelLayout.childForceExpandHeight = false;
 
-            titleText = CreateText(panelObject.transform, "Title", 30, FontStyle.Bold, TextAnchor.MiddleLeft, Color.white);
-            AddLayoutElement(titleText.gameObject, 44f);
+            titleText = RuntimeUiSupport.CreateText(
+                panelObject.transform,
+                uiFont,
+                "Title",
+                30,
+                FontStyle.Bold,
+                TextAnchor.MiddleLeft,
+                Color.white);
+            RuntimeUiSupport.AddLayoutElement(titleText.gameObject, 44f);
 
-            summaryText = CreateText(panelObject.transform, "Summary", 20, FontStyle.Normal, TextAnchor.UpperLeft, new Color(0.90f, 0.90f, 0.94f, 1f));
-            AddLayoutElement(summaryText.gameObject, 120f);
+            summaryText = RuntimeUiSupport.CreateText(
+                panelObject.transform,
+                uiFont,
+                "Summary",
+                20,
+                FontStyle.Normal,
+                TextAnchor.UpperLeft,
+                new Color(0.90f, 0.90f, 0.94f, 1f));
+            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 120f);
 
-            statusText = CreateText(panelObject.transform, "Status", 18, FontStyle.Normal, TextAnchor.UpperLeft, new Color(0.78f, 0.82f, 0.90f, 1f));
-            AddLayoutElement(statusText.gameObject, 78f);
+            statusText = RuntimeUiSupport.CreateText(
+                panelObject.transform,
+                uiFont,
+                "Status",
+                18,
+                FontStyle.Normal,
+                TextAnchor.UpperLeft,
+                new Color(0.78f, 0.82f, 0.90f, 1f));
+            RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 78f);
 
             returnButton = CreateActionButton(
                 panelObject.transform,
                 "ReturnToWorldMapButton",
                 "Resolve Placeholder Node and Return");
-            AddLayoutElement(returnButton.gameObject, 56f);
+            RuntimeUiSupport.AddLayoutElement(returnButton.gameObject, 56f);
             returnButton.onClick.AddListener(HandleReturnRequested);
         }
 
@@ -192,7 +164,14 @@ namespace Survivalon.Runtime
             colors.disabledColor = buttonImage.color * 0.7f;
             button.colors = colors;
 
-            Text buttonText = CreateText(buttonObject.transform, "Label", 18, FontStyle.Bold, TextAnchor.MiddleCenter, Color.white);
+            Text buttonText = RuntimeUiSupport.CreateText(
+                buttonObject.transform,
+                uiFont,
+                "Label",
+                18,
+                FontStyle.Bold,
+                TextAnchor.MiddleCenter,
+                Color.white);
             buttonText.text = label;
 
             RectTransform textRectTransform = buttonText.rectTransform;
@@ -205,51 +184,5 @@ namespace Survivalon.Runtime
             return button;
         }
 
-        private Text CreateText(Transform parent, string objectName, int fontSize, FontStyle fontStyle, TextAnchor alignment, Color color)
-        {
-            GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(Text));
-            textObject.transform.SetParent(parent, false);
-
-            Text text = textObject.GetComponent<Text>();
-            text.font = uiFont;
-            text.fontSize = fontSize;
-            text.fontStyle = fontStyle;
-            text.alignment = alignment;
-            text.color = color;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-            text.raycastTarget = false;
-
-            return text;
-        }
-
-        private static void AddLayoutElement(GameObject gameObject, float preferredHeight)
-        {
-            LayoutElement layoutElement = gameObject.AddComponent<LayoutElement>();
-            layoutElement.minHeight = preferredHeight;
-            layoutElement.preferredHeight = preferredHeight;
-        }
-
-        private static T GetOrAddComponent<T>(GameObject target) where T : Component
-        {
-            T component = target.GetComponent<T>();
-            if (component != null)
-            {
-                return component;
-            }
-
-            return target.AddComponent<T>();
-        }
-
-        private static Font LoadDefaultFont()
-        {
-            Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (font != null)
-            {
-                return font;
-            }
-
-            throw new InvalidOperationException("NodePlaceholderScreen could not load a Unity-compatible runtime font.");
-        }
     }
 }
