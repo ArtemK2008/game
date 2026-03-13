@@ -10,6 +10,7 @@ namespace Survivalon.Runtime
         private Text titleText;
         private Text summaryText;
         private Text statusText;
+        private CombatShellView combatShellView;
         private GameObject postRunSummaryPanelObject;
         private Text postRunSummaryText;
         private Button advanceRunLifecycleButton;
@@ -53,6 +54,7 @@ namespace Survivalon.Runtime
             titleText.text = $"Run Shell: {placeholderState.NodeId.Value}";
             summaryText.text = BuildSummaryText();
             statusText.text = BuildStatusText();
+            RefreshCombatShellView();
             RefreshAdvanceButton();
             RefreshPostRunSummaryPanel();
         }
@@ -199,6 +201,12 @@ namespace Survivalon.Runtime
                 new Color(0.78f, 0.82f, 0.90f, 1f));
             RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 78f);
 
+            GameObject combatShellViewObject = new GameObject("CombatShellView");
+            combatShellViewObject.transform.SetParent(panelObject.transform, false);
+            RuntimeUiSupport.AddLayoutElement(combatShellViewObject, 200f);
+            combatShellView = combatShellViewObject.AddComponent<CombatShellView>();
+            combatShellView.Hide();
+
             advanceRunLifecycleButton = CreateActionButton(
                 panelObject.transform,
                 "AdvanceRunLifecycleButton",
@@ -334,14 +342,22 @@ namespace Survivalon.Runtime
 
         private string BuildStatusText()
         {
+            bool usesCombatShell = runLifecycleController.NodeContext.UsesCombatShell;
+
             switch (runLifecycleController.CurrentState)
             {
                 case RunLifecycleState.RunStart:
-                    return "Run shell initialized. Start the placeholder run when ready.";
+                    return usesCombatShell
+                        ? "Combat shell initialized. Start the placeholder combat run when ready."
+                        : "Run shell initialized. Start the placeholder run when ready.";
                 case RunLifecycleState.RunActive:
-                    return "Run is active. Resolve the placeholder run to produce a run result.";
+                    return runLifecycleController.HasCombatContext
+                        ? "Combat shell active. One player-side entity and one enemy-side entity are spawned for the placeholder encounter."
+                        : "Run is active. Resolve the placeholder run to produce a run result.";
                 case RunLifecycleState.RunResolved:
-                    return "Run resolved. Open the post-run state to review next actions.";
+                    return usesCombatShell
+                        ? "Combat shell resolved. Open the post-run state to review next actions."
+                        : "Run resolved. Open the post-run state to review next actions.";
                 case RunLifecycleState.PostRun:
                     return "Post-run summary is active. Replay, return to the world map, or stop the session.";
                 default:
@@ -349,17 +365,37 @@ namespace Survivalon.Runtime
             }
         }
 
+        private void RefreshCombatShellView()
+        {
+            bool shouldShowCombatShell = runLifecycleController.CurrentState == RunLifecycleState.RunActive &&
+                runLifecycleController.HasCombatContext;
+
+            if (!shouldShowCombatShell)
+            {
+                combatShellView.Hide();
+                return;
+            }
+
+            combatShellView.Show(runLifecycleController.CombatContext);
+        }
+
         private void RefreshAdvanceButton()
         {
+            bool usesCombatShell = runLifecycleController.NodeContext.UsesCombatShell;
+
             switch (runLifecycleController.CurrentState)
             {
                 case RunLifecycleState.RunStart:
                     advanceRunLifecycleButton.interactable = true;
-                    advanceRunLifecycleButtonText.text = "Start Placeholder Run";
+                    advanceRunLifecycleButtonText.text = usesCombatShell
+                        ? "Start Combat Shell"
+                        : "Start Placeholder Run";
                     return;
                 case RunLifecycleState.RunActive:
                     advanceRunLifecycleButton.interactable = true;
-                    advanceRunLifecycleButtonText.text = "Resolve Placeholder Run";
+                    advanceRunLifecycleButtonText.text = usesCombatShell
+                        ? "Resolve Combat Shell"
+                        : "Resolve Placeholder Run";
                     return;
                 case RunLifecycleState.RunResolved:
                     advanceRunLifecycleButton.interactable = true;

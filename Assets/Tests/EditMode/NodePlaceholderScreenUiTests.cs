@@ -78,6 +78,38 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void Show_ShouldDisplayCombatShellParticipantsForCombatNodeWhenRunStarts()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
+                Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
+                Assert.That(advanceButtonText.text, Is.EqualTo("Start Combat Shell"));
+
+                advanceRunLifecycleButton.onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "Combat shell active. One player-side entity and one enemy-side entity are spawned for the placeholder encounter."), Is.True);
+                Assert.That(ContainsText(hostObject, "Player Unit"), Is.True);
+                Assert.That(ContainsText(hostObject, "Side: Player"), Is.True);
+                Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
+                Assert.That(ContainsText(hostObject, "Side: Enemy"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldInvokeReturnAndStopCallbacksFromPostRunSummary()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
@@ -118,6 +150,16 @@ namespace Survivalon.Tests.EditMode
                 new NodeId("region_002_node_001"),
                 new RegionId("region_002"),
                 NodeType.ServiceOrProgression,
+                NodeState.Available,
+                new NodeId("region_001_node_002"));
+        }
+
+        private static NodePlaceholderState CreateCombatPlaceholderState()
+        {
+            return new NodePlaceholderState(
+                new NodeId("region_001_node_004"),
+                new RegionId("region_001"),
+                NodeType.Combat,
                 NodeState.Available,
                 new NodeId("region_001_node_002"));
         }

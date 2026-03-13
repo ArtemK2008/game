@@ -38,6 +38,27 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldCreateCombatShellContextWhenCombatRunEntersActiveState()
+        {
+            RunLifecycleController controller = new RunLifecycleController(new NodePlaceholderState(
+                new NodeId("region_001_node_004"),
+                new RegionId("region_001"),
+                NodeType.Combat,
+                NodeState.Available,
+                new NodeId("region_001_node_002")));
+
+            bool enteredActive = controller.TryEnterActiveState();
+
+            Assert.That(enteredActive, Is.True);
+            Assert.That(controller.HasCombatContext, Is.True);
+            Assert.That(controller.CombatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
+            Assert.That(controller.CombatContext.PlayerParticipant.DisplayName, Is.EqualTo("Player Unit"));
+            Assert.That(controller.CombatContext.PlayerParticipant.Side, Is.EqualTo(CombatSide.Player));
+            Assert.That(controller.CombatContext.EnemyParticipant.DisplayName, Is.EqualTo("Enemy Unit"));
+            Assert.That(controller.CombatContext.EnemyParticipant.Side, Is.EqualTo(CombatSide.Enemy));
+        }
+
+        [Test]
         public void ShouldEnterPostRunStateOnlyAfterResolvedRun()
         {
             RunLifecycleController controller = CreateController();

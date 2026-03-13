@@ -5,12 +5,17 @@ namespace Survivalon.Runtime
     public sealed class RunLifecycleController
     {
         private readonly NodePlaceholderState nodeContext;
+        private readonly CombatShellContextFactory combatShellContextFactory;
         private RunLifecycleState currentState;
+        private CombatShellContext combatShellContext;
         private RunResult runResult;
 
-        public RunLifecycleController(NodePlaceholderState nodeContext)
+        public RunLifecycleController(
+            NodePlaceholderState nodeContext,
+            CombatShellContextFactory combatShellContextFactory = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
+            this.combatShellContextFactory = combatShellContextFactory ?? new CombatShellContextFactory();
             currentState = RunLifecycleState.RunStart;
         }
 
@@ -19,6 +24,11 @@ namespace Survivalon.Runtime
         public RunLifecycleState CurrentState => currentState;
 
         public bool HasRunResult => runResult != null;
+
+        public bool HasCombatContext => combatShellContext != null;
+
+        public CombatShellContext CombatContext => combatShellContext ??
+            throw new InvalidOperationException("Combat context is not available until a combat-compatible run enters the active state.");
 
         public RunResult RunResult => runResult ??
             throw new InvalidOperationException("Run result is not available until the run is resolved.");
@@ -30,6 +40,9 @@ namespace Survivalon.Runtime
                 return false;
             }
 
+            combatShellContext = nodeContext.UsesCombatShell
+                ? combatShellContextFactory.Create(nodeContext)
+                : null;
             currentState = RunLifecycleState.RunActive;
             return true;
         }
