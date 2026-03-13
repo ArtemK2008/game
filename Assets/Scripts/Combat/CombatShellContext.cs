@@ -6,18 +6,18 @@ namespace Survivalon.Runtime
     {
         public CombatShellContext(
             NodeId nodeId,
-            CombatShellParticipant playerParticipant,
-            CombatShellParticipant enemyParticipant)
+            CombatEntityState playerEntity,
+            CombatEntityState enemyEntity)
         {
             NodeId = nodeId;
-            PlayerParticipant = playerParticipant ?? throw new ArgumentNullException(nameof(playerParticipant));
-            EnemyParticipant = enemyParticipant ?? throw new ArgumentNullException(nameof(enemyParticipant));
+            PlayerEntity = playerEntity ?? throw new ArgumentNullException(nameof(playerEntity));
+            EnemyEntity = enemyEntity ?? throw new ArgumentNullException(nameof(enemyEntity));
         }
 
         public NodeId NodeId { get; }
 
-        public CombatShellParticipant PlayerParticipant { get; }
+        public CombatEntityState PlayerEntity { get; }
 
-        public CombatShellParticipant EnemyParticipant { get; }
+        public CombatEntityState EnemyEntity { get; }
     }
 }
