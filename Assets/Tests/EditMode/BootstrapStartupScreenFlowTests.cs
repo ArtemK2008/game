@@ -110,6 +110,31 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldEnterCombatShellFromWorldMapCombatNodeFlow()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                FindButton(hostObject, "AdvanceRunLifecycleButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "Combat Shell: region_001_node_004"), Is.True);
+                Assert.That(ContainsText(hostObject, "Player Unit"), Is.True);
+                Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");

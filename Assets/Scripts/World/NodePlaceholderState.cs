@@ -25,5 +25,7 @@ namespace Survivalon.Runtime
         public NodeState NodeState { get; }
 
         public NodeId OriginNodeId { get; }
+
+        public bool UsesCombatShell => NodeType == NodeType.Combat || NodeType == NodeType.BossOrGate;
     }
 }
