@@ -86,6 +86,30 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldShowRecentNodeContextAfterReturningToWorldMap()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Recent node: region_002_node_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Recent push target: region_002_node_001"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
@@ -188,6 +212,20 @@ namespace Survivalon.Tests.EditMode
 
             Assert.Fail($"Button '{buttonObjectName}' was not found.");
             return null;
+        }
+
+        private static bool ContainsText(GameObject rootObject, string textFragment)
+        {
+            Text[] labels = rootObject.GetComponentsInChildren<Text>(true);
+            foreach (Text label in labels)
+            {
+                if (label.text.Contains(textFragment))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage

@@ -20,7 +20,8 @@ namespace Survivalon.Runtime
         public void Show(
             WorldGraph worldGraph,
             PersistentWorldState worldState,
-            Action<NodeId> nodeEntryRequested = null)
+            Action<NodeId> nodeEntryRequested = null,
+            SessionContextState sessionContext = null)
         {
             if (worldGraph == null)
             {
@@ -32,7 +33,7 @@ namespace Survivalon.Runtime
                 throw new ArgumentNullException(nameof(worldState));
             }
 
-            screenController = new WorldMapScreenController(worldGraph, worldState);
+            screenController = new WorldMapScreenController(worldGraph, worldState, sessionContext: sessionContext);
             onNodeEntryRequested = nodeEntryRequested;
             gameObject.name = "WorldMapScreen";
 
@@ -154,7 +155,7 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.90f, 0.94f, 1f));
-            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 88f);
+            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 132f);
 
             enterSelectedNodeButton = CreateActionButton(
                 panelObject.transform,
@@ -346,6 +347,18 @@ namespace Survivalon.Runtime
         {
             string currentNodeLabel = "unknown";
             string selectedNodeLabel = screenController.HasSelection ? screenController.SelectedNodeId.Value : "none";
+            string recentNodeLabel = GetSessionNodeLabel(
+                screenController.SessionContext,
+                context => context.HasRecentNode,
+                context => context.RecentNodeId);
+            string recentPushTargetLabel = GetSessionNodeLabel(
+                screenController.SessionContext,
+                context => context.HasRecentPushTarget,
+                context => context.RecentPushTargetNodeId);
+            string lastSelectedNodeLabel = GetSessionNodeLabel(
+                screenController.SessionContext,
+                context => context.HasLastSelectedNode,
+                context => context.LastSelectedNodeId);
             int selectableCount = 0;
             int forwardSelectableCount = screenController.ForwardSelectableNodeCount;
 
@@ -368,10 +381,26 @@ namespace Survivalon.Runtime
 
             return
                 $"Current node: {currentNodeLabel}\n" +
+                $"Recent node: {recentNodeLabel}\n" +
+                $"Recent push target: {recentPushTargetLabel}\n" +
+                $"Last selected node: {lastSelectedNodeLabel}\n" +
                 $"Selectable destinations: {selectableCount}\n" +
                 $"Forward route options: {forwardSelectableCount} ({routeChoiceLabel})\n" +
                 $"Selected node: {selectedNodeLabel}\n" +
                 "Select a reachable node, then confirm entry to start the placeholder node flow.";
+        }
+
+        private static string GetSessionNodeLabel(
+            SessionContextState sessionContext,
+            Func<SessionContextState, bool> hasValue,
+            Func<SessionContextState, NodeId> selector)
+        {
+            if (sessionContext == null || !hasValue(sessionContext))
+            {
+                return "none";
+            }
+
+            return selector(sessionContext).Value;
         }
 
         private static Color GetNodeColor(WorldMapNodeOption nodeOption)

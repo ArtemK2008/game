@@ -10,6 +10,7 @@ namespace Survivalon.Runtime
         private PersistentGameState gameState;
         private WorldNodeEntryFlowController nodeEntryFlowController;
         private SafeResumePersistenceService persistenceService;
+        private SessionContextState sessionContext;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
@@ -24,6 +25,8 @@ namespace Survivalon.Runtime
             persistenceService ??= new SafeResumePersistenceService(CreateDefaultPersistenceStorage());
             gameState = persistenceService.LoadOrCreate(worldMapFactory.CreateGameState());
             nodeEntryFlowController = new WorldNodeEntryFlowController(worldGraph, gameState.WorldState);
+            sessionContext = new SessionContextState();
+            sessionContext.SeedFromWorldState(gameState.WorldState);
             GameStartupFlowResolver startupFlowResolver = new GameStartupFlowResolver();
             StartupEntryTarget entryTarget = startupFlowResolver.ResolveInitialEntryTarget(gameState);
 
@@ -47,7 +50,11 @@ namespace Survivalon.Runtime
 
             WorldMapScreen worldMapScreen = EnsureWorldMapScreen();
             worldMapScreen.gameObject.SetActive(true);
-            worldMapScreen.Show(worldGraph, gameState.WorldState, HandleNodeEntryRequested);
+            worldMapScreen.Show(
+                worldGraph,
+                gameState.WorldState,
+                HandleNodeEntryRequested,
+                sessionContext);
         }
 
         private void ShowNodePlaceholder(NodePlaceholderState placeholderState)
@@ -71,12 +78,14 @@ namespace Survivalon.Runtime
                 return;
             }
 
+            sessionContext.RecordNodeEntry(nodeId);
             Debug.Log($"Entered placeholder node flow for {nodeId}.");
             ShowNodePlaceholder(placeholderState);
         }
 
         private void HandleReturnToWorldRequested(RunResult runResult)
         {
+            sessionContext.RecordRunReturned(runResult.NodeId);
             persistenceService.SaveResolvedWorldContext(gameState);
             Debug.Log($"Returning from post-run state to world map after {runResult.ResolutionState} on {runResult.NodeId}.");
             ShowWorldMap();
@@ -84,6 +93,7 @@ namespace Survivalon.Runtime
 
         private void HandleStopSessionRequested(RunResult runResult)
         {
+            sessionContext.RecordRunReturned(runResult.NodeId);
             persistenceService.SaveResolvedWorldContext(gameState);
             Debug.Log($"Stopping session from post-run state after {runResult.ResolutionState} on {runResult.NodeId}.");
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);

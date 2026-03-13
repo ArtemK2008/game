@@ -32,11 +32,15 @@ namespace Survivalon.Tests.EditMode
         {
             BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
             GameObject hostObject = new GameObject("WorldMapScreenHost");
+            SessionContextState sessionContext = new SessionContextState();
 
             try
             {
                 WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
-                worldMapScreen.Show(factory.CreateWorldGraph(), factory.CreateGameState().WorldState);
+                worldMapScreen.Show(
+                    factory.CreateWorldGraph(),
+                    factory.CreateGameState().WorldState,
+                    sessionContext: sessionContext);
 
                 Canvas canvas = hostObject.GetComponent<Canvas>();
                 Assert.That(canvas, Is.Not.Null);
@@ -54,6 +58,7 @@ namespace Survivalon.Tests.EditMode
                 Text[] labels = hostObject.GetComponentsInChildren<Text>(true);
                 bool containsStateLabel = false;
                 bool containsForwardRouteSummary = false;
+                bool containsRecentNodeSummary = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("State:"))
@@ -65,10 +70,16 @@ namespace Survivalon.Tests.EditMode
                     {
                         containsForwardRouteSummary = true;
                     }
+
+                    if (label.text.Contains("Recent node: region_001_node_002"))
+                    {
+                        containsRecentNodeSummary = true;
+                    }
                 }
 
                 Assert.That(containsStateLabel, Is.True);
                 Assert.That(containsForwardRouteSummary, Is.True);
+                Assert.That(containsRecentNodeSummary, Is.True);
             }
             finally
             {
@@ -90,7 +101,7 @@ namespace Survivalon.Tests.EditMode
                 worldMapScreen.Show(
                     factory.CreateWorldGraph(),
                     factory.CreateGameState().WorldState,
-                    nodeId =>
+                    nodeEntryRequested: nodeId =>
                     {
                         wasInvoked = true;
                         enteredNodeId = nodeId;
