@@ -111,6 +111,48 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void Show_ShouldKeepCombatShellSeparatedFromAdvanceButtonForCombatNode()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
+                advanceRunLifecycleButton.onClick.Invoke();
+                ForceUiLayout(hostObject);
+
+                RectTransform combatShellRect = FindRectTransform(hostObject, "CombatShellView");
+                RectTransform combatShellSummaryRect = FindRectTransform(hostObject, "CombatShellSummary");
+                RectTransform combatEntityRowRect = FindRectTransform(hostObject, "CombatEntityRow");
+                RectTransform playerCardRect = FindRectTransform(hostObject, "PlayerCombatEntity");
+                RectTransform enemyCardRect = FindRectTransform(hostObject, "EnemyCombatEntity");
+                RectTransform advanceButtonRect = FindRectTransform(hostObject, "AdvanceRunLifecycleButton");
+                RectTransform mainPanelRect = FindRectTransform(hostObject, "Panel");
+
+                Assert.That(RectangleContains(combatShellRect, combatShellSummaryRect), Is.True);
+                Assert.That(RectangleContains(combatShellRect, combatEntityRowRect), Is.True);
+                Assert.That(RectangleContains(combatEntityRowRect, playerCardRect), Is.True);
+                Assert.That(RectangleContains(combatEntityRowRect, enemyCardRect), Is.True);
+                Assert.That(RectanglesOverlap(combatEntityRowRect, advanceButtonRect), Is.False);
+                Assert.That(RectanglesOverlap(playerCardRect, advanceButtonRect), Is.False);
+                Assert.That(RectanglesOverlap(enemyCardRect, advanceButtonRect), Is.False);
+                Assert.That(RectangleContains(mainPanelRect, combatShellRect), Is.True);
+                Assert.That(RectangleContains(mainPanelRect, advanceButtonRect), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldAdvanceCombatUntilRunResolvesForCombatNode()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
