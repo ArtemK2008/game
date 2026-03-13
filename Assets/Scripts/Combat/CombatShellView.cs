@@ -15,26 +15,26 @@ namespace Survivalon.Runtime
         private Text enemyEntityCardText;
         private Font uiFont;
 
-        public void Show(CombatShellContext combatContext)
+        public void Show(CombatEncounterState combatEncounterState)
         {
-            if (combatContext == null)
+            if (combatEncounterState == null)
             {
-                throw new ArgumentNullException(nameof(combatContext));
+                throw new ArgumentNullException(nameof(combatEncounterState));
             }
 
             gameObject.name = "CombatShellView";
             EnsureUi();
-            titleText.text = $"Combat Shell: {combatContext.NodeId.Value}";
-            summaryText.text = "Combat shell active. One player-side entity and one enemy-side entity are spawned.";
+            titleText.text = $"Combat Shell: {combatEncounterState.CombatContext.NodeId.Value}";
+            summaryText.text = BuildSummaryText(combatEncounterState);
             ApplyEntityCard(
                 playerEntityCardImage,
                 playerEntityCardText,
-                combatContext.PlayerEntity,
+                combatEncounterState.PlayerEntity,
                 new Color(0.18f, 0.38f, 0.68f, 1f));
             ApplyEntityCard(
                 enemyEntityCardImage,
                 enemyEntityCardText,
-                combatContext.EnemyEntity,
+                combatEncounterState.EnemyEntity,
                 new Color(0.62f, 0.22f, 0.22f, 1f));
             gameObject.SetActive(true);
         }
@@ -87,7 +87,7 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.90f, 0.94f, 1f));
-            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 46f);
+            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 64f);
 
             GameObject entityRowObject = new GameObject(
                 "CombatEntityRow",
@@ -105,8 +105,8 @@ namespace Survivalon.Runtime
             entityRowLayout.childForceExpandHeight = true;
 
             LayoutElement entityRowLayoutElement = entityRowObject.GetComponent<LayoutElement>();
-            entityRowLayoutElement.minHeight = 92f;
-            entityRowLayoutElement.preferredHeight = 92f;
+            entityRowLayoutElement.minHeight = 104f;
+            entityRowLayoutElement.preferredHeight = 104f;
 
             playerEntityCardImage = CreateEntityCard(
                 entityRowObject.transform,
@@ -134,8 +134,8 @@ namespace Survivalon.Runtime
             cardRectTransform.localScale = Vector3.one;
 
             LayoutElement cardLayoutElement = cardObject.GetComponent<LayoutElement>();
-            cardLayoutElement.minHeight = 92f;
-            cardLayoutElement.preferredHeight = 92f;
+            cardLayoutElement.minHeight = 104f;
+            cardLayoutElement.preferredHeight = 104f;
             cardLayoutElement.flexibleWidth = 1f;
 
             Image cardImage = cardObject.GetComponent<Image>();
@@ -162,16 +162,15 @@ namespace Survivalon.Runtime
         private static void ApplyEntityCard(
             Image cardImage,
             Text cardText,
-            CombatEntityState combatEntity,
+            CombatEntityRuntimeState combatEntity,
             Color backgroundColor)
         {
             cardImage.color = backgroundColor;
             cardText.text =
                 $"{combatEntity.DisplayName}\n" +
-                $"Side: {combatEntity.Side}\n" +
-                $"HP: {FormatStat(combatEntity.BaseStats.MaxHealth)} | ATK: {FormatStat(combatEntity.BaseStats.AttackPower)}\n" +
-                $"Rate: {FormatStat(combatEntity.BaseStats.AttackRate)}/s | DEF: {FormatStat(combatEntity.BaseStats.Defense)}\n" +
-                $"Alive: {FormatYesNo(combatEntity.IsAlive)} | Active: {FormatYesNo(combatEntity.IsActive)}";
+                $"{combatEntity.Side} | Alive: {FormatYesNo(combatEntity.IsAlive)} | Act: {FormatYesNo(combatEntity.IsActive)}\n" +
+                $"HP: {FormatStat(combatEntity.CurrentHealth)} / {FormatStat(combatEntity.MaxHealth)} | ATK: {FormatStat(combatEntity.CombatEntity.BaseStats.AttackPower)}\n" +
+                $"Rate: {FormatStat(combatEntity.CombatEntity.BaseStats.AttackRate)}/s | DEF: {FormatStat(combatEntity.CombatEntity.BaseStats.Defense)}";
         }
 
         private static string FormatYesNo(bool value)
@@ -182,6 +181,17 @@ namespace Survivalon.Runtime
         private static string FormatStat(float value)
         {
             return value.ToString("0.##");
+        }
+
+        private static string BuildSummaryText(CombatEncounterState combatEncounterState)
+        {
+            string outcomeText = combatEncounterState.IsResolved
+                ? $"Outcome: {combatEncounterState.Outcome}"
+                : "Outcome: Ongoing";
+            return
+                $"Elapsed: {FormatStat(combatEncounterState.ElapsedCombatSeconds)}s | {outcomeText}\n" +
+                $"Targeting: {combatEncounterState.PlayerEntity.DisplayName} -> {combatEncounterState.EnemyEntity.DisplayName}; " +
+                $"{combatEncounterState.EnemyEntity.DisplayName} -> {combatEncounterState.PlayerEntity.DisplayName}";
         }
     }
 }

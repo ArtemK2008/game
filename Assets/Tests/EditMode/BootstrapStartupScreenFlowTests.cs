@@ -182,9 +182,20 @@ namespace Survivalon.Tests.EditMode
         private static void AdvanceToPostRun(GameObject rootObject)
         {
             Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
-            advanceRunLifecycleButton.onClick.Invoke();
-            advanceRunLifecycleButton.onClick.Invoke();
-            advanceRunLifecycleButton.onClick.Invoke();
+
+            for (int index = 0; index < 12; index++)
+            {
+                Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
+                if (advanceButtonText.text == "Enter Post-Run State")
+                {
+                    advanceRunLifecycleButton.onClick.Invoke();
+                    return;
+                }
+
+                advanceRunLifecycleButton.onClick.Invoke();
+            }
+
+            Assert.Fail("AdvanceToPostRun did not reach the post-run state within the expected number of steps.");
         }
 
         private static void AssertScreenCounts(

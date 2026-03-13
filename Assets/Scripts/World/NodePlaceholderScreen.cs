@@ -67,7 +67,14 @@ namespace Survivalon.Runtime
                     runLifecycleController.TryEnterActiveState();
                     break;
                 case RunLifecycleState.RunActive:
-                    runLifecycleController.TryResolveRun(RunResolutionState.Succeeded);
+                    if (runLifecycleController.HasCombatEncounterState)
+                    {
+                        runLifecycleController.TryAdvanceCombat(1f);
+                    }
+                    else
+                    {
+                        runLifecycleController.TryResolveRun(RunResolutionState.Succeeded);
+                    }
                     break;
                 case RunLifecycleState.RunResolved:
                     runLifecycleController.TryEnterPostRunState();
@@ -371,13 +378,17 @@ namespace Survivalon.Runtime
                         ? "Combat shell initialized. Start the placeholder combat run when ready."
                         : "Run shell initialized. Start the placeholder run when ready.";
                 case RunLifecycleState.RunActive:
-                    return runLifecycleController.HasCombatContext
-                        ? "Combat shell active. One player-side entity and one enemy-side entity are spawned for the placeholder encounter."
+                    return runLifecycleController.HasCombatEncounterState
+                        ? "Combat shell active. Advance combat time to execute automated attacks until one side is defeated."
                         : "Run is active. Resolve the placeholder run to produce a run result.";
                 case RunLifecycleState.RunResolved:
-                    return usesCombatShell
-                        ? "Combat shell resolved. Open the post-run state to review next actions."
-                        : "Run resolved. Open the post-run state to review next actions.";
+                    if (usesCombatShell && runLifecycleController.HasCombatEncounterState)
+                    {
+                        string winnerText = runLifecycleController.CombatEncounterState.WinnerSide?.ToString() ?? "Unknown";
+                        return $"Combat shell resolved. Winner: {winnerText}. Open the post-run state to review next actions.";
+                    }
+
+                    return "Run resolved. Open the post-run state to review next actions.";
                 case RunLifecycleState.PostRun:
                     return "Post-run summary is active. Replay, return to the world map, or stop the session.";
                 default:
@@ -387,8 +398,10 @@ namespace Survivalon.Runtime
 
         private void RefreshCombatShellView()
         {
-            bool shouldShowCombatShell = runLifecycleController.CurrentState == RunLifecycleState.RunActive &&
-                runLifecycleController.HasCombatContext;
+            bool shouldShowCombatShell =
+                runLifecycleController.HasCombatEncounterState &&
+                (runLifecycleController.CurrentState == RunLifecycleState.RunActive ||
+                runLifecycleController.CurrentState == RunLifecycleState.RunResolved);
 
             if (!shouldShowCombatShell)
             {
@@ -396,7 +409,7 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            combatShellView.Show(runLifecycleController.CombatContext);
+            combatShellView.Show(runLifecycleController.CombatEncounterState);
         }
 
         private void RefreshAdvanceButton()
@@ -413,8 +426,8 @@ namespace Survivalon.Runtime
                     return;
                 case RunLifecycleState.RunActive:
                     advanceRunLifecycleButton.interactable = true;
-                    advanceRunLifecycleButtonText.text = usesCombatShell
-                        ? "Resolve Combat Shell"
+                    advanceRunLifecycleButtonText.text = runLifecycleController.HasCombatEncounterState
+                        ? "Advance Combat +1.0s"
                         : "Resolve Placeholder Run";
                     return;
                 case RunLifecycleState.RunResolved:

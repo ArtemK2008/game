@@ -97,12 +97,45 @@ namespace Survivalon.Tests.EditMode
 
                 advanceRunLifecycleButton.onClick.Invoke();
 
-                Assert.That(ContainsText(hostObject, "Combat shell active. One player-side entity and one enemy-side entity are spawned for the placeholder encounter."), Is.True);
+                Assert.That(ContainsText(hostObject, "Combat shell active. Advance combat time to execute automated attacks until one side is defeated."), Is.True);
+                Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player Unit"), Is.True);
-                Assert.That(ContainsText(hostObject, "Side: Player"), Is.True);
+                Assert.That(ContainsText(hostObject, "Player | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
-                Assert.That(ContainsText(hostObject, "Side: Enemy"), Is.True);
-                Assert.That(ContainsText(hostObject, "Alive: Yes | Active: Yes"), Is.True);
+                Assert.That(ContainsText(hostObject, "Enemy | Alive: Yes | Act: Yes"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldAdvanceCombatUntilRunResolvesForCombatNode()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
+                advanceRunLifecycleButton.onClick.Invoke();
+
+                for (int index = 0; index < 5; index++)
+                {
+                    advanceRunLifecycleButton.onClick.Invoke();
+                }
+
+                Assert.That(ContainsText(hostObject, "Combat shell resolved. Winner: Player."), Is.True);
+                Assert.That(ContainsText(hostObject, "Elapsed: 5s | Outcome: PlayerVictory"), Is.True);
+                Assert.That(ContainsText(hostObject, "HP: 0 / 75"), Is.True);
+                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Enter Post-Run State"));
             }
             finally
             {
