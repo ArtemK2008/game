@@ -7,6 +7,8 @@ namespace Survivalon.Runtime
 {
     public sealed class WorldMapScreen : MonoBehaviour
     {
+        private const float SummaryPreferredHeight = 176f;
+
         private Canvas canvas;
         private Text titleText;
         private Text summaryText;
@@ -155,7 +157,7 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.90f, 0.94f, 1f));
-            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 132f);
+            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, SummaryPreferredHeight);
 
             enterSelectedNodeButton = CreateActionButton(
                 panelObject.transform,

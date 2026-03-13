@@ -6,6 +6,12 @@ namespace Survivalon.Runtime
 {
     public sealed class CombatShellView : MonoBehaviour
     {
+        public const float PreferredHeight = 252f;
+
+        private const float TitleHeight = 32f;
+        private const float SummaryHeight = 64f;
+        private const float EntityRowHeight = 104f;
+
         private Image backgroundImage;
         private Text titleText;
         private Text summaryText;
@@ -77,7 +83,7 @@ namespace Survivalon.Runtime
                 FontStyle.Bold,
                 TextAnchor.MiddleLeft,
                 Color.white);
-            RuntimeUiSupport.AddLayoutElement(titleText.gameObject, 32f);
+            RuntimeUiSupport.AddLayoutElement(titleText.gameObject, TitleHeight);
 
             summaryText = RuntimeUiSupport.CreateText(
                 transform,
@@ -87,7 +93,7 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.90f, 0.94f, 1f));
-            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 64f);
+            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, SummaryHeight);
 
             GameObject entityRowObject = new GameObject(
                 "CombatEntityRow",
@@ -105,8 +111,8 @@ namespace Survivalon.Runtime
             entityRowLayout.childForceExpandHeight = true;
 
             LayoutElement entityRowLayoutElement = entityRowObject.GetComponent<LayoutElement>();
-            entityRowLayoutElement.minHeight = 104f;
-            entityRowLayoutElement.preferredHeight = 104f;
+            entityRowLayoutElement.minHeight = EntityRowHeight;
+            entityRowLayoutElement.preferredHeight = EntityRowHeight;
 
             playerEntityCardImage = CreateEntityCard(
                 entityRowObject.transform,
@@ -134,8 +140,8 @@ namespace Survivalon.Runtime
             cardRectTransform.localScale = Vector3.one;
 
             LayoutElement cardLayoutElement = cardObject.GetComponent<LayoutElement>();
-            cardLayoutElement.minHeight = 104f;
-            cardLayoutElement.preferredHeight = 104f;
+            cardLayoutElement.minHeight = EntityRowHeight;
+            cardLayoutElement.preferredHeight = EntityRowHeight;
             cardLayoutElement.flexibleWidth = 1f;
 
             Image cardImage = cardObject.GetComponent<Image>();

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using UnityEngine;
 
 namespace Survivalon.Tests.EditMode
 {
@@ -124,6 +125,37 @@ namespace Survivalon.Tests.EditMode
             }
         }
 
+        [Test]
+        public void Show_ShouldKeepSummaryTextSeparatedFromEnterButton()
+        {
+            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            SessionContextState sessionContext = new SessionContextState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    factory.CreateWorldGraph(),
+                    factory.CreateGameState().WorldState,
+                    sessionContext: sessionContext);
+
+                ForceUiLayout(hostObject);
+
+                RectTransform summaryRect = FindRectTransform(hostObject, "Summary");
+                RectTransform enterButtonRect = FindRectTransform(hostObject, "EnterSelectedNodeButton");
+                RectTransform panelRect = FindRectTransform(hostObject, "Panel");
+
+                Assert.That(RectanglesOverlap(summaryRect, enterButtonRect), Is.False);
+                Assert.That(RectangleContains(panelRect, summaryRect), Is.True);
+                Assert.That(RectangleContains(panelRect, enterButtonRect), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
         private static Button FindButton(GameObject rootObject, string buttonObjectName)
         {
             Button[] buttons = rootObject.GetComponentsInChildren<Button>(true);
@@ -137,6 +169,61 @@ namespace Survivalon.Tests.EditMode
 
             Assert.Fail($"Button '{buttonObjectName}' was not found.");
             return null;
+        }
+
+        private static RectTransform FindRectTransform(GameObject rootObject, string objectName)
+        {
+            RectTransform[] rectTransforms = rootObject.GetComponentsInChildren<RectTransform>(true);
+            foreach (RectTransform rectTransform in rectTransforms)
+            {
+                if (rectTransform.gameObject.name == objectName)
+                {
+                    return rectTransform;
+                }
+            }
+
+            Assert.Fail($"RectTransform '{objectName}' was not found.");
+            return null;
+        }
+
+        private static void ForceUiLayout(GameObject rootObject)
+        {
+            Canvas.ForceUpdateCanvases();
+
+            RectTransform[] rectTransforms = rootObject.GetComponentsInChildren<RectTransform>(true);
+            foreach (RectTransform rectTransform in rectTransforms)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+            }
+
+            Canvas.ForceUpdateCanvases();
+        }
+
+        private static bool RectanglesOverlap(RectTransform first, RectTransform second)
+        {
+            Rect firstRect = GetWorldRect(first);
+            Rect secondRect = GetWorldRect(second);
+            return firstRect.Overlaps(secondRect, true);
+        }
+
+        private static Rect GetWorldRect(RectTransform rectTransform)
+        {
+            Vector3[] worldCorners = new Vector3[4];
+            rectTransform.GetWorldCorners(worldCorners);
+
+            Vector2 min = worldCorners[0];
+            Vector2 max = worldCorners[2];
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
+
+        private static bool RectangleContains(RectTransform container, RectTransform child)
+        {
+            Rect containerRect = GetWorldRect(container);
+            Rect childRect = GetWorldRect(child);
+            return containerRect.xMin <= childRect.xMin &&
+                containerRect.xMax >= childRect.xMax &&
+                containerRect.yMin <= childRect.yMin &&
+                containerRect.yMax >= childRect.yMax;
         }
     }
 }

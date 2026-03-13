@@ -163,8 +163,8 @@ namespace Survivalon.Runtime
             panelImage.color = new Color(0.09f, 0.09f, 0.12f, 0.96f);
 
             RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
-            panelRectTransform.anchorMin = new Vector2(0.14f, 0.03f);
-            panelRectTransform.anchorMax = new Vector2(0.86f, 0.97f);
+            panelRectTransform.anchorMin = new Vector2(0.12f, 0.01f);
+            panelRectTransform.anchorMax = new Vector2(0.88f, 0.99f);
             panelRectTransform.offsetMin = Vector2.zero;
             panelRectTransform.offsetMax = Vector2.zero;
             panelRectTransform.localScale = Vector3.one;
@@ -196,7 +196,7 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.90f, 0.90f, 0.94f, 1f));
-            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 158f);
+            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 148f);
 
             statusText = RuntimeUiSupport.CreateText(
                 panelObject.transform,
@@ -206,11 +206,11 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.78f, 0.82f, 0.90f, 1f));
-            RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 94f);
+            RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 80f);
 
             GameObject combatShellViewObject = new GameObject("CombatShellView");
             combatShellViewObject.transform.SetParent(panelObject.transform, false);
-            RuntimeUiSupport.AddLayoutElement(combatShellViewObject, 200f);
+            RuntimeUiSupport.AddLayoutElement(combatShellViewObject, CombatShellView.PreferredHeight);
             combatShellView = combatShellViewObject.AddComponent<CombatShellView>();
             combatShellView.Hide();
 
