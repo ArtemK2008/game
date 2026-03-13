@@ -21,11 +21,37 @@ namespace Survivalon.Runtime
                 new CombatEntityState(
                     new CombatEntityId("player_main"),
                     "Player Unit",
-                    CombatSide.Player),
+                    CombatSide.Player,
+                    CreatePlayerBaseStats()),
                 new CombatEntityState(
                     new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
                     GetEnemyDisplayName(nodeContext),
-                    CombatSide.Enemy));
+                    CombatSide.Enemy,
+                    CreateEnemyBaseStats(nodeContext)));
+        }
+
+        private static CombatStatBlock CreatePlayerBaseStats()
+        {
+            return new CombatStatBlock(
+                maxHealth: 120f,
+                attackPower: 14f,
+                attackRate: 1.2f,
+                defense: 12f);
+        }
+
+        private static CombatStatBlock CreateEnemyBaseStats(NodePlaceholderState nodeContext)
+        {
+            return nodeContext.NodeType == NodeType.BossOrGate
+                ? new CombatStatBlock(
+                    maxHealth: 180f,
+                    attackPower: 16f,
+                    attackRate: 0.85f,
+                    defense: 18f)
+                : new CombatStatBlock(
+                    maxHealth: 75f,
+                    attackPower: 8f,
+                    attackRate: 0.9f,
+                    defense: 4f);
         }
 
         private static string GetEnemyEntityIdValue(NodePlaceholderState nodeContext)

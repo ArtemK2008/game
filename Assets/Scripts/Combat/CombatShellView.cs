@@ -169,12 +169,19 @@ namespace Survivalon.Runtime
             cardText.text =
                 $"{combatEntity.DisplayName}\n" +
                 $"Side: {combatEntity.Side}\n" +
+                $"HP: {FormatStat(combatEntity.BaseStats.MaxHealth)} | ATK: {FormatStat(combatEntity.BaseStats.AttackPower)}\n" +
+                $"Rate: {FormatStat(combatEntity.BaseStats.AttackRate)}/s | DEF: {FormatStat(combatEntity.BaseStats.Defense)}\n" +
                 $"Alive: {FormatYesNo(combatEntity.IsAlive)} | Active: {FormatYesNo(combatEntity.IsActive)}";
         }
 
         private static string FormatYesNo(bool value)
         {
             return value ? "Yes" : "No";
+        }
+
+        private static string FormatStat(float value)
+        {
+            return value.ToString("0.##");
         }
     }
 }
