@@ -145,6 +145,44 @@ namespace Survivalon.Tests.EditMode
             }
         }
 
+        [Test]
+        public void Show_ShouldKeepPostRunSummaryTextSeparatedFromActionButtons()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreatePlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                AdvanceToPostRun(hostObject);
+                ForceUiLayout(hostObject);
+
+                RectTransform postRunSummaryTextRect = FindRectTransform(hostObject, "PostRunSummary");
+                RectTransform replayButtonRect = FindRectTransform(hostObject, "ReplayNodeButton");
+                RectTransform returnButtonRect = FindRectTransform(hostObject, "ReturnToWorldMapButton");
+                RectTransform stopButtonRect = FindRectTransform(hostObject, "StopSessionButton");
+                RectTransform advanceButtonRect = FindRectTransform(hostObject, "AdvanceRunLifecycleButton");
+                RectTransform postRunPanelRect = FindRectTransform(hostObject, "PostRunSummaryPanel");
+                RectTransform mainPanelRect = FindRectTransform(hostObject, "Panel");
+
+                Assert.That(RectanglesOverlap(postRunSummaryTextRect, replayButtonRect), Is.False);
+                Assert.That(RectanglesOverlap(postRunSummaryTextRect, returnButtonRect), Is.False);
+                Assert.That(RectanglesOverlap(postRunSummaryTextRect, stopButtonRect), Is.False);
+                Assert.That(RectanglesOverlap(advanceButtonRect, postRunPanelRect), Is.False);
+                Assert.That(RectangleContains(mainPanelRect, advanceButtonRect), Is.True);
+                Assert.That(RectangleContains(mainPanelRect, postRunPanelRect), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
         private static NodePlaceholderState CreatePlaceholderState()
         {
             return new NodePlaceholderState(
@@ -171,6 +209,19 @@ namespace Survivalon.Tests.EditMode
             advanceRunLifecycleButton.onClick.Invoke();
             advanceRunLifecycleButton.onClick.Invoke();
             advanceRunLifecycleButton.onClick.Invoke();
+        }
+
+        private static void ForceUiLayout(GameObject rootObject)
+        {
+            Canvas.ForceUpdateCanvases();
+
+            RectTransform[] rectTransforms = rootObject.GetComponentsInChildren<RectTransform>(true);
+            foreach (RectTransform rectTransform in rectTransforms)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
+            }
+
+            Canvas.ForceUpdateCanvases();
         }
 
         private static bool ContainsText(GameObject rootObject, string textFragment)
@@ -200,6 +251,48 @@ namespace Survivalon.Tests.EditMode
 
             Assert.Fail($"Button '{buttonObjectName}' was not found.");
             return null;
+        }
+
+        private static RectTransform FindRectTransform(GameObject rootObject, string objectName)
+        {
+            RectTransform[] rectTransforms = rootObject.GetComponentsInChildren<RectTransform>(true);
+            foreach (RectTransform rectTransform in rectTransforms)
+            {
+                if (rectTransform.gameObject.name == objectName)
+                {
+                    return rectTransform;
+                }
+            }
+
+            Assert.Fail($"RectTransform '{objectName}' was not found.");
+            return null;
+        }
+
+        private static bool RectanglesOverlap(RectTransform first, RectTransform second)
+        {
+            Rect firstRect = GetWorldRect(first);
+            Rect secondRect = GetWorldRect(second);
+            return firstRect.Overlaps(secondRect, true);
+        }
+
+        private static Rect GetWorldRect(RectTransform rectTransform)
+        {
+            Vector3[] worldCorners = new Vector3[4];
+            rectTransform.GetWorldCorners(worldCorners);
+
+            Vector2 min = worldCorners[0];
+            Vector2 max = worldCorners[2];
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
+
+        private static bool RectangleContains(RectTransform container, RectTransform child)
+        {
+            Rect containerRect = GetWorldRect(container);
+            Rect childRect = GetWorldRect(child);
+            return containerRect.xMin <= childRect.xMin &&
+                containerRect.xMax >= childRect.xMax &&
+                containerRect.yMin <= childRect.yMin &&
+                containerRect.yMax >= childRect.yMax;
         }
     }
 }
