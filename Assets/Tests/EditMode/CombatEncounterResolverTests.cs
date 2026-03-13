@@ -85,6 +85,10 @@ namespace Survivalon.Tests.EditMode
             Assert.That(encounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
             Assert.That(encounterState.WinnerSide, Is.EqualTo(CombatSide.Player));
             Assert.That(encounterState.EnemyEntity.IsAlive, Is.False);
+            Assert.That(encounterState.EnemyEntity.IsActive, Is.False);
+            Assert.That(encounterState.EnemyEntity.CanAct, Is.False);
+            Assert.That(encounterState.HasActiveEnemy, Is.False);
+            Assert.That(encounterState.ActiveEnemyCount, Is.EqualTo(0));
             Assert.That(encounterState.EnemyEntity.CurrentHealth, Is.EqualTo(0f));
         }
 
@@ -103,6 +107,26 @@ namespace Survivalon.Tests.EditMode
             Assert.That(advancedAfterResolution, Is.False);
             Assert.That(encounterState.PlayerEntity.CurrentHealth, Is.EqualTo(playerHealthAfterVictory));
             Assert.That(encounterState.ElapsedCombatSeconds, Is.EqualTo(1f).Within(0.001f));
+        }
+
+        [Test]
+        public void ShouldPreventDefeatedEnemyFromActingAfterVictory()
+        {
+            CombatEncounterState encounterState = CreateEncounterState(
+                new CombatStatBlock(100f, 60f, 1f, 0f),
+                new CombatStatBlock(50f, 9f, 1f, 0f));
+            CombatEncounterResolver resolver = new CombatEncounterResolver();
+
+            resolver.TryAdvance(encounterState, 1f);
+            float playerHealthAfterVictory = encounterState.PlayerEntity.CurrentHealth;
+
+            encounterState.EnemyEntity.AdvanceAttackTimer(10f);
+
+            Assert.That(encounterState.EnemyEntity.IsAlive, Is.False);
+            Assert.That(encounterState.EnemyEntity.IsActive, Is.False);
+            Assert.That(encounterState.EnemyEntity.CanAct, Is.False);
+            Assert.That(encounterState.EnemyEntity.TimeUntilNextAttackSeconds, Is.EqualTo(0f));
+            Assert.That(encounterState.PlayerEntity.CurrentHealth, Is.EqualTo(playerHealthAfterVictory));
         }
 
         [Test]

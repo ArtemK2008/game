@@ -88,8 +88,34 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.CombatEncounterState.IsResolved, Is.True);
             Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
             Assert.That(controller.CombatEncounterState.EnemyEntity.IsAlive, Is.False);
+            Assert.That(controller.CombatEncounterState.EnemyEntity.IsActive, Is.False);
+            Assert.That(controller.CombatEncounterState.HasActiveEnemy, Is.False);
+            Assert.That(controller.CombatEncounterState.ActiveEnemyCount, Is.EqualTo(0));
             Assert.That(controller.CombatEncounterState.EnemyEntity.CurrentHealth, Is.EqualTo(0f));
             Assert.That(controller.CombatEncounterState.ElapsedCombatSeconds, Is.EqualTo(5f).Within(0.001f));
+        }
+
+        [Test]
+        public void ShouldResolveCombatRunAsFailedWhenPlayerIsDefeated()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateBossCombatNodeState());
+
+            Assert.That(controller.TryEnterActiveState(), Is.True);
+
+            for (int index = 0; index < 12 && controller.CurrentState == RunLifecycleState.RunActive; index++)
+            {
+                controller.TryAdvanceCombat(1f);
+            }
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunResolved));
+            Assert.That(controller.HasRunResult, Is.True);
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(controller.CombatEncounterState.IsResolved, Is.True);
+            Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
+            Assert.That(controller.CombatEncounterState.PlayerEntity.IsAlive, Is.False);
+            Assert.That(controller.CombatEncounterState.PlayerEntity.IsActive, Is.False);
+            Assert.That(controller.CombatEncounterState.HasActivePlayer, Is.False);
+            Assert.That(controller.CombatEncounterState.ActivePlayerCount, Is.EqualTo(0));
         }
 
         [Test]
@@ -151,6 +177,16 @@ namespace Survivalon.Tests.EditMode
                 NodeType.Combat,
                 NodeState.Available,
                 new NodeId("region_001_node_002"));
+        }
+
+        private static NodePlaceholderState CreateBossCombatNodeState()
+        {
+            return new NodePlaceholderState(
+                new NodeId("region_001_node_005"),
+                new RegionId("region_001"),
+                NodeType.BossOrGate,
+                NodeState.Available,
+                new NodeId("region_001_node_004"));
         }
     }
 }
