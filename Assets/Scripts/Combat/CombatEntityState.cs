@@ -8,6 +8,7 @@ namespace Survivalon.Runtime
             CombatEntityId entityId,
             string displayName,
             CombatSide side,
+            CombatStatBlock baseStats,
             bool isAlive = true,
             bool isActive = true)
         {
@@ -19,6 +20,7 @@ namespace Survivalon.Runtime
             EntityId = entityId;
             DisplayName = displayName;
             Side = side;
+            BaseStats = baseStats;
             IsAlive = isAlive;
             IsActive = isActive;
         }
@@ -28,6 +30,8 @@ namespace Survivalon.Runtime
         public string DisplayName { get; }
 
         public CombatSide Side { get; }
+
+        public CombatStatBlock BaseStats { get; }
 
         public bool IsAlive { get; }
 
