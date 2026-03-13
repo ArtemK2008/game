@@ -38,7 +38,7 @@ namespace Survivalon.Runtime
 
         public bool IsAlive { get; private set; }
 
-        public bool IsActive { get; }
+        public bool IsActive { get; private set; }
 
         public bool CanAct => IsAlive && IsActive;
 
@@ -80,6 +80,7 @@ namespace Survivalon.Runtime
             if (CurrentHealth <= 0f)
             {
                 IsAlive = false;
+                IsActive = false;
                 TimeUntilNextAttackSeconds = 0f;
             }
         }

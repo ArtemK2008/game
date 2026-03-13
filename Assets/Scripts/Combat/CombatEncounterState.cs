@@ -35,6 +35,14 @@ namespace Survivalon.Runtime
 
         public bool IsResolved => Outcome != CombatEncounterOutcome.None;
 
+        public bool HasActivePlayer => PlayerEntity.CanAct;
+
+        public bool HasActiveEnemy => EnemyEntity.CanAct;
+
+        public int ActivePlayerCount => HasActivePlayer ? 1 : 0;
+
+        public int ActiveEnemyCount => HasActiveEnemy ? 1 : 0;
+
         public CombatSide? WinnerSide => Outcome switch
         {
             CombatEncounterOutcome.PlayerVictory => CombatSide.Player,

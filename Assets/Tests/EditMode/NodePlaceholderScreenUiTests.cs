@@ -176,6 +176,7 @@ namespace Survivalon.Tests.EditMode
 
                 Assert.That(ContainsText(hostObject, "Combat shell resolved. Winner: Player."), Is.True);
                 Assert.That(ContainsText(hostObject, "Elapsed: 5s | Outcome: PlayerVictory"), Is.True);
+                Assert.That(ContainsText(hostObject, "Enemy | Alive: No | Act: No"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 0 / 75"), Is.True);
                 Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Enter Post-Run State"));
             }
