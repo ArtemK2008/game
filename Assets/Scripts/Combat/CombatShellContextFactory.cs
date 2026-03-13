@@ -18,8 +18,21 @@ namespace Survivalon.Runtime
 
             return new CombatShellContext(
                 nodeContext.NodeId,
-                new CombatShellParticipant("Player Unit", CombatSide.Player),
-                new CombatShellParticipant(GetEnemyDisplayName(nodeContext), CombatSide.Enemy));
+                new CombatEntityState(
+                    new CombatEntityId("player_main"),
+                    "Player Unit",
+                    CombatSide.Player),
+                new CombatEntityState(
+                    new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
+                    GetEnemyDisplayName(nodeContext),
+                    CombatSide.Enemy));
+        }
+
+        private static string GetEnemyEntityIdValue(NodePlaceholderState nodeContext)
+        {
+            return nodeContext.NodeType == NodeType.BossOrGate
+                ? $"{nodeContext.NodeId.Value}_boss_001"
+                : $"{nodeContext.NodeId.Value}_enemy_001";
         }
 
         private static string GetEnemyDisplayName(NodePlaceholderState nodeContext)

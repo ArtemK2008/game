@@ -9,10 +9,10 @@ namespace Survivalon.Runtime
         private Image backgroundImage;
         private Text titleText;
         private Text summaryText;
-        private Image playerParticipantCardImage;
-        private Text playerParticipantCardText;
-        private Image enemyParticipantCardImage;
-        private Text enemyParticipantCardText;
+        private Image playerEntityCardImage;
+        private Text playerEntityCardText;
+        private Image enemyEntityCardImage;
+        private Text enemyEntityCardText;
         private Font uiFont;
 
         public void Show(CombatShellContext combatContext)
@@ -26,15 +26,15 @@ namespace Survivalon.Runtime
             EnsureUi();
             titleText.text = $"Combat Shell: {combatContext.NodeId.Value}";
             summaryText.text = "Combat shell active. One player-side entity and one enemy-side entity are spawned.";
-            ApplyParticipantCard(
-                playerParticipantCardImage,
-                playerParticipantCardText,
-                combatContext.PlayerParticipant,
+            ApplyEntityCard(
+                playerEntityCardImage,
+                playerEntityCardText,
+                combatContext.PlayerEntity,
                 new Color(0.18f, 0.38f, 0.68f, 1f));
-            ApplyParticipantCard(
-                enemyParticipantCardImage,
-                enemyParticipantCardText,
-                combatContext.EnemyParticipant,
+            ApplyEntityCard(
+                enemyEntityCardImage,
+                enemyEntityCardText,
+                combatContext.EnemyEntity,
                 new Color(0.62f, 0.22f, 0.22f, 1f));
             gameObject.SetActive(true);
         }
@@ -89,39 +89,39 @@ namespace Survivalon.Runtime
                 new Color(0.88f, 0.90f, 0.94f, 1f));
             RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 46f);
 
-            GameObject participantRowObject = new GameObject(
-                "CombatParticipantRow",
+            GameObject entityRowObject = new GameObject(
+                "CombatEntityRow",
                 typeof(RectTransform),
                 typeof(HorizontalLayoutGroup),
                 typeof(LayoutElement));
-            participantRowObject.transform.SetParent(transform, false);
+            entityRowObject.transform.SetParent(transform, false);
 
-            HorizontalLayoutGroup participantRowLayout = participantRowObject.GetComponent<HorizontalLayoutGroup>();
-            participantRowLayout.spacing = 12f;
-            participantRowLayout.childAlignment = TextAnchor.MiddleCenter;
-            participantRowLayout.childControlWidth = true;
-            participantRowLayout.childControlHeight = true;
-            participantRowLayout.childForceExpandWidth = true;
-            participantRowLayout.childForceExpandHeight = true;
+            HorizontalLayoutGroup entityRowLayout = entityRowObject.GetComponent<HorizontalLayoutGroup>();
+            entityRowLayout.spacing = 12f;
+            entityRowLayout.childAlignment = TextAnchor.MiddleCenter;
+            entityRowLayout.childControlWidth = true;
+            entityRowLayout.childControlHeight = true;
+            entityRowLayout.childForceExpandWidth = true;
+            entityRowLayout.childForceExpandHeight = true;
 
-            LayoutElement participantRowLayoutElement = participantRowObject.GetComponent<LayoutElement>();
-            participantRowLayoutElement.minHeight = 92f;
-            participantRowLayoutElement.preferredHeight = 92f;
+            LayoutElement entityRowLayoutElement = entityRowObject.GetComponent<LayoutElement>();
+            entityRowLayoutElement.minHeight = 92f;
+            entityRowLayoutElement.preferredHeight = 92f;
 
-            playerParticipantCardImage = CreateParticipantCard(
-                participantRowObject.transform,
-                "PlayerCombatParticipant",
-                out playerParticipantCardText);
-            enemyParticipantCardImage = CreateParticipantCard(
-                participantRowObject.transform,
-                "EnemyCombatParticipant",
-                out enemyParticipantCardText);
+            playerEntityCardImage = CreateEntityCard(
+                entityRowObject.transform,
+                "PlayerCombatEntity",
+                out playerEntityCardText);
+            enemyEntityCardImage = CreateEntityCard(
+                entityRowObject.transform,
+                "EnemyCombatEntity",
+                out enemyEntityCardText);
         }
 
-        private Image CreateParticipantCard(
+        private Image CreateEntityCard(
             Transform parent,
             string objectName,
-            out Text participantCardText)
+            out Text entityCardText)
         {
             GameObject cardObject = new GameObject(
                 objectName,
@@ -140,7 +140,7 @@ namespace Survivalon.Runtime
 
             Image cardImage = cardObject.GetComponent<Image>();
 
-            participantCardText = RuntimeUiSupport.CreateText(
+            entityCardText = RuntimeUiSupport.CreateText(
                 cardObject.transform,
                 uiFont,
                 "Label",
@@ -149,7 +149,7 @@ namespace Survivalon.Runtime
                 TextAnchor.MiddleCenter,
                 Color.white);
 
-            RectTransform textRectTransform = participantCardText.rectTransform;
+            RectTransform textRectTransform = entityCardText.rectTransform;
             textRectTransform.anchorMin = Vector2.zero;
             textRectTransform.anchorMax = Vector2.one;
             textRectTransform.offsetMin = new Vector2(12f, 8f);
@@ -159,14 +159,22 @@ namespace Survivalon.Runtime
             return cardImage;
         }
 
-        private static void ApplyParticipantCard(
+        private static void ApplyEntityCard(
             Image cardImage,
             Text cardText,
-            CombatShellParticipant participant,
+            CombatEntityState combatEntity,
             Color backgroundColor)
         {
             cardImage.color = backgroundColor;
-            cardText.text = $"{participant.DisplayName}\nSide: {participant.Side}";
+            cardText.text =
+                $"{combatEntity.DisplayName}\n" +
+                $"Side: {combatEntity.Side}\n" +
+                $"Alive: {FormatYesNo(combatEntity.IsAlive)} | Active: {FormatYesNo(combatEntity.IsActive)}";
+        }
+
+        private static string FormatYesNo(bool value)
+        {
+            return value ? "Yes" : "No";
         }
     }
 }

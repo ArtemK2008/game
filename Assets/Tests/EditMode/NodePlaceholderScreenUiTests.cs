@@ -78,7 +78,7 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void Show_ShouldDisplayCombatShellParticipantsForCombatNodeWhenRunStarts()
+        public void Show_ShouldDisplayCombatEntitiesForCombatNodeWhenRunStarts()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
 
@@ -102,6 +102,7 @@ namespace Survivalon.Tests.EditMode
                 Assert.That(ContainsText(hostObject, "Side: Player"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Side: Enemy"), Is.True);
+                Assert.That(ContainsText(hostObject, "Alive: Yes | Active: Yes"), Is.True);
             }
             finally
             {

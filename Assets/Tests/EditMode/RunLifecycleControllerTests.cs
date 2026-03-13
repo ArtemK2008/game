@@ -52,10 +52,16 @@ namespace Survivalon.Tests.EditMode
             Assert.That(enteredActive, Is.True);
             Assert.That(controller.HasCombatContext, Is.True);
             Assert.That(controller.CombatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
-            Assert.That(controller.CombatContext.PlayerParticipant.DisplayName, Is.EqualTo("Player Unit"));
-            Assert.That(controller.CombatContext.PlayerParticipant.Side, Is.EqualTo(CombatSide.Player));
-            Assert.That(controller.CombatContext.EnemyParticipant.DisplayName, Is.EqualTo("Enemy Unit"));
-            Assert.That(controller.CombatContext.EnemyParticipant.Side, Is.EqualTo(CombatSide.Enemy));
+            Assert.That(controller.CombatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
+            Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Player Unit"));
+            Assert.That(controller.CombatContext.PlayerEntity.Side, Is.EqualTo(CombatSide.Player));
+            Assert.That(controller.CombatContext.PlayerEntity.IsAlive, Is.True);
+            Assert.That(controller.CombatContext.PlayerEntity.IsActive, Is.True);
+            Assert.That(controller.CombatContext.EnemyEntity.EntityId, Is.EqualTo(new CombatEntityId("region_001_node_004_enemy_001")));
+            Assert.That(controller.CombatContext.EnemyEntity.DisplayName, Is.EqualTo("Enemy Unit"));
+            Assert.That(controller.CombatContext.EnemyEntity.Side, Is.EqualTo(CombatSide.Enemy));
+            Assert.That(controller.CombatContext.EnemyEntity.IsAlive, Is.True);
+            Assert.That(controller.CombatContext.EnemyEntity.IsActive, Is.True);
         }
 
         [Test]
