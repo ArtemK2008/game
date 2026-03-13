@@ -156,8 +156,8 @@ namespace Survivalon.Runtime
             panelImage.color = new Color(0.09f, 0.09f, 0.12f, 0.96f);
 
             RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
-            panelRectTransform.anchorMin = new Vector2(0.18f, 0.10f);
-            panelRectTransform.anchorMax = new Vector2(0.82f, 0.90f);
+            panelRectTransform.anchorMin = new Vector2(0.14f, 0.03f);
+            panelRectTransform.anchorMax = new Vector2(0.86f, 0.97f);
             panelRectTransform.offsetMin = Vector2.zero;
             panelRectTransform.offsetMax = Vector2.zero;
             panelRectTransform.localScale = Vector3.one;
@@ -189,7 +189,7 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.90f, 0.90f, 0.94f, 1f));
-            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 120f);
+            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 158f);
 
             statusText = RuntimeUiSupport.CreateText(
                 panelObject.transform,
@@ -199,7 +199,7 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.78f, 0.82f, 0.90f, 1f));
-            RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 78f);
+            RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 94f);
 
             GameObject combatShellViewObject = new GameObject("CombatShellView");
             combatShellViewObject.transform.SetParent(panelObject.transform, false);
@@ -219,20 +219,20 @@ namespace Survivalon.Runtime
                 "PostRunSummaryPanel",
                 typeof(RectTransform),
                 typeof(Image),
-                typeof(VerticalLayoutGroup));
+                typeof(HorizontalLayoutGroup));
             postRunSummaryPanelObject.transform.SetParent(panelObject.transform, false);
-            RuntimeUiSupport.AddLayoutElement(postRunSummaryPanelObject, 260f);
+            RuntimeUiSupport.AddLayoutElement(postRunSummaryPanelObject, 226f);
 
             Image postRunPanelImage = postRunSummaryPanelObject.GetComponent<Image>();
             postRunPanelImage.color = new Color(0.12f, 0.13f, 0.18f, 0.96f);
 
-            VerticalLayoutGroup postRunPanelLayout = postRunSummaryPanelObject.GetComponent<VerticalLayoutGroup>();
+            HorizontalLayoutGroup postRunPanelLayout = postRunSummaryPanelObject.GetComponent<HorizontalLayoutGroup>();
             postRunPanelLayout.padding = new RectOffset(18, 18, 18, 18);
-            postRunPanelLayout.spacing = 10f;
+            postRunPanelLayout.spacing = 18f;
             postRunPanelLayout.childAlignment = TextAnchor.UpperLeft;
             postRunPanelLayout.childControlWidth = true;
             postRunPanelLayout.childControlHeight = true;
-            postRunPanelLayout.childForceExpandWidth = true;
+            postRunPanelLayout.childForceExpandWidth = false;
             postRunPanelLayout.childForceExpandHeight = false;
 
             postRunSummaryText = RuntimeUiSupport.CreateText(
@@ -243,30 +243,54 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.90f, 0.92f, 0.97f, 1f));
-            RuntimeUiSupport.AddLayoutElement(postRunSummaryText.gameObject, 126f);
+            RuntimeUiSupport.AddLayoutElement(
+                postRunSummaryText.gameObject,
+                170f,
+                flexibleWidth: 1f);
+
+            GameObject postRunActionsColumnObject = new GameObject(
+                "PostRunActionsColumn",
+                typeof(RectTransform),
+                typeof(VerticalLayoutGroup));
+            postRunActionsColumnObject.transform.SetParent(postRunSummaryPanelObject.transform, false);
+            RectTransform postRunActionsColumnRect = postRunActionsColumnObject.GetComponent<RectTransform>();
+            postRunActionsColumnRect.localScale = Vector3.one;
+
+            VerticalLayoutGroup postRunActionsLayout = postRunActionsColumnObject.GetComponent<VerticalLayoutGroup>();
+            postRunActionsLayout.spacing = 10f;
+            postRunActionsLayout.childAlignment = TextAnchor.UpperCenter;
+            postRunActionsLayout.childControlWidth = true;
+            postRunActionsLayout.childControlHeight = true;
+            postRunActionsLayout.childForceExpandWidth = true;
+            postRunActionsLayout.childForceExpandHeight = false;
+
+            RuntimeUiSupport.AddLayoutElement(
+                postRunActionsColumnObject,
+                170f,
+                preferredWidth: 236f);
 
             replayButton = CreateActionButton(
-                postRunSummaryPanelObject.transform,
+                postRunActionsColumnObject.transform,
                 "ReplayNodeButton",
                 "Replay Node",
                 out replayButtonText);
-            RuntimeUiSupport.AddLayoutElement(replayButton.gameObject, 52f);
+            RuntimeUiSupport.AddLayoutElement(replayButton.gameObject, 48f);
             replayButton.onClick.AddListener(HandleReplayRequested);
 
             returnToWorldButton = CreateActionButton(
-                postRunSummaryPanelObject.transform,
+                postRunActionsColumnObject.transform,
                 "ReturnToWorldMapButton",
                 "Return To World Map",
                 out returnToWorldButtonText);
-            RuntimeUiSupport.AddLayoutElement(returnToWorldButton.gameObject, 52f);
+            RuntimeUiSupport.AddLayoutElement(returnToWorldButton.gameObject, 48f);
             returnToWorldButton.onClick.AddListener(HandleReturnToWorldRequested);
 
             stopSessionButton = CreateActionButton(
-                postRunSummaryPanelObject.transform,
+                postRunActionsColumnObject.transform,
                 "StopSessionButton",
                 "Stop Session",
                 out stopSessionButtonText);
-            RuntimeUiSupport.AddLayoutElement(stopSessionButton.gameObject, 52f);
+            RuntimeUiSupport.AddLayoutElement(stopSessionButton.gameObject, 48f);
             stopSessionButton.onClick.AddListener(HandleStopSessionRequested);
         }
 
@@ -331,13 +355,9 @@ namespace Survivalon.Runtime
                 return summary;
             }
 
-            RunResult runResult = runLifecycleController.RunResult;
-            return summary + "\n" +
-                $"Resolution: {runResult.ResolutionState}\n" +
-                $"Node progress delta: {runResult.NodeProgressDelta}\n" +
-                $"Persistent progression delta: {runResult.PersistentProgressionDelta}\n" +
-                $"Route unlock changed: {FormatYesNo(runResult.DidUnlockRoute)}\n" +
-                $"Rewards: {BuildRewardSummary(runResult.RewardPayload)}";
+            return runLifecycleController.CurrentState == RunLifecycleState.RunResolved
+                ? summary + "\n" + $"Resolution: {runLifecycleController.RunResult.ResolutionState}"
+                : summary;
         }
 
         private string BuildStatusText()

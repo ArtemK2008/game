@@ -95,11 +95,26 @@ namespace Survivalon.Runtime
             return text;
         }
 
-        public static void AddLayoutElement(GameObject gameObject, float preferredHeight)
+        public static LayoutElement AddLayoutElement(
+            GameObject gameObject,
+            float preferredHeight,
+            float flexibleWidth = 0f,
+            float flexibleHeight = 0f,
+            float preferredWidth = -1f)
         {
-            LayoutElement layoutElement = gameObject.AddComponent<LayoutElement>();
+            LayoutElement layoutElement = GetOrAddComponent<LayoutElement>(gameObject);
             layoutElement.minHeight = preferredHeight;
             layoutElement.preferredHeight = preferredHeight;
+            layoutElement.flexibleWidth = flexibleWidth;
+            layoutElement.flexibleHeight = flexibleHeight;
+
+            if (preferredWidth >= 0f)
+            {
+                layoutElement.minWidth = preferredWidth;
+                layoutElement.preferredWidth = preferredWidth;
+            }
+
+            return layoutElement;
         }
 
         public static T GetOrAddComponent<T>(GameObject target) where T : Component
