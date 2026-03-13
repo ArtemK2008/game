@@ -8,6 +8,7 @@ namespace Survivalon.Runtime
         private readonly WorldGraph worldGraph;
         private readonly PersistentWorldState worldState;
         private readonly NodeReachabilityResolver nodeReachabilityResolver;
+        private readonly SessionContextState sessionContext;
         private readonly Dictionary<RegionId, int> regionOrderById;
         private readonly HashSet<NodeId> forwardSelectableNodeIds;
         private readonly HashSet<NodeId> selectableNodeIds;
@@ -17,16 +18,19 @@ namespace Survivalon.Runtime
         public WorldMapScreenController(
             WorldGraph worldGraph,
             PersistentWorldState worldState,
-            NodeReachabilityResolver nodeReachabilityResolver = null)
+            NodeReachabilityResolver nodeReachabilityResolver = null,
+            SessionContextState sessionContext = null)
         {
             this.worldGraph = worldGraph ?? throw new ArgumentNullException(nameof(worldGraph));
             this.worldState = worldState ?? throw new ArgumentNullException(nameof(worldState));
             this.nodeReachabilityResolver = nodeReachabilityResolver ?? new NodeReachabilityResolver();
+            this.sessionContext = sessionContext;
             regionOrderById = CreateRegionOrderLookup(worldGraph);
             forwardSelectableNodeIds = CreateSelectableNodeIdSet(
                 this.nodeReachabilityResolver.GetForwardReachableNodes(worldGraph, worldState));
             selectableNodeIds = CreateSelectableNodeIdSet(
                 this.nodeReachabilityResolver.GetReachableNodes(worldGraph, worldState));
+            this.sessionContext?.SeedFromWorldState(worldState);
         }
 
         public bool HasSelection => hasSelectedNode;
@@ -34,6 +38,8 @@ namespace Survivalon.Runtime
         public bool HasForwardRouteChoice => forwardSelectableNodeIds.Count > 1;
 
         public int ForwardSelectableNodeCount => forwardSelectableNodeIds.Count;
+
+        public SessionContextState SessionContext => sessionContext;
 
         public NodeId SelectedNodeId => hasSelectedNode
             ? selectedNodeId
@@ -70,6 +76,7 @@ namespace Survivalon.Runtime
 
             selectedNodeId = nodeId;
             hasSelectedNode = true;
+            sessionContext?.RecordSelection(nodeId, forwardSelectableNodeIds.Contains(nodeId));
             return true;
         }
 

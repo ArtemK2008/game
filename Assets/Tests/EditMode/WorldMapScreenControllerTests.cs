@@ -28,7 +28,11 @@ namespace Survivalon.Tests.EditMode
         {
             WorldGraph worldGraph = CreateGraph();
             PersistentWorldState worldState = CreateWorldState();
-            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+            SessionContextState sessionContext = new SessionContextState();
+            WorldMapScreenController controller = new WorldMapScreenController(
+                worldGraph,
+                worldState,
+                sessionContext: sessionContext);
             NodeId selectableNodeId = new NodeId("region_002_node_001");
 
             bool selected = controller.TrySelectNode(selectableNodeId);
@@ -38,6 +42,10 @@ namespace Survivalon.Tests.EditMode
             Assert.That(selected, Is.True);
             Assert.That(hasSelectedNodeId, Is.True);
             Assert.That(selectedNodeId, Is.EqualTo(selectableNodeId));
+            Assert.That(sessionContext.HasLastSelectedNode, Is.True);
+            Assert.That(sessionContext.LastSelectedNodeId, Is.EqualTo(selectableNodeId));
+            Assert.That(sessionContext.HasRecentPushTarget, Is.True);
+            Assert.That(sessionContext.RecentPushTargetNodeId, Is.EqualTo(selectableNodeId));
             AssertNodeOption(nodeOptions, selectableNodeId, true, false, true);
         }
 
