@@ -40,17 +40,13 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldCreateCombatShellContextWhenCombatRunEntersActiveState()
         {
-            RunLifecycleController controller = new RunLifecycleController(new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002")));
+            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
 
             bool enteredActive = controller.TryEnterActiveState();
 
             Assert.That(enteredActive, Is.True);
             Assert.That(controller.HasCombatContext, Is.True);
+            Assert.That(controller.HasCombatEncounterState, Is.True);
             Assert.That(controller.CombatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
             Assert.That(controller.CombatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
             Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Player Unit"));
@@ -70,6 +66,44 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.CombatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(4f));
             Assert.That(controller.CombatContext.EnemyEntity.IsAlive, Is.True);
             Assert.That(controller.CombatContext.EnemyEntity.IsActive, Is.True);
+            Assert.That(controller.CombatEncounterState.PlayerEntity.CurrentHealth, Is.EqualTo(120f));
+            Assert.That(controller.CombatEncounterState.EnemyEntity.CurrentHealth, Is.EqualTo(75f));
+        }
+
+        [Test]
+        public void ShouldAdvanceCombatUntilCombatRunResolves()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+
+            Assert.That(controller.TryEnterActiveState(), Is.True);
+
+            for (int index = 0; index < 5 && controller.CurrentState == RunLifecycleState.RunActive; index++)
+            {
+                controller.TryAdvanceCombat(1f);
+            }
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunResolved));
+            Assert.That(controller.HasRunResult, Is.True);
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(controller.CombatEncounterState.IsResolved, Is.True);
+            Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+            Assert.That(controller.CombatEncounterState.EnemyEntity.IsAlive, Is.False);
+            Assert.That(controller.CombatEncounterState.EnemyEntity.CurrentHealth, Is.EqualTo(0f));
+            Assert.That(controller.CombatEncounterState.ElapsedCombatSeconds, Is.EqualTo(5f).Within(0.001f));
+        }
+
+        [Test]
+        public void ShouldRejectManualCombatResolutionBeforeCombatOutcomeIsReached()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+
+            Assert.That(controller.TryEnterActiveState(), Is.True);
+
+            bool resolved = controller.TryResolveRun(RunResolutionState.Succeeded);
+
+            Assert.That(resolved, Is.False);
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
+            Assert.That(controller.HasRunResult, Is.False);
         }
 
         [Test]
@@ -107,6 +141,16 @@ namespace Survivalon.Tests.EditMode
                 NodeType.ServiceOrProgression,
                 NodeState.Available,
                 new NodeId("region_001_node_002")));
+        }
+
+        private static NodePlaceholderState CreateCombatNodeState()
+        {
+            return new NodePlaceholderState(
+                new NodeId("region_001_node_004"),
+                new RegionId("region_001"),
+                NodeType.Combat,
+                NodeState.Available,
+                new NodeId("region_001_node_002"));
         }
     }
 }
