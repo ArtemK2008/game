@@ -22,6 +22,9 @@ namespace Survivalon.Runtime
         [SerializeField]
         private List<string> ownedGearIds = new List<string>();
 
+        [SerializeField]
+        private PersistentSafeResumeState safeResumeState = new PersistentSafeResumeState();
+
         public PersistentWorldState WorldState => worldState;
 
         public PersistentProgressionState ProgressionState => progressionState;
@@ -31,5 +34,7 @@ namespace Survivalon.Runtime
         public IReadOnlyList<PersistentCharacterState> CharacterStates => characterStates;
 
         public IReadOnlyList<string> OwnedGearIds => ownedGearIds;
+
+        public PersistentSafeResumeState SafeResumeState => safeResumeState;
     }
 }

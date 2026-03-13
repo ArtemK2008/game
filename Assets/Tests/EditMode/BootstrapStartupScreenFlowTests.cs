@@ -31,10 +31,12 @@ namespace Survivalon.Tests.EditMode
         public void ShouldReuseSingleWorldMapAndPlaceholderScreenAcrossEnterAndReturnFlow()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
 
             try
             {
                 BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
                 InvokeAwake(bootstrapStartup);
 
                 AssertScreenCounts(hostObject, 1, 0, 1, 0);
@@ -58,13 +60,41 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
+        public void ShouldPersistSafeResumeContextWhenReturningToWorldFromPostRun()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
 
             try
             {
                 BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(hostObject);
+
+                Assert.That(storage.HasSavedState, Is.True);
+                Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
+                Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
+                Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
                 InvokeAwake(bootstrapStartup);
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
@@ -78,6 +108,9 @@ namespace Survivalon.Tests.EditMode
                 StartupPlaceholderView placeholderView = hostObject.GetComponentInChildren<StartupPlaceholderView>(true);
                 Assert.That(placeholderView, Is.Not.Null);
                 Assert.That(placeholderView.ActiveTarget, Is.EqualTo(StartupEntryTarget.MainMenuPlaceholder));
+                Assert.That(storage.HasSavedState, Is.True);
+                Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
+                Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
             }
             finally
             {
@@ -155,6 +188,24 @@ namespace Survivalon.Tests.EditMode
 
             Assert.Fail($"Button '{buttonObjectName}' was not found.");
             return null;
+        }
+
+        private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
+        {
+            public PersistentGameState SavedGameState { get; private set; }
+
+            public bool HasSavedState => SavedGameState != null;
+
+            public void Save(PersistentGameState gameState)
+            {
+                SavedGameState = gameState;
+            }
+
+            public bool TryLoad(out PersistentGameState gameState)
+            {
+                gameState = SavedGameState;
+                return gameState != null;
+            }
         }
     }
 }

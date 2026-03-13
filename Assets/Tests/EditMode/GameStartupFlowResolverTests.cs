@@ -10,9 +10,9 @@ namespace Survivalon.Tests.EditMode
         public void ShouldRouteToMainMenuPlaceholderWhenNoResumeContextExists()
         {
             GameStartupFlowResolver resolver = new GameStartupFlowResolver();
-            PersistentWorldState worldState = new PersistentWorldState();
+            PersistentGameState gameState = new PersistentGameState();
 
-            StartupEntryTarget entryTarget = resolver.ResolveInitialEntryTarget(worldState);
+            StartupEntryTarget entryTarget = resolver.ResolveInitialEntryTarget(gameState);
 
             Assert.That(entryTarget, Is.EqualTo(StartupEntryTarget.MainMenuPlaceholder));
         }
@@ -21,10 +21,10 @@ namespace Survivalon.Tests.EditMode
         public void ShouldRouteToWorldViewPlaceholderWhenLastSafeNodeExists()
         {
             GameStartupFlowResolver resolver = new GameStartupFlowResolver();
-            PersistentWorldState worldState = new PersistentWorldState();
-            worldState.SetLastSafeNode(new NodeId("region_001_node_001"));
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.WorldState.SetLastSafeNode(new NodeId("region_001_node_001"));
 
-            StartupEntryTarget entryTarget = resolver.ResolveInitialEntryTarget(worldState);
+            StartupEntryTarget entryTarget = resolver.ResolveInitialEntryTarget(gameState);
 
             Assert.That(entryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
         }
@@ -33,10 +33,22 @@ namespace Survivalon.Tests.EditMode
         public void ShouldRouteToWorldViewPlaceholderWhenCurrentNodeExists()
         {
             GameStartupFlowResolver resolver = new GameStartupFlowResolver();
-            PersistentWorldState worldState = new PersistentWorldState();
-            worldState.SetCurrentNode(new NodeId("region_001_node_001"));
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.WorldState.SetCurrentNode(new NodeId("region_001_node_001"));
 
-            StartupEntryTarget entryTarget = resolver.ResolveInitialEntryTarget(worldState);
+            StartupEntryTarget entryTarget = resolver.ResolveInitialEntryTarget(gameState);
+
+            Assert.That(entryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
+        }
+
+        [Test]
+        public void ShouldRouteToWorldViewPlaceholderWhenSafeResumeTargetExists()
+        {
+            GameStartupFlowResolver resolver = new GameStartupFlowResolver();
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.SafeResumeState.MarkWorldMap(new NodeId("region_001_node_002"));
+
+            StartupEntryTarget entryTarget = resolver.ResolveInitialEntryTarget(gameState);
 
             Assert.That(entryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
         }

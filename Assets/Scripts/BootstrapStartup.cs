@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using UnityEngine;
 
 namespace Survivalon.Runtime
@@ -7,15 +9,23 @@ namespace Survivalon.Runtime
         private WorldGraph worldGraph;
         private PersistentGameState gameState;
         private WorldNodeEntryFlowController nodeEntryFlowController;
+        private SafeResumePersistenceService persistenceService;
+
+        public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
+        {
+            persistenceService = new SafeResumePersistenceService(
+                storage ?? throw new ArgumentNullException(nameof(storage)));
+        }
 
         private void Awake()
         {
             BootstrapWorldMapFactory worldMapFactory = new BootstrapWorldMapFactory();
             worldGraph = worldMapFactory.CreateWorldGraph();
-            gameState = worldMapFactory.CreateGameState();
+            persistenceService ??= new SafeResumePersistenceService(CreateDefaultPersistenceStorage());
+            gameState = persistenceService.LoadOrCreate(worldMapFactory.CreateGameState());
             nodeEntryFlowController = new WorldNodeEntryFlowController(worldGraph, gameState.WorldState);
             GameStartupFlowResolver startupFlowResolver = new GameStartupFlowResolver();
-            StartupEntryTarget entryTarget = startupFlowResolver.ResolveInitialEntryTarget(gameState.WorldState);
+            StartupEntryTarget entryTarget = startupFlowResolver.ResolveInitialEntryTarget(gameState);
 
             if (entryTarget == StartupEntryTarget.WorldViewPlaceholder)
             {
@@ -67,12 +77,14 @@ namespace Survivalon.Runtime
 
         private void HandleReturnToWorldRequested(RunResult runResult)
         {
+            persistenceService.SaveResolvedWorldContext(gameState);
             Debug.Log($"Returning from post-run state to world map after {runResult.ResolutionState} on {runResult.NodeId}.");
             ShowWorldMap();
         }
 
         private void HandleStopSessionRequested(RunResult runResult)
         {
+            persistenceService.SaveResolvedWorldContext(gameState);
             Debug.Log($"Stopping session from post-run state after {runResult.ResolutionState} on {runResult.NodeId}.");
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
@@ -137,6 +149,12 @@ namespace Survivalon.Runtime
         private T FindOptionalScreen<T>() where T : Component
         {
             return GetComponentInChildren<T>(true);
+        }
+
+        private static IPersistentGameStateStorage CreateDefaultPersistenceStorage()
+        {
+            string storagePath = Path.Combine(Application.persistentDataPath, "survivalon_game_state.json");
+            return new FilePersistentGameStateStorage(storagePath);
         }
     }
 }

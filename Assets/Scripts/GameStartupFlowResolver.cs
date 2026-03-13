@@ -4,13 +4,19 @@ namespace Survivalon.Runtime
 {
     public sealed class GameStartupFlowResolver
     {
-        public StartupEntryTarget ResolveInitialEntryTarget(PersistentWorldState worldState)
+        public StartupEntryTarget ResolveInitialEntryTarget(PersistentGameState gameState)
         {
-            if (worldState == null)
+            if (gameState == null)
             {
-                throw new ArgumentNullException(nameof(worldState));
+                throw new ArgumentNullException(nameof(gameState));
             }
 
+            if (gameState.SafeResumeState.HasSafeResumeTarget)
+            {
+                return StartupEntryTarget.WorldViewPlaceholder;
+            }
+
+            PersistentWorldState worldState = gameState.WorldState;
             if (worldState.HasLastSafeNode || worldState.HasCurrentNode)
             {
                 return StartupEntryTarget.WorldViewPlaceholder;
