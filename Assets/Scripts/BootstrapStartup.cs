@@ -10,6 +10,7 @@ namespace Survivalon.Runtime
         private PersistentGameState gameState;
         private WorldNodeEntryFlowController nodeEntryFlowController;
         private SafeResumePersistenceService persistenceService;
+        private BootstrapPostRunTransitionService postRunTransitionService;
         private SessionContextState sessionContext;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
@@ -20,27 +21,18 @@ namespace Survivalon.Runtime
 
         private void Awake()
         {
-            BootstrapWorldMapFactory worldMapFactory = new BootstrapWorldMapFactory();
-            worldGraph = worldMapFactory.CreateWorldGraph();
             persistenceService ??= new SafeResumePersistenceService(CreateDefaultPersistenceStorage());
-            gameState = persistenceService.LoadOrCreate(worldMapFactory.CreateGameState());
-            nodeEntryFlowController = new WorldNodeEntryFlowController(worldGraph, gameState.WorldState);
-            sessionContext = new SessionContextState();
-            sessionContext.SeedFromWorldState(gameState.WorldState);
-            GameStartupFlowResolver startupFlowResolver = new GameStartupFlowResolver();
-            StartupEntryTarget entryTarget = startupFlowResolver.ResolveInitialEntryTarget(gameState);
+            postRunTransitionService = new BootstrapPostRunTransitionService(persistenceService);
 
-            if (entryTarget == StartupEntryTarget.WorldViewPlaceholder)
-            {
-                ShowWorldMap();
-                Debug.Log($"Bootstrap startup flow entered {entryTarget}.");
-                return;
-            }
+            BootstrapStartupState startupState = new BootstrapStartupStateFactory(persistenceService)
+                .Create(new BootstrapWorldMapFactory());
+            worldGraph = startupState.WorldGraph;
+            gameState = startupState.GameState;
+            nodeEntryFlowController = startupState.NodeEntryFlowController;
+            sessionContext = startupState.SessionContext;
 
-            StartupPlaceholderView placeholderView = EnsurePlaceholderView();
-            placeholderView.Show(entryTarget);
-
-            Debug.Log($"Bootstrap startup flow entered {entryTarget}.");
+            ShowStartupEntryTarget(startupState.EntryTarget);
+            Debug.Log($"Bootstrap startup flow entered {startupState.EntryTarget}.");
         }
 
         private void ShowWorldMap()
@@ -87,23 +79,38 @@ namespace Survivalon.Runtime
 
         private void HandleReturnToWorldRequested(RunResult runResult)
         {
-            sessionContext.RecordRunReturned(runResult.NodeId);
-            persistenceService.SaveResolvedWorldContext(gameState);
+            StartupEntryTarget entryTarget = postRunTransitionService.PrepareReturnToWorld(
+                gameState,
+                sessionContext,
+                runResult);
             Debug.Log($"Returning from post-run state to world map after {runResult.ResolutionState} on {runResult.NodeId}.");
-            ShowWorldMap();
+            ShowStartupEntryTarget(entryTarget);
         }
 
         private void HandleStopSessionRequested(RunResult runResult)
         {
-            sessionContext.RecordRunReturned(runResult.NodeId);
-            persistenceService.SaveResolvedWorldContext(gameState);
+            StartupEntryTarget entryTarget = postRunTransitionService.PrepareStopSession(
+                gameState,
+                sessionContext,
+                runResult);
             Debug.Log($"Stopping session from post-run state after {runResult.ResolutionState} on {runResult.NodeId}.");
+            ShowStartupEntryTarget(entryTarget);
+        }
+
+        private void ShowStartupEntryTarget(StartupEntryTarget entryTarget)
+        {
+            if (entryTarget == StartupEntryTarget.WorldViewPlaceholder)
+            {
+                ShowWorldMap();
+                return;
+            }
+
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
 
             StartupPlaceholderView placeholderView = EnsurePlaceholderView();
             placeholderView.gameObject.SetActive(true);
-            placeholderView.Show(StartupEntryTarget.MainMenuPlaceholder);
+            placeholderView.Show(entryTarget);
         }
 
         private StartupPlaceholderView EnsurePlaceholderView()
