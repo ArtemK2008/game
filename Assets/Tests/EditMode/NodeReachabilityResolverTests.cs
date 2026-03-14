@@ -124,9 +124,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldExposeForwardPathCandidatesWithoutPersistentStateOverlay()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            WorldGraph worldGraph = factory.CreateWorldGraph();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             NodeReachabilityResolver resolver = new NodeReachabilityResolver();
             NodeId unlockedGateNodeId = new NodeId("region_001_node_003");
 

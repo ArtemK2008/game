@@ -12,9 +12,9 @@ namespace Survivalon.Tests.EditMode
             RunProgressResolutionService service = new RunProgressResolutionService();
 
             RunProgressResolution resolution = service.Resolve(
-                CreateCombatNodeState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 RunResolutionState.Succeeded,
-                CreateResolvedEncounter(CreateCombatNodeState(), CombatEncounterOutcome.PlayerVictory),
+                CreateResolvedEncounter(NodePlaceholderTestData.CreateCombatPlaceholderState(), CombatEncounterOutcome.PlayerVictory),
                 worldState,
                 worldGraph: null);
 
@@ -31,18 +31,17 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldUnlockConnectedNodeWhenTrackedNodeReachesThreshold()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
-            WorldGraph worldGraph = factory.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
             RunProgressResolutionService service = new RunProgressResolutionService();
 
             Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
             pushNodeState.ApplyUnlockProgress(1);
 
             RunProgressResolution resolution = service.Resolve(
-                CreatePushCombatNodeState(),
+                NodePlaceholderTestData.CreatePushCombatPlaceholderState(),
                 RunResolutionState.Succeeded,
-                CreateResolvedEncounter(CreatePushCombatNodeState(), CombatEncounterOutcome.PlayerVictory),
+                CreateResolvedEncounter(NodePlaceholderTestData.CreatePushCombatPlaceholderState(), CombatEncounterOutcome.PlayerVictory),
                 worldState,
                 worldGraph);
 
@@ -62,9 +61,9 @@ namespace Survivalon.Tests.EditMode
             RunProgressResolutionService service = new RunProgressResolutionService();
 
             RunProgressResolution resolution = service.Resolve(
-                CreateBossCombatNodeState(),
+                NodePlaceholderTestData.CreateBossCombatPlaceholderState(),
                 RunResolutionState.Failed,
-                CreateResolvedEncounter(CreateBossCombatNodeState(), CombatEncounterOutcome.EnemyVictory),
+                CreateResolvedEncounter(NodePlaceholderTestData.CreateBossCombatPlaceholderState(), CombatEncounterOutcome.EnemyVictory),
                 worldState,
                 worldGraph: null);
 
@@ -84,9 +83,9 @@ namespace Survivalon.Tests.EditMode
             RunProgressResolutionService service = new RunProgressResolutionService();
 
             RunProgressResolution resolution = service.Resolve(
-                CreateCombatNodeState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 RunResolutionState.Succeeded,
-                CreateResolvedEncounter(CreateCombatNodeState(), CombatEncounterOutcome.PlayerVictory),
+                CreateResolvedEncounter(NodePlaceholderTestData.CreateCombatPlaceholderState(), CombatEncounterOutcome.PlayerVictory),
                 persistentWorldState: null,
                 worldGraph: null);
 
@@ -121,34 +120,5 @@ namespace Survivalon.Tests.EditMode
             return encounterState;
         }
 
-        private static NodePlaceholderState CreateCombatNodeState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
-        }
-
-        private static NodePlaceholderState CreateBossCombatNodeState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_005"),
-                new RegionId("region_001"),
-                NodeType.BossOrGate,
-                NodeState.Available,
-                new NodeId("region_001_node_004"));
-        }
-
-        private static NodePlaceholderState CreatePushCombatNodeState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_002"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.InProgress,
-                new NodeId("region_001_node_001"));
-        }
     }
 }

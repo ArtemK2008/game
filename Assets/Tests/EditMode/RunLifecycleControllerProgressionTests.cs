@@ -34,9 +34,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldUnlockNextConnectedNodeWhenTrackedNodeClears()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            WorldGraph worldGraph = factory.CreateWorldGraph();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreatePushCombatNodeState(),
                 worldGraph,
@@ -66,9 +65,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldNotUnlockConnectedNodeAgainWhenClearedNodeIsReplayed()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            WorldGraph worldGraph = factory.CreateWorldGraph();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
 
             Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
             pushNodeState.ApplyUnlockProgress(1);

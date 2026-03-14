@@ -45,12 +45,7 @@ namespace Survivalon.Tests.EditMode
         public void ShouldCreateCombatShellContextUsingCombatEntityState()
         {
             CombatShellContextFactory factory = new CombatShellContextFactory();
-            CombatShellContext combatContext = factory.Create(new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002")));
+            CombatShellContext combatContext = factory.Create(NodePlaceholderTestData.CreateCombatPlaceholderState());
 
             Assert.That(combatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
             Assert.That(combatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));

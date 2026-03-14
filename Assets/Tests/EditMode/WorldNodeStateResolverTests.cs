@@ -9,11 +9,12 @@ namespace Survivalon.Tests.EditMode
         public void ShouldPreferPersistentNodeStateOverGraphNodeState()
         {
             WorldGraph worldGraph = CreateGraph(NodeState.Locked);
-            PersistentWorldState worldState = new PersistentWorldState();
             WorldNodeStateResolver resolver = new WorldNodeStateResolver();
             NodeId nodeId = new NodeId("node_001");
-
-            worldState.GetOrAddNodeState(nodeId, 0, NodeState.Locked).MarkAvailable();
+            PersistentWorldState worldState = PersistentStateTestData.CreateWorldState(
+                nodeId,
+                new NodeId[0],
+                PersistentStateTestData.CreateNodeState(nodeId, 0, NodeState.Available, 0));
 
             NodeState resolvedState = resolver.ResolveNodeState(worldGraph, worldState, nodeId);
 
@@ -24,7 +25,9 @@ namespace Survivalon.Tests.EditMode
         public void ShouldFallbackToGraphNodeStateWhenPersistentStateIsMissing()
         {
             WorldGraph worldGraph = CreateGraph(NodeState.Cleared);
-            PersistentWorldState worldState = new PersistentWorldState();
+            PersistentWorldState worldState = PersistentStateTestData.CreateWorldState(
+                new NodeId("node_001"),
+                new NodeId[0]);
             WorldNodeStateResolver resolver = new WorldNodeStateResolver();
 
             NodeState resolvedState = resolver.ResolveNodeState(worldGraph, worldState, new NodeId("node_001"));

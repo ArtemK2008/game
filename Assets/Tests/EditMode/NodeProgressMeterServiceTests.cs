@@ -8,8 +8,7 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldSeedPersistentCombatNodeProgressAtExpectedDefault()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
 
             bool foundNodeState = worldState.TryGetNodeState(
                 new NodeId("region_001_node_004"),
@@ -29,7 +28,7 @@ namespace Survivalon.Tests.EditMode
 
             NodeProgressUpdateResult updateResult = service.ApplyRunProgress(
                 worldState,
-                CreateCombatNodeState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 progressDelta: 1);
 
             Assert.That(updateResult.IsTracked, Is.True);
@@ -45,10 +44,10 @@ namespace Survivalon.Tests.EditMode
             NodeProgressMeterService service = new NodeProgressMeterService();
             PersistentWorldState worldState = new PersistentWorldState();
 
-            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
+            service.ApplyRunProgress(worldState, NodePlaceholderTestData.CreateCombatPlaceholderState(), progressDelta: 1);
             NodeProgressUpdateResult secondUpdate = service.ApplyRunProgress(
                 worldState,
-                CreateCombatNodeState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 progressDelta: 1);
 
             Assert.That(secondUpdate.CurrentProgress, Is.EqualTo(2));
@@ -64,7 +63,7 @@ namespace Survivalon.Tests.EditMode
 
             NodeProgressUpdateResult updateResult = service.ApplyRunProgress(
                 worldState,
-                CreateBossCombatNodeState(),
+                NodePlaceholderTestData.CreateBossCombatPlaceholderState(),
                 progressDelta: 0);
 
             Assert.That(updateResult.IsTracked, Is.True);
@@ -80,11 +79,11 @@ namespace Survivalon.Tests.EditMode
             NodeProgressMeterService service = new NodeProgressMeterService();
             PersistentWorldState worldState = new PersistentWorldState();
 
-            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
-            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
+            service.ApplyRunProgress(worldState, NodePlaceholderTestData.CreateCombatPlaceholderState(), progressDelta: 1);
+            service.ApplyRunProgress(worldState, NodePlaceholderTestData.CreateCombatPlaceholderState(), progressDelta: 1);
             NodeProgressUpdateResult finalUpdate = service.ApplyRunProgress(
                 worldState,
-                CreateCombatNodeState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 progressDelta: 1);
 
             Assert.That(finalUpdate.CurrentProgress, Is.EqualTo(3));
@@ -99,12 +98,12 @@ namespace Survivalon.Tests.EditMode
             NodeProgressMeterService service = new NodeProgressMeterService();
             PersistentWorldState worldState = new PersistentWorldState();
 
-            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
-            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
-            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
+            service.ApplyRunProgress(worldState, NodePlaceholderTestData.CreateCombatPlaceholderState(), progressDelta: 1);
+            service.ApplyRunProgress(worldState, NodePlaceholderTestData.CreateCombatPlaceholderState(), progressDelta: 1);
+            service.ApplyRunProgress(worldState, NodePlaceholderTestData.CreateCombatPlaceholderState(), progressDelta: 1);
             NodeProgressUpdateResult postClearUpdate = service.ApplyRunProgress(
                 worldState,
-                CreateCombatNodeState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 progressDelta: 1);
 
             Assert.That(postClearUpdate.CurrentProgress, Is.EqualTo(3));
@@ -113,24 +112,5 @@ namespace Survivalon.Tests.EditMode
             Assert.That(postClearUpdate.NodeStateAfterUpdate, Is.EqualTo(NodeState.Cleared));
         }
 
-        private static NodePlaceholderState CreateCombatNodeState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
-        }
-
-        private static NodePlaceholderState CreateBossCombatNodeState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_005"),
-                new RegionId("region_001"),
-                NodeType.BossOrGate,
-                NodeState.Available,
-                new NodeId("region_001_node_004"));
-        }
     }
 }

@@ -74,12 +74,7 @@ namespace Survivalon.Tests.EditMode
         private static CombatEncounterState CreateEncounterState()
         {
             CombatShellContext combatContext = new CombatShellContextFactory().Create(
-                new NodePlaceholderState(
-                    new NodeId("region_001_node_004"),
-                    new RegionId("region_001"),
-                    NodeType.Combat,
-                    NodeState.Available,
-                    new NodeId("region_001_node_002")));
+                NodePlaceholderTestData.CreateCombatPlaceholderState());
             return new CombatEncounterState(combatContext);
         }
     }

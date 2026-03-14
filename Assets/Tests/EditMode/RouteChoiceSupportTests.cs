@@ -9,9 +9,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldExposeMoreThanOneForwardOptionForBranchingCurrentNode()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            WorldGraph worldGraph = factory.CreateWorldGraph();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
 
             IReadOnlyList<NodeId> forwardSelectableNodeIds = controller.GetForwardSelectableNodeIds();
@@ -24,9 +23,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldExcludeLockedBranchDestinationsFromForwardOptions()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            WorldGraph worldGraph = factory.CreateWorldGraph();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
 
             IReadOnlyList<NodeId> forwardSelectableNodeIds = controller.GetForwardSelectableNodeIds();

@@ -51,12 +51,7 @@ namespace Survivalon.Tests.EditMode
 
         private static PostRunStateController CreateController()
         {
-            NodePlaceholderState placeholderState = new NodePlaceholderState(
-                new NodeId("region_002_node_001"),
-                new RegionId("region_002"),
-                NodeType.ServiceOrProgression,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
+            NodePlaceholderState placeholderState = NodePlaceholderTestData.CreateServicePlaceholderState();
             RunResult runResult = new RunResult(
                 placeholderState.NodeId,
                 RunResolutionState.Succeeded,
@@ -76,12 +71,7 @@ namespace Survivalon.Tests.EditMode
 
         private static PostRunStateController CreateCombatController()
         {
-            NodePlaceholderState placeholderState = new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
+            NodePlaceholderState placeholderState = NodePlaceholderTestData.CreateCombatPlaceholderState();
             RunResult runResult = new RunResult(
                 placeholderState.NodeId,
                 RunResolutionState.Succeeded,

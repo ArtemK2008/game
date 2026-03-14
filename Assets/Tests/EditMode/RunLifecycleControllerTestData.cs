@@ -7,42 +7,22 @@ namespace Survivalon.Tests.EditMode
     {
         public static RunLifecycleController CreateController()
         {
-            return new RunLifecycleController(new NodePlaceholderState(
-                new NodeId("region_002_node_001"),
-                new RegionId("region_002"),
-                NodeType.ServiceOrProgression,
-                NodeState.Available,
-                new NodeId("region_001_node_002")));
+            return new RunLifecycleController(NodePlaceholderTestData.CreateServicePlaceholderState());
         }
 
         public static NodePlaceholderState CreateCombatNodeState()
         {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
+            return NodePlaceholderTestData.CreateCombatPlaceholderState();
         }
 
         public static NodePlaceholderState CreateBossCombatNodeState()
         {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_005"),
-                new RegionId("region_001"),
-                NodeType.BossOrGate,
-                NodeState.Available,
-                new NodeId("region_001_node_004"));
+            return NodePlaceholderTestData.CreateBossCombatPlaceholderState();
         }
 
         public static NodePlaceholderState CreatePushCombatNodeState()
         {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_002"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.InProgress,
-                new NodeId("region_001_node_001"));
+            return NodePlaceholderTestData.CreatePushCombatPlaceholderState();
         }
 
         public static void RunToPostRun(RunLifecycleController controller, int maxStepCount = 128)
