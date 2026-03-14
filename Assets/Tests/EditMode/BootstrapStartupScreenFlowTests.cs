@@ -390,6 +390,64 @@ namespace Survivalon.Tests.EditMode
             }
         }
 
+        [Test]
+        public void ShouldAllowEnteringClearedFarmNodeFromWorldMapEvenWhenItIsNotNormallyReachable()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
+            PersistentGameState gameState = factory.CreateGameState();
+            WorldGraph worldGraph = factory.CreateWorldGraph();
+            NodeId clearedFarmNodeId = new NodeId("region_001_node_002");
+            NodeId unlockedNextNodeId = new NodeId("region_001_node_003");
+            NodeId currentNodeId = new NodeId("region_002_node_001");
+            NodeId lastSafeNodeId = new NodeId("region_001_node_001");
+
+            try
+            {
+                Assert.That(gameState.WorldState.TryGetNodeState(clearedFarmNodeId, out PersistentNodeState clearedFarmNodeState), Is.True);
+                clearedFarmNodeState.ApplyUnlockProgress(2);
+                Assert.That(clearedFarmNodeState.State, Is.EqualTo(NodeState.Cleared));
+                new NextNodeUnlockService().UnlockConnectedNodesWhenSourceClears(worldGraph, gameState.WorldState, clearedFarmNodeId);
+                gameState.WorldState.SetCurrentNode(currentNodeId);
+                gameState.WorldState.SetLastSafeNode(lastSafeNodeId);
+                gameState.WorldState.ReplaceReachableNodes(new[] { lastSafeNodeId });
+                storage.Seed(gameState);
+
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                Button clearedFarmNodeButton = FindButton(hostObject, "region_001_node_002_Button");
+                Text clearedFarmNodeLabel = clearedFarmNodeButton.GetComponentInChildren<Text>(true);
+
+                Assert.That(clearedFarmNodeButton.interactable, Is.True);
+                Assert.That(clearedFarmNodeLabel, Is.Not.Null);
+                Assert.That(clearedFarmNodeLabel.text, Does.Contain("State: Cleared"));
+                Assert.That(ContainsText(hostObject, "Current node: region_002_node_001"), Is.True);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Node progress total: 3 / 3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Route unlock changed: No"), Is.True);
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(clearedFarmNodeId, out PersistentNodeState savedClearedFarmNodeState), Is.True);
+                Assert.That(savedClearedFarmNodeState.State, Is.EqualTo(NodeState.Cleared));
+                Assert.That(savedClearedFarmNodeState.UnlockProgress, Is.EqualTo(3));
+                Assert.That(savedClearedFarmNodeState.UnlockThreshold, Is.EqualTo(3));
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(unlockedNextNodeId, out PersistentNodeState savedUnlockedNodeState), Is.True);
+                Assert.That(savedUnlockedNodeState.State, Is.EqualTo(NodeState.Available));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
         private static void EnterNodeFromWorldMap(GameObject rootObject, string nodeButtonName)
         {
             FindButton(rootObject, nodeButtonName).onClick.Invoke();
@@ -510,6 +568,11 @@ namespace Survivalon.Tests.EditMode
             public PersistentGameState SavedGameState { get; private set; }
 
             public bool HasSavedState => SavedGameState != null;
+
+            public void Seed(PersistentGameState gameState)
+            {
+                SavedGameState = gameState;
+            }
 
             public void Save(PersistentGameState gameState)
             {

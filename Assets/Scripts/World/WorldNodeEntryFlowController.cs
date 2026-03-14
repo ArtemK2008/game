@@ -7,21 +7,22 @@ namespace Survivalon.Runtime
     {
         private readonly WorldGraph worldGraph;
         private readonly PersistentWorldState worldState;
-        private readonly NodeReachabilityResolver nodeReachabilityResolver;
+        private readonly WorldNodeAccessResolver worldNodeAccessResolver;
 
         public WorldNodeEntryFlowController(
             WorldGraph worldGraph,
             PersistentWorldState worldState,
-            NodeReachabilityResolver nodeReachabilityResolver = null)
+            NodeReachabilityResolver nodeReachabilityResolver = null,
+            WorldNodeAccessResolver worldNodeAccessResolver = null)
         {
             this.worldGraph = worldGraph ?? throw new ArgumentNullException(nameof(worldGraph));
             this.worldState = worldState ?? throw new ArgumentNullException(nameof(worldState));
-            this.nodeReachabilityResolver = nodeReachabilityResolver ?? new NodeReachabilityResolver();
+            this.worldNodeAccessResolver = worldNodeAccessResolver ?? new WorldNodeAccessResolver(nodeReachabilityResolver);
         }
 
         public bool TryEnterNode(NodeId nodeId, out NodePlaceholderState placeholderState)
         {
-            foreach (WorldNode reachableNode in nodeReachabilityResolver.GetReachableNodes(worldGraph, worldState))
+            foreach (WorldNode reachableNode in worldNodeAccessResolver.GetEnterableNodes(worldGraph, worldState))
             {
                 if (reachableNode.NodeId != nodeId)
                 {

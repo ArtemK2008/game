@@ -4,12 +4,12 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 032**.
+This summary reflects completed work through **Milestone 032b**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
 
-From the world map, the player manually selects a reachable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. At post-run, the player can replay the node, return to the world map, or stop the session. Cleared nodes remain replayable through both post-run replay and later world-map re-entry when they are reachable. Non-combat placeholder nodes still use the simple placeholder run shell rather than real gameplay.
+From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. At post-run, the player can replay the node, return to the world map, or stop the session. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. Non-combat placeholder nodes still use the simple placeholder run shell rather than real gameplay.
 
 Manual actions currently required:
 - select a node on the world map
@@ -68,6 +68,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### Cleared-node replayability
 - Cleared nodes remain selectable and enterable when they are otherwise reachable in the world flow.
+- Cleared nodes are also enterable from the world map for farming even when they are no longer reachable through the normal forward/backtrack path rules.
 - Re-entering a cleared node preserves its `Cleared` state and does not re-lock already unlocked connected nodes.
 - In the current MVP, cleared-node farming value remains minimal: the node stays replayable and low-friction, but no broader reward economy exists yet.
 
@@ -77,6 +78,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The combat shell is still a debug-style placeholder presentation, not a final combat HUD.
 - `BossOrGate` currently shares the same tracked-progress rule and default threshold as ordinary combat nodes as a temporary MVP placeholder.
 - Current unlock behavior is limited to direct connected-node unlock on clear; advanced branch and gate semantics are still deferred.
+- Broad farm access applies only to persistently `Cleared` nodes; uncleared nodes still follow the normal reachability rules.
 - Failed or incomplete combat runs do **not** currently grant node progress in the MVP, because node progress is still kill-driven and the single-enemy combat prototype has no failed partial-kill case.
 - Rewards and economy are still placeholder-level; runs currently produce minimal reward/result structure without a real reward pipeline.
 - Non-combat nodes still use placeholder run behavior.

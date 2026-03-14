@@ -86,6 +86,21 @@ namespace Survivalon.Tests.EditMode
             }));
         }
 
+        [Test]
+        public void ShouldMakeClearedNodeSelectableForFarmingEvenWhenItIsNotPathReachable()
+        {
+            WorldGraph worldGraph = CreateFarmAccessGraph();
+            PersistentWorldState worldState = CreateFarmAccessWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+
+            IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
+
+            AssertNodeOption(nodeOptions, new NodeId("node_reachable"), true, false, false);
+            AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false);
+            AssertNodeOption(nodeOptions, new NodeId("node_unreachable_available"), false, false, false);
+            AssertNodeOption(nodeOptions, new NodeId("node_locked"), false, false, false);
+        }
+
         private static void AssertNodeOption(
             IReadOnlyList<WorldMapNodeOption> nodeOptions,
             NodeId nodeId,
@@ -119,6 +134,79 @@ namespace Survivalon.Tests.EditMode
         {
             BootstrapWorldMapFactory bootstrapWorldMapFactory = new BootstrapWorldMapFactory();
             return bootstrapWorldMapFactory.CreateGameState().WorldState;
+        }
+
+        private static WorldGraph CreateFarmAccessGraph()
+        {
+            RegionId regionId = new RegionId("region_001");
+            WorldNode currentNode = new WorldNode(new NodeId("node_current"), regionId, NodeType.ServiceOrProgression, NodeState.Available);
+            WorldNode reachableNode = new WorldNode(new NodeId("node_reachable"), regionId, NodeType.Combat, NodeState.Available);
+            WorldNode clearedFarmNode = new WorldNode(new NodeId("node_cleared_farm"), regionId, NodeType.Combat, NodeState.Available);
+            WorldNode unreachableAvailableNode = new WorldNode(new NodeId("node_unreachable_available"), regionId, NodeType.Combat, NodeState.Available);
+            WorldNode lockedNode = new WorldNode(new NodeId("node_locked"), regionId, NodeType.BossOrGate, NodeState.Locked);
+
+            return new WorldGraph(
+                new[]
+                {
+                    new WorldRegion(
+                        regionId,
+                        0,
+                        currentNode.NodeId,
+                        new[]
+                        {
+                            currentNode.NodeId,
+                            reachableNode.NodeId,
+                            clearedFarmNode.NodeId,
+                            unreachableAvailableNode.NodeId,
+                            lockedNode.NodeId,
+                        },
+                        ResourceCategory.RegionMaterial,
+                        "farm_access"),
+                },
+                new[]
+                {
+                    currentNode,
+                    reachableNode,
+                    clearedFarmNode,
+                    unreachableAvailableNode,
+                    lockedNode,
+                },
+                new[]
+                {
+                    new WorldNodeConnection(currentNode.NodeId, reachableNode.NodeId),
+                });
+        }
+
+        private static PersistentWorldState CreateFarmAccessWorldState()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            worldState.SetCurrentNode(new NodeId("node_current"));
+            worldState.ReplaceReachableNodes(new[] { new NodeId("node_current") });
+            worldState.ReplaceNodeStates(new[]
+            {
+                CreateNodeState(new NodeId("node_cleared_farm"), 3, NodeState.Cleared, 3),
+                CreateNodeState(new NodeId("node_locked"), 3, NodeState.Locked, 0),
+            });
+            return worldState;
+        }
+
+        private static PersistentNodeState CreateNodeState(
+            NodeId nodeId,
+            int unlockThreshold,
+            NodeState nodeState,
+            int unlockProgress)
+        {
+            NodeState initialState = nodeState == NodeState.Locked
+                ? NodeState.Locked
+                : NodeState.Available;
+            PersistentNodeState persistentNodeState = new PersistentNodeState(nodeId, unlockThreshold, initialState);
+
+            if (initialState != NodeState.Locked && unlockProgress > 0)
+            {
+                persistentNodeState.ApplyUnlockProgress(unlockProgress);
+            }
+
+            return persistentNodeState;
         }
     }
 }
