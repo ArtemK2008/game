@@ -23,6 +23,7 @@ namespace Survivalon.Runtime
         private Text stopSessionButtonText;
         private Font uiFont;
         private RunLifecycleController runLifecycleController;
+        private CombatAutoAdvanceLoop combatAutoAdvanceLoop;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
         private Action<RunResult> onStopSessionRequested;
@@ -38,6 +39,7 @@ namespace Survivalon.Runtime
             }
 
             runLifecycleController = new RunLifecycleController(placeholderState);
+            combatAutoAdvanceLoop = new CombatAutoAdvanceLoop();
             postRunStateController = null;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
@@ -65,11 +67,12 @@ namespace Survivalon.Runtime
             {
                 case RunLifecycleState.RunStart:
                     runLifecycleController.TryEnterActiveState();
+                    combatAutoAdvanceLoop.Reset();
                     break;
                 case RunLifecycleState.RunActive:
                     if (runLifecycleController.HasCombatEncounterState)
                     {
-                        runLifecycleController.TryAdvanceCombat(1f);
+                        return;
                     }
                     else
                     {
@@ -99,6 +102,7 @@ namespace Survivalon.Runtime
             }
 
             runLifecycleController = postRunStateController.CreateReplayLifecycleController();
+            combatAutoAdvanceLoop.Reset();
             postRunStateController = null;
             Refresh();
         }
@@ -379,7 +383,7 @@ namespace Survivalon.Runtime
                         : "Run shell initialized. Start the placeholder run when ready.";
                 case RunLifecycleState.RunActive:
                     return runLifecycleController.HasCombatEncounterState
-                        ? "Combat shell active. Advance combat time to execute automated attacks until one side is defeated."
+                        ? "Combat shell active. Attacks resolve automatically until one side is defeated."
                         : "Run is active. Resolve the placeholder run to produce a run result.";
                 case RunLifecycleState.RunResolved:
                     if (usesCombatShell && runLifecycleController.HasCombatEncounterState)
@@ -425,9 +429,9 @@ namespace Survivalon.Runtime
                         : "Start Placeholder Run";
                     return;
                 case RunLifecycleState.RunActive:
-                    advanceRunLifecycleButton.interactable = true;
+                    advanceRunLifecycleButton.interactable = !runLifecycleController.HasCombatEncounterState;
                     advanceRunLifecycleButtonText.text = runLifecycleController.HasCombatEncounterState
-                        ? "Advance Combat +1.0s"
+                        ? "Combat Auto-Running"
                         : "Resolve Placeholder Run";
                     return;
                 case RunLifecycleState.RunResolved:
@@ -440,6 +444,24 @@ namespace Survivalon.Runtime
                     return;
                 default:
                     throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
+            }
+        }
+
+        private void Update()
+        {
+            TryAutoAdvanceCombat(Time.unscaledDeltaTime);
+        }
+
+        private void TryAutoAdvanceCombat(float elapsedSeconds)
+        {
+            if (runLifecycleController == null || combatAutoAdvanceLoop == null)
+            {
+                return;
+            }
+
+            if (combatAutoAdvanceLoop.TryAdvance(runLifecycleController, elapsedSeconds))
+            {
+                Refresh();
             }
         }
 

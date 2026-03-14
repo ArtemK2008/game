@@ -183,7 +183,7 @@ namespace Survivalon.Tests.EditMode
         {
             Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
 
-            for (int index = 0; index < 12; index++)
+            for (int index = 0; index < 40; index++)
             {
                 Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
                 if (advanceButtonText.text == "Enter Post-Run State")
@@ -192,10 +192,29 @@ namespace Survivalon.Tests.EditMode
                     return;
                 }
 
+                if (advanceButtonText.text == "Combat Auto-Running")
+                {
+                    InvokeAutoAdvance(rootObject, 0.25f);
+                    continue;
+                }
+
                 advanceRunLifecycleButton.onClick.Invoke();
             }
 
             Assert.Fail("AdvanceToPostRun did not reach the post-run state within the expected number of steps.");
+        }
+
+        private static void InvokeAutoAdvance(GameObject rootObject, float elapsedSeconds)
+        {
+            NodePlaceholderScreen placeholderScreen = rootObject.GetComponentInChildren<NodePlaceholderScreen>(true);
+            Assert.That(placeholderScreen, Is.Not.Null);
+
+            MethodInfo autoAdvanceMethod = typeof(NodePlaceholderScreen).GetMethod(
+                "TryAutoAdvanceCombat",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(autoAdvanceMethod, Is.Not.Null);
+
+            autoAdvanceMethod.Invoke(placeholderScreen, new object[] { elapsedSeconds });
         }
 
         private static void AssertScreenCounts(
