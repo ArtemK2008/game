@@ -220,6 +220,43 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldMarkCombatNodeClearedAtThresholdAndReflectItOnWorldMap()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
+                Assert.That(nodeState.UnlockProgress, Is.EqualTo(3));
+                Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
+                Assert.That(nodeState.State, Is.EqualTo(NodeState.Cleared));
+
+                Button clearedNodeButton = FindButton(hostObject, "region_001_node_004_Button");
+                Text clearedNodeLabel = clearedNodeButton.GetComponentInChildren<Text>(true);
+
+                Assert.That(clearedNodeLabel, Is.Not.Null);
+                Assert.That(clearedNodeLabel.text, Does.Contain("State: Cleared"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
