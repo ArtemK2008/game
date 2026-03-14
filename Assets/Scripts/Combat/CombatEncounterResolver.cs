@@ -5,6 +5,12 @@ namespace Survivalon.Runtime
     public sealed class CombatEncounterResolver
     {
         private const float AttackTimingEpsilon = 0.0001f;
+        private readonly CombatAutoTargetSelector combatAutoTargetSelector;
+
+        public CombatEncounterResolver(CombatAutoTargetSelector combatAutoTargetSelector = null)
+        {
+            this.combatAutoTargetSelector = combatAutoTargetSelector ?? new CombatAutoTargetSelector();
+        }
 
         public bool TryAdvance(CombatEncounterState encounterState, float elapsedSeconds)
         {
@@ -60,7 +66,7 @@ namespace Survivalon.Runtime
             encounterState.AdvanceElapsedTime(elapsedSeconds);
         }
 
-        private static void ResolveDueAttacks(CombatEncounterState encounterState)
+        private void ResolveDueAttacks(CombatEncounterState encounterState)
         {
             bool playerAttackIsDue = encounterState.PlayerEntity.CanAct &&
                 encounterState.PlayerEntity.TimeUntilNextAttackSeconds <= AttackTimingEpsilon;
@@ -69,7 +75,10 @@ namespace Survivalon.Runtime
 
             if (playerAttackIsDue)
             {
-                ResolveAttack(encounterState.PlayerEntity, encounterState.EnemyEntity, encounterState);
+                ResolveAttack(
+                    encounterState.PlayerEntity,
+                    combatAutoTargetSelector.SelectTarget(encounterState, encounterState.PlayerEntity.Side),
+                    encounterState);
                 if (encounterState.IsResolved)
                 {
                     return;
@@ -78,7 +87,10 @@ namespace Survivalon.Runtime
 
             if (enemyAttackIsDue)
             {
-                ResolveAttack(encounterState.EnemyEntity, encounterState.PlayerEntity, encounterState);
+                ResolveAttack(
+                    encounterState.EnemyEntity,
+                    combatAutoTargetSelector.SelectTarget(encounterState, encounterState.EnemyEntity.Side),
+                    encounterState);
             }
         }
 
@@ -87,6 +99,11 @@ namespace Survivalon.Runtime
             CombatEntityRuntimeState defender,
             CombatEncounterState encounterState)
         {
+            if (defender == null)
+            {
+                throw new ArgumentNullException(nameof(defender));
+            }
+
             if (!attacker.CanAct || !defender.IsAlive)
             {
                 return;
