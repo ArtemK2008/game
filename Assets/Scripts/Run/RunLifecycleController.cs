@@ -70,17 +70,27 @@ namespace Survivalon.Runtime
             return combatAutoAdvanceLoop.TryAdvance(this, elapsedSeconds);
         }
 
-        public bool TryAdvanceAutomaticFlow(float elapsedSeconds)
+        public bool TryStartAutomaticFlow()
         {
-            bool changed = false;
+            return UsesCombatShell && currentState == RunLifecycleState.RunStart && TryEnterActiveState();
+        }
 
-            if (UsesCombatShell && currentState == RunLifecycleState.RunStart)
+        public bool TryAdvanceAutomaticTime(float elapsedSeconds)
+        {
+            if (elapsedSeconds < 0f)
             {
-                changed |= TryEnterActiveState();
+                throw new ArgumentOutOfRangeException(
+                    nameof(elapsedSeconds),
+                    elapsedSeconds,
+                    "Elapsed time cannot be negative.");
             }
 
-            changed |= TryAdvanceTime(elapsedSeconds);
+            if (elapsedSeconds == 0f)
+            {
+                return false;
+            }
 
+            bool changed = TryAdvanceTime(elapsedSeconds);
             if (UsesCombatShell && currentState == RunLifecycleState.RunResolved && runResult != null)
             {
                 changed |= TryEnterPostRunState();
