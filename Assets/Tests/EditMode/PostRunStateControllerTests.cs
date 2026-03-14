@@ -41,6 +41,8 @@ namespace Survivalon.Tests.EditMode
                 RunRewardPayload.Empty,
                 0,
                 0,
+                0,
+                0,
                 false,
                 new RunNextActionContext(
                     canReplayNode: true,

@@ -217,6 +217,7 @@ namespace Survivalon.Tests.EditMode
         public void Show_ShouldAutoReplayCombatNodeWithoutManualCombatRestart()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
+            PersistentWorldState worldState = new PersistentWorldState();
 
             try
             {
@@ -225,7 +226,8 @@ namespace Survivalon.Tests.EditMode
                 placeholderScreen.Show(
                     CreateCombatPlaceholderState(),
                     runResult => { },
-                    runResult => { });
+                    runResult => { },
+                    worldState);
 
                 AdvanceToPostRun(hostObject);
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
@@ -238,6 +240,7 @@ namespace Survivalon.Tests.EditMode
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Node progress total: 2 / 3"), Is.True);
             }
             finally
             {

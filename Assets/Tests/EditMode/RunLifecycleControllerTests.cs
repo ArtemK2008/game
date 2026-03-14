@@ -110,6 +110,32 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldGrantNodeProgressWhenSuccessfulCombatRunResolvesAgainstEnemy()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            RunLifecycleController controller = new RunLifecycleController(
+                CreateCombatNodeState(),
+                persistentWorldState: worldState);
+
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+
+            for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                controller.TryAdvanceAutomaticTime(0.25f);
+            }
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
+            Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(1));
+            Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(1));
+            Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
+            Assert.That(controller.RunResult.DidUnlockRoute, Is.False);
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
+            Assert.That(nodeState.UnlockProgress, Is.EqualTo(1));
+            Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
+            Assert.That(nodeState.State, Is.EqualTo(NodeState.InProgress));
+        }
+
+        [Test]
         public void ShouldStartAutomaticCombatFlowWithoutAdvancingTime()
         {
             RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
@@ -137,7 +163,10 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldAdvanceAutomaticCombatFlowFromNodeEntryToPostRun()
         {
-            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+            PersistentWorldState worldState = new PersistentWorldState();
+            RunLifecycleController controller = new RunLifecycleController(
+                CreateCombatNodeState(),
+                persistentWorldState: worldState);
 
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
@@ -151,6 +180,9 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.HasRunResult, Is.True);
             Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+            Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(1));
+            Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(1));
+            Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
         }
 
         [Test]
@@ -179,7 +211,10 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldAdvanceAutomaticHostileCombatFlowToFailedPostRun()
         {
-            RunLifecycleController controller = new RunLifecycleController(CreateBossCombatNodeState());
+            PersistentWorldState worldState = new PersistentWorldState();
+            RunLifecycleController controller = new RunLifecycleController(
+                CreateBossCombatNodeState(),
+                persistentWorldState: worldState);
 
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
@@ -193,6 +228,9 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.HasRunResult, Is.True);
             Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
             Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
+            Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(0));
+            Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(0));
+            Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
         }
 
         [Test]
