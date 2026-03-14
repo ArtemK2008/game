@@ -5,9 +5,11 @@ namespace Survivalon.Runtime
     public sealed class RunLifecycleController
     {
         private readonly NodePlaceholderState nodeContext;
+        private readonly PersistentWorldState persistentWorldState;
         private readonly CombatShellContextFactory combatShellContextFactory;
         private readonly CombatEncounterResolver combatEncounterResolver;
         private readonly CombatAutoAdvanceLoop combatAutoAdvanceLoop;
+        private readonly NodeProgressMeterService nodeProgressMeterService;
         private RunLifecycleState currentState;
         private CombatShellContext combatShellContext;
         private CombatEncounterState combatEncounterState;
@@ -17,12 +19,16 @@ namespace Survivalon.Runtime
             NodePlaceholderState nodeContext,
             CombatShellContextFactory combatShellContextFactory = null,
             CombatEncounterResolver combatEncounterResolver = null,
-            CombatAutoAdvanceLoop combatAutoAdvanceLoop = null)
+            CombatAutoAdvanceLoop combatAutoAdvanceLoop = null,
+            PersistentWorldState persistentWorldState = null,
+            NodeProgressMeterService nodeProgressMeterService = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
             this.combatShellContextFactory = combatShellContextFactory ?? new CombatShellContextFactory();
             this.combatEncounterResolver = combatEncounterResolver ?? new CombatEncounterResolver();
             this.combatAutoAdvanceLoop = combatAutoAdvanceLoop ?? new CombatAutoAdvanceLoop();
+            this.persistentWorldState = persistentWorldState;
+            this.nodeProgressMeterService = nodeProgressMeterService ?? new NodeProgressMeterService();
             currentState = RunLifecycleState.RunStart;
         }
 
@@ -150,17 +156,47 @@ namespace Survivalon.Runtime
 
         private RunResult CreateRunResult(RunResolutionState resolutionState)
         {
+            int nodeProgressDelta = ResolveNodeProgressDelta(resolutionState);
+            NodeProgressUpdateResult nodeProgressUpdate = ResolveNodeProgressUpdate(nodeProgressDelta);
+
             return new RunResult(
                 nodeContext.NodeId,
                 resolutionState,
                 RunRewardPayload.Empty,
-                0,
+                nodeProgressDelta,
+                nodeProgressUpdate.CurrentProgress,
+                nodeProgressUpdate.ProgressThreshold,
                 0,
                 false,
                 new RunNextActionContext(
                     canReplayNode: true,
                     canChooseAnotherNode: true,
                     canStopSession: true));
+        }
+
+        private int ResolveNodeProgressDelta(RunResolutionState resolutionState)
+        {
+            if (!NodeProgressMeterService.ShouldTrackProgress(nodeContext.NodeType) ||
+                resolutionState != RunResolutionState.Succeeded ||
+                combatEncounterState == null)
+            {
+                return 0;
+            }
+
+            return combatEncounterState.DefeatedEnemyCount;
+        }
+
+        private NodeProgressUpdateResult ResolveNodeProgressUpdate(int nodeProgressDelta)
+        {
+            if (persistentWorldState == null)
+            {
+                return NodeProgressUpdateResult.Untracked(nodeContext.NodeState);
+            }
+
+            return nodeProgressMeterService.ApplyRunProgress(
+                persistentWorldState,
+                nodeContext,
+                nodeProgressDelta);
         }
     }
 }

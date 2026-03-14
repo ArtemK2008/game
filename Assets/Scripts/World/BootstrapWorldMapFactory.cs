@@ -71,8 +71,48 @@ namespace Survivalon.Runtime
             gameState.WorldState.SetCurrentNode(ForestPushNodeId);
             gameState.WorldState.SetLastSafeNode(ForestEntryNodeId);
             gameState.WorldState.ReplaceReachableNodes(new[] { ForestEntryNodeId });
+            gameState.WorldState.ReplaceNodeStates(CreatePersistentNodeStates());
 
             return gameState;
+        }
+
+        private static IEnumerable<PersistentNodeState> CreatePersistentNodeStates()
+        {
+            int combatThreshold = NodeProgressMeterService.GetDefaultThreshold(NodeType.Combat);
+            int bossThreshold = NodeProgressMeterService.GetDefaultThreshold(NodeType.BossOrGate);
+
+            return new[]
+            {
+                CreateNodeState(ForestEntryNodeId, combatThreshold, NodeState.Cleared, combatThreshold),
+                CreateNodeState(ForestPushNodeId, combatThreshold, NodeState.InProgress, 1),
+                CreateNodeState(ForestGateNodeId, bossThreshold, NodeState.Locked, 0),
+                CreateNodeState(ForestFarmNodeId, combatThreshold, NodeState.Available, 0),
+                CreateNodeState(CavernGateNodeId, bossThreshold, NodeState.Locked, 0),
+            };
+        }
+
+        private static PersistentNodeState CreateNodeState(
+            NodeId nodeId,
+            int unlockThreshold,
+            NodeState nodeState,
+            int unlockProgress)
+        {
+            NodeState initialState = nodeState == NodeState.Locked
+                ? NodeState.Locked
+                : NodeState.Available;
+            PersistentNodeState persistentNodeState = new PersistentNodeState(nodeId, unlockThreshold, initialState);
+
+            if (initialState != NodeState.Locked && unlockProgress > 0)
+            {
+                persistentNodeState.ApplyUnlockProgress(unlockProgress);
+            }
+
+            if (nodeState == NodeState.Mastered)
+            {
+                persistentNodeState.MarkMastered();
+            }
+
+            return persistentNodeState;
         }
     }
 }

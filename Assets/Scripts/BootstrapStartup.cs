@@ -67,7 +67,8 @@ namespace Survivalon.Runtime
             nodePlaceholderScreen.Show(
                 placeholderState,
                 HandleReturnToWorldRequested,
-                HandleStopSessionRequested);
+                HandleStopSessionRequested,
+                gameState.WorldState);
         }
 
         private void HandleNodeEntryRequested(NodeId nodeId)

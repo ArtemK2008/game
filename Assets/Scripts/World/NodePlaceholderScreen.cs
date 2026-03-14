@@ -22,6 +22,7 @@ namespace Survivalon.Runtime
         private Button stopSessionButton;
         private Text stopSessionButtonText;
         private Font uiFont;
+        private PersistentWorldState persistentWorldState;
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
@@ -30,14 +31,16 @@ namespace Survivalon.Runtime
         public void Show(
             NodePlaceholderState placeholderState,
             Action<RunResult> returnToWorldRequested,
-            Action<RunResult> stopSessionRequested = null)
+            Action<RunResult> stopSessionRequested = null,
+            PersistentWorldState persistentWorldState = null)
         {
             if (placeholderState == null)
             {
                 throw new ArgumentNullException(nameof(placeholderState));
             }
 
-            runLifecycleController = new RunLifecycleController(placeholderState);
+            this.persistentWorldState = persistentWorldState;
+            runLifecycleController = CreateRunLifecycleController(placeholderState);
             postRunStateController = null;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
@@ -97,8 +100,9 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            runLifecycleController = postRunStateController.CreateReplayLifecycleController();
+            NodePlaceholderState replayNodeContext = postRunStateController.NodeContext;
             postRunStateController = null;
+            runLifecycleController = CreateRunLifecycleController(replayNodeContext);
             runLifecycleController.TryStartAutomaticFlow();
             Refresh();
         }
@@ -495,7 +499,7 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            postRunSummaryText.text = BuildPostRunSummaryText(postRunStateController);
+            postRunSummaryText.text = BuildPostRunSummaryText(postRunStateController, runLifecycleController.RunResult);
             replayButton.interactable = postRunStateController.CanReplayNode;
             replayButtonText.text = "Replay Node";
             returnToWorldButton.interactable = postRunStateController.CanReturnToWorld;
@@ -512,13 +516,24 @@ namespace Survivalon.Runtime
             return rewardPayload.HasRewards ? "Placeholder reward payload present" : "None";
         }
 
-        private static string BuildPostRunSummaryText(PostRunStateController postRunStateController)
+        private RunLifecycleController CreateRunLifecycleController(NodePlaceholderState placeholderState)
         {
-            RunResult runResult = postRunStateController.RunResult;
+            return new RunLifecycleController(
+                placeholderState,
+                persistentWorldState: persistentWorldState);
+        }
+
+        private static string BuildPostRunSummaryText(PostRunStateController postRunStateController, RunResult runResult)
+        {
+            string nodeProgressSummary = runResult.HasTrackedNodeProgress
+                ? $"{runResult.NodeProgressValue} / {runResult.NodeProgressThreshold}"
+                : "not tracked";
+
             return
                 "Run finished.\n" +
                 $"Node: {runResult.NodeId.Value}\n" +
                 $"Resolution: {runResult.ResolutionState}\n" +
+                $"Node progress total: {nodeProgressSummary}\n" +
                 $"Rewards: {BuildRewardSummary(runResult.RewardPayload)}\n" +
                 $"Node progress delta: {runResult.NodeProgressDelta}\n" +
                 $"Persistent progression delta: {runResult.PersistentProgressionDelta}\n" +

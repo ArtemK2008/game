@@ -54,11 +54,15 @@ namespace Survivalon.Runtime
             List<WorldMapNodeOption> nodeOptions = new List<WorldMapNodeOption>(orderedNodes.Count);
             foreach (WorldNode node in orderedNodes)
             {
+                NodeState displayNodeState = worldState.TryGetNodeState(node.NodeId, out PersistentNodeState persistentNodeState)
+                    ? persistentNodeState.State
+                    : node.State;
+
                 nodeOptions.Add(new WorldMapNodeOption(
                     node.NodeId,
                     node.RegionId,
                     node.NodeType,
-                    node.State,
+                    displayNodeState,
                     selectableNodeIds.Contains(node.NodeId),
                     node.NodeId == currentContextNodeId,
                     hasSelectedNode && node.NodeId == selectedNodeId));

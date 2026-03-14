@@ -43,6 +43,8 @@ namespace Survivalon.Runtime
 
         public int ActiveEnemyCount => HasActiveEnemy ? 1 : 0;
 
+        public int DefeatedEnemyCount => EnemyEntity.IsAlive ? 0 : 1;
+
         public CombatSide? WinnerSide => Outcome switch
         {
             CombatEncounterOutcome.PlayerVictory => CombatSide.Player,
