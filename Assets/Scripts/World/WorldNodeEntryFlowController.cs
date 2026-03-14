@@ -8,46 +8,42 @@ namespace Survivalon.Runtime
         private readonly WorldGraph worldGraph;
         private readonly PersistentWorldState worldState;
         private readonly WorldNodeAccessResolver worldNodeAccessResolver;
+        private readonly WorldNodeStateResolver worldNodeStateResolver;
 
         public WorldNodeEntryFlowController(
             WorldGraph worldGraph,
             PersistentWorldState worldState,
             NodeReachabilityResolver nodeReachabilityResolver = null,
-            WorldNodeAccessResolver worldNodeAccessResolver = null)
+            WorldNodeAccessResolver worldNodeAccessResolver = null,
+            WorldNodeStateResolver worldNodeStateResolver = null)
         {
             this.worldGraph = worldGraph ?? throw new ArgumentNullException(nameof(worldGraph));
             this.worldState = worldState ?? throw new ArgumentNullException(nameof(worldState));
-            this.worldNodeAccessResolver = worldNodeAccessResolver ?? new WorldNodeAccessResolver(nodeReachabilityResolver);
+            this.worldNodeStateResolver = worldNodeStateResolver ?? new WorldNodeStateResolver();
+            this.worldNodeAccessResolver = worldNodeAccessResolver
+                ?? new WorldNodeAccessResolver(nodeReachabilityResolver, this.worldNodeStateResolver);
         }
 
         public bool TryEnterNode(NodeId nodeId, out NodePlaceholderState placeholderState)
         {
-            foreach (WorldNode reachableNode in worldNodeAccessResolver.GetEnterableNodes(worldGraph, worldState))
+            if (!worldNodeAccessResolver.TryGetEnterableNode(worldGraph, worldState, nodeId, out WorldNode enterableNode))
             {
-                if (reachableNode.NodeId != nodeId)
-                {
-                    continue;
-                }
-
-                NodeId originNodeId = ResolveCurrentContextNodeId();
-                worldState.SetCurrentNode(reachableNode.NodeId);
-                worldState.SetLastSafeNode(originNodeId);
-                worldState.ReplaceReachableNodes(BuildUpdatedReachableNodes(originNodeId));
-                NodeState placeholderNodeState = worldState.TryGetNodeState(reachableNode.NodeId, out PersistentNodeState persistentNodeState)
-                    ? persistentNodeState.State
-                    : reachableNode.State;
-
-                placeholderState = new NodePlaceholderState(
-                    reachableNode.NodeId,
-                    reachableNode.RegionId,
-                    reachableNode.NodeType,
-                    placeholderNodeState,
-                    originNodeId);
-                return true;
+                placeholderState = null;
+                return false;
             }
 
-            placeholderState = null;
-            return false;
+            NodeId originNodeId = ResolveCurrentContextNodeId();
+            worldState.SetCurrentNode(enterableNode.NodeId);
+            worldState.SetLastSafeNode(originNodeId);
+            worldState.ReplaceReachableNodes(BuildUpdatedReachableNodes(originNodeId));
+
+            placeholderState = new NodePlaceholderState(
+                enterableNode.NodeId,
+                enterableNode.RegionId,
+                enterableNode.NodeType,
+                worldNodeStateResolver.ResolveNodeState(worldGraph, worldState, enterableNode.NodeId),
+                originNodeId);
+            return true;
         }
 
         private IEnumerable<NodeId> BuildUpdatedReachableNodes(NodeId originNodeId)

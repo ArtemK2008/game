@@ -7,21 +7,13 @@ namespace Survivalon.Runtime
     {
         public IReadOnlyList<WorldNode> GetReachableNodes(WorldGraph worldGraph, PersistentWorldState worldState)
         {
-            if (worldGraph == null)
-            {
-                throw new ArgumentNullException(nameof(worldGraph));
-            }
-
-            if (worldState == null)
-            {
-                throw new ArgumentNullException(nameof(worldState));
-            }
+            ValidateInputs(worldGraph, worldState);
 
             NodeId anchorNodeId = ResolveAnchorNodeId(worldState);
             List<WorldNode> reachableNodes = new List<WorldNode>();
             HashSet<NodeId> addedNodeIds = new HashSet<NodeId>();
 
-            AddForwardReachableNodes(worldGraph, worldState, anchorNodeId, addedNodeIds, reachableNodes);
+            AddForwardReachableNodes(worldGraph, anchorNodeId, addedNodeIds, reachableNodes);
             AddBacktrackReachableNodes(worldGraph, worldState, anchorNodeId, addedNodeIds, reachableNodes);
 
             return reachableNodes;
@@ -29,36 +21,20 @@ namespace Survivalon.Runtime
 
         public IReadOnlyList<WorldNode> GetForwardReachableNodes(WorldGraph worldGraph, PersistentWorldState worldState)
         {
-            if (worldGraph == null)
-            {
-                throw new ArgumentNullException(nameof(worldGraph));
-            }
-
-            if (worldState == null)
-            {
-                throw new ArgumentNullException(nameof(worldState));
-            }
+            ValidateInputs(worldGraph, worldState);
 
             NodeId anchorNodeId = ResolveAnchorNodeId(worldState);
             List<WorldNode> reachableNodes = new List<WorldNode>();
             HashSet<NodeId> addedNodeIds = new HashSet<NodeId>();
 
-            AddForwardReachableNodes(worldGraph, worldState, anchorNodeId, addedNodeIds, reachableNodes);
+            AddForwardReachableNodes(worldGraph, anchorNodeId, addedNodeIds, reachableNodes);
 
             return reachableNodes;
         }
 
         public IReadOnlyList<WorldNode> GetBacktrackReachableNodes(WorldGraph worldGraph, PersistentWorldState worldState)
         {
-            if (worldGraph == null)
-            {
-                throw new ArgumentNullException(nameof(worldGraph));
-            }
-
-            if (worldState == null)
-            {
-                throw new ArgumentNullException(nameof(worldState));
-            }
+            ValidateInputs(worldGraph, worldState);
 
             NodeId anchorNodeId = ResolveAnchorNodeId(worldState);
             List<WorldNode> reachableNodes = new List<WorldNode>();
@@ -71,14 +47,13 @@ namespace Survivalon.Runtime
 
         private static void AddForwardReachableNodes(
             WorldGraph worldGraph,
-            PersistentWorldState worldState,
             NodeId anchorNodeId,
             HashSet<NodeId> addedNodeIds,
             List<WorldNode> reachableNodes)
         {
             foreach (WorldNodeConnection connection in worldGraph.GetOutboundConnections(anchorNodeId))
             {
-                TryAddReachableNode(worldGraph, worldState, connection.TargetNodeId, anchorNodeId, addedNodeIds, reachableNodes);
+                TryAddReachableNode(worldGraph, connection.TargetNodeId, anchorNodeId, addedNodeIds, reachableNodes);
             }
         }
 
@@ -91,18 +66,17 @@ namespace Survivalon.Runtime
         {
             if (worldState.HasLastSafeNode)
             {
-                TryAddReachableNode(worldGraph, worldState, worldState.LastSafeNodeId, anchorNodeId, addedNodeIds, reachableNodes);
+                TryAddReachableNode(worldGraph, worldState.LastSafeNodeId, anchorNodeId, addedNodeIds, reachableNodes);
             }
 
             foreach (string reachableNodeIdValue in worldState.ReachableNodeIdValues)
             {
-                TryAddReachableNode(worldGraph, worldState, new NodeId(reachableNodeIdValue), anchorNodeId, addedNodeIds, reachableNodes);
+                TryAddReachableNode(worldGraph, new NodeId(reachableNodeIdValue), anchorNodeId, addedNodeIds, reachableNodes);
             }
         }
 
         private static void TryAddReachableNode(
             WorldGraph worldGraph,
-            PersistentWorldState worldState,
             NodeId candidateNodeId,
             NodeId anchorNodeId,
             HashSet<NodeId> addedNodeIds,
@@ -113,14 +87,8 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            WorldNode node = worldGraph.GetNode(candidateNodeId);
-            if (ResolveNodeState(worldGraph, worldState, node.NodeId) == NodeState.Locked)
-            {
-                return;
-            }
-
             addedNodeIds.Add(candidateNodeId);
-            reachableNodes.Add(node);
+            reachableNodes.Add(worldGraph.GetNode(candidateNodeId));
         }
 
         private static NodeId ResolveAnchorNodeId(PersistentWorldState worldState)
@@ -138,14 +106,17 @@ namespace Survivalon.Runtime
             throw new InvalidOperationException("Current world context requires a current node or last safe node.");
         }
 
-        private static NodeState ResolveNodeState(
-            WorldGraph worldGraph,
-            PersistentWorldState worldState,
-            NodeId nodeId)
+        private static void ValidateInputs(WorldGraph worldGraph, PersistentWorldState worldState)
         {
-            return worldState.TryGetNodeState(nodeId, out PersistentNodeState nodeState)
-                ? nodeState.State
-                : worldGraph.GetNode(nodeId).State;
+            if (worldGraph == null)
+            {
+                throw new ArgumentNullException(nameof(worldGraph));
+            }
+
+            if (worldState == null)
+            {
+                throw new ArgumentNullException(nameof(worldState));
+            }
         }
     }
 }

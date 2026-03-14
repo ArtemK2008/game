@@ -9,6 +9,7 @@ namespace Survivalon.Runtime
         private readonly PersistentWorldState worldState;
         private readonly NodeReachabilityResolver nodeReachabilityResolver;
         private readonly WorldNodeAccessResolver worldNodeAccessResolver;
+        private readonly WorldNodeStateResolver worldNodeStateResolver;
         private readonly SessionContextState sessionContext;
         private readonly Dictionary<RegionId, int> regionOrderById;
         private readonly HashSet<NodeId> forwardSelectableNodeIds;
@@ -21,16 +22,19 @@ namespace Survivalon.Runtime
             PersistentWorldState worldState,
             NodeReachabilityResolver nodeReachabilityResolver = null,
             SessionContextState sessionContext = null,
-            WorldNodeAccessResolver worldNodeAccessResolver = null)
+            WorldNodeAccessResolver worldNodeAccessResolver = null,
+            WorldNodeStateResolver worldNodeStateResolver = null)
         {
             this.worldGraph = worldGraph ?? throw new ArgumentNullException(nameof(worldGraph));
             this.worldState = worldState ?? throw new ArgumentNullException(nameof(worldState));
             this.nodeReachabilityResolver = nodeReachabilityResolver ?? new NodeReachabilityResolver();
-            this.worldNodeAccessResolver = worldNodeAccessResolver ?? new WorldNodeAccessResolver(this.nodeReachabilityResolver);
+            this.worldNodeStateResolver = worldNodeStateResolver ?? new WorldNodeStateResolver();
+            this.worldNodeAccessResolver = worldNodeAccessResolver
+                ?? new WorldNodeAccessResolver(this.nodeReachabilityResolver, this.worldNodeStateResolver);
             this.sessionContext = sessionContext;
             regionOrderById = CreateRegionOrderLookup(worldGraph);
             forwardSelectableNodeIds = CreateSelectableNodeIdSet(
-                this.nodeReachabilityResolver.GetForwardReachableNodes(worldGraph, worldState));
+                this.worldNodeAccessResolver.GetForwardEnterableNodes(worldGraph, worldState));
             selectableNodeIds = CreateSelectableNodeIdSet(
                 this.worldNodeAccessResolver.GetEnterableNodes(worldGraph, worldState));
             this.sessionContext?.SeedFromWorldState(worldState);
@@ -57,15 +61,11 @@ namespace Survivalon.Runtime
             List<WorldMapNodeOption> nodeOptions = new List<WorldMapNodeOption>(orderedNodes.Count);
             foreach (WorldNode node in orderedNodes)
             {
-                NodeState displayNodeState = worldState.TryGetNodeState(node.NodeId, out PersistentNodeState persistentNodeState)
-                    ? persistentNodeState.State
-                    : node.State;
-
                 nodeOptions.Add(new WorldMapNodeOption(
                     node.NodeId,
                     node.RegionId,
                     node.NodeType,
-                    displayNodeState,
+                    worldNodeStateResolver.ResolveNodeState(worldGraph, worldState, node.NodeId),
                     selectableNodeIds.Contains(node.NodeId),
                     node.NodeId == currentContextNodeId,
                     hasSelectedNode && node.NodeId == selectedNodeId));
