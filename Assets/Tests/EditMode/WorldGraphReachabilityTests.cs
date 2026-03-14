@@ -76,6 +76,71 @@ namespace Survivalon.Tests.EditMode
             Assert.That(worldGraph.CanReach(startNode.NodeId, disconnectedNode.NodeId), Is.False);
         }
 
+        [Test]
+        public void ShouldReturnEmptyReachabilityWhenStartNodeIsLocked()
+        {
+            WorldNode lockedStartNode = CreateNode("region_001_node_001", "region_001", NodeState.Locked);
+            WorldNode availableTargetNode = CreateNode("region_001_node_002", "region_001", NodeState.Available);
+
+            WorldGraph worldGraph = CreateGraph(
+                new[] { lockedStartNode, availableTargetNode },
+                new WorldNodeConnection(lockedStartNode.NodeId, availableTargetNode.NodeId));
+
+            Assert.That(worldGraph.GetReachableNodes(lockedStartNode.NodeId), Is.Empty);
+            Assert.That(worldGraph.CanReach(lockedStartNode.NodeId, lockedStartNode.NodeId), Is.False);
+            Assert.That(worldGraph.CanReach(lockedStartNode.NodeId, availableTargetNode.NodeId), Is.False);
+        }
+
+        [Test]
+        public void ShouldHandleCyclesWithoutRepeatingNodes()
+        {
+            WorldNode startNode = CreateNode("region_001_node_001", "region_001", NodeState.Available);
+            WorldNode middleNode = CreateNode("region_001_node_002", "region_001", NodeState.Available);
+            WorldNode endNode = CreateNode("region_001_node_003", "region_001", NodeState.Available);
+
+            WorldGraph worldGraph = CreateGraph(
+                new[] { startNode, middleNode, endNode },
+                new WorldNodeConnection(startNode.NodeId, middleNode.NodeId),
+                new WorldNodeConnection(middleNode.NodeId, endNode.NodeId),
+                new WorldNodeConnection(endNode.NodeId, startNode.NodeId));
+
+            IReadOnlyList<NodeId> reachableNodeIds = worldGraph.GetReachableNodes(startNode.NodeId)
+                .Select(node => node.NodeId)
+                .ToArray();
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    middleNode.NodeId,
+                    endNode.NodeId,
+                },
+                reachableNodeIds);
+        }
+
+        [Test]
+        public void ShouldThrowWhenGettingMissingNode()
+        {
+            WorldNode startNode = CreateNode("region_001_node_001", "region_001", NodeState.Available);
+            WorldGraph worldGraph = CreateGraph(new[] { startNode });
+
+            KeyNotFoundException exception = Assert.Throws<KeyNotFoundException>(
+                () => worldGraph.GetNode(new NodeId("region_001_node_999")));
+
+            Assert.That(exception.Message, Does.Contain("region_001_node_999"));
+        }
+
+        [Test]
+        public void ShouldThrowWhenGettingOutboundConnectionsForMissingNode()
+        {
+            WorldNode startNode = CreateNode("region_001_node_001", "region_001", NodeState.Available);
+            WorldGraph worldGraph = CreateGraph(new[] { startNode });
+
+            KeyNotFoundException exception = Assert.Throws<KeyNotFoundException>(
+                () => worldGraph.GetOutboundConnections(new NodeId("region_001_node_999")));
+
+            Assert.That(exception.Message, Does.Contain("region_001_node_999"));
+        }
+
         private static WorldNode CreateNode(string nodeIdValue, string regionIdValue, NodeState state)
         {
             return new WorldNode(
