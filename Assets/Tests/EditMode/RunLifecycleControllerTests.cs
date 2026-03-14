@@ -297,6 +297,49 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldKeepFailedTrackedCombatNodeAtZeroProgressAndNotUnlockRouteInCurrentOneVsOneMvp()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            RunLifecycleController controller = new RunLifecycleController(
+                CreateBossCombatNodeState(),
+                persistentWorldState: worldState);
+
+            RunToPostRun(controller);
+
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(0));
+            Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(0));
+            Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
+            Assert.That(controller.RunResult.DidUnlockRoute, Is.False);
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_005"), out PersistentNodeState nodeState), Is.True);
+            Assert.That(nodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(nodeState.UnlockProgress, Is.EqualTo(0));
+            Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void ShouldKeepFailedTrackedCombatReplayAtZeroProgressInCurrentOneVsOneMvp()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            RunLifecycleController firstController = new RunLifecycleController(
+                CreateBossCombatNodeState(),
+                persistentWorldState: worldState);
+            RunLifecycleController replayController = new RunLifecycleController(
+                CreateBossCombatNodeState(),
+                persistentWorldState: worldState);
+
+            RunToPostRun(firstController);
+            RunToPostRun(replayController);
+
+            Assert.That(firstController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(replayController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_005"), out PersistentNodeState nodeState), Is.True);
+            Assert.That(nodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(nodeState.UnlockProgress, Is.EqualTo(0));
+            Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
+        }
+
+        [Test]
         public void ShouldStopAutomaticCombatFlowAfterPostRunIsReached()
         {
             RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
@@ -396,11 +439,11 @@ namespace Survivalon.Tests.EditMode
                 new NodeId("region_001_node_001"));
         }
 
-        private static void RunToPostRun(RunLifecycleController controller)
+        private static void RunToPostRun(RunLifecycleController controller, int maxStepCount = 128)
         {
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
 
-            for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
+            for (int index = 0; index < maxStepCount && controller.CurrentState != RunLifecycleState.PostRun; index++)
             {
                 controller.TryAdvanceAutomaticTime(0.25f);
             }
