@@ -98,14 +98,43 @@ namespace Survivalon.Tests.EditMode
 
                 advanceRunLifecycleButton.onClick.Invoke();
 
-                Assert.That(ContainsText(hostObject, "Combat shell active. Attacks resolve automatically until one side is defeated."), Is.True);
+                Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
                 Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.True);
+                Assert.That(ContainsText(hostObject, "Targeting: Player Unit -> Enemy Unit; Enemy Unit -> Player Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(advanceButtonText.text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldReflectEnemyHostilityDamageDuringAutomaticCombat()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                FindButton(hostObject, "AdvanceRunLifecycleButton").onClick.Invoke();
+                AutoAdvanceCombat(hostObject, 5, 0.25f);
+
+                Assert.That(ContainsText(hostObject, "Targeting: Player Unit -> Enemy Unit; Enemy Unit -> Player Unit"), Is.True);
+                Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Contain("Player | Alive: Yes | Act: Yes"));
+                Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Not.Contain("HP: 120 / 120"));
+                Assert.That(FindTextInObject(hostObject, "EnemyCombatEntity"), Does.Contain("Enemy | Alive: Yes | Act: Yes"));
             }
             finally
             {
@@ -349,6 +378,29 @@ namespace Survivalon.Tests.EditMode
             }
 
             return false;
+        }
+
+        private static string FindTextInObject(GameObject rootObject, string objectName)
+        {
+            Transform[] transforms = rootObject.GetComponentsInChildren<Transform>(true);
+            foreach (Transform transform in transforms)
+            {
+                if (transform.gameObject.name != objectName)
+                {
+                    continue;
+                }
+
+                Text label = transform.GetComponentInChildren<Text>(true);
+                if (label == null)
+                {
+                    break;
+                }
+
+                return label.text;
+            }
+
+            Assert.Fail($"Text host '{objectName}' was not found.");
+            return string.Empty;
         }
 
         private static Button FindButton(GameObject rootObject, string buttonObjectName)
