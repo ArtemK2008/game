@@ -15,8 +15,8 @@ namespace Survivalon.Runtime
 
         private static PersistentNodeState[] CreatePersistentNodeStates()
         {
-            int combatThreshold = NodeProgressMeterService.GetDefaultThreshold(NodeType.Combat);
-            int bossThreshold = NodeProgressMeterService.GetDefaultThreshold(NodeType.BossOrGate);
+            int combatThreshold = TrackedNodeProgressRules.GetDefaultThreshold(NodeType.Combat);
+            int bossThreshold = TrackedNodeProgressRules.GetDefaultThreshold(NodeType.BossOrGate);
 
             return new[]
             {
@@ -34,22 +34,7 @@ namespace Survivalon.Runtime
             NodeState nodeState,
             int unlockProgress)
         {
-            NodeState initialState = nodeState == NodeState.Locked
-                ? NodeState.Locked
-                : NodeState.Available;
-            PersistentNodeState persistentNodeState = new PersistentNodeState(nodeId, unlockThreshold, initialState);
-
-            if (initialState != NodeState.Locked && unlockProgress > 0)
-            {
-                persistentNodeState.ApplyUnlockProgress(unlockProgress);
-            }
-
-            if (nodeState == NodeState.Mastered)
-            {
-                persistentNodeState.MarkMastered();
-            }
-
-            return persistentNodeState;
+            return PersistentNodeStateFactory.Create(nodeId, unlockThreshold, nodeState, unlockProgress);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Survivalon.Runtime
 
                 PersistentNodeState persistentNodeState = worldState.GetOrAddNodeState(
                     targetNode.NodeId,
-                    NodeProgressMeterService.GetDefaultThreshold(targetNode.NodeType),
+                    TrackedNodeProgressRules.GetDefaultThreshold(targetNode.NodeType),
                     NodeState.Locked);
 
                 if (persistentNodeState.State != NodeState.Locked)

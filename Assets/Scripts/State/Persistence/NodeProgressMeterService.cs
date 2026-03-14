@@ -4,8 +4,6 @@ namespace Survivalon.Runtime
 {
     public sealed class NodeProgressMeterService
     {
-        private const int CombatNodeProgressThreshold = 3;
-
         public NodeProgressUpdateResult ApplyRunProgress(
             PersistentWorldState worldState,
             NodePlaceholderState nodeContext,
@@ -26,15 +24,15 @@ namespace Survivalon.Runtime
                 throw new ArgumentOutOfRangeException(nameof(progressDelta), "Progress delta cannot be negative.");
             }
 
-            if (!ShouldTrackProgress(nodeContext.NodeType))
+            if (!TrackedNodeProgressRules.ShouldTrack(nodeContext.NodeType))
             {
                 return NodeProgressUpdateResult.Untracked(nodeContext.NodeState);
             }
 
             PersistentNodeState nodeState = worldState.GetOrAddNodeState(
                 nodeContext.NodeId,
-                GetDefaultThreshold(nodeContext.NodeType),
-                ResolveInitialNodeState(nodeContext.NodeState));
+                TrackedNodeProgressRules.GetDefaultThreshold(nodeContext.NodeType),
+                nodeContext.NodeState);
             bool wasCompleted = nodeState.IsCompleted;
 
             if (progressDelta > 0)
@@ -52,19 +50,12 @@ namespace Survivalon.Runtime
 
         public static bool ShouldTrackProgress(NodeType nodeType)
         {
-            return nodeType == NodeType.Combat || nodeType == NodeType.BossOrGate;
+            return TrackedNodeProgressRules.ShouldTrack(nodeType);
         }
 
         public static int GetDefaultThreshold(NodeType nodeType)
         {
-            return ShouldTrackProgress(nodeType) ? CombatNodeProgressThreshold : 0;
-        }
-
-        private static NodeState ResolveInitialNodeState(NodeState nodeState)
-        {
-            return nodeState == NodeState.Locked
-                ? NodeState.Locked
-                : NodeState.Available;
+            return TrackedNodeProgressRules.GetDefaultThreshold(nodeType);
         }
     }
 }
