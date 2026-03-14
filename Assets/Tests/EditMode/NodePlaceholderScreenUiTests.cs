@@ -3,6 +3,7 @@ using Survivalon.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Reflection;
 
 namespace Survivalon.Tests.EditMode
 {
@@ -97,12 +98,14 @@ namespace Survivalon.Tests.EditMode
 
                 advanceRunLifecycleButton.onClick.Invoke();
 
-                Assert.That(ContainsText(hostObject, "Combat shell active. Advance combat time to execute automated attacks until one side is defeated."), Is.True);
+                Assert.That(ContainsText(hostObject, "Combat shell active. Attacks resolve automatically until one side is defeated."), Is.True);
                 Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy | Alive: Yes | Act: Yes"), Is.True);
+                Assert.That(advanceButtonText.text, Is.EqualTo("Combat Auto-Running"));
+                Assert.That(advanceRunLifecycleButton.interactable, Is.False);
             }
             finally
             {
@@ -168,11 +171,7 @@ namespace Survivalon.Tests.EditMode
 
                 Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
                 advanceRunLifecycleButton.onClick.Invoke();
-
-                for (int index = 0; index < 5; index++)
-                {
-                    advanceRunLifecycleButton.onClick.Invoke();
-                }
+                AutoAdvanceCombat(hostObject, 24, 0.25f);
 
                 Assert.That(ContainsText(hostObject, "Combat shell resolved. Winner: Player."), Is.True);
                 Assert.That(ContainsText(hostObject, "Elapsed: 5s | Outcome: PlayerVictory"), Is.True);
@@ -282,9 +281,47 @@ namespace Survivalon.Tests.EditMode
         private static void AdvanceToPostRun(GameObject rootObject)
         {
             Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
-            advanceRunLifecycleButton.onClick.Invoke();
-            advanceRunLifecycleButton.onClick.Invoke();
-            advanceRunLifecycleButton.onClick.Invoke();
+
+            for (int index = 0; index < 40; index++)
+            {
+                Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
+                if (advanceButtonText.text == "Enter Post-Run State")
+                {
+                    advanceRunLifecycleButton.onClick.Invoke();
+                    return;
+                }
+
+                if (advanceButtonText.text == "Combat Auto-Running")
+                {
+                    InvokeAutoAdvance(rootObject, 0.25f);
+                    continue;
+                }
+
+                advanceRunLifecycleButton.onClick.Invoke();
+            }
+
+            Assert.Fail("AdvanceToPostRun did not reach the post-run state within the expected number of steps.");
+        }
+
+        private static void AutoAdvanceCombat(GameObject rootObject, int stepCount, float elapsedSecondsPerStep)
+        {
+            for (int index = 0; index < stepCount; index++)
+            {
+                InvokeAutoAdvance(rootObject, elapsedSecondsPerStep);
+            }
+        }
+
+        private static void InvokeAutoAdvance(GameObject rootObject, float elapsedSeconds)
+        {
+            NodePlaceholderScreen placeholderScreen = rootObject.GetComponent<NodePlaceholderScreen>();
+            Assert.That(placeholderScreen, Is.Not.Null);
+
+            MethodInfo autoAdvanceMethod = typeof(NodePlaceholderScreen).GetMethod(
+                "TryAutoAdvanceCombat",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(autoAdvanceMethod, Is.Not.Null);
+
+            autoAdvanceMethod.Invoke(placeholderScreen, new object[] { elapsedSeconds });
         }
 
         private static void ForceUiLayout(GameObject rootObject)
