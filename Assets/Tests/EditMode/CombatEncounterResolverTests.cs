@@ -21,7 +21,7 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void ShouldAdvanceEnemyAttacksAgainstPlayerOverTime()
+        public void ShouldAdvanceEnemyHostilityAgainstPlayerOverTime()
         {
             CombatEncounterState encounterState = CreateEncounterState(
                 new CombatStatBlock(100f, 10f, 0.5f, 0f),
@@ -32,6 +32,22 @@ namespace Survivalon.Tests.EditMode
             Assert.That(advanced, Is.True);
             Assert.That(encounterState.PlayerEntity.CurrentHealth, Is.EqualTo(93f));
             Assert.That(encounterState.EnemyEntity.CurrentHealth, Is.EqualTo(100f));
+        }
+
+        [Test]
+        public void ShouldKeepEnemyHostilityTargetedAtPlayerSide()
+        {
+            CombatEncounterState encounterState = CreateEncounterState(
+                new CombatStatBlock(100f, 9f, 0.5f, 12f),
+                new CombatStatBlock(100f, 8f, 1f, 0f));
+            CombatEncounterResolver resolver = new CombatEncounterResolver();
+
+            resolver.TryAdvance(encounterState, 1.25f);
+
+            Assert.That(encounterState.PlayerEntity.CurrentHealth, Is.LessThan(encounterState.PlayerEntity.MaxHealth));
+            Assert.That(encounterState.EnemyEntity.CurrentHealth, Is.EqualTo(encounterState.EnemyEntity.MaxHealth));
+            Assert.That(encounterState.PlayerEntity.IsAlive, Is.True);
+            Assert.That(encounterState.EnemyEntity.IsAlive, Is.True);
         }
 
         [Test]

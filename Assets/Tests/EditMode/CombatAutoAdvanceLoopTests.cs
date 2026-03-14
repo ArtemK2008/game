@@ -71,6 +71,26 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.CombatEncounterState.PlayerEntity.CurrentHealth, Is.EqualTo(playerHealthAfterResolution).Within(0.001f));
         }
 
+        [Test]
+        public void ShouldResolveAutoAdvancedBossCombatAsFailedWhenHostileEnemyWins()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateBossCombatNodeState());
+
+            Assert.That(controller.TryEnterActiveState(), Is.True);
+
+            for (int index = 0; index < 64 && controller.CurrentState == RunLifecycleState.RunActive; index++)
+            {
+                controller.TryAdvanceTime(0.25f);
+            }
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunResolved));
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
+            Assert.That(controller.CombatEncounterState.PlayerEntity.IsAlive, Is.False);
+            Assert.That(controller.CombatEncounterState.PlayerEntity.IsActive, Is.False);
+            Assert.That(controller.CombatEncounterState.HasActivePlayer, Is.False);
+        }
+
         private static NodePlaceholderState CreateCombatNodeState()
         {
             return new NodePlaceholderState(
@@ -79,6 +99,16 @@ namespace Survivalon.Tests.EditMode
                 NodeType.Combat,
                 NodeState.Available,
                 new NodeId("region_001_node_002"));
+        }
+
+        private static NodePlaceholderState CreateBossCombatNodeState()
+        {
+            return new NodePlaceholderState(
+                new NodeId("region_001_node_005"),
+                new RegionId("region_001"),
+                NodeType.BossOrGate,
+                NodeState.Available,
+                new NodeId("region_001_node_004"));
         }
     }
 }

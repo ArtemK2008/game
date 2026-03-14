@@ -68,30 +68,43 @@ namespace Survivalon.Runtime
 
         private void ResolveDueAttacks(CombatEncounterState encounterState)
         {
+            if (ResolvePlayerAttackIfDue(encounterState))
+            {
+                return;
+            }
+
+            ResolveEnemyHostilityIfDue(encounterState);
+        }
+
+        private bool ResolvePlayerAttackIfDue(CombatEncounterState encounterState)
+        {
             bool playerAttackIsDue = encounterState.PlayerEntity.CanAct &&
                 encounterState.PlayerEntity.TimeUntilNextAttackSeconds <= AttackTimingEpsilon;
+            if (!playerAttackIsDue)
+            {
+                return false;
+            }
+
+            ResolveAttack(
+                encounterState.PlayerEntity,
+                combatAutoTargetSelector.SelectTarget(encounterState, encounterState.PlayerEntity.Side),
+                encounterState);
+            return encounterState.IsResolved;
+        }
+
+        private void ResolveEnemyHostilityIfDue(CombatEncounterState encounterState)
+        {
             bool enemyAttackIsDue = encounterState.EnemyEntity.CanAct &&
                 encounterState.EnemyEntity.TimeUntilNextAttackSeconds <= AttackTimingEpsilon;
-
-            if (playerAttackIsDue)
+            if (!enemyAttackIsDue)
             {
-                ResolveAttack(
-                    encounterState.PlayerEntity,
-                    combatAutoTargetSelector.SelectTarget(encounterState, encounterState.PlayerEntity.Side),
-                    encounterState);
-                if (encounterState.IsResolved)
-                {
-                    return;
-                }
+                return;
             }
 
-            if (enemyAttackIsDue)
-            {
-                ResolveAttack(
-                    encounterState.EnemyEntity,
-                    combatAutoTargetSelector.SelectTarget(encounterState, encounterState.EnemyEntity.Side),
-                    encounterState);
-            }
+            ResolveAttack(
+                encounterState.EnemyEntity,
+                combatAutoTargetSelector.SelectTarget(encounterState, encounterState.EnemyEntity.Side),
+                encounterState);
         }
 
         private static void ResolveAttack(

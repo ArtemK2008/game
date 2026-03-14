@@ -379,7 +379,7 @@ namespace Survivalon.Runtime
                         : "Run shell initialized. Start the placeholder run when ready.";
                 case RunLifecycleState.RunActive:
                     return runLifecycleController.HasCombatEncounterState
-                        ? "Combat shell active. Attacks resolve automatically until one side is defeated."
+                        ? "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."
                         : "Run is active. Resolve the placeholder run to produce a run result.";
                 case RunLifecycleState.RunResolved:
                     if (usesCombatShell && runLifecycleController.HasCombatEncounterState)
