@@ -65,8 +65,14 @@ namespace Survivalon.Runtime
             SyncPostRunStateController();
             NodePlaceholderState placeholderState = runLifecycleController.NodeContext;
             titleText.text = $"Run Shell: {placeholderState.NodeId.Value}";
-            summaryText.text = BuildSummaryText();
-            statusText.text = BuildStatusText();
+            summaryText.text = NodePlaceholderScreenTextBuilder.BuildSummaryText(
+                placeholderState,
+                runLifecycleController.CurrentState,
+                runLifecycleController.HasRunResult ? runLifecycleController.RunResult : null);
+            statusText.text = NodePlaceholderScreenTextBuilder.BuildStatusText(
+                placeholderState,
+                runLifecycleController.CurrentState,
+                runLifecycleController.HasCombatEncounterState ? runLifecycleController.CombatEncounterState : null);
             RefreshCombatShellView();
             RefreshAdvanceButton();
             RefreshPostRunSummaryPanel();
@@ -361,63 +367,11 @@ namespace Survivalon.Runtime
             return button;
         }
 
-        private string BuildSummaryText()
-        {
-            NodePlaceholderState placeholderState = runLifecycleController.NodeContext;
-            string summary =
-                $"Region: {placeholderState.RegionId.Value}\n" +
-                $"Type: {placeholderState.NodeType}\n" +
-                $"Node state: {placeholderState.NodeState}\n" +
-                $"Lifecycle: {runLifecycleController.CurrentState}\n" +
-                $"Entered from: {placeholderState.OriginNodeId.Value}";
-
-            if (!runLifecycleController.HasRunResult)
-            {
-                return summary;
-            }
-
-            return runLifecycleController.CurrentState == RunLifecycleState.RunResolved
-                ? summary + "\n" + $"Resolution: {runLifecycleController.RunResult.ResolutionState}"
-                : summary;
-        }
-
-        private string BuildStatusText()
-        {
-            bool usesCombatShell = runLifecycleController.NodeContext.UsesCombatShell;
-
-            switch (runLifecycleController.CurrentState)
-            {
-                case RunLifecycleState.RunStart:
-                    return usesCombatShell
-                        ? "Combat shell initialized. Preparing automatic combat startup."
-                        : "Run shell initialized. Start the placeholder run when ready.";
-                case RunLifecycleState.RunActive:
-                    return runLifecycleController.HasCombatEncounterState
-                        ? "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."
-                        : "Run is active. Resolve the placeholder run to produce a run result.";
-                case RunLifecycleState.RunResolved:
-                    if (usesCombatShell && runLifecycleController.HasCombatEncounterState)
-                    {
-                        string winnerText = runLifecycleController.CombatEncounterState.WinnerSide?.ToString() ?? "Unknown";
-                        return $"Combat shell resolved. Winner: {winnerText}. Preparing post-run summary.";
-                    }
-
-                    return "Run resolved. Open the post-run state to review next actions.";
-                case RunLifecycleState.PostRun:
-                    return "Post-run summary is active. Replay, return to the world map, or stop the session.";
-                default:
-                    throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
-            }
-        }
-
         private void RefreshCombatShellView()
         {
-            bool shouldShowCombatShell =
-                runLifecycleController.HasCombatEncounterState &&
-                (runLifecycleController.CurrentState == RunLifecycleState.RunActive ||
-                runLifecycleController.CurrentState == RunLifecycleState.RunResolved);
-
-            if (!shouldShowCombatShell)
+            if (!NodePlaceholderScreenStateResolver.ShouldShowCombatShell(
+                runLifecycleController.CurrentState,
+                runLifecycleController.HasCombatEncounterState))
             {
                 combatShellView.Hide();
                 return;
@@ -428,35 +382,12 @@ namespace Survivalon.Runtime
 
         private void RefreshAdvanceButton()
         {
-            bool usesCombatShell = runLifecycleController.NodeContext.UsesCombatShell;
-
-            switch (runLifecycleController.CurrentState)
-            {
-                case RunLifecycleState.RunStart:
-                    advanceRunLifecycleButton.interactable = !usesCombatShell;
-                    advanceRunLifecycleButtonText.text = usesCombatShell
-                        ? "Combat Auto-Starting"
-                        : "Start Placeholder Run";
-                    return;
-                case RunLifecycleState.RunActive:
-                    advanceRunLifecycleButton.interactable = !runLifecycleController.HasCombatEncounterState;
-                    advanceRunLifecycleButtonText.text = runLifecycleController.HasCombatEncounterState
-                        ? "Combat Auto-Running"
-                        : "Resolve Placeholder Run";
-                    return;
-                case RunLifecycleState.RunResolved:
-                    advanceRunLifecycleButton.interactable = !usesCombatShell;
-                    advanceRunLifecycleButtonText.text = usesCombatShell
-                        ? "Preparing Post-Run"
-                        : "Enter Post-Run State";
-                    return;
-                case RunLifecycleState.PostRun:
-                    advanceRunLifecycleButton.interactable = false;
-                    advanceRunLifecycleButtonText.text = "Run Lifecycle Complete";
-                    return;
-                default:
-                    throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
-            }
+            NodePlaceholderScreenButtonState buttonState = NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                runLifecycleController.NodeContext,
+                runLifecycleController.CurrentState,
+                runLifecycleController.HasCombatEncounterState);
+            advanceRunLifecycleButton.interactable = buttonState.IsInteractable;
+            advanceRunLifecycleButtonText.text = buttonState.Label;
         }
 
         private void Update()
@@ -497,33 +428,27 @@ namespace Survivalon.Runtime
 
         private void RefreshPostRunSummaryPanel()
         {
-            bool isPostRunActive = runLifecycleController.CurrentState == RunLifecycleState.PostRun &&
-                postRunStateController != null;
+            NodePlaceholderScreenPostRunPanelState panelState = NodePlaceholderScreenStateResolver.ResolvePostRunPanelState(
+                runLifecycleController.CurrentState,
+                postRunStateController,
+                onStopSessionRequested != null);
 
-            postRunSummaryPanelObject.SetActive(isPostRunActive);
-            if (!isPostRunActive)
+            postRunSummaryPanelObject.SetActive(panelState.IsVisible);
+            replayButton.interactable = panelState.ReplayButton.IsInteractable;
+            replayButtonText.text = panelState.ReplayButton.Label;
+            returnToWorldButton.interactable = panelState.ReturnToWorldButton.IsInteractable;
+            returnToWorldButtonText.text = panelState.ReturnToWorldButton.Label;
+            stopSessionButton.interactable = panelState.StopSessionButton.IsInteractable;
+            stopSessionButtonText.text = panelState.StopSessionButton.Label;
+
+            if (!panelState.IsVisible)
             {
-                replayButton.interactable = false;
-                returnToWorldButton.interactable = false;
-                stopSessionButton.interactable = false;
                 return;
             }
 
-            postRunSummaryText.text = BuildPostRunSummaryText(postRunStateController, runLifecycleController.RunResult);
-            replayButton.interactable = postRunStateController.CanReplayNode;
-            replayButtonText.text = "Replay Node";
-            returnToWorldButton.interactable = postRunStateController.CanReturnToWorld;
-            returnToWorldButtonText.text = "Return To World Map";
-            stopSessionButton.interactable =
-                postRunStateController.CanStopSession && onStopSessionRequested != null;
-            stopSessionButtonText.text = onStopSessionRequested == null
-                ? "Stop Session Unavailable"
-                : "Stop Session";
-        }
-
-        private static string BuildRewardSummary(RunRewardPayload rewardPayload)
-        {
-            return rewardPayload.HasRewards ? "Placeholder reward payload present" : "None";
+            postRunSummaryText.text = NodePlaceholderScreenTextBuilder.BuildPostRunSummaryText(
+                postRunStateController,
+                runLifecycleController.RunResult);
         }
 
         private RunLifecycleController CreateRunLifecycleController(NodePlaceholderState placeholderState)
@@ -534,30 +459,5 @@ namespace Survivalon.Runtime
                 persistentWorldState: persistentWorldState);
         }
 
-        private static string BuildPostRunSummaryText(PostRunStateController postRunStateController, RunResult runResult)
-        {
-            string nodeProgressSummary = runResult.HasTrackedNodeProgress
-                ? $"{runResult.NodeProgressValue} / {runResult.NodeProgressThreshold}"
-                : "not tracked";
-
-            return
-                "Run finished.\n" +
-                $"Node: {runResult.NodeId.Value}\n" +
-                $"Resolution: {runResult.ResolutionState}\n" +
-                $"Node progress total: {nodeProgressSummary}\n" +
-                $"Rewards: {BuildRewardSummary(runResult.RewardPayload)}\n" +
-                $"Node progress delta: {runResult.NodeProgressDelta}\n" +
-                $"Persistent progression delta: {runResult.PersistentProgressionDelta}\n" +
-                $"Route unlock changed: {FormatYesNo(runResult.DidUnlockRoute)}\n" +
-                "Next actions:\n" +
-                $"- Replay: {FormatYesNo(postRunStateController.CanReplayNode)}\n" +
-                $"- Return to world: {FormatYesNo(postRunStateController.CanReturnToWorld)}\n" +
-                $"- Stop: {FormatYesNo(postRunStateController.CanStopSession)}";
-        }
-
-        private static string FormatYesNo(bool value)
-        {
-            return value ? "Yes" : "No";
-        }
     }
 }
