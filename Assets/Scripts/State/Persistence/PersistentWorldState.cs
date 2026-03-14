@@ -110,9 +110,9 @@ namespace Survivalon.Runtime
                 return existingNodeState;
             }
 
-            if (unlockThreshold <= 0)
+            if (unlockThreshold < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(unlockThreshold), "Unlock threshold must be positive.");
+                throw new ArgumentOutOfRangeException(nameof(unlockThreshold), "Unlock threshold cannot be negative.");
             }
 
             if (initialProgress < 0 || initialProgress > unlockThreshold)

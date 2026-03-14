@@ -49,6 +49,19 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldRejectProgressOnUntrackedNodeState()
+        {
+            PersistentNodeState nodeState = new PersistentNodeState(
+                new NodeId("region_001_node_003"),
+                0,
+                NodeState.Available);
+
+            TestDelegate action = () => nodeState.ApplyUnlockProgress(1);
+
+            Assert.That(action, Throws.InvalidOperationException);
+        }
+
+        [Test]
         public void ShouldAddAndSpendResourceBalances()
         {
             ResourceBalancesState resourceBalances = new ResourceBalancesState();

@@ -1,9 +1,9 @@
+using System.Reflection;
 using NUnit.Framework;
 using Survivalon.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using System.Reflection;
 
 namespace Survivalon.Tests.EditMode
 {
@@ -40,6 +40,7 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderState placeholderState = CreatePlaceholderState();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     placeholderState,
                     runResult => returnRequested = runResult != null,
                     runResult => stopRequested = runResult != null);
@@ -88,6 +89,7 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     CreateCombatPlaceholderState(),
                     runResult => { },
                     runResult => { });
@@ -122,6 +124,7 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     CreateCombatPlaceholderState(),
                     runResult => { },
                     runResult => { });
@@ -149,11 +152,11 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     CreateCombatPlaceholderState(),
                     runResult => { },
                     runResult => { });
 
-                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
                 ForceUiLayout(hostObject);
 
                 RectTransform combatShellRect = FindRectTransform(hostObject, "CombatShellView");
@@ -190,6 +193,7 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     CreateCombatPlaceholderState(),
                     runResult => { },
                     runResult => { });
@@ -224,6 +228,7 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     CreateCombatPlaceholderState(),
                     runResult => { },
                     runResult => { },
@@ -258,6 +263,7 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     CreateBossCombatPlaceholderState(),
                     runResult => { },
                     runResult => { });
@@ -286,6 +292,7 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     CreatePlaceholderState(),
                     runResult => returnedRunResult = runResult,
                     runResult => stoppedRunResult = runResult);
@@ -319,6 +326,7 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
 
                 placeholderScreen.Show(
+                    CreateWorldGraph(),
                     CreatePlaceholderState(),
                     runResult => { },
                     runResult => { });
@@ -375,6 +383,11 @@ namespace Survivalon.Tests.EditMode
                 NodeType.BossOrGate,
                 NodeState.Available,
                 new NodeId("region_001_node_004"));
+        }
+
+        private static WorldGraph CreateWorldGraph()
+        {
+            return new BootstrapWorldMapFactory().CreateWorldGraph();
         }
 
         private static void AdvanceToPostRun(GameObject rootObject)

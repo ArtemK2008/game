@@ -35,7 +35,7 @@ namespace Survivalon.Runtime
 
                 PersistentNodeState persistentNodeState = worldState.GetOrAddNodeState(
                     targetNode.NodeId,
-                    ResolvePersistentThreshold(targetNode.NodeType),
+                    NodeProgressMeterService.GetDefaultThreshold(targetNode.NodeType),
                     NodeState.Locked);
 
                 if (persistentNodeState.State != NodeState.Locked)
@@ -63,12 +63,6 @@ namespace Survivalon.Runtime
         private static bool IsClearedOrBetter(NodeState state)
         {
             return state == NodeState.Cleared || state == NodeState.Mastered;
-        }
-
-        private static int ResolvePersistentThreshold(NodeType nodeType)
-        {
-            int trackedThreshold = NodeProgressMeterService.GetDefaultThreshold(nodeType);
-            return trackedThreshold > 0 ? trackedThreshold : 1;
         }
     }
 }
