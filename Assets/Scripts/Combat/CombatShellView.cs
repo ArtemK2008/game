@@ -31,17 +31,17 @@ namespace Survivalon.Runtime
             gameObject.name = "CombatShellView";
             EnsureUi();
             titleText.text = $"Combat Shell: {combatEncounterState.CombatContext.NodeId.Value}";
-            summaryText.text = BuildSummaryText(combatEncounterState);
+            summaryText.text = CombatShellTextBuilder.BuildSummaryText(combatEncounterState);
             ApplyEntityCard(
                 playerEntityCardImage,
                 playerEntityCardText,
                 combatEncounterState.PlayerEntity,
-                new Color(0.18f, 0.38f, 0.68f, 1f));
+                CombatShellStateResolver.ResolveEntityCardColor(combatEncounterState.PlayerEntity.Side));
             ApplyEntityCard(
                 enemyEntityCardImage,
                 enemyEntityCardText,
                 combatEncounterState.EnemyEntity,
-                new Color(0.62f, 0.22f, 0.22f, 1f));
+                CombatShellStateResolver.ResolveEntityCardColor(combatEncounterState.EnemyEntity.Side));
             gameObject.SetActive(true);
         }
 
@@ -172,32 +172,7 @@ namespace Survivalon.Runtime
             Color backgroundColor)
         {
             cardImage.color = backgroundColor;
-            cardText.text =
-                $"{combatEntity.DisplayName}\n" +
-                $"{combatEntity.Side} | Alive: {FormatYesNo(combatEntity.IsAlive)} | Act: {FormatYesNo(combatEntity.IsActive)}\n" +
-                $"HP: {FormatStat(combatEntity.CurrentHealth)} / {FormatStat(combatEntity.MaxHealth)} | ATK: {FormatStat(combatEntity.CombatEntity.BaseStats.AttackPower)}\n" +
-                $"Rate: {FormatStat(combatEntity.CombatEntity.BaseStats.AttackRate)}/s | DEF: {FormatStat(combatEntity.CombatEntity.BaseStats.Defense)}";
-        }
-
-        private static string FormatYesNo(bool value)
-        {
-            return value ? "Yes" : "No";
-        }
-
-        private static string FormatStat(float value)
-        {
-            return value.ToString("0.##");
-        }
-
-        private static string BuildSummaryText(CombatEncounterState combatEncounterState)
-        {
-            string outcomeText = combatEncounterState.IsResolved
-                ? $"Outcome: {combatEncounterState.Outcome}"
-                : "Outcome: Ongoing";
-            return
-                $"Elapsed: {FormatStat(combatEncounterState.ElapsedCombatSeconds)}s | {outcomeText}\n" +
-                $"Targeting: {combatEncounterState.PlayerEntity.DisplayName} -> {combatEncounterState.EnemyEntity.DisplayName}; " +
-                $"{combatEncounterState.EnemyEntity.DisplayName} -> {combatEncounterState.PlayerEntity.DisplayName}";
+            cardText.text = CombatShellTextBuilder.BuildEntityCardText(combatEntity);
         }
     }
 }
