@@ -120,7 +120,7 @@ namespace Survivalon.Tests.EditMode
             NodeReachabilityResolver resolver = new NodeReachabilityResolver();
             NodeId unlockedGateNodeId = new NodeId("region_001_node_003");
 
-            worldState.GetOrAddNodeState(unlockedGateNodeId, 3, NodeState.Locked).MarkAvailable();
+            worldState.GetOrAddNodeState(unlockedGateNodeId, 0, NodeState.Locked).MarkAvailable();
 
             IReadOnlyList<NodeId> forwardNodeIds = resolver.GetForwardReachableNodes(worldGraph, worldState)
                 .Select(node => node.NodeId)

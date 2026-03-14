@@ -16,7 +16,7 @@ namespace Survivalon.Runtime
         private int unlockProgress;
 
         [SerializeField]
-        private int unlockThreshold = 1;
+        private int unlockThreshold;
 
         public PersistentNodeState()
         {
@@ -24,9 +24,9 @@ namespace Survivalon.Runtime
 
         public PersistentNodeState(NodeId nodeId, int unlockThreshold, NodeState state = NodeState.Locked)
         {
-            if (unlockThreshold <= 0)
+            if (unlockThreshold < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(unlockThreshold), "Unlock threshold must be positive.");
+                throw new ArgumentOutOfRangeException(nameof(unlockThreshold), "Unlock threshold cannot be negative.");
             }
 
             nodeIdValue = nodeId.Value;
@@ -51,6 +51,11 @@ namespace Survivalon.Runtime
             if (progressDelta < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(progressDelta), "Unlock progress delta cannot be negative.");
+            }
+
+            if (unlockThreshold <= 0)
+            {
+                throw new InvalidOperationException("Untracked nodes cannot receive unlock progress.");
             }
 
             if (state == NodeState.Locked)

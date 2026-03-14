@@ -30,20 +30,6 @@ namespace Survivalon.Runtime
         private Action<RunResult> onStopSessionRequested;
 
         public void Show(
-            NodePlaceholderState placeholderState,
-            Action<RunResult> returnToWorldRequested,
-            Action<RunResult> stopSessionRequested = null,
-            PersistentWorldState persistentWorldState = null)
-        {
-            Show(
-                new BootstrapWorldMapFactory().CreateWorldGraph(),
-                placeholderState,
-                returnToWorldRequested,
-                stopSessionRequested,
-                persistentWorldState);
-        }
-
-        public void Show(
             WorldGraph worldGraph,
             NodePlaceholderState placeholderState,
             Action<RunResult> returnToWorldRequested,
