@@ -43,3 +43,17 @@
 - Avoid unrelated refactors.
 - Do not stage local/editor-generated files such as `.idea/` unless explicitly requested.
 - Add local-only files that should not be versioned to `.gitignore`.
+
+## Implementation snapshot upkeep
+- After completing each milestone, update `specs/00_overview/current_build_state.md` in addition to creating the milestone note in `specs/milestone/`.
+- Treat `specs/00_overview/current_build_state.md` as the compact snapshot of the build’s current behavior.
+- Treat `specs/milestone/*.md` as detailed historical notes for each milestone.
+- When a milestone changes current behavior, reflect that behavior in `current_build_state.md`.
+- When a milestone only adds historical detail but does not change current behavior, keep the `current_build_state.md` edit minimal.
+- Keep `current_build_state.md` concise:
+    - summarize only currently true behavior
+    - list important temporary placeholder decisions
+    - list major not-yet-implemented areas that matter for upcoming milestones
+- Do not merge milestone history into one large file.
+- Do not remove milestone notes after updating `current_build_state.md`.
+- If milestone notes and current code appear inconsistent, surface the inconsistency instead of guessing.
