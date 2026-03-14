@@ -4,12 +4,12 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 031**.
+This summary reflects completed work through **Milestone 032**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
 
-From the world map, the player manually selects a reachable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. At post-run, the player can replay the node, return to the world map, or stop the session. Non-combat placeholder nodes still use the simple placeholder run shell rather than real gameplay.
+From the world map, the player manually selects a reachable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. At post-run, the player can replay the node, return to the world map, or stop the session. Cleared nodes remain replayable through both post-run replay and later world-map re-entry when they are reachable. Non-combat placeholder nodes still use the simple placeholder run shell rather than real gameplay.
 
 Manual actions currently required:
 - select a node on the world map
@@ -65,6 +65,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - When a tracked node reaches `Cleared`, directly connected locked next nodes become `Available`.
 - The unlocked state is persisted in `PersistentWorldState`, not only in transient world-map view state.
 - World-map reachability now respects persistent unlocked node state, so newly unlocked connected nodes become selectable after returning from the cleared node flow.
+
+### Cleared-node replayability
+- Cleared nodes remain selectable and enterable when they are otherwise reachable in the world flow.
+- Re-entering a cleared node preserves its `Cleared` state and does not re-lock already unlocked connected nodes.
+- In the current MVP, cleared-node farming value remains minimal: the node stays replayable and low-friction, but no broader reward economy exists yet.
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.
