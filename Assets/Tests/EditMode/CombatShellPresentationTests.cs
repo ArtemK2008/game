@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Survivalon.Runtime;
 using UnityEngine;
@@ -6,6 +7,14 @@ namespace Survivalon.Tests.EditMode
 {
     public sealed class CombatShellPresentationTests
     {
+        [Test]
+        public void BuildSummaryText_ShouldRejectMissingEncounterState()
+        {
+            Assert.That(
+                () => CombatShellTextBuilder.BuildSummaryText(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("combatEncounterState"));
+        }
+
         [Test]
         public void BuildSummaryText_ShouldMatchExistingOngoingSummaryFormatting()
         {
@@ -61,6 +70,14 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void BuildEntityCardText_ShouldRejectMissingCombatEntity()
+        {
+            Assert.That(
+                () => CombatShellTextBuilder.BuildEntityCardText(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("combatEntity"));
+        }
+
+        [Test]
         public void ResolveEntityCardColor_ShouldMatchExistingSideColors()
         {
             Assert.That(
@@ -69,6 +86,14 @@ namespace Survivalon.Tests.EditMode
             Assert.That(
                 CombatShellStateResolver.ResolveEntityCardColor(CombatSide.Enemy),
                 Is.EqualTo(new Color(0.62f, 0.22f, 0.22f, 1f)));
+        }
+
+        [Test]
+        public void ResolveEntityCardColor_ShouldRejectUnsupportedSide()
+        {
+            Assert.That(
+                () => CombatShellStateResolver.ResolveEntityCardColor((CombatSide)999),
+                Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("side"));
         }
 
         private static CombatEncounterState CreateEncounterState()

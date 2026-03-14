@@ -6,6 +6,21 @@ namespace Survivalon.Tests.EditMode
     public sealed class RunProgressResolutionServiceTests
     {
         [Test]
+        public void ShouldRejectMissingNodeContext()
+        {
+            RunProgressResolutionService service = new RunProgressResolutionService();
+
+            Assert.That(
+                () => service.Resolve(
+                    null,
+                    RunResolutionState.Succeeded,
+                    combatEncounterState: null,
+                    persistentWorldState: new PersistentWorldState(),
+                    worldGraph: null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeContext"));
+        }
+
+        [Test]
         public void ShouldGrantTrackedNodeProgressWithoutUnlockBeforeThreshold()
         {
             PersistentWorldState worldState = new PersistentWorldState();
@@ -75,6 +90,68 @@ namespace Survivalon.Tests.EditMode
             Assert.That(resolution.DidUnlockRoute, Is.False);
             Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_005"), out PersistentNodeState nodeState), Is.True);
             Assert.That(nodeState.State, Is.EqualTo(NodeState.Available));
+        }
+
+        [Test]
+        public void ShouldReturnUntrackedResolutionForSuccessfulServiceNode()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            RunProgressResolutionService service = new RunProgressResolutionService();
+
+            RunProgressResolution resolution = service.Resolve(
+                NodePlaceholderTestData.CreateServicePlaceholderState(),
+                RunResolutionState.Succeeded,
+                CreateResolvedEncounter(NodePlaceholderTestData.CreateCombatPlaceholderState(), CombatEncounterOutcome.PlayerVictory),
+                worldState,
+                BootstrapWorldTestData.CreateWorldGraph());
+
+            Assert.That(resolution.NodeProgressDelta, Is.EqualTo(0));
+            Assert.That(resolution.NodeProgressUpdate.IsTracked, Is.False);
+            Assert.That(resolution.NodeProgressUpdate.CurrentProgress, Is.EqualTo(0));
+            Assert.That(resolution.DidUnlockRoute, Is.False);
+            Assert.That(worldState.TryGetNodeState(NodePlaceholderTestData.CreateServicePlaceholderState().NodeId, out _), Is.False);
+        }
+
+        [Test]
+        public void ShouldKeepTrackedCombatAtZeroProgressWhenEncounterStateIsMissing()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            RunProgressResolutionService service = new RunProgressResolutionService();
+
+            RunProgressResolution resolution = service.Resolve(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                RunResolutionState.Succeeded,
+                null,
+                worldState,
+                worldGraph: null);
+
+            Assert.That(resolution.NodeProgressDelta, Is.EqualTo(0));
+            Assert.That(resolution.NodeProgressUpdate.IsTracked, Is.True);
+            Assert.That(resolution.NodeProgressUpdate.CurrentProgress, Is.EqualTo(0));
+            Assert.That(resolution.NodeProgressUpdate.DidReachClearThreshold, Is.False);
+            Assert.That(resolution.DidUnlockRoute, Is.False);
+        }
+
+        [Test]
+        public void ShouldNotUnlockRouteWhenThresholdIsReachedWithoutWorldGraph()
+        {
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            RunProgressResolutionService service = new RunProgressResolutionService();
+
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
+            pushNodeState.ApplyUnlockProgress(1);
+
+            RunProgressResolution resolution = service.Resolve(
+                NodePlaceholderTestData.CreatePushCombatPlaceholderState(),
+                RunResolutionState.Succeeded,
+                CreateResolvedEncounter(NodePlaceholderTestData.CreatePushCombatPlaceholderState(), CombatEncounterOutcome.PlayerVictory),
+                worldState,
+                worldGraph: null);
+
+            Assert.That(resolution.NodeProgressUpdate.DidReachClearThreshold, Is.True);
+            Assert.That(resolution.DidUnlockRoute, Is.False);
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState gateNodeState), Is.True);
+            Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Locked));
         }
 
         [Test]

@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Survivalon.Runtime;
 
@@ -59,6 +60,106 @@ namespace Survivalon.Tests.EditMode
             TestDelegate action = () => nodeState.ApplyUnlockProgress(1);
 
             Assert.That(action, Throws.InvalidOperationException);
+        }
+
+        [Test]
+        public void ShouldRejectNegativeProgressDelta()
+        {
+            PersistentNodeState nodeState = new PersistentNodeState(
+                new NodeId("region_001_node_001"),
+                3,
+                NodeState.Available);
+
+            TestDelegate action = () => nodeState.ApplyUnlockProgress(-1);
+
+            Assert.That(action, Throws.TypeOf<ArgumentOutOfRangeException>());
+        }
+
+        [Test]
+        public void ShouldKeepAvailableNodeUnchangedWhenZeroProgressIsApplied()
+        {
+            PersistentNodeState nodeState = new PersistentNodeState(
+                new NodeId("region_001_node_001"),
+                3,
+                NodeState.Available);
+
+            nodeState.ApplyUnlockProgress(0);
+
+            Assert.That(nodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(nodeState.UnlockProgress, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ShouldMarkClearedNodeAsMastered()
+        {
+            PersistentNodeState nodeState = new PersistentNodeState(
+                new NodeId("region_001_node_001"),
+                3,
+                NodeState.Available);
+
+            nodeState.ApplyUnlockProgress(3);
+            nodeState.MarkMastered();
+
+            Assert.That(nodeState.State, Is.EqualTo(NodeState.Mastered));
+            Assert.That(nodeState.IsCompleted, Is.True);
+        }
+
+        [Test]
+        public void ShouldNotMarkAvailableNodeAsMastered()
+        {
+            PersistentNodeState nodeState = new PersistentNodeState(
+                new NodeId("region_001_node_001"),
+                3,
+                NodeState.Available);
+
+            nodeState.MarkMastered();
+
+            Assert.That(nodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(nodeState.IsCompleted, Is.False);
+        }
+
+        [Test]
+        public void ShouldRejectReplacingReachableNodesWithNullCollection()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+
+            Assert.That(
+                () => worldState.ReplaceReachableNodes(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeIds"));
+        }
+
+        [Test]
+        public void ShouldRejectReplacingNodeStatesWithNullCollection()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+
+            Assert.That(
+                () => worldState.ReplaceNodeStates(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("replacementNodeStates"));
+        }
+
+        [Test]
+        public void ShouldRejectReplacingNodeStatesWithNullEntries()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+
+            Assert.That(
+                () => worldState.ReplaceNodeStates(new PersistentNodeState[] { null }),
+                Throws.ArgumentException.With.Property("ParamName").EqualTo("replacementNodeStates"));
+        }
+
+        [Test]
+        public void ShouldReturnExistingNodeStateWhenGetOrAddIsCalledRepeatedly()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            NodeId nodeId = new NodeId("region_001_node_001");
+
+            PersistentNodeState firstNodeState = worldState.GetOrAddNodeState(nodeId, 3, NodeState.Available);
+            PersistentNodeState secondNodeState = worldState.GetOrAddNodeState(nodeId, 1, NodeState.Locked);
+
+            Assert.That(secondNodeState, Is.SameAs(firstNodeState));
+            Assert.That(worldState.NodeStates.Count, Is.EqualTo(1));
+            Assert.That(secondNodeState.UnlockThreshold, Is.EqualTo(3));
         }
 
         [Test]

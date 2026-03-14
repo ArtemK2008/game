@@ -8,6 +8,26 @@ namespace Survivalon.Tests.EditMode
     public sealed class NextNodeUnlockServiceTests
     {
         [Test]
+        public void ShouldRejectMissingWorldGraph()
+        {
+            NextNodeUnlockService service = new NextNodeUnlockService();
+
+            Assert.That(
+                () => service.UnlockConnectedNodesWhenSourceClears(null, new PersistentWorldState(), new NodeId("node_001")),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldGraph"));
+        }
+
+        [Test]
+        public void ShouldRejectMissingWorldState()
+        {
+            NextNodeUnlockService service = new NextNodeUnlockService();
+
+            Assert.That(
+                () => service.UnlockConnectedNodesWhenSourceClears(BootstrapWorldTestData.CreateWorldGraph(), null, new NodeId("node_001")),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldState"));
+        }
+
+        [Test]
         public void ShouldPersistUnlockedUntrackedNodeWithoutFakeThreshold()
         {
             WorldNode sourceNode = new WorldNode(
@@ -78,6 +98,47 @@ namespace Survivalon.Tests.EditMode
             Assert.That(secondUnlockCount, Is.EqualTo(0));
             Assert.That(worldState.TryGetNodeState(unlockedNodeId, out PersistentNodeState unlockedNodeState), Is.True);
             Assert.That(unlockedNodeState.State, Is.EqualTo(NodeState.Available));
+        }
+
+        [Test]
+        public void ShouldNotUnlockConnectedNodesWhenSourceIsNotCleared()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            NextNodeUnlockService service = new NextNodeUnlockService();
+
+            int unlockedNodeCount = service.UnlockConnectedNodesWhenSourceClears(
+                worldGraph,
+                worldState,
+                new NodeId("region_001_node_002"));
+
+            Assert.That(unlockedNodeCount, Is.EqualTo(0));
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState gateNodeState), Is.True);
+            Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Locked));
+        }
+
+        [Test]
+        public void ShouldUnlockConnectedNodesWhenSourceIsMastered()
+        {
+            NodeId sourceNodeId = new NodeId("source_node");
+            NodeId targetNodeId = new NodeId("target_node");
+            WorldNode sourceNode = new WorldNode(sourceNodeId, new RegionId("region_001"), NodeType.Combat, NodeState.Cleared);
+            WorldNode targetNode = new WorldNode(targetNodeId, new RegionId("region_001"), NodeType.BossOrGate, NodeState.Locked);
+            WorldGraph worldGraph = CreateGraph(
+                new[] { sourceNode, targetNode },
+                new WorldNodeConnection(sourceNodeId, targetNodeId));
+            PersistentWorldState worldState = PersistentStateTestData.CreateWorldState(
+                sourceNodeId,
+                new[] { sourceNodeId },
+                PersistentStateTestData.CreateNodeState(sourceNodeId, 3, NodeState.Mastered, 3));
+            NextNodeUnlockService service = new NextNodeUnlockService();
+
+            int unlockedNodeCount = service.UnlockConnectedNodesWhenSourceClears(worldGraph, worldState, sourceNodeId);
+
+            Assert.That(unlockedNodeCount, Is.EqualTo(1));
+            Assert.That(worldState.TryGetNodeState(targetNodeId, out PersistentNodeState targetNodeState), Is.True);
+            Assert.That(targetNodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(targetNodeState.UnlockThreshold, Is.EqualTo(3));
         }
 
         private static WorldGraph CreateGraph(IEnumerable<WorldNode> nodes, params WorldNodeConnection[] connections)

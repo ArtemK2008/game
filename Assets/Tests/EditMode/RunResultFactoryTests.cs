@@ -6,20 +6,23 @@ namespace Survivalon.Tests.EditMode
     public sealed class RunResultFactoryTests
     {
         [Test]
+        public void ShouldRejectMissingNodeContext()
+        {
+            Assert.That(
+                () => RunResultFactory.Create(
+                    null,
+                    RunResolutionState.Succeeded,
+                    CreateProgressResolution()),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeContext"));
+        }
+
+        [Test]
         public void ShouldCreateRunResultUsingProgressResolutionValues()
         {
             RunResult runResult = RunResultFactory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 RunResolutionState.Succeeded,
-                new RunProgressResolution(
-                    2,
-                    new NodeProgressUpdateResult(
-                        isTracked: true,
-                        currentProgress: 2,
-                        progressThreshold: 3,
-                        didReachClearThreshold: false,
-                        nodeStateAfterUpdate: NodeState.InProgress),
-                    didUnlockRoute: true));
+                CreateProgressResolution());
 
             Assert.That(runResult.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
             Assert.That(runResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
@@ -47,5 +50,17 @@ namespace Survivalon.Tests.EditMode
             Assert.That(runResult.NextActionContext.CanStopSession, Is.True);
         }
 
+        private static RunProgressResolution CreateProgressResolution()
+        {
+            return new RunProgressResolution(
+                2,
+                new NodeProgressUpdateResult(
+                    isTracked: true,
+                    currentProgress: 2,
+                    progressThreshold: 3,
+                    didReachClearThreshold: false,
+                    nodeStateAfterUpdate: NodeState.InProgress),
+                didUnlockRoute: true);
+        }
     }
 }

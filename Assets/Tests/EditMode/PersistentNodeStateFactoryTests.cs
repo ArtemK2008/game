@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Survivalon.Runtime;
 
@@ -5,6 +6,30 @@ namespace Survivalon.Tests.EditMode
 {
     public sealed class PersistentNodeStateFactoryTests
     {
+        [Test]
+        public void ShouldRejectNegativeInitialProgress()
+        {
+            Assert.That(
+                () => PersistentNodeStateFactory.Create(
+                    new NodeId("region_001_node_001"),
+                    3,
+                    NodeState.Available,
+                    initialProgress: -1),
+                Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("initialProgress"));
+        }
+
+        [Test]
+        public void ShouldRejectInitialProgressAboveThreshold()
+        {
+            Assert.That(
+                () => PersistentNodeStateFactory.Create(
+                    new NodeId("region_001_node_001"),
+                    3,
+                    NodeState.Available,
+                    initialProgress: 4),
+                Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("initialProgress"));
+        }
+
         [Test]
         public void ShouldCreateInProgressStateWhenSeededWithAvailableProgress()
         {

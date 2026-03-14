@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Survivalon.Runtime;
 
@@ -5,6 +6,36 @@ namespace Survivalon.Tests.EditMode
 {
     public sealed class NodeProgressMeterServiceTests
     {
+        [Test]
+        public void ShouldRejectMissingWorldState()
+        {
+            NodeProgressMeterService service = new NodeProgressMeterService();
+
+            Assert.That(
+                () => service.ApplyRunProgress(null, NodePlaceholderTestData.CreateCombatPlaceholderState(), 1),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldState"));
+        }
+
+        [Test]
+        public void ShouldRejectMissingNodeContext()
+        {
+            NodeProgressMeterService service = new NodeProgressMeterService();
+
+            Assert.That(
+                () => service.ApplyRunProgress(new PersistentWorldState(), null, 1),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeContext"));
+        }
+
+        [Test]
+        public void ShouldRejectNegativeProgressDelta()
+        {
+            NodeProgressMeterService service = new NodeProgressMeterService();
+
+            Assert.That(
+                () => service.ApplyRunProgress(new PersistentWorldState(), NodePlaceholderTestData.CreateCombatPlaceholderState(), -1),
+                Throws.TypeOf<ArgumentOutOfRangeException>().With.Property("ParamName").EqualTo("progressDelta"));
+        }
+
         [Test]
         public void ShouldSeedPersistentCombatNodeProgressAtExpectedDefault()
         {
@@ -36,6 +67,24 @@ namespace Survivalon.Tests.EditMode
             Assert.That(updateResult.ProgressThreshold, Is.EqualTo(3));
             Assert.That(updateResult.DidReachClearThreshold, Is.False);
             Assert.That(updateResult.NodeStateAfterUpdate, Is.EqualTo(NodeState.InProgress));
+        }
+
+        [Test]
+        public void ShouldReturnUntrackedProgressResultWithoutPersistingServiceNodeState()
+        {
+            NodeProgressMeterService service = new NodeProgressMeterService();
+            PersistentWorldState worldState = new PersistentWorldState();
+
+            NodeProgressUpdateResult updateResult = service.ApplyRunProgress(
+                worldState,
+                NodePlaceholderTestData.CreateServicePlaceholderState(),
+                progressDelta: 1);
+
+            Assert.That(updateResult.IsTracked, Is.False);
+            Assert.That(updateResult.CurrentProgress, Is.EqualTo(0));
+            Assert.That(updateResult.ProgressThreshold, Is.EqualTo(0));
+            Assert.That(updateResult.NodeStateAfterUpdate, Is.EqualTo(NodeState.Available));
+            Assert.That(worldState.TryGetNodeState(NodePlaceholderTestData.CreateServicePlaceholderState().NodeId, out _), Is.False);
         }
 
         [Test]
@@ -112,5 +161,23 @@ namespace Survivalon.Tests.EditMode
             Assert.That(postClearUpdate.NodeStateAfterUpdate, Is.EqualTo(NodeState.Cleared));
         }
 
+        [Test]
+        public void ShouldKeepTrackedNodeProgressUnchangedWhenZeroDeltaIsApplied()
+        {
+            NodeProgressMeterService service = new NodeProgressMeterService();
+            PersistentWorldState worldState = new PersistentWorldState();
+
+            service.ApplyRunProgress(worldState, NodePlaceholderTestData.CreateCombatPlaceholderState(), progressDelta: 1);
+            NodeProgressUpdateResult updateResult = service.ApplyRunProgress(
+                worldState,
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                progressDelta: 0);
+
+            Assert.That(updateResult.IsTracked, Is.True);
+            Assert.That(updateResult.CurrentProgress, Is.EqualTo(1));
+            Assert.That(updateResult.ProgressThreshold, Is.EqualTo(3));
+            Assert.That(updateResult.DidReachClearThreshold, Is.False);
+            Assert.That(updateResult.NodeStateAfterUpdate, Is.EqualTo(NodeState.InProgress));
+        }
     }
 }
