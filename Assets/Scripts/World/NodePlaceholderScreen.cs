@@ -100,9 +100,10 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            NodePlaceholderState replayNodeContext = postRunStateController.NodeContext;
+            RunLifecycleController replayController = postRunStateController.CreateReplayLifecycleController(
+                persistentWorldState);
             postRunStateController = null;
-            runLifecycleController = CreateRunLifecycleController(replayNodeContext);
+            runLifecycleController = replayController;
             runLifecycleController.TryStartAutomaticFlow();
             Refresh();
         }

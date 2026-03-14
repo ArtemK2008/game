@@ -27,6 +27,27 @@ namespace Survivalon.Tests.EditMode
             Assert.That(replayController.HasRunResult, Is.False);
         }
 
+        [Test]
+        public void ShouldPassPersistentWorldStateIntoReplayLifecycleController()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            PostRunStateController controller = CreateCombatController();
+
+            RunLifecycleController replayController = controller.CreateReplayLifecycleController(worldState);
+
+            Assert.That(replayController.TryStartAutomaticFlow(), Is.True);
+
+            for (int index = 0; index < 24 && replayController.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                replayController.TryAdvanceAutomaticTime(0.25f);
+            }
+
+            Assert.That(replayController.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
+            Assert.That(nodeState.UnlockProgress, Is.EqualTo(1));
+            Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
+        }
+
         private static PostRunStateController CreateController()
         {
             NodePlaceholderState placeholderState = new NodePlaceholderState(
@@ -42,6 +63,31 @@ namespace Survivalon.Tests.EditMode
                 0,
                 0,
                 0,
+                0,
+                false,
+                new RunNextActionContext(
+                    canReplayNode: true,
+                    canChooseAnotherNode: true,
+                    canStopSession: true));
+
+            return new PostRunStateController(placeholderState, runResult);
+        }
+
+        private static PostRunStateController CreateCombatController()
+        {
+            NodePlaceholderState placeholderState = new NodePlaceholderState(
+                new NodeId("region_001_node_004"),
+                new RegionId("region_001"),
+                NodeType.Combat,
+                NodeState.Available,
+                new NodeId("region_001_node_002"));
+            RunResult runResult = new RunResult(
+                placeholderState.NodeId,
+                RunResolutionState.Succeeded,
+                RunRewardPayload.Empty,
+                1,
+                1,
+                3,
                 0,
                 false,
                 new RunNextActionContext(

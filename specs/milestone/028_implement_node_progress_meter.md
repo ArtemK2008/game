@@ -6,6 +6,7 @@
 - Wired successful combat-node runs to grant progress from defeated enemies in the current 1v1 prototype:
   - one defeated enemy grants `+1` node progress
   - repeated successful runs accumulate progress on the same node
+- Kept `BossOrGate` on the same tracked progress rule and default threshold as ordinary combat nodes as a temporary MVP placeholder.
 - Seeded the bootstrap world state with persistent node progress values so the current placeholder world map flow has readable baseline data.
 - Surfaced node progress minimally in the post-run summary:
   - current total
@@ -24,11 +25,14 @@
 - Updated `PostRunStateControllerTests` for the extended `RunResult` shape.
 
 ## Intentionally Left Out
+- Dedicated boss clear semantics
+- Dedicated gate-opening semantics
 - Route unlock application
 - Full reward tables or economy
 - Multi-enemy combat progress rules
 - Broad progression services beyond the per-node progress meter
 - World-map UI redesign for dedicated progress presentation
+- Revisit of `BossOrGate` progress behavior, which is deferred to Milestone 029 / 030 and later boss-focused milestones
 
 ## Verification
 - Unity EditMode batch run passed:

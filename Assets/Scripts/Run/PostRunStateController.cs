@@ -23,14 +23,17 @@ namespace Survivalon.Runtime
 
         public bool CanStopSession => runResult.NextActionContext.CanStopSession;
 
-        public RunLifecycleController CreateReplayLifecycleController()
+        public RunLifecycleController CreateReplayLifecycleController(
+            PersistentWorldState persistentWorldState = null)
         {
             if (!CanReplayNode)
             {
                 throw new InvalidOperationException("Replay is not available for the current post-run state.");
             }
 
-            return new RunLifecycleController(nodeContext);
+            return new RunLifecycleController(
+                nodeContext,
+                persistentWorldState: persistentWorldState);
         }
     }
 }
