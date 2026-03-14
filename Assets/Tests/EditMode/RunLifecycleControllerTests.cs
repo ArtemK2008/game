@@ -38,6 +38,20 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldIgnoreElapsedTimeForNonCombatRun()
+        {
+            RunLifecycleController controller = CreateController();
+
+            Assert.That(controller.TryEnterActiveState(), Is.True);
+
+            bool advanced = controller.TryAdvanceTime(1f);
+
+            Assert.That(advanced, Is.False);
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
+            Assert.That(controller.HasRunResult, Is.False);
+        }
+
+        [Test]
         public void ShouldCreateCombatShellContextWhenCombatRunEntersActiveState()
         {
             RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());

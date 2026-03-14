@@ -7,6 +7,7 @@ namespace Survivalon.Runtime
         private readonly NodePlaceholderState nodeContext;
         private readonly CombatShellContextFactory combatShellContextFactory;
         private readonly CombatEncounterResolver combatEncounterResolver;
+        private readonly CombatAutoAdvanceLoop combatAutoAdvanceLoop;
         private RunLifecycleState currentState;
         private CombatShellContext combatShellContext;
         private CombatEncounterState combatEncounterState;
@@ -15,11 +16,13 @@ namespace Survivalon.Runtime
         public RunLifecycleController(
             NodePlaceholderState nodeContext,
             CombatShellContextFactory combatShellContextFactory = null,
-            CombatEncounterResolver combatEncounterResolver = null)
+            CombatEncounterResolver combatEncounterResolver = null,
+            CombatAutoAdvanceLoop combatAutoAdvanceLoop = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
             this.combatShellContextFactory = combatShellContextFactory ?? new CombatShellContextFactory();
             this.combatEncounterResolver = combatEncounterResolver ?? new CombatEncounterResolver();
+            this.combatAutoAdvanceLoop = combatAutoAdvanceLoop ?? new CombatAutoAdvanceLoop();
             currentState = RunLifecycleState.RunStart;
         }
 
@@ -49,6 +52,7 @@ namespace Survivalon.Runtime
                 return false;
             }
 
+            combatAutoAdvanceLoop.Reset();
             combatShellContext = nodeContext.UsesCombatShell
                 ? combatShellContextFactory.Create(nodeContext)
                 : null;
@@ -57,6 +61,11 @@ namespace Survivalon.Runtime
                 : new CombatEncounterState(combatShellContext);
             currentState = RunLifecycleState.RunActive;
             return true;
+        }
+
+        public bool TryAdvanceTime(float elapsedSeconds)
+        {
+            return combatAutoAdvanceLoop.TryAdvance(this, elapsedSeconds);
         }
 
         public bool TryAdvanceCombat(float elapsedSeconds)
