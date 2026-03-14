@@ -122,11 +122,63 @@ namespace Survivalon.Tests.EditMode
                 InvokeAwake(bootstrapStartup);
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
-                FindButton(hostObject, "AdvanceRunLifecycleButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Combat Shell: region_001_node_004"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
+                Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
+                Assert.That(FindButton(hostObject, "AdvanceRunLifecycleButton").interactable, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldResolveCombatNodeRunWithoutManualCombatInteractionAfterNodeEntry()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
+                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
+                Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldReturnToWorldMapAfterAutoResolvedCombatRun()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                ReturnToWorldMap(hostObject);
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(hostObject, "Recent node: region_001_node_004"), Is.True);
             }
             finally
             {
@@ -182,17 +234,16 @@ namespace Survivalon.Tests.EditMode
         private static void AdvanceToPostRun(GameObject rootObject)
         {
             Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
+            Button returnToWorldButton = FindButton(rootObject, "ReturnToWorldMapButton");
 
             for (int index = 0; index < 40; index++)
             {
-                Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
-                if (advanceButtonText.text == "Enter Post-Run State")
+                if (returnToWorldButton.interactable)
                 {
-                    advanceRunLifecycleButton.onClick.Invoke();
                     return;
                 }
 
-                if (advanceButtonText.text == "Combat Auto-Running")
+                if (!advanceRunLifecycleButton.interactable)
                 {
                     InvokeRuntimeAdvance(rootObject, 0.25f);
                     continue;

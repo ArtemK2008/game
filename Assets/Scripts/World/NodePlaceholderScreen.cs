@@ -45,11 +45,13 @@ namespace Survivalon.Runtime
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
             EnsureUi();
+            runLifecycleController.TryAdvanceAutomaticFlow(0f);
             Refresh();
         }
 
         private void Refresh()
         {
+            SyncPostRunStateController();
             NodePlaceholderState placeholderState = runLifecycleController.NodeContext;
             titleText.text = $"Run Shell: {placeholderState.NodeId.Value}";
             summaryText.text = BuildSummaryText();
@@ -78,9 +80,6 @@ namespace Survivalon.Runtime
                     break;
                 case RunLifecycleState.RunResolved:
                     runLifecycleController.TryEnterPostRunState();
-                    postRunStateController = new PostRunStateController(
-                        runLifecycleController.NodeContext,
-                        runLifecycleController.RunResult);
                     break;
                 case RunLifecycleState.PostRun:
                     return;
@@ -100,6 +99,7 @@ namespace Survivalon.Runtime
 
             runLifecycleController = postRunStateController.CreateReplayLifecycleController();
             postRunStateController = null;
+            runLifecycleController.TryAdvanceAutomaticFlow(0f);
             Refresh();
         }
 
@@ -375,7 +375,7 @@ namespace Survivalon.Runtime
             {
                 case RunLifecycleState.RunStart:
                     return usesCombatShell
-                        ? "Combat shell initialized. Start the placeholder combat run when ready."
+                        ? "Combat shell initialized. Preparing automatic combat startup."
                         : "Run shell initialized. Start the placeholder run when ready.";
                 case RunLifecycleState.RunActive:
                     return runLifecycleController.HasCombatEncounterState
@@ -385,7 +385,7 @@ namespace Survivalon.Runtime
                     if (usesCombatShell && runLifecycleController.HasCombatEncounterState)
                     {
                         string winnerText = runLifecycleController.CombatEncounterState.WinnerSide?.ToString() ?? "Unknown";
-                        return $"Combat shell resolved. Winner: {winnerText}. Open the post-run state to review next actions.";
+                        return $"Combat shell resolved. Winner: {winnerText}. Preparing post-run summary.";
                     }
 
                     return "Run resolved. Open the post-run state to review next actions.";
@@ -419,9 +419,9 @@ namespace Survivalon.Runtime
             switch (runLifecycleController.CurrentState)
             {
                 case RunLifecycleState.RunStart:
-                    advanceRunLifecycleButton.interactable = true;
+                    advanceRunLifecycleButton.interactable = !usesCombatShell;
                     advanceRunLifecycleButtonText.text = usesCombatShell
-                        ? "Start Combat Shell"
+                        ? "Combat Auto-Starting"
                         : "Start Placeholder Run";
                     return;
                 case RunLifecycleState.RunActive:
@@ -431,8 +431,10 @@ namespace Survivalon.Runtime
                         : "Resolve Placeholder Run";
                     return;
                 case RunLifecycleState.RunResolved:
-                    advanceRunLifecycleButton.interactable = true;
-                    advanceRunLifecycleButtonText.text = "Enter Post-Run State";
+                    advanceRunLifecycleButton.interactable = !usesCombatShell;
+                    advanceRunLifecycleButtonText.text = usesCombatShell
+                        ? "Preparing Post-Run"
+                        : "Enter Post-Run State";
                     return;
                 case RunLifecycleState.PostRun:
                     advanceRunLifecycleButton.interactable = false;
@@ -455,10 +457,28 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            if (runLifecycleController.TryAdvanceTime(elapsedSeconds))
+            if (runLifecycleController.TryAdvanceAutomaticFlow(elapsedSeconds))
             {
                 Refresh();
             }
+        }
+
+        private void SyncPostRunStateController()
+        {
+            if (runLifecycleController == null || runLifecycleController.CurrentState != RunLifecycleState.PostRun)
+            {
+                postRunStateController = null;
+                return;
+            }
+
+            if (postRunStateController != null)
+            {
+                return;
+            }
+
+            postRunStateController = new PostRunStateController(
+                runLifecycleController.NodeContext,
+                runLifecycleController.RunResult);
         }
 
         private void RefreshPostRunSummaryPanel()
