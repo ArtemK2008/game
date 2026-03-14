@@ -44,5 +44,31 @@ namespace Survivalon.Tests.EditMode
             Assert.That(worldState.CurrentNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
             Assert.That(worldState.LastSafeNodeId, Is.EqualTo(new NodeId("region_001_node_001")));
         }
+
+        [Test]
+        public void ShouldAllowEnteringReachableClearedNodeWithoutRegressingPersistentState()
+        {
+            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
+            WorldGraph worldGraph = factory.CreateWorldGraph();
+            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+            NodeId clearedNodeId = new NodeId("region_001_node_001");
+
+            Assert.That(worldState.TryGetNodeState(clearedNodeId, out PersistentNodeState clearedNodeStateBeforeEntry), Is.True);
+            Assert.That(clearedNodeStateBeforeEntry.State, Is.EqualTo(NodeState.Cleared));
+            Assert.That(clearedNodeStateBeforeEntry.UnlockProgress, Is.EqualTo(clearedNodeStateBeforeEntry.UnlockThreshold));
+
+            bool entered = controller.TryEnterNode(clearedNodeId, out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.NodeId, Is.EqualTo(clearedNodeId));
+            Assert.That(placeholderState.NodeState, Is.EqualTo(NodeState.Cleared));
+            Assert.That(worldState.CurrentNodeId, Is.EqualTo(clearedNodeId));
+            Assert.That(worldState.LastSafeNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
+            Assert.That(worldState.TryGetNodeState(clearedNodeId, out PersistentNodeState clearedNodeStateAfterEntry), Is.True);
+            Assert.That(clearedNodeStateAfterEntry.State, Is.EqualTo(NodeState.Cleared));
+            Assert.That(clearedNodeStateAfterEntry.UnlockProgress, Is.EqualTo(clearedNodeStateAfterEntry.UnlockThreshold));
+        }
     }
 }

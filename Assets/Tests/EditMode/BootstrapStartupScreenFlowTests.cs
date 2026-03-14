@@ -303,6 +303,61 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldAllowReenteringClearedNodeWithoutRegressingStateOrUnlocks()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(hostObject);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_001_Button");
+                ReturnToWorldMap(hostObject);
+
+                Button clearedPushNodeButton = FindButton(hostObject, "region_001_node_002_Button");
+                Text clearedPushNodeLabel = clearedPushNodeButton.GetComponentInChildren<Text>(true);
+                Assert.That(clearedPushNodeButton.interactable, Is.True);
+                Assert.That(clearedPushNodeLabel, Is.Not.Null);
+                Assert.That(clearedPushNodeLabel.text, Does.Contain("State: Cleared"));
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
+                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Node progress total: 3 / 3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Route unlock changed: No"), Is.True);
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState clearedPushNodeState), Is.True);
+                Assert.That(clearedPushNodeState.State, Is.EqualTo(NodeState.Cleared));
+                Assert.That(clearedPushNodeState.UnlockProgress, Is.EqualTo(3));
+                Assert.That(clearedPushNodeState.UnlockThreshold, Is.EqualTo(3));
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState unlockedGateNodeState), Is.True);
+                Assert.That(unlockedGateNodeState.State, Is.EqualTo(NodeState.Available));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
