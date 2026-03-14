@@ -93,6 +93,26 @@ namespace Survivalon.Tests.EditMode
             Assert.That(finalUpdate.NodeStateAfterUpdate, Is.EqualTo(NodeState.Cleared));
         }
 
+        [Test]
+        public void ShouldKeepTrackedNodeClearedAndCappedAfterThresholdIsReached()
+        {
+            NodeProgressMeterService service = new NodeProgressMeterService();
+            PersistentWorldState worldState = new PersistentWorldState();
+
+            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
+            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
+            service.ApplyRunProgress(worldState, CreateCombatNodeState(), progressDelta: 1);
+            NodeProgressUpdateResult postClearUpdate = service.ApplyRunProgress(
+                worldState,
+                CreateCombatNodeState(),
+                progressDelta: 1);
+
+            Assert.That(postClearUpdate.CurrentProgress, Is.EqualTo(3));
+            Assert.That(postClearUpdate.ProgressThreshold, Is.EqualTo(3));
+            Assert.That(postClearUpdate.DidReachClearThreshold, Is.False);
+            Assert.That(postClearUpdate.NodeStateAfterUpdate, Is.EqualTo(NodeState.Cleared));
+        }
+
         private static NodePlaceholderState CreateCombatNodeState()
         {
             return new NodePlaceholderState(
