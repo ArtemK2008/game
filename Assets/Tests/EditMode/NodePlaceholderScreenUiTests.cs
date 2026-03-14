@@ -257,6 +257,7 @@ namespace Survivalon.Tests.EditMode
         public void Show_ShouldReachFailedPostRunForHostileBossCombatWithoutManualCombatInput()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
+            PersistentWorldState worldState = new PersistentWorldState();
 
             try
             {
@@ -266,12 +267,16 @@ namespace Survivalon.Tests.EditMode
                     CreateWorldGraph(),
                     CreateBossCombatPlaceholderState(),
                     runResult => { },
-                    runResult => { });
+                    runResult => { },
+                    worldState);
 
                 AutoAdvanceCombat(hostObject, 64, 0.25f);
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Failed"), Is.True);
+                Assert.That(ContainsText(hostObject, "Node progress total: 0 / 3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Node progress delta: 0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Route unlock changed: No"), Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
             }
             finally

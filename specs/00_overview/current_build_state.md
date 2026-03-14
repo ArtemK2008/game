@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 030**.
+This summary reflects completed work through **Milestone 031**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -53,6 +53,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### Persistent node progress
 - Combat-oriented nodes have persistent per-node progress stored in `PersistentWorldState` / `PersistentNodeState`.
 - In the current 1v1 prototype, a successful enemy defeat grants `+1` node progress.
+- Progress can accumulate across multiple successful runs before a node reaches its clear threshold.
 - Progress totals and per-run delta are surfaced minimally in the post-run summary.
 
 ### Map clear threshold behavior
@@ -71,11 +72,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The combat shell is still a debug-style placeholder presentation, not a final combat HUD.
 - `BossOrGate` currently shares the same tracked-progress rule and default threshold as ordinary combat nodes as a temporary MVP placeholder.
 - Current unlock behavior is limited to direct connected-node unlock on clear; advanced branch and gate semantics are still deferred.
+- Failed or incomplete combat runs do **not** currently grant node progress in the MVP, because node progress is still kill-driven and the single-enemy combat prototype has no failed partial-kill case.
 - Rewards and economy are still placeholder-level; runs currently produce minimal reward/result structure without a real reward pipeline.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet
-- Partial-completion value for failed or incomplete runs where allowed
+- Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
 - Structured reward economy beyond placeholder reward payloads
 - Real persistent progression sinks and upgrade spending
 - Expanded character/build systems beyond the current placeholders
