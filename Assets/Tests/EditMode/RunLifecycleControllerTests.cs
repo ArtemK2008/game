@@ -136,6 +136,69 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldUnlockNextConnectedNodeWhenTrackedNodeClears()
+        {
+            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
+            WorldGraph worldGraph = factory.CreateWorldGraph();
+            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            RunLifecycleController controller = new RunLifecycleController(
+                CreatePushCombatNodeState(),
+                worldGraph,
+                persistentWorldState: worldState);
+
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
+            pushNodeState.ApplyUnlockProgress(1);
+            Assert.That(pushNodeState.State, Is.EqualTo(NodeState.InProgress));
+            Assert.That(pushNodeState.UnlockProgress, Is.EqualTo(2));
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+
+            for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                controller.TryAdvanceAutomaticTime(0.25f);
+            }
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(controller.RunResult.DidUnlockRoute, Is.True);
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out pushNodeState), Is.True);
+            Assert.That(pushNodeState.State, Is.EqualTo(NodeState.Cleared));
+            Assert.That(pushNodeState.UnlockProgress, Is.EqualTo(3));
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState gateNodeState), Is.True);
+            Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Available));
+        }
+
+        [Test]
+        public void ShouldNotUnlockConnectedNodeAgainWhenClearedNodeIsReplayed()
+        {
+            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
+            WorldGraph worldGraph = factory.CreateWorldGraph();
+            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
+            pushNodeState.ApplyUnlockProgress(1);
+
+            RunLifecycleController firstController = new RunLifecycleController(
+                CreatePushCombatNodeState(),
+                worldGraph,
+                persistentWorldState: worldState);
+            RunToPostRun(firstController);
+
+            int nodeStateCountAfterFirstClear = worldState.NodeStates.Count;
+
+            RunLifecycleController replayController = new RunLifecycleController(
+                CreatePushCombatNodeState(),
+                worldGraph,
+                persistentWorldState: worldState);
+            RunToPostRun(replayController);
+
+            Assert.That(firstController.RunResult.DidUnlockRoute, Is.True);
+            Assert.That(replayController.RunResult.DidUnlockRoute, Is.False);
+            Assert.That(worldState.NodeStates.Count, Is.EqualTo(nodeStateCountAfterFirstClear));
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState gateNodeState), Is.True);
+            Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Available));
+        }
+
+        [Test]
         public void ShouldStartAutomaticCombatFlowWithoutAdvancingTime()
         {
             RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
@@ -321,6 +384,28 @@ namespace Survivalon.Tests.EditMode
                 NodeType.BossOrGate,
                 NodeState.Available,
                 new NodeId("region_001_node_004"));
+        }
+
+        private static NodePlaceholderState CreatePushCombatNodeState()
+        {
+            return new NodePlaceholderState(
+                new NodeId("region_001_node_002"),
+                new RegionId("region_001"),
+                NodeType.Combat,
+                NodeState.InProgress,
+                new NodeId("region_001_node_001"));
+        }
+
+        private static void RunToPostRun(RunLifecycleController controller)
+        {
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+
+            for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                controller.TryAdvanceAutomaticTime(0.25f);
+            }
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
         }
     }
 }

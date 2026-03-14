@@ -24,6 +24,7 @@ namespace Survivalon.Runtime
         public bool CanStopSession => runResult.NextActionContext.CanStopSession;
 
         public RunLifecycleController CreateReplayLifecycleController(
+            WorldGraph worldGraph = null,
             PersistentWorldState persistentWorldState = null)
         {
             if (!CanReplayNode)
@@ -33,6 +34,7 @@ namespace Survivalon.Runtime
 
             return new RunLifecycleController(
                 nodeContext,
+                worldGraph,
                 persistentWorldState: persistentWorldState);
         }
     }

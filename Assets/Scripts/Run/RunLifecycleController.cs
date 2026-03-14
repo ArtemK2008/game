@@ -5,11 +5,13 @@ namespace Survivalon.Runtime
     public sealed class RunLifecycleController
     {
         private readonly NodePlaceholderState nodeContext;
+        private readonly WorldGraph worldGraph;
         private readonly PersistentWorldState persistentWorldState;
         private readonly CombatShellContextFactory combatShellContextFactory;
         private readonly CombatEncounterResolver combatEncounterResolver;
         private readonly CombatAutoAdvanceLoop combatAutoAdvanceLoop;
         private readonly NodeProgressMeterService nodeProgressMeterService;
+        private readonly NextNodeUnlockService nextNodeUnlockService;
         private RunLifecycleState currentState;
         private CombatShellContext combatShellContext;
         private CombatEncounterState combatEncounterState;
@@ -17,18 +19,22 @@ namespace Survivalon.Runtime
 
         public RunLifecycleController(
             NodePlaceholderState nodeContext,
+            WorldGraph worldGraph = null,
             CombatShellContextFactory combatShellContextFactory = null,
             CombatEncounterResolver combatEncounterResolver = null,
             CombatAutoAdvanceLoop combatAutoAdvanceLoop = null,
             PersistentWorldState persistentWorldState = null,
-            NodeProgressMeterService nodeProgressMeterService = null)
+            NodeProgressMeterService nodeProgressMeterService = null,
+            NextNodeUnlockService nextNodeUnlockService = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
+            this.worldGraph = worldGraph;
             this.combatShellContextFactory = combatShellContextFactory ?? new CombatShellContextFactory();
             this.combatEncounterResolver = combatEncounterResolver ?? new CombatEncounterResolver();
             this.combatAutoAdvanceLoop = combatAutoAdvanceLoop ?? new CombatAutoAdvanceLoop();
             this.persistentWorldState = persistentWorldState;
             this.nodeProgressMeterService = nodeProgressMeterService ?? new NodeProgressMeterService();
+            this.nextNodeUnlockService = nextNodeUnlockService ?? new NextNodeUnlockService();
             currentState = RunLifecycleState.RunStart;
         }
 
@@ -158,6 +164,7 @@ namespace Survivalon.Runtime
         {
             int nodeProgressDelta = ResolveNodeProgressDelta(resolutionState);
             NodeProgressUpdateResult nodeProgressUpdate = ResolveNodeProgressUpdate(nodeProgressDelta);
+            bool didUnlockRoute = ResolveRouteUnlock(nodeProgressUpdate);
 
             return new RunResult(
                 nodeContext.NodeId,
@@ -167,7 +174,7 @@ namespace Survivalon.Runtime
                 nodeProgressUpdate.CurrentProgress,
                 nodeProgressUpdate.ProgressThreshold,
                 0,
-                false,
+                didUnlockRoute,
                 new RunNextActionContext(
                     canReplayNode: true,
                     canChooseAnotherNode: true,
@@ -197,6 +204,19 @@ namespace Survivalon.Runtime
                 persistentWorldState,
                 nodeContext,
                 nodeProgressDelta);
+        }
+
+        private bool ResolveRouteUnlock(NodeProgressUpdateResult nodeProgressUpdate)
+        {
+            if (worldGraph == null || persistentWorldState == null || !nodeProgressUpdate.DidReachClearThreshold)
+            {
+                return false;
+            }
+
+            return nextNodeUnlockService.UnlockConnectedNodesWhenSourceClears(
+                worldGraph,
+                persistentWorldState,
+                nodeContext.NodeId) > 0;
         }
     }
 }

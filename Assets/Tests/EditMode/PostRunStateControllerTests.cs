@@ -33,7 +33,8 @@ namespace Survivalon.Tests.EditMode
             PersistentWorldState worldState = new PersistentWorldState();
             PostRunStateController controller = CreateCombatController();
 
-            RunLifecycleController replayController = controller.CreateReplayLifecycleController(worldState);
+            RunLifecycleController replayController = controller.CreateReplayLifecycleController(
+                persistentWorldState: worldState);
 
             Assert.That(replayController.TryStartAutomaticFlow(), Is.True);
 

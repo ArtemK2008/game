@@ -257,6 +257,52 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldUnlockNextConnectedNodeAfterPushNodeClearsAndReturnToWorld()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
+                bootstrapStartup.ConfigurePersistenceStorage(storage);
+                InvokeAwake(bootstrapStartup);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(hostObject);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(hostObject);
+                Assert.That(ContainsText(hostObject, "Node progress total: 2 / 3"), Is.True);
+
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Node progress total: 3 / 3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Route unlock changed: Yes"), Is.True);
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
+                Assert.That(pushNodeState.State, Is.EqualTo(NodeState.Cleared));
+                Assert.That(pushNodeState.UnlockProgress, Is.EqualTo(3));
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState gateNodeState), Is.True);
+                Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Available));
+
+                Button gateNodeButton = FindButton(hostObject, "region_001_node_003_Button");
+                Text gateNodeLabel = gateNodeButton.GetComponentInChildren<Text>(true);
+
+                Assert.That(gateNodeButton.interactable, Is.True);
+                Assert.That(gateNodeLabel, Is.Not.Null);
+                Assert.That(gateNodeLabel.text, Does.Contain("State: Available"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
