@@ -194,7 +194,7 @@ namespace Survivalon.Tests.EditMode
 
                 if (advanceButtonText.text == "Combat Auto-Running")
                 {
-                    InvokeAutoAdvance(rootObject, 0.25f);
+                    InvokeRuntimeAdvance(rootObject, 0.25f);
                     continue;
                 }
 
@@ -204,13 +204,13 @@ namespace Survivalon.Tests.EditMode
             Assert.Fail("AdvanceToPostRun did not reach the post-run state within the expected number of steps.");
         }
 
-        private static void InvokeAutoAdvance(GameObject rootObject, float elapsedSeconds)
+        private static void InvokeRuntimeAdvance(GameObject rootObject, float elapsedSeconds)
         {
             NodePlaceholderScreen placeholderScreen = rootObject.GetComponentInChildren<NodePlaceholderScreen>(true);
             Assert.That(placeholderScreen, Is.Not.Null);
 
             MethodInfo autoAdvanceMethod = typeof(NodePlaceholderScreen).GetMethod(
-                "TryAutoAdvanceCombat",
+                "TryAdvanceRuntimeTime",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.That(autoAdvanceMethod, Is.Not.Null);
 

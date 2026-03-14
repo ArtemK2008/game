@@ -23,7 +23,6 @@ namespace Survivalon.Runtime
         private Text stopSessionButtonText;
         private Font uiFont;
         private RunLifecycleController runLifecycleController;
-        private CombatAutoAdvanceLoop combatAutoAdvanceLoop;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
         private Action<RunResult> onStopSessionRequested;
@@ -39,7 +38,6 @@ namespace Survivalon.Runtime
             }
 
             runLifecycleController = new RunLifecycleController(placeholderState);
-            combatAutoAdvanceLoop = new CombatAutoAdvanceLoop();
             postRunStateController = null;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
@@ -67,7 +65,6 @@ namespace Survivalon.Runtime
             {
                 case RunLifecycleState.RunStart:
                     runLifecycleController.TryEnterActiveState();
-                    combatAutoAdvanceLoop.Reset();
                     break;
                 case RunLifecycleState.RunActive:
                     if (runLifecycleController.HasCombatEncounterState)
@@ -102,7 +99,6 @@ namespace Survivalon.Runtime
             }
 
             runLifecycleController = postRunStateController.CreateReplayLifecycleController();
-            combatAutoAdvanceLoop.Reset();
             postRunStateController = null;
             Refresh();
         }
@@ -449,17 +445,17 @@ namespace Survivalon.Runtime
 
         private void Update()
         {
-            TryAutoAdvanceCombat(Time.unscaledDeltaTime);
+            TryAdvanceRuntimeTime(Time.unscaledDeltaTime);
         }
 
-        private void TryAutoAdvanceCombat(float elapsedSeconds)
+        private void TryAdvanceRuntimeTime(float elapsedSeconds)
         {
-            if (runLifecycleController == null || combatAutoAdvanceLoop == null)
+            if (runLifecycleController == null)
             {
                 return;
             }
 
-            if (combatAutoAdvanceLoop.TryAdvance(runLifecycleController, elapsedSeconds))
+            if (runLifecycleController.TryAdvanceTime(elapsedSeconds))
             {
                 Refresh();
             }

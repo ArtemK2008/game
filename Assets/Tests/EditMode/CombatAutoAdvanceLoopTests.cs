@@ -9,13 +9,12 @@ namespace Survivalon.Tests.EditMode
         public void ShouldAdvanceCombatRunAutomaticallyUntilResolved()
         {
             RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
-            CombatAutoAdvanceLoop autoAdvanceLoop = new CombatAutoAdvanceLoop(0.25f);
 
             Assert.That(controller.TryEnterActiveState(), Is.True);
 
             for (int index = 0; index < 24 && controller.CurrentState == RunLifecycleState.RunActive; index++)
             {
-                autoAdvanceLoop.TryAdvance(controller, 0.25f);
+                controller.TryAdvanceTime(0.25f);
             }
 
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunResolved));
@@ -28,14 +27,13 @@ namespace Survivalon.Tests.EditMode
         {
             RunLifecycleController incrementalController = new RunLifecycleController(CreateCombatNodeState());
             RunLifecycleController referenceController = new RunLifecycleController(CreateCombatNodeState());
-            CombatAutoAdvanceLoop autoAdvanceLoop = new CombatAutoAdvanceLoop(0.1f);
 
             Assert.That(incrementalController.TryEnterActiveState(), Is.True);
             Assert.That(referenceController.TryEnterActiveState(), Is.True);
 
             for (int index = 0; index < 10; index++)
             {
-                autoAdvanceLoop.TryAdvance(incrementalController, 0.1f);
+                incrementalController.TryAdvanceTime(0.1f);
             }
 
             referenceController.TryAdvanceCombat(1f);
@@ -55,19 +53,18 @@ namespace Survivalon.Tests.EditMode
         public void ShouldStopAutoAdvancingAfterCombatRunResolves()
         {
             RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
-            CombatAutoAdvanceLoop autoAdvanceLoop = new CombatAutoAdvanceLoop(0.25f);
 
             Assert.That(controller.TryEnterActiveState(), Is.True);
 
             for (int index = 0; index < 24 && controller.CurrentState == RunLifecycleState.RunActive; index++)
             {
-                autoAdvanceLoop.TryAdvance(controller, 0.25f);
+                controller.TryAdvanceTime(0.25f);
             }
 
             float resolvedElapsedSeconds = controller.CombatEncounterState.ElapsedCombatSeconds;
             float playerHealthAfterResolution = controller.CombatEncounterState.PlayerEntity.CurrentHealth;
 
-            bool advancedAfterResolution = autoAdvanceLoop.TryAdvance(controller, 1f);
+            bool advancedAfterResolution = controller.TryAdvanceTime(1f);
 
             Assert.That(advancedAfterResolution, Is.False);
             Assert.That(controller.CombatEncounterState.ElapsedCombatSeconds, Is.EqualTo(resolvedElapsedSeconds).Within(0.001f));
