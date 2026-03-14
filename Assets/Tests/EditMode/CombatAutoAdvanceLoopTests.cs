@@ -8,7 +8,7 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldAdvanceCombatRunAutomaticallyUntilResolved()
         {
-            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+            RunLifecycleController controller = new RunLifecycleController(NodePlaceholderTestData.CreateCombatPlaceholderState());
 
             Assert.That(controller.TryEnterActiveState(), Is.True);
 
@@ -25,8 +25,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldRemainDeterministicAcrossSmallRepeatedTicks()
         {
-            RunLifecycleController incrementalController = new RunLifecycleController(CreateCombatNodeState());
-            RunLifecycleController referenceController = new RunLifecycleController(CreateCombatNodeState());
+            RunLifecycleController incrementalController = new RunLifecycleController(NodePlaceholderTestData.CreateCombatPlaceholderState());
+            RunLifecycleController referenceController = new RunLifecycleController(NodePlaceholderTestData.CreateCombatPlaceholderState());
 
             Assert.That(incrementalController.TryEnterActiveState(), Is.True);
             Assert.That(referenceController.TryEnterActiveState(), Is.True);
@@ -52,7 +52,7 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldStopAutoAdvancingAfterCombatRunResolves()
         {
-            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+            RunLifecycleController controller = new RunLifecycleController(NodePlaceholderTestData.CreateCombatPlaceholderState());
 
             Assert.That(controller.TryEnterActiveState(), Is.True);
 
@@ -74,7 +74,7 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldResolveAutoAdvancedBossCombatAsFailedWhenHostileEnemyWins()
         {
-            RunLifecycleController controller = new RunLifecycleController(CreateBossCombatNodeState());
+            RunLifecycleController controller = new RunLifecycleController(NodePlaceholderTestData.CreateBossCombatPlaceholderState());
 
             Assert.That(controller.TryEnterActiveState(), Is.True);
 
@@ -91,24 +91,5 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.CombatEncounterState.HasActivePlayer, Is.False);
         }
 
-        private static NodePlaceholderState CreateCombatNodeState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
-        }
-
-        private static NodePlaceholderState CreateBossCombatNodeState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_005"),
-                new RegionId("region_001"),
-                NodeType.BossOrGate,
-                NodeState.Available,
-                new NodeId("region_001_node_004"));
-        }
     }
 }

@@ -9,7 +9,7 @@ namespace Survivalon.Tests.EditMode
         public void ShouldCreateRunResultUsingProgressResolutionValues()
         {
             RunResult runResult = RunResultFactory.Create(
-                CreateNodeState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 RunResolutionState.Succeeded,
                 new RunProgressResolution(
                     2,
@@ -33,7 +33,7 @@ namespace Survivalon.Tests.EditMode
         public void ShouldCreateRunResultWithDefaultRewardPayloadAndNextActions()
         {
             RunResult runResult = RunResultFactory.Create(
-                CreateNodeState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 RunResolutionState.Failed,
                 new RunProgressResolution(
                     0,
@@ -47,14 +47,5 @@ namespace Survivalon.Tests.EditMode
             Assert.That(runResult.NextActionContext.CanStopSession, Is.True);
         }
 
-        private static NodePlaceholderState CreateNodeState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
-        }
     }
 }

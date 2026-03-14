@@ -9,7 +9,7 @@ namespace Survivalon.Tests.EditMode
         public void BuildSummaryText_ShouldMatchExistingRunStartSummary()
         {
             string summaryText = NodePlaceholderScreenTextBuilder.BuildSummaryText(
-                CreateServicePlaceholderState(),
+                NodePlaceholderTestData.CreateServicePlaceholderState(),
                 RunLifecycleState.RunStart);
 
             Assert.That(summaryText, Is.EqualTo(
@@ -26,11 +26,11 @@ namespace Survivalon.Tests.EditMode
             RunResult runResult = CreateSucceededRunResult();
 
             string resolvedSummary = NodePlaceholderScreenTextBuilder.BuildSummaryText(
-                CreateServicePlaceholderState(),
+                NodePlaceholderTestData.CreateServicePlaceholderState(),
                 RunLifecycleState.RunResolved,
                 runResult);
             string postRunSummary = NodePlaceholderScreenTextBuilder.BuildSummaryText(
-                CreateServicePlaceholderState(),
+                NodePlaceholderTestData.CreateServicePlaceholderState(),
                 RunLifecycleState.PostRun,
                 runResult);
 
@@ -41,7 +41,7 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void BuildStatusText_ShouldMatchNonCombatLifecycleTexts()
         {
-            NodePlaceholderState serviceState = CreateServicePlaceholderState();
+            NodePlaceholderState serviceState = NodePlaceholderTestData.CreateServicePlaceholderState();
 
             Assert.That(
                 NodePlaceholderScreenTextBuilder.BuildStatusText(serviceState, RunLifecycleState.RunStart),
@@ -60,7 +60,7 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void BuildStatusText_ShouldMatchCombatLifecycleTexts()
         {
-            NodePlaceholderState combatState = CreateCombatPlaceholderState();
+            NodePlaceholderState combatState = NodePlaceholderTestData.CreateCombatPlaceholderState();
             CombatEncounterState resolvedEncounterState = CreateResolvedCombatEncounterState();
 
             Assert.That(
@@ -83,8 +83,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ResolveAdvanceButtonState_ShouldMatchLifecycleAndCombatState()
         {
-            NodePlaceholderState serviceState = CreateServicePlaceholderState();
-            NodePlaceholderState combatState = CreateCombatPlaceholderState();
+            NodePlaceholderState serviceState = NodePlaceholderTestData.CreateServicePlaceholderState();
+            NodePlaceholderState combatState = NodePlaceholderTestData.CreateCombatPlaceholderState();
 
             AssertButtonState(
                 NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(serviceState, RunLifecycleState.RunStart, false),
@@ -120,7 +120,7 @@ namespace Survivalon.Tests.EditMode
         public void ResolvePostRunPanelState_ShouldMatchExistingActionAvailability()
         {
             PostRunStateController postRunStateController = new PostRunStateController(
-                CreateCombatPlaceholderState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 CreateSucceededRunResult());
 
             NodePlaceholderScreenPostRunPanelState hiddenState =
@@ -168,7 +168,7 @@ namespace Survivalon.Tests.EditMode
         {
             RunResult runResult = CreateSucceededRunResult();
             PostRunStateController postRunStateController = new PostRunStateController(
-                CreateCombatPlaceholderState(),
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 runResult);
 
             string summaryText = NodePlaceholderScreenTextBuilder.BuildPostRunSummaryText(
@@ -196,30 +196,10 @@ namespace Survivalon.Tests.EditMode
             Assert.That(buttonState.IsInteractable, Is.EqualTo(expectedInteractable));
         }
 
-        private static NodePlaceholderState CreateServicePlaceholderState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_002_node_001"),
-                new RegionId("region_002"),
-                NodeType.ServiceOrProgression,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
-        }
-
-        private static NodePlaceholderState CreateCombatPlaceholderState()
-        {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
-        }
-
         private static CombatEncounterState CreateActiveCombatEncounterState()
         {
             CombatShellContextFactory combatShellContextFactory = new CombatShellContextFactory();
-            CombatShellContext combatContext = combatShellContextFactory.Create(CreateCombatPlaceholderState());
+            CombatShellContext combatContext = combatShellContextFactory.Create(NodePlaceholderTestData.CreateCombatPlaceholderState());
             return new CombatEncounterState(combatContext);
         }
 

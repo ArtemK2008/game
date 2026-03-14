@@ -38,9 +38,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldUnlockLockedConnectedTrackedNodeWhenSourceNodeIsCleared()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            WorldGraph worldGraph = factory.CreateWorldGraph();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             NextNodeUnlockService service = new NextNodeUnlockService();
             NodeId sourceNodeId = new NodeId("region_001_node_002");
             NodeId unlockedNodeId = new NodeId("region_001_node_003");
@@ -62,9 +61,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldNotDuplicateUnlocksWhenConnectedNodeIsAlreadyAvailable()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            WorldGraph worldGraph = factory.CreateWorldGraph();
-            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             NextNodeUnlockService service = new NextNodeUnlockService();
             NodeId sourceNodeId = new NodeId("region_001_node_002");
             NodeId unlockedNodeId = new NodeId("region_001_node_003");

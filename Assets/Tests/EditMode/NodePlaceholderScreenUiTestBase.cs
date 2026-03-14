@@ -23,37 +23,22 @@ namespace Survivalon.Tests.EditMode
 
         protected static NodePlaceholderState CreatePlaceholderState()
         {
-            return new NodePlaceholderState(
-                new NodeId("region_002_node_001"),
-                new RegionId("region_002"),
-                NodeType.ServiceOrProgression,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
+            return NodePlaceholderTestData.CreateServicePlaceholderState();
         }
 
         protected static NodePlaceholderState CreateCombatPlaceholderState()
         {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_004"),
-                new RegionId("region_001"),
-                NodeType.Combat,
-                NodeState.Available,
-                new NodeId("region_001_node_002"));
+            return NodePlaceholderTestData.CreateCombatPlaceholderState();
         }
 
         protected static NodePlaceholderState CreateBossCombatPlaceholderState()
         {
-            return new NodePlaceholderState(
-                new NodeId("region_001_node_005"),
-                new RegionId("region_001"),
-                NodeType.BossOrGate,
-                NodeState.Available,
-                new NodeId("region_001_node_004"));
+            return NodePlaceholderTestData.CreateBossCombatPlaceholderState();
         }
 
         protected static WorldGraph CreateWorldGraph()
         {
-            return new BootstrapWorldMapFactory().CreateWorldGraph();
+            return BootstrapWorldTestData.CreateWorldGraph();
         }
 
         protected static void AdvanceToPostRun(GameObject rootObject)

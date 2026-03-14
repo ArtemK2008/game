@@ -170,9 +170,8 @@ namespace Survivalon.Tests.EditMode
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
-            PersistentGameState gameState = factory.CreateGameState();
-            WorldGraph worldGraph = factory.CreateWorldGraph();
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
             NodeId clearedFarmNodeId = new NodeId("region_001_node_002");
             NodeId unlockedNextNodeId = new NodeId("region_001_node_003");
             NodeId currentNodeId = new NodeId("region_002_node_001");

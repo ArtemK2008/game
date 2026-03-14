@@ -30,7 +30,6 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void Show_ShouldCreateVisibleCanvasAndInputSystemModule()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             SessionContextState sessionContext = new SessionContextState();
 
@@ -38,8 +37,8 @@ namespace Survivalon.Tests.EditMode
             {
                 WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
                 worldMapScreen.Show(
-                    factory.CreateWorldGraph(),
-                    factory.CreateGameState().WorldState,
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
                     sessionContext: sessionContext);
 
                 Canvas canvas = hostObject.GetComponent<Canvas>();
@@ -90,7 +89,6 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void Show_ShouldInvokeNodeEntryCallbackWhenSelectedNodeIsConfirmed()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             bool wasInvoked = false;
             NodeId enteredNodeId = default;
@@ -99,8 +97,8 @@ namespace Survivalon.Tests.EditMode
             {
                 WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
                 worldMapScreen.Show(
-                    factory.CreateWorldGraph(),
-                    factory.CreateGameState().WorldState,
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
                     nodeEntryRequested: nodeId =>
                     {
                         wasInvoked = true;
@@ -127,7 +125,6 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void Show_ShouldKeepSummaryTextSeparatedFromEnterButton()
         {
-            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             SessionContextState sessionContext = new SessionContextState();
 
@@ -135,8 +132,8 @@ namespace Survivalon.Tests.EditMode
             {
                 WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
                 worldMapScreen.Show(
-                    factory.CreateWorldGraph(),
-                    factory.CreateGameState().WorldState,
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
                     sessionContext: sessionContext);
 
                 ForceUiLayout(hostObject);
