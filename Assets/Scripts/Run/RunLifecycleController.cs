@@ -36,6 +36,8 @@ namespace Survivalon.Runtime
 
         public bool HasCombatEncounterState => combatEncounterState != null;
 
+        public bool UsesCombatShell => nodeContext.UsesCombatShell;
+
         public CombatShellContext CombatContext => combatShellContext ??
             throw new InvalidOperationException("Combat context is not available until a combat-compatible run enters the active state.");
 
@@ -66,6 +68,25 @@ namespace Survivalon.Runtime
         public bool TryAdvanceTime(float elapsedSeconds)
         {
             return combatAutoAdvanceLoop.TryAdvance(this, elapsedSeconds);
+        }
+
+        public bool TryAdvanceAutomaticFlow(float elapsedSeconds)
+        {
+            bool changed = false;
+
+            if (UsesCombatShell && currentState == RunLifecycleState.RunStart)
+            {
+                changed |= TryEnterActiveState();
+            }
+
+            changed |= TryAdvanceTime(elapsedSeconds);
+
+            if (UsesCombatShell && currentState == RunLifecycleState.RunResolved && runResult != null)
+            {
+                changed |= TryEnterPostRunState();
+            }
+
+            return changed;
         }
 
         public bool TryAdvanceCombat(float elapsedSeconds)

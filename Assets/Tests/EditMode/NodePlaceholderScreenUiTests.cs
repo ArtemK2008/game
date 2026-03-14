@@ -79,7 +79,7 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void Show_ShouldDisplayCombatEntitiesForCombatNodeWhenRunStarts()
+        public void Show_ShouldDisplayCombatEntitiesForCombatNodeWithoutManualStart()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
 
@@ -94,9 +94,7 @@ namespace Survivalon.Tests.EditMode
 
                 Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
                 Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
-                Assert.That(advanceButtonText.text, Is.EqualTo("Start Combat Shell"));
-
-                advanceRunLifecycleButton.onClick.Invoke();
+                Assert.That(advanceButtonText.text, Is.EqualTo("Combat Auto-Running"));
 
                 Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
                 Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.True);
@@ -128,7 +126,6 @@ namespace Survivalon.Tests.EditMode
                     runResult => { },
                     runResult => { });
 
-                FindButton(hostObject, "AdvanceRunLifecycleButton").onClick.Invoke();
                 AutoAdvanceCombat(hostObject, 5, 0.25f);
 
                 Assert.That(ContainsText(hostObject, "Targeting: Player Unit -> Enemy Unit; Enemy Unit -> Player Unit"), Is.True);
@@ -157,7 +154,6 @@ namespace Survivalon.Tests.EditMode
                     runResult => { });
 
                 Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
-                advanceRunLifecycleButton.onClick.Invoke();
                 ForceUiLayout(hostObject);
 
                 RectTransform combatShellRect = FindRectTransform(hostObject, "CombatShellView");
@@ -185,7 +181,7 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void Show_ShouldAdvanceCombatUntilRunResolvesForCombatNode()
+        public void Show_ShouldReachPostRunForCombatNodeWithoutManualCombatInput()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
 
@@ -198,15 +194,76 @@ namespace Survivalon.Tests.EditMode
                     runResult => { },
                     runResult => { });
 
-                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
-                advanceRunLifecycleButton.onClick.Invoke();
                 AutoAdvanceCombat(hostObject, 24, 0.25f);
 
-                Assert.That(ContainsText(hostObject, "Combat shell resolved. Winner: Player."), Is.True);
-                Assert.That(ContainsText(hostObject, "Elapsed: 5s | Outcome: PlayerVictory"), Is.True);
-                Assert.That(ContainsText(hostObject, "Enemy | Alive: No | Act: No"), Is.True);
-                Assert.That(ContainsText(hostObject, "HP: 0 / 75"), Is.True);
-                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Enter Post-Run State"));
+                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
+
+                Assert.That(ContainsText(hostObject, "Post-run summary is active. Replay, return to the world map, or stop the session."), Is.True);
+                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
+                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Run Lifecycle Complete"));
+                Assert.That(advanceRunLifecycleButton.interactable, Is.False);
+                Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
+                Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
+                Assert.That(FindButton(hostObject, "StopSessionButton").interactable, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldAutoReplayCombatNodeWithoutManualCombatRestart()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+
+                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
+                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
+                Assert.That(advanceRunLifecycleButton.interactable, Is.False);
+
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
+                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldReachFailedPostRunForHostileBossCombatWithoutManualCombatInput()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateBossCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                AutoAdvanceCombat(hostObject, 64, 0.25f);
+
+                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
+                Assert.That(ContainsText(hostObject, "Resolution: Failed"), Is.True);
+                Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
             }
             finally
             {
@@ -307,20 +364,29 @@ namespace Survivalon.Tests.EditMode
                 new NodeId("region_001_node_002"));
         }
 
+        private static NodePlaceholderState CreateBossCombatPlaceholderState()
+        {
+            return new NodePlaceholderState(
+                new NodeId("region_001_node_005"),
+                new RegionId("region_001"),
+                NodeType.BossOrGate,
+                NodeState.Available,
+                new NodeId("region_001_node_004"));
+        }
+
         private static void AdvanceToPostRun(GameObject rootObject)
         {
             Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
+            Button returnToWorldButton = FindButton(rootObject, "ReturnToWorldMapButton");
 
             for (int index = 0; index < 40; index++)
             {
-                Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
-                if (advanceButtonText.text == "Enter Post-Run State")
+                if (returnToWorldButton.interactable)
                 {
-                    advanceRunLifecycleButton.onClick.Invoke();
                     return;
                 }
 
-                if (advanceButtonText.text == "Combat Auto-Running")
+                if (!advanceRunLifecycleButton.interactable)
                 {
                     InvokeRuntimeAdvance(rootObject, 0.25f);
                     continue;

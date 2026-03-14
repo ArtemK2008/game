@@ -110,6 +110,25 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldAdvanceAutomaticCombatFlowFromNodeEntryToPostRun()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+
+            Assert.That(controller.TryAdvanceAutomaticFlow(0f), Is.True);
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
+
+            for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                controller.TryAdvanceAutomaticFlow(0.25f);
+            }
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
+            Assert.That(controller.HasRunResult, Is.True);
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+        }
+
+        [Test]
         public void ShouldResolveCombatRunAsFailedWhenPlayerIsDefeated()
         {
             RunLifecycleController controller = new RunLifecycleController(CreateBossCombatNodeState());
@@ -130,6 +149,44 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.CombatEncounterState.PlayerEntity.IsActive, Is.False);
             Assert.That(controller.CombatEncounterState.HasActivePlayer, Is.False);
             Assert.That(controller.CombatEncounterState.ActivePlayerCount, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ShouldAdvanceAutomaticHostileCombatFlowToFailedPostRun()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateBossCombatNodeState());
+
+            Assert.That(controller.TryAdvanceAutomaticFlow(0f), Is.True);
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
+
+            for (int index = 0; index < 64 && controller.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                controller.TryAdvanceAutomaticFlow(0.25f);
+            }
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
+            Assert.That(controller.HasRunResult, Is.True);
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
+        }
+
+        [Test]
+        public void ShouldStopAutomaticCombatFlowAfterPostRunIsReached()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+
+            controller.TryAdvanceAutomaticFlow(0f);
+            for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                controller.TryAdvanceAutomaticFlow(0.25f);
+            }
+
+            float resolvedElapsedSeconds = controller.CombatEncounterState.ElapsedCombatSeconds;
+            bool advancedAfterPostRun = controller.TryAdvanceAutomaticFlow(1f);
+
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
+            Assert.That(advancedAfterPostRun, Is.False);
+            Assert.That(controller.CombatEncounterState.ElapsedCombatSeconds, Is.EqualTo(resolvedElapsedSeconds).Within(0.001f));
         }
 
         [Test]
