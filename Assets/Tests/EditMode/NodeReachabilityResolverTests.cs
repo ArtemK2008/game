@@ -111,6 +111,31 @@ namespace Survivalon.Tests.EditMode
             CollectionAssert.AreEqual(new[] { nextNode.NodeId, priorNode.NodeId }, reachableNodeIds);
         }
 
+        [Test]
+        public void ShouldTreatPersistentlyUnlockedNodeAsForwardReachable()
+        {
+            BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
+            WorldGraph worldGraph = factory.CreateWorldGraph();
+            PersistentWorldState worldState = factory.CreateGameState().WorldState;
+            NodeReachabilityResolver resolver = new NodeReachabilityResolver();
+            NodeId unlockedGateNodeId = new NodeId("region_001_node_003");
+
+            worldState.GetOrAddNodeState(unlockedGateNodeId, 3, NodeState.Locked).MarkAvailable();
+
+            IReadOnlyList<NodeId> forwardNodeIds = resolver.GetForwardReachableNodes(worldGraph, worldState)
+                .Select(node => node.NodeId)
+                .ToArray();
+
+            CollectionAssert.AreEquivalent(
+                new[]
+                {
+                    new NodeId("region_001_node_004"),
+                    new NodeId("region_002_node_001"),
+                    unlockedGateNodeId,
+                },
+                forwardNodeIds);
+        }
+
         private static WorldNode CreateNode(string nodeIdValue, string regionIdValue, NodeState state)
         {
             return new WorldNode(

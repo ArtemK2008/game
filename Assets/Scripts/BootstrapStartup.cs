@@ -65,6 +65,7 @@ namespace Survivalon.Runtime
             NodePlaceholderScreen nodePlaceholderScreen = EnsureNodePlaceholderScreen();
             nodePlaceholderScreen.gameObject.SetActive(true);
             nodePlaceholderScreen.Show(
+                worldGraph,
                 placeholderState,
                 HandleReturnToWorldRequested,
                 HandleStopSessionRequested,

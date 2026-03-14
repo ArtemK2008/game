@@ -32,12 +32,15 @@ namespace Survivalon.Runtime
                 worldState.SetCurrentNode(reachableNode.NodeId);
                 worldState.SetLastSafeNode(originNodeId);
                 worldState.ReplaceReachableNodes(BuildUpdatedReachableNodes(originNodeId));
+                NodeState placeholderNodeState = worldState.TryGetNodeState(reachableNode.NodeId, out PersistentNodeState persistentNodeState)
+                    ? persistentNodeState.State
+                    : reachableNode.State;
 
                 placeholderState = new NodePlaceholderState(
                     reachableNode.NodeId,
                     reachableNode.RegionId,
                     reachableNode.NodeType,
-                    reachableNode.State,
+                    placeholderNodeState,
                     originNodeId);
                 return true;
             }

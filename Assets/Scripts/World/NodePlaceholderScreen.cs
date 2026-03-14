@@ -22,6 +22,7 @@ namespace Survivalon.Runtime
         private Button stopSessionButton;
         private Text stopSessionButtonText;
         private Font uiFont;
+        private WorldGraph worldGraph;
         private PersistentWorldState persistentWorldState;
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
@@ -34,11 +35,32 @@ namespace Survivalon.Runtime
             Action<RunResult> stopSessionRequested = null,
             PersistentWorldState persistentWorldState = null)
         {
+            Show(
+                new BootstrapWorldMapFactory().CreateWorldGraph(),
+                placeholderState,
+                returnToWorldRequested,
+                stopSessionRequested,
+                persistentWorldState);
+        }
+
+        public void Show(
+            WorldGraph worldGraph,
+            NodePlaceholderState placeholderState,
+            Action<RunResult> returnToWorldRequested,
+            Action<RunResult> stopSessionRequested = null,
+            PersistentWorldState persistentWorldState = null)
+        {
+            if (worldGraph == null)
+            {
+                throw new ArgumentNullException(nameof(worldGraph));
+            }
+
             if (placeholderState == null)
             {
                 throw new ArgumentNullException(nameof(placeholderState));
             }
 
+            this.worldGraph = worldGraph;
             this.persistentWorldState = persistentWorldState;
             runLifecycleController = CreateRunLifecycleController(placeholderState);
             postRunStateController = null;
@@ -101,6 +123,7 @@ namespace Survivalon.Runtime
             }
 
             RunLifecycleController replayController = postRunStateController.CreateReplayLifecycleController(
+                worldGraph,
                 persistentWorldState);
             postRunStateController = null;
             runLifecycleController = replayController;
@@ -521,6 +544,7 @@ namespace Survivalon.Runtime
         {
             return new RunLifecycleController(
                 placeholderState,
+                worldGraph,
                 persistentWorldState: persistentWorldState);
         }
 

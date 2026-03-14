@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 029**.
+This summary reflects completed work through **Milestone 030**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -60,17 +60,21 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current threshold rule is simple and kill-driven.
 - Cleared state persists and is reflected on the world map because the world map reads persistent node state when present.
 
+### Next-node unlock behavior
+- When a tracked node reaches `Cleared`, directly connected locked next nodes become `Available`.
+- The unlocked state is persisted in `PersistentWorldState`, not only in transient world-map view state.
+- World-map reachability now respects persistent unlocked node state, so newly unlocked connected nodes become selectable after returning from the cleared node flow.
+
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.
 - Movement is **not** part of the current MVP combat model.
 - The combat shell is still a debug-style placeholder presentation, not a final combat HUD.
 - `BossOrGate` currently shares the same tracked-progress rule and default threshold as ordinary combat nodes as a temporary MVP placeholder.
-- Connected-node unlocking on clear is **not implemented yet**.
+- Current unlock behavior is limited to direct connected-node unlock on clear; advanced branch and gate semantics are still deferred.
 - Rewards and economy are still placeholder-level; runs currently produce minimal reward/result structure without a real reward pipeline.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet
-- Unlocking next connected nodes/routes from cleared nodes
 - Partial-completion value for failed or incomplete runs where allowed
 - Structured reward economy beyond placeholder reward payloads
 - Real persistent progression sinks and upgrade spending
