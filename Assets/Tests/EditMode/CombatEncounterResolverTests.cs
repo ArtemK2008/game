@@ -158,6 +158,19 @@ namespace Survivalon.Tests.EditMode
                 Throws.TypeOf<ArgumentOutOfRangeException>());
         }
 
+        [Test]
+        public void ShouldRejectCombatAdvanceWhenResolvedTargetSelectionFindsNoActiveEnemy()
+        {
+            CombatEncounterState encounterState = CreateEncounterState(
+                new CombatStatBlock(100f, 10f, 1f, 0f),
+                new CombatStatBlock(100f, 10f, 1f, 0f));
+            encounterState.EnemyEntity.ApplyDamage(encounterState.EnemyEntity.MaxHealth);
+
+            Assert.That(
+                () => new CombatEncounterResolver().TryAdvance(encounterState, 1f),
+                Throws.InvalidOperationException.With.Message.Contains("No active target"));
+        }
+
         private static CombatEncounterState CreateEncounterState(
             CombatStatBlock playerStats,
             CombatStatBlock enemyStats)
