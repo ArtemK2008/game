@@ -110,16 +110,41 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldStartAutomaticCombatFlowWithoutAdvancingTime()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
+            Assert.That(controller.HasRunResult, Is.False);
+            Assert.That(controller.CombatEncounterState.ElapsedCombatSeconds, Is.EqualTo(0f).Within(0.001f));
+        }
+
+        [Test]
+        public void ShouldIgnoreZeroElapsedAutomaticTimeProgression()
+        {
+            RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
+
+            controller.TryStartAutomaticFlow();
+
+            bool changed = controller.TryAdvanceAutomaticTime(0f);
+
+            Assert.That(changed, Is.False);
+            Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
+            Assert.That(controller.CombatEncounterState.ElapsedCombatSeconds, Is.EqualTo(0f).Within(0.001f));
+        }
+
+        [Test]
         public void ShouldAdvanceAutomaticCombatFlowFromNodeEntryToPostRun()
         {
             RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
 
-            Assert.That(controller.TryAdvanceAutomaticFlow(0f), Is.True);
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
 
             for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
             {
-                controller.TryAdvanceAutomaticFlow(0.25f);
+                controller.TryAdvanceAutomaticTime(0.25f);
             }
 
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
@@ -156,12 +181,12 @@ namespace Survivalon.Tests.EditMode
         {
             RunLifecycleController controller = new RunLifecycleController(CreateBossCombatNodeState());
 
-            Assert.That(controller.TryAdvanceAutomaticFlow(0f), Is.True);
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
 
             for (int index = 0; index < 64 && controller.CurrentState != RunLifecycleState.PostRun; index++)
             {
-                controller.TryAdvanceAutomaticFlow(0.25f);
+                controller.TryAdvanceAutomaticTime(0.25f);
             }
 
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
@@ -175,14 +200,14 @@ namespace Survivalon.Tests.EditMode
         {
             RunLifecycleController controller = new RunLifecycleController(CreateCombatNodeState());
 
-            controller.TryAdvanceAutomaticFlow(0f);
+            controller.TryStartAutomaticFlow();
             for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
             {
-                controller.TryAdvanceAutomaticFlow(0.25f);
+                controller.TryAdvanceAutomaticTime(0.25f);
             }
 
             float resolvedElapsedSeconds = controller.CombatEncounterState.ElapsedCombatSeconds;
-            bool advancedAfterPostRun = controller.TryAdvanceAutomaticFlow(1f);
+            bool advancedAfterPostRun = controller.TryAdvanceAutomaticTime(1f);
 
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
             Assert.That(advancedAfterPostRun, Is.False);

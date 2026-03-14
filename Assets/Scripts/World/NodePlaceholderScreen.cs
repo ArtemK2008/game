@@ -45,7 +45,7 @@ namespace Survivalon.Runtime
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
             EnsureUi();
-            runLifecycleController.TryAdvanceAutomaticFlow(0f);
+            runLifecycleController.TryStartAutomaticFlow();
             Refresh();
         }
 
@@ -99,7 +99,7 @@ namespace Survivalon.Runtime
 
             runLifecycleController = postRunStateController.CreateReplayLifecycleController();
             postRunStateController = null;
-            runLifecycleController.TryAdvanceAutomaticFlow(0f);
+            runLifecycleController.TryStartAutomaticFlow();
             Refresh();
         }
 
@@ -457,7 +457,7 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            if (runLifecycleController.TryAdvanceAutomaticFlow(elapsedSeconds))
+            if (runLifecycleController.TryAdvanceAutomaticTime(elapsedSeconds))
             {
                 Refresh();
             }
