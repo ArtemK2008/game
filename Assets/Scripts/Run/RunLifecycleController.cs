@@ -10,8 +10,7 @@ namespace Survivalon.Runtime
         private readonly CombatShellContextFactory combatShellContextFactory;
         private readonly CombatEncounterResolver combatEncounterResolver;
         private readonly CombatAutoAdvanceLoop combatAutoAdvanceLoop;
-        private readonly NodeProgressMeterService nodeProgressMeterService;
-        private readonly NextNodeUnlockService nextNodeUnlockService;
+        private readonly RunProgressResolutionService runProgressResolutionService;
         private RunLifecycleState currentState;
         private CombatShellContext combatShellContext;
         private CombatEncounterState combatEncounterState;
@@ -33,8 +32,9 @@ namespace Survivalon.Runtime
             this.combatEncounterResolver = combatEncounterResolver ?? new CombatEncounterResolver();
             this.combatAutoAdvanceLoop = combatAutoAdvanceLoop ?? new CombatAutoAdvanceLoop();
             this.persistentWorldState = persistentWorldState;
-            this.nodeProgressMeterService = nodeProgressMeterService ?? new NodeProgressMeterService();
-            this.nextNodeUnlockService = nextNodeUnlockService ?? new NextNodeUnlockService();
+            runProgressResolutionService = new RunProgressResolutionService(
+                nodeProgressMeterService,
+                nextNodeUnlockService);
             currentState = RunLifecycleState.RunStart;
         }
 
@@ -162,61 +162,13 @@ namespace Survivalon.Runtime
 
         private RunResult CreateRunResult(RunResolutionState resolutionState)
         {
-            int nodeProgressDelta = ResolveNodeProgressDelta(resolutionState);
-            NodeProgressUpdateResult nodeProgressUpdate = ResolveNodeProgressUpdate(nodeProgressDelta);
-            bool didUnlockRoute = ResolveRouteUnlock(nodeProgressUpdate);
-
-            return new RunResult(
-                nodeContext.NodeId,
-                resolutionState,
-                RunRewardPayload.Empty,
-                nodeProgressDelta,
-                nodeProgressUpdate.CurrentProgress,
-                nodeProgressUpdate.ProgressThreshold,
-                0,
-                didUnlockRoute,
-                new RunNextActionContext(
-                    canReplayNode: true,
-                    canChooseAnotherNode: true,
-                    canStopSession: true));
-        }
-
-        private int ResolveNodeProgressDelta(RunResolutionState resolutionState)
-        {
-            if (!NodeProgressMeterService.ShouldTrackProgress(nodeContext.NodeType) ||
-                resolutionState != RunResolutionState.Succeeded ||
-                combatEncounterState == null)
-            {
-                return 0;
-            }
-
-            return combatEncounterState.DefeatedEnemyCount;
-        }
-
-        private NodeProgressUpdateResult ResolveNodeProgressUpdate(int nodeProgressDelta)
-        {
-            if (persistentWorldState == null)
-            {
-                return NodeProgressUpdateResult.Untracked(nodeContext.NodeState);
-            }
-
-            return nodeProgressMeterService.ApplyRunProgress(
-                persistentWorldState,
+            RunProgressResolution progressResolution = runProgressResolutionService.Resolve(
                 nodeContext,
-                nodeProgressDelta);
-        }
-
-        private bool ResolveRouteUnlock(NodeProgressUpdateResult nodeProgressUpdate)
-        {
-            if (worldGraph == null || persistentWorldState == null || !nodeProgressUpdate.DidReachClearThreshold)
-            {
-                return false;
-            }
-
-            return nextNodeUnlockService.UnlockConnectedNodesWhenSourceClears(
-                worldGraph,
+                resolutionState,
+                combatEncounterState,
                 persistentWorldState,
-                nodeContext.NodeId) > 0;
+                worldGraph);
+            return RunResultFactory.Create(nodeContext, resolutionState, progressResolution);
         }
     }
 }
