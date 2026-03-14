@@ -6,6 +6,14 @@ namespace Survivalon.Tests.EditMode
     public sealed class NodePlaceholderScreenPresentationTests
     {
         [Test]
+        public void BuildSummaryText_ShouldRejectMissingPlaceholderState()
+        {
+            Assert.That(
+                () => NodePlaceholderScreenTextBuilder.BuildSummaryText(null, RunLifecycleState.RunStart),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("placeholderState"));
+        }
+
+        [Test]
         public void BuildSummaryText_ShouldMatchExistingRunStartSummary()
         {
             string summaryText = NodePlaceholderScreenTextBuilder.BuildSummaryText(
@@ -78,6 +86,17 @@ namespace Survivalon.Tests.EditMode
                     RunLifecycleState.RunResolved,
                     resolvedEncounterState),
                 Is.EqualTo("Combat shell resolved. Winner: Player. Preparing post-run summary."));
+        }
+
+        [Test]
+        public void BuildStatusText_ShouldFallbackToGenericResolvedTextWhenCombatEncounterIsMissing()
+        {
+            string statusText = NodePlaceholderScreenTextBuilder.BuildStatusText(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                RunLifecycleState.RunResolved,
+                combatEncounterState: null);
+
+            Assert.That(statusText, Is.EqualTo("Run resolved. Open the post-run state to review next actions."));
         }
 
         [Test]
@@ -188,6 +207,43 @@ namespace Survivalon.Tests.EditMode
                 "- Replay: Yes\n" +
                 "- Return to world: Yes\n" +
                 "- Stop: Yes"));
+        }
+
+        [Test]
+        public void BuildPostRunSummaryText_ShouldShowUntrackedProgressWhenThresholdIsZero()
+        {
+            RunResult runResult = new RunResult(
+                new NodeId("region_002_node_001"),
+                RunResolutionState.Failed,
+                RunRewardPayload.Empty,
+                0,
+                0,
+                0,
+                0,
+                false,
+                new RunNextActionContext(
+                    canReplayNode: true,
+                    canChooseAnotherNode: true,
+                    canStopSession: false));
+            PostRunStateController postRunStateController = new PostRunStateController(
+                NodePlaceholderTestData.CreateServicePlaceholderState(),
+                runResult);
+
+            string summaryText = NodePlaceholderScreenTextBuilder.BuildPostRunSummaryText(
+                postRunStateController,
+                runResult);
+
+            Assert.That(summaryText, Does.Contain("Node progress total: not tracked"));
+            Assert.That(summaryText, Does.Contain("Resolution: Failed"));
+            Assert.That(summaryText, Does.Contain("- Stop: No"));
+        }
+
+        [Test]
+        public void ResolveAdvanceButtonState_ShouldRejectMissingPlaceholderState()
+        {
+            Assert.That(
+                () => NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(null, RunLifecycleState.RunStart, false),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("placeholderState"));
         }
 
         private static void AssertButtonState(NodePlaceholderScreenButtonState buttonState, string expectedLabel, bool expectedInteractable)

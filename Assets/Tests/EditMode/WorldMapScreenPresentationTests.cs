@@ -7,6 +7,20 @@ namespace Survivalon.Tests.EditMode
     public sealed class WorldMapScreenPresentationTests
     {
         [Test]
+        public void BuildSummaryText_ShouldRejectMissingNodeOptions()
+        {
+            Assert.That(
+                () => WorldMapScreenTextBuilder.BuildSummaryText(
+                    null,
+                    hasSelectedNode: false,
+                    selectedNodeId: default,
+                    sessionContext: null,
+                    hasForwardRouteChoice: false,
+                    forwardSelectableNodeCount: 0),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeOptions"));
+        }
+
+        [Test]
         public void BuildSummaryText_ShouldMatchExistingWorldMapSummary()
         {
             SessionContextState sessionContext = new SessionContextState();
@@ -38,6 +52,27 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void BuildSummaryText_ShouldShowFallbackLabelsWithoutSelectionOrSessionContext()
+        {
+            string summaryText = WorldMapScreenTextBuilder.BuildSummaryText(
+                new[]
+                {
+                    CreateNodeOption("region_001_node_002", NodeState.InProgress, isSelectable: false, isCurrentContext: true, isSelected: false),
+                },
+                hasSelectedNode: false,
+                selectedNodeId: default,
+                sessionContext: null,
+                hasForwardRouteChoice: false,
+                forwardSelectableNodeCount: 1);
+
+            Assert.That(summaryText, Does.Contain("Recent node: none"));
+            Assert.That(summaryText, Does.Contain("Recent push target: none"));
+            Assert.That(summaryText, Does.Contain("Last selected node: none"));
+            Assert.That(summaryText, Does.Contain("Selected node: none"));
+            Assert.That(summaryText, Does.Contain("Forward route options: 1 (Single forward route)"));
+        }
+
+        [Test]
         public void BuildNodeLabel_ShouldMatchExistingFormatting()
         {
             string labelText = WorldMapScreenTextBuilder.BuildNodeLabel(
@@ -53,6 +88,14 @@ namespace Survivalon.Tests.EditMode
             Assert.That(labelText, Is.EqualTo(
                 "region_002 / region_002_node_001\n" +
                 "Type: ServiceOrProgression | State: Available | Selectable"));
+        }
+
+        [Test]
+        public void BuildNodeLabel_ShouldRejectMissingNodeOption()
+        {
+            Assert.That(
+                () => WorldMapScreenTextBuilder.BuildNodeLabel(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeOption"));
         }
 
         [Test]
@@ -94,6 +137,14 @@ namespace Survivalon.Tests.EditMode
             Assert.That(
                 WorldMapScreenStateResolver.ResolveNodeColor(CreateNodeOption("known", NodeState.Cleared, false, false, false)),
                 Is.EqualTo(new Color(0.34f, 0.34f, 0.38f, 1f)));
+        }
+
+        [Test]
+        public void ResolveNodeColor_ShouldRejectMissingNodeOption()
+        {
+            Assert.That(
+                () => WorldMapScreenStateResolver.ResolveNodeColor(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeOption"));
         }
 
         private static void AssertButtonState(WorldMapScreenButtonState buttonState, string expectedLabel, bool expectedInteractable)

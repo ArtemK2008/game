@@ -8,6 +8,36 @@ namespace Survivalon.Tests.EditMode
     public sealed class WorldNodeAccessResolverTests
     {
         [Test]
+        public void ShouldRejectMissingWorldGraphForEnterableNodeQueries()
+        {
+            WorldNodeAccessResolver resolver = new WorldNodeAccessResolver();
+
+            Assert.That(
+                () => resolver.GetEnterableNodes(null, new PersistentWorldState()),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldGraph"));
+        }
+
+        [Test]
+        public void ShouldRejectMissingWorldStateForForwardEnterableQueries()
+        {
+            WorldNodeAccessResolver resolver = new WorldNodeAccessResolver();
+
+            Assert.That(
+                () => resolver.GetForwardEnterableNodes(BootstrapWorldTestData.CreateWorldGraph(), null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldState"));
+        }
+
+        [Test]
+        public void ShouldRejectMissingWorldGraphForDirectEnterableLookup()
+        {
+            WorldNodeAccessResolver resolver = new WorldNodeAccessResolver();
+
+            Assert.That(
+                () => resolver.TryGetEnterableNode(null, new PersistentWorldState(), new NodeId("node_001"), out _),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldGraph"));
+        }
+
+        [Test]
         public void ShouldIncludeClearedNodeForFarmAccessEvenWhenPathRulesWouldNotReachIt()
         {
             WorldGraph worldGraph = WorldFlowTestData.CreateFarmAccessGraph(includeLockedConnection: true);
@@ -74,5 +104,18 @@ namespace Survivalon.Tests.EditMode
                 enterableNodeIds);
         }
 
+        [Test]
+        public void ShouldNotDuplicateClearedNodeWhenItIsPathEnterableAndFarmAccessible()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeAccessResolver resolver = new WorldNodeAccessResolver();
+
+            IReadOnlyList<NodeId> enterableNodeIds = resolver.GetEnterableNodes(worldGraph, worldState)
+                .Select(node => node.NodeId)
+                .ToArray();
+
+            Assert.That(enterableNodeIds.Count(nodeId => nodeId == new NodeId("region_001_node_001")), Is.EqualTo(1));
+        }
     }
 }

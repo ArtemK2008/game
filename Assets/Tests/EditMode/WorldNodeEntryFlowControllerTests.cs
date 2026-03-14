@@ -6,6 +6,22 @@ namespace Survivalon.Tests.EditMode
     public sealed class WorldNodeEntryFlowControllerTests
     {
         [Test]
+        public void ShouldRejectMissingWorldGraphDuringConstruction()
+        {
+            Assert.That(
+                () => new WorldNodeEntryFlowController(null, new PersistentWorldState()),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldGraph"));
+        }
+
+        [Test]
+        public void ShouldRejectMissingWorldStateDuringConstruction()
+        {
+            Assert.That(
+                () => new WorldNodeEntryFlowController(BootstrapWorldTestData.CreateWorldGraph(), null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldState"));
+        }
+
+        [Test]
         public void ShouldEnterReachableNodeAndUpdateWorldContext()
         {
             WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
@@ -106,5 +122,43 @@ namespace Survivalon.Tests.EditMode
             Assert.That(worldState.CurrentNodeId, Is.EqualTo(new NodeId("node_current")));
         }
 
+        [Test]
+        public void ShouldUseLastSafeNodeAsOriginWhenCurrentNodeIsMissing()
+        {
+            WorldGraph worldGraph = WorldFlowTestData.CreateFarmAccessGraph();
+            PersistentWorldState worldState = new PersistentWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+            NodeId lastSafeNodeId = new NodeId("node_current");
+
+            worldState.SetLastSafeNode(lastSafeNodeId);
+            worldState.ReplaceReachableNodes(new[] { lastSafeNodeId });
+            worldState.ReplaceNodeStates(new[]
+            {
+                PersistentStateTestData.CreateNodeState(new NodeId("node_cleared_farm"), 3, NodeState.Cleared, 3),
+            });
+
+            bool entered = controller.TryEnterNode(new NodeId("node_cleared_farm"), out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState.OriginNodeId, Is.EqualTo(lastSafeNodeId));
+            Assert.That(worldState.LastSafeNodeId, Is.EqualTo(lastSafeNodeId));
+        }
+
+        [Test]
+        public void ShouldRejectEntryWhenCurrentAndLastSafeContextAreMissing()
+        {
+            WorldGraph worldGraph = WorldFlowTestData.CreateFarmAccessGraph();
+            PersistentWorldState worldState = new PersistentWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+
+            worldState.ReplaceNodeStates(new[]
+            {
+                PersistentStateTestData.CreateNodeState(new NodeId("node_cleared_farm"), 3, NodeState.Cleared, 3),
+            });
+
+            Assert.That(
+                () => controller.TryEnterNode(new NodeId("node_cleared_farm"), out _),
+                Throws.InvalidOperationException.With.Message.Contains("current node or last safe node"));
+        }
     }
 }
