@@ -42,6 +42,38 @@ namespace Survivalon.Tests.EditMode
             Assert.That(enterableNodeIds, Has.No.Member(new NodeId("node_locked")));
         }
 
+        [Test]
+        public void ShouldRejectLockedPathCandidateFromDirectEnterableLookup()
+        {
+            WorldGraph worldGraph = CreateFarmAccessGraph();
+            PersistentWorldState worldState = CreateFarmAccessWorldState();
+            WorldNodeAccessResolver resolver = new WorldNodeAccessResolver();
+
+            bool foundLockedNode = resolver.TryGetEnterableNode(worldGraph, worldState, new NodeId("node_locked"), out WorldNode lockedNode);
+
+            Assert.That(foundLockedNode, Is.False);
+            Assert.That(lockedNode, Is.Null);
+        }
+
+        [Test]
+        public void ShouldReturnOnlyForwardNodesThatAreActuallyEnterable()
+        {
+            WorldGraph worldGraph = CreateFarmAccessGraph();
+            PersistentWorldState worldState = CreateFarmAccessWorldState();
+            WorldNodeAccessResolver resolver = new WorldNodeAccessResolver();
+
+            IReadOnlyList<NodeId> enterableNodeIds = resolver.GetForwardEnterableNodes(worldGraph, worldState)
+                .Select(node => node.NodeId)
+                .ToArray();
+
+            CollectionAssert.AreEquivalent(
+                new[]
+                {
+                    new NodeId("node_reachable"),
+                },
+                enterableNodeIds);
+        }
+
         private static WorldGraph CreateFarmAccessGraph()
         {
             RegionId regionId = new RegionId("region_001");
@@ -80,6 +112,7 @@ namespace Survivalon.Tests.EditMode
                 new[]
                 {
                     new WorldNodeConnection(currentNode.NodeId, reachableNode.NodeId),
+                    new WorldNodeConnection(currentNode.NodeId, lockedNode.NodeId),
                 });
         }
 

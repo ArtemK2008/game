@@ -8,7 +8,7 @@ namespace Survivalon.Tests.EditMode
     public sealed class NodeReachabilityResolverTests
     {
         [Test]
-        public void ShouldReachAvailableConnectedNodesAsForwardDestinations()
+        public void ShouldListForwardPathCandidatesWithoutFilteringByNodeState()
         {
             WorldNode currentNode = CreateNode("region_001_node_001", "region_001", NodeState.Cleared);
             WorldNode availableForwardNode = CreateNode("region_001_node_002", "region_001", NodeState.Available);
@@ -26,11 +26,17 @@ namespace Survivalon.Tests.EditMode
                 .Select(node => node.NodeId)
                 .ToArray();
 
-            CollectionAssert.AreEqual(new[] { availableForwardNode.NodeId }, reachableNodeIds);
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    availableForwardNode.NodeId,
+                    lockedForwardNode.NodeId,
+                },
+                reachableNodeIds);
         }
 
         [Test]
-        public void ShouldNotReachLockedNodesEvenWhenStoredAsBacktrackTargets()
+        public void ShouldListStoredBacktrackTargetsWithoutFilteringByNodeState()
         {
             WorldNode currentNode = CreateNode("region_001_node_001", "region_001", NodeState.Available);
             WorldNode lockedPriorNode = CreateNode("region_001_node_002", "region_001", NodeState.Locked);
@@ -41,8 +47,12 @@ namespace Survivalon.Tests.EditMode
             worldState.SetCurrentNode(currentNode.NodeId);
             worldState.ReplaceReachableNodes(new[] { lockedPriorNode.NodeId });
 
-            Assert.That(resolver.GetBacktrackReachableNodes(worldGraph, worldState), Is.Empty);
-            Assert.That(resolver.GetReachableNodes(worldGraph, worldState), Is.Empty);
+            Assert.That(
+                resolver.GetBacktrackReachableNodes(worldGraph, worldState).Select(node => node.NodeId),
+                Is.EquivalentTo(new[] { lockedPriorNode.NodeId }));
+            Assert.That(
+                resolver.GetReachableNodes(worldGraph, worldState).Select(node => node.NodeId),
+                Is.EquivalentTo(new[] { lockedPriorNode.NodeId }));
         }
 
         [Test]
@@ -112,15 +122,13 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void ShouldTreatPersistentlyUnlockedNodeAsForwardReachable()
+        public void ShouldExposeForwardPathCandidatesWithoutPersistentStateOverlay()
         {
             BootstrapWorldMapFactory factory = new BootstrapWorldMapFactory();
             WorldGraph worldGraph = factory.CreateWorldGraph();
             PersistentWorldState worldState = factory.CreateGameState().WorldState;
             NodeReachabilityResolver resolver = new NodeReachabilityResolver();
             NodeId unlockedGateNodeId = new NodeId("region_001_node_003");
-
-            worldState.GetOrAddNodeState(unlockedGateNodeId, 0, NodeState.Locked).MarkAvailable();
 
             IReadOnlyList<NodeId> forwardNodeIds = resolver.GetForwardReachableNodes(worldGraph, worldState)
                 .Select(node => node.NodeId)
