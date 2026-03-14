@@ -48,7 +48,13 @@ namespace Survivalon.Runtime
         {
             IReadOnlyList<WorldMapNodeOption> nodeOptions = screenController.BuildNodeOptions();
             titleText.text = "World Map";
-            summaryText.text = BuildSummaryText(nodeOptions);
+            summaryText.text = WorldMapScreenTextBuilder.BuildSummaryText(
+                nodeOptions,
+                screenController.HasSelection,
+                screenController.HasSelection ? screenController.SelectedNodeId : default,
+                screenController.SessionContext,
+                screenController.HasForwardRouteChoice,
+                screenController.ForwardSelectableNodeCount);
             RefreshEntryButton();
 
             ClearNodeButtons();
@@ -224,7 +230,7 @@ namespace Survivalon.Runtime
             layoutElement.preferredHeight = 72f;
 
             Image buttonImage = buttonObject.GetComponent<Image>();
-            buttonImage.color = GetNodeColor(nodeOption);
+            buttonImage.color = WorldMapScreenStateResolver.ResolveNodeColor(nodeOption);
 
             Button button = buttonObject.GetComponent<Button>();
             button.targetGraphic = buttonImage;
@@ -247,7 +253,7 @@ namespace Survivalon.Runtime
                 FontStyle.Normal,
                 TextAnchor.MiddleLeft,
                 Color.white);
-            buttonText.text = BuildNodeLabel(nodeOption);
+            buttonText.text = WorldMapScreenTextBuilder.BuildNodeLabel(nodeOption);
 
             RectTransform textRectTransform = buttonText.rectTransform;
             textRectTransform.anchorMin = Vector2.zero;
@@ -305,129 +311,13 @@ namespace Survivalon.Runtime
 
         private void RefreshEntryButton()
         {
-            NodeId selectedNodeId = default;
-            bool canEnterSelection = onNodeEntryRequested != null &&
-                screenController.TryGetSelectedNodeId(out selectedNodeId);
-
-            enterSelectedNodeButton.interactable = canEnterSelection;
-            enterSelectedNodeButtonText.text = canEnterSelection
-                ? $"Enter {selectedNodeId.Value}"
-                : "Select a reachable node to enter";
-        }
-
-        private static string BuildNodeLabel(WorldMapNodeOption nodeOption)
-        {
-            return $"{nodeOption.RegionId.Value} / {nodeOption.NodeId.Value}\nType: {nodeOption.NodeType} | State: {nodeOption.NodeState} | {BuildAvailabilityLabel(nodeOption)}";
-        }
-
-        private static string BuildAvailabilityLabel(WorldMapNodeOption nodeOption)
-        {
-            if (nodeOption.IsSelected)
-            {
-                return "Selected";
-            }
-
-            if (nodeOption.IsCurrentContext)
-            {
-                return "Current";
-            }
-
-            if (nodeOption.IsSelectable)
-            {
-                return "Selectable";
-            }
-
-            if (nodeOption.NodeState == NodeState.Locked)
-            {
-                return "Locked";
-            }
-
-            return "Known";
-        }
-
-        private string BuildSummaryText(IReadOnlyList<WorldMapNodeOption> nodeOptions)
-        {
-            string currentNodeLabel = "unknown";
-            string selectedNodeLabel = screenController.HasSelection ? screenController.SelectedNodeId.Value : "none";
-            string recentNodeLabel = GetSessionNodeLabel(
-                screenController.SessionContext,
-                context => context.HasRecentNode,
-                context => context.RecentNodeId);
-            string recentPushTargetLabel = GetSessionNodeLabel(
-                screenController.SessionContext,
-                context => context.HasRecentPushTarget,
-                context => context.RecentPushTargetNodeId);
-            string lastSelectedNodeLabel = GetSessionNodeLabel(
-                screenController.SessionContext,
-                context => context.HasLastSelectedNode,
-                context => context.LastSelectedNodeId);
-            int selectableCount = 0;
-            int forwardSelectableCount = screenController.ForwardSelectableNodeCount;
-
-            foreach (WorldMapNodeOption nodeOption in nodeOptions)
-            {
-                if (nodeOption.IsCurrentContext)
-                {
-                    currentNodeLabel = nodeOption.NodeId.Value;
-                }
-
-                if (nodeOption.IsSelectable)
-                {
-                    selectableCount++;
-                }
-            }
-
-            string routeChoiceLabel = screenController.HasForwardRouteChoice
-                ? "Branch choice available"
-                : "Single forward route";
-
-            return
-                $"Current node: {currentNodeLabel}\n" +
-                $"Recent node: {recentNodeLabel}\n" +
-                $"Recent push target: {recentPushTargetLabel}\n" +
-                $"Last selected node: {lastSelectedNodeLabel}\n" +
-                $"Selectable destinations: {selectableCount}\n" +
-                $"Forward route options: {forwardSelectableCount} ({routeChoiceLabel})\n" +
-                $"Selected node: {selectedNodeLabel}\n" +
-                "Select a reachable node, then confirm entry to start the placeholder node flow.";
-        }
-
-        private static string GetSessionNodeLabel(
-            SessionContextState sessionContext,
-            Func<SessionContextState, bool> hasValue,
-            Func<SessionContextState, NodeId> selector)
-        {
-            if (sessionContext == null || !hasValue(sessionContext))
-            {
-                return "none";
-            }
-
-            return selector(sessionContext).Value;
-        }
-
-        private static Color GetNodeColor(WorldMapNodeOption nodeOption)
-        {
-            if (nodeOption.IsSelected)
-            {
-                return new Color(0.77f, 0.62f, 0.20f, 1f);
-            }
-
-            if (nodeOption.IsCurrentContext)
-            {
-                return new Color(0.18f, 0.39f, 0.70f, 1f);
-            }
-
-            if (nodeOption.IsSelectable)
-            {
-                return new Color(0.18f, 0.50f, 0.24f, 1f);
-            }
-
-            if (nodeOption.NodeState == NodeState.Locked)
-            {
-                return new Color(0.24f, 0.24f, 0.27f, 1f);
-            }
-
-            return new Color(0.34f, 0.34f, 0.38f, 1f);
+            bool hasSelectedNode = screenController.TryGetSelectedNodeId(out NodeId selectedNodeId);
+            WorldMapScreenButtonState buttonState = WorldMapScreenStateResolver.ResolveEntryButtonState(
+                onNodeEntryRequested != null,
+                hasSelectedNode,
+                selectedNodeId);
+            enterSelectedNodeButton.interactable = buttonState.IsInteractable;
+            enterSelectedNodeButtonText.text = buttonState.Label;
         }
     }
 }
