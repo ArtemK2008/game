@@ -110,31 +110,11 @@ namespace Survivalon.Runtime
                 return existingNodeState;
             }
 
-            if (unlockThreshold < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(unlockThreshold), "Unlock threshold cannot be negative.");
-            }
-
-            if (initialProgress < 0 || initialProgress > unlockThreshold)
-            {
-                throw new ArgumentOutOfRangeException(nameof(initialProgress), "Initial progress must be between zero and the unlock threshold.");
-            }
-
-            NodeState normalizedState = initialState == NodeState.Locked
-                ? NodeState.Locked
-                : NodeState.Available;
-            PersistentNodeState nodeState = new PersistentNodeState(nodeId, unlockThreshold, normalizedState);
-
-            if (normalizedState != NodeState.Locked && initialProgress > 0)
-            {
-                nodeState.ApplyUnlockProgress(initialProgress);
-            }
-
-            if (initialState == NodeState.Mastered)
-            {
-                nodeState.MarkMastered();
-            }
-
+            PersistentNodeState nodeState = PersistentNodeStateFactory.Create(
+                nodeId,
+                unlockThreshold,
+                initialState,
+                initialProgress);
             nodeStates.Add(nodeState);
             return nodeState;
         }

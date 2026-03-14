@@ -46,7 +46,7 @@ namespace Survivalon.Runtime
             RunResolutionState resolutionState,
             CombatEncounterState combatEncounterState)
         {
-            if (!NodeProgressMeterService.ShouldTrackProgress(nodeContext.NodeType) ||
+            if (!TrackedNodeProgressRules.ShouldTrack(nodeContext.NodeType) ||
                 resolutionState != RunResolutionState.Succeeded ||
                 combatEncounterState == null)
             {
