@@ -45,6 +45,7 @@ namespace Survivalon.Tests.EditMode
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Rewards: Soft currency x1"), Is.True);
                 Assert.That(ContainsText(hostObject, "Node progress total: 1 / 3"), Is.True);
                 Assert.That(ContainsText(hostObject, "Node progress delta: 1"), Is.True);
                 Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
@@ -75,6 +76,7 @@ namespace Survivalon.Tests.EditMode
                 Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
                 Assert.That(nodeState.UnlockProgress, Is.EqualTo(1));
                 Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
             }
             finally
             {

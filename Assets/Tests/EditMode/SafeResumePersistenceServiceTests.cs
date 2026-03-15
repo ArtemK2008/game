@@ -11,6 +11,7 @@ namespace Survivalon.Tests.EditMode
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
             SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
             PersistentGameState gameState = CreateGameState("region_002_node_001", "region_001_node_002");
+            gameState.ResourceBalances.Add(ResourceCategory.SoftCurrency, 4);
 
             service.SaveResolvedWorldContext(gameState);
 
@@ -18,6 +19,7 @@ namespace Survivalon.Tests.EditMode
             Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
             Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
             Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(4));
         }
 
         [Test]

@@ -7,7 +7,8 @@ namespace Survivalon.Runtime
         public static RunResult Create(
             NodePlaceholderState nodeContext,
             RunResolutionState resolutionState,
-            RunProgressResolution progressResolution)
+            RunProgressResolution progressResolution,
+            RunRewardPayload rewardPayload = null)
         {
             if (nodeContext == null)
             {
@@ -17,7 +18,7 @@ namespace Survivalon.Runtime
             return new RunResult(
                 nodeContext.NodeId,
                 resolutionState,
-                RunRewardPayload.Empty,
+                rewardPayload ?? RunRewardPayload.Empty,
                 progressResolution.NodeProgressDelta,
                 progressResolution.NodeProgressUpdate.CurrentProgress,
                 progressResolution.NodeProgressUpdate.ProgressThreshold,

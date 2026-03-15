@@ -92,9 +92,11 @@ namespace Survivalon.Tests.EditMode
         public void ShouldAdvanceAutomaticCombatFlowFromNodeEntryToPostRun()
         {
             PersistentWorldState worldState = new PersistentWorldState();
+            ResourceBalancesState resourceBalances = new ResourceBalancesState();
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateCombatNodeState(),
-                persistentWorldState: worldState);
+                persistentWorldState: worldState,
+                resourceBalancesState: resourceBalances);
 
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
@@ -108,9 +110,13 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.HasRunResult, Is.True);
             Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+            Assert.That(controller.RunResult.RewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.CurrencyRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.SoftCurrency));
+            Assert.That(controller.RunResult.RewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
         }
 
         [Test]
@@ -140,9 +146,11 @@ namespace Survivalon.Tests.EditMode
         public void ShouldAdvanceAutomaticHostileCombatFlowToFailedPostRun()
         {
             PersistentWorldState worldState = new PersistentWorldState();
+            ResourceBalancesState resourceBalances = new ResourceBalancesState();
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateBossCombatNodeState(),
-                persistentWorldState: worldState);
+                persistentWorldState: worldState,
+                resourceBalancesState: resourceBalances);
 
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
@@ -156,9 +164,11 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.HasRunResult, Is.True);
             Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
             Assert.That(controller.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
+            Assert.That(controller.RunResult.RewardPayload, Is.SameAs(RunRewardPayload.Empty));
             Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(0));
             Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(0));
             Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(0));
         }
 
         [Test]

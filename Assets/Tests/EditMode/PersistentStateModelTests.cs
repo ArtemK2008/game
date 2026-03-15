@@ -163,7 +163,7 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void ShouldAddAndSpendResourceBalances()
+        public void ShouldAddAndSpendSoftCurrencyBalance()
         {
             ResourceBalancesState resourceBalances = new ResourceBalancesState();
 
@@ -175,15 +175,15 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void ShouldRejectSpendWhenResourceBalanceIsTooLow()
+        public void ShouldRejectSoftCurrencySpendWhenBalanceIsTooLow()
         {
             ResourceBalancesState resourceBalances = new ResourceBalancesState();
-            resourceBalances.Add(ResourceCategory.RegionMaterial, 2);
+            resourceBalances.Add(ResourceCategory.SoftCurrency, 2);
 
-            bool spent = resourceBalances.TrySpend(ResourceCategory.RegionMaterial, 3);
+            bool spent = resourceBalances.TrySpend(ResourceCategory.SoftCurrency, 3);
 
             Assert.That(spent, Is.False);
-            Assert.That(resourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(2));
         }
     }
 }
