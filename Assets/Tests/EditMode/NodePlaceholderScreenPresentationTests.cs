@@ -210,6 +210,38 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void BuildPostRunSummaryText_ShouldIncludeSoftCurrencyRewardsWhenPresent()
+        {
+            RunResult runResult = new RunResult(
+                new NodeId("region_001_node_004"),
+                RunResolutionState.Succeeded,
+                new RunRewardPayload(
+                    new[]
+                    {
+                        new RunCurrencyReward(ResourceCategory.SoftCurrency, 1),
+                    },
+                    System.Array.Empty<RunMaterialReward>()),
+                1,
+                1,
+                3,
+                0,
+                false,
+                new RunNextActionContext(
+                    canReplayNode: true,
+                    canChooseAnotherNode: true,
+                    canStopSession: true));
+            PostRunStateController postRunStateController = new PostRunStateController(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                runResult);
+
+            string summaryText = NodePlaceholderScreenTextBuilder.BuildPostRunSummaryText(
+                postRunStateController,
+                runResult);
+
+            Assert.That(summaryText, Does.Contain("Rewards: Soft currency x1"));
+        }
+
+        [Test]
         public void BuildPostRunSummaryText_ShouldShowUntrackedProgressWhenThresholdIsZero()
         {
             RunResult runResult = new RunResult(

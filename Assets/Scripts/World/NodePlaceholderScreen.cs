@@ -24,6 +24,7 @@ namespace Survivalon.Runtime
         private Font uiFont;
         private WorldGraph worldGraph;
         private PersistentWorldState persistentWorldState;
+        private ResourceBalancesState resourceBalancesState;
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
@@ -34,7 +35,8 @@ namespace Survivalon.Runtime
             NodePlaceholderState placeholderState,
             Action<RunResult> returnToWorldRequested,
             Action<RunResult> stopSessionRequested = null,
-            PersistentWorldState persistentWorldState = null)
+            PersistentWorldState persistentWorldState = null,
+            ResourceBalancesState resourceBalancesState = null)
         {
             if (worldGraph == null)
             {
@@ -48,6 +50,7 @@ namespace Survivalon.Runtime
 
             this.worldGraph = worldGraph;
             this.persistentWorldState = persistentWorldState;
+            this.resourceBalancesState = resourceBalancesState;
             runLifecycleController = CreateRunLifecycleController(placeholderState);
             postRunStateController = null;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
@@ -116,7 +119,8 @@ namespace Survivalon.Runtime
 
             RunLifecycleController replayController = postRunStateController.CreateReplayLifecycleController(
                 worldGraph,
-                persistentWorldState);
+                persistentWorldState,
+                resourceBalancesState);
             postRunStateController = null;
             runLifecycleController = replayController;
             runLifecycleController.TryStartAutomaticFlow();
@@ -456,7 +460,8 @@ namespace Survivalon.Runtime
             return new RunLifecycleController(
                 placeholderState,
                 worldGraph,
-                persistentWorldState: persistentWorldState);
+                persistentWorldState: persistentWorldState,
+                resourceBalancesState: resourceBalancesState);
         }
 
     }

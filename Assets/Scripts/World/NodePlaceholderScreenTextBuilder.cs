@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Survivalon.Runtime
 {
@@ -106,12 +107,44 @@ namespace Survivalon.Runtime
                 throw new ArgumentNullException(nameof(rewardPayload));
             }
 
-            return rewardPayload.HasRewards ? "Placeholder reward payload present" : "None";
+            if (!rewardPayload.HasRewards)
+            {
+                return "None";
+            }
+
+            List<string> rewardSummaries = new List<string>();
+
+            foreach (RunCurrencyReward currencyReward in rewardPayload.CurrencyRewards)
+            {
+                rewardSummaries.Add($"{FormatResourceCategory(currencyReward.ResourceCategory)} x{currencyReward.Amount}");
+            }
+
+            foreach (RunMaterialReward materialReward in rewardPayload.MaterialRewards)
+            {
+                rewardSummaries.Add($"{FormatResourceCategory(materialReward.ResourceCategory)} x{materialReward.Amount}");
+            }
+
+            return string.Join(", ", rewardSummaries);
         }
 
         private static string FormatYesNo(bool value)
         {
             return value ? "Yes" : "No";
+        }
+
+        private static string FormatResourceCategory(ResourceCategory resourceCategory)
+        {
+            switch (resourceCategory)
+            {
+                case ResourceCategory.SoftCurrency:
+                    return "Soft currency";
+                case ResourceCategory.RegionMaterial:
+                    return "Region material";
+                case ResourceCategory.PersistentProgressionMaterial:
+                    return "Persistent progression material";
+                default:
+                    return resourceCategory.ToString();
+            }
         }
     }
 }

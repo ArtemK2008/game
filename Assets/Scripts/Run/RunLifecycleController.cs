@@ -7,10 +7,13 @@ namespace Survivalon.Runtime
         private readonly NodePlaceholderState nodeContext;
         private readonly WorldGraph worldGraph;
         private readonly PersistentWorldState persistentWorldState;
+        private readonly ResourceBalancesState resourceBalancesState;
         private readonly CombatShellContextFactory combatShellContextFactory;
         private readonly CombatEncounterResolver combatEncounterResolver;
         private readonly CombatAutoAdvanceLoop combatAutoAdvanceLoop;
         private readonly RunProgressResolutionService runProgressResolutionService;
+        private readonly RunRewardResolutionService runRewardResolutionService;
+        private readonly RunRewardGrantService runRewardGrantService;
         private RunLifecycleState currentState;
         private CombatShellContext combatShellContext;
         private CombatEncounterState combatEncounterState;
@@ -24,7 +27,10 @@ namespace Survivalon.Runtime
             CombatAutoAdvanceLoop combatAutoAdvanceLoop = null,
             PersistentWorldState persistentWorldState = null,
             NodeProgressMeterService nodeProgressMeterService = null,
-            NextNodeUnlockService nextNodeUnlockService = null)
+            NextNodeUnlockService nextNodeUnlockService = null,
+            ResourceBalancesState resourceBalancesState = null,
+            RunRewardResolutionService runRewardResolutionService = null,
+            RunRewardGrantService runRewardGrantService = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
             this.worldGraph = worldGraph;
@@ -32,9 +38,12 @@ namespace Survivalon.Runtime
             this.combatEncounterResolver = combatEncounterResolver ?? new CombatEncounterResolver();
             this.combatAutoAdvanceLoop = combatAutoAdvanceLoop ?? new CombatAutoAdvanceLoop();
             this.persistentWorldState = persistentWorldState;
+            this.resourceBalancesState = resourceBalancesState;
             runProgressResolutionService = new RunProgressResolutionService(
                 nodeProgressMeterService,
                 nextNodeUnlockService);
+            this.runRewardResolutionService = runRewardResolutionService ?? new RunRewardResolutionService();
+            this.runRewardGrantService = runRewardGrantService ?? new RunRewardGrantService();
             currentState = RunLifecycleState.RunStart;
         }
 
@@ -168,7 +177,16 @@ namespace Survivalon.Runtime
                 combatEncounterState,
                 persistentWorldState,
                 worldGraph);
-            return RunResultFactory.Create(nodeContext, resolutionState, progressResolution);
+            RunRewardPayload rewardPayload = runRewardResolutionService.Resolve(
+                nodeContext,
+                resolutionState);
+
+            if (resourceBalancesState != null)
+            {
+                runRewardGrantService.Grant(resourceBalancesState, rewardPayload);
+            }
+
+            return RunResultFactory.Create(nodeContext, resolutionState, progressResolution, rewardPayload);
         }
     }
 }
