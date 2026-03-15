@@ -23,9 +23,7 @@ namespace Survivalon.Runtime
         private Text stopSessionButtonText;
         private Font uiFont;
         private WorldGraph worldGraph;
-        private PersistentWorldState persistentWorldState;
-        private PersistentProgressionState persistentProgressionState;
-        private ResourceBalancesState resourceBalancesState;
+        private RunPersistentContext persistentContext;
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
@@ -36,9 +34,7 @@ namespace Survivalon.Runtime
             NodePlaceholderState placeholderState,
             Action<RunResult> returnToWorldRequested,
             Action<RunResult> stopSessionRequested = null,
-            PersistentWorldState persistentWorldState = null,
-            ResourceBalancesState resourceBalancesState = null,
-            PersistentProgressionState persistentProgressionState = null)
+            RunPersistentContext persistentContext = null)
         {
             if (worldGraph == null)
             {
@@ -51,9 +47,7 @@ namespace Survivalon.Runtime
             }
 
             this.worldGraph = worldGraph;
-            this.persistentWorldState = persistentWorldState;
-            this.resourceBalancesState = resourceBalancesState;
-            this.persistentProgressionState = persistentProgressionState;
+            this.persistentContext = persistentContext;
             runLifecycleController = CreateRunLifecycleController(placeholderState);
             postRunStateController = null;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
@@ -122,9 +116,7 @@ namespace Survivalon.Runtime
 
             RunLifecycleController replayController = postRunStateController.CreateReplayLifecycleController(
                 worldGraph,
-                persistentWorldState,
-                resourceBalancesState,
-                persistentProgressionState);
+                persistentContext);
             postRunStateController = null;
             runLifecycleController = replayController;
             runLifecycleController.TryStartAutomaticFlow();
@@ -464,9 +456,7 @@ namespace Survivalon.Runtime
             return new RunLifecycleController(
                 placeholderState,
                 worldGraph,
-                persistentWorldState: persistentWorldState,
-                persistentProgressionState: persistentProgressionState,
-                resourceBalancesState: resourceBalancesState);
+                persistentContext: persistentContext);
         }
 
     }

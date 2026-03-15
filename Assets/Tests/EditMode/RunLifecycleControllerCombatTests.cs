@@ -96,8 +96,9 @@ namespace Survivalon.Tests.EditMode
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateCombatNodeState(),
                 worldGraph: BootstrapWorldTestData.CreateWorldGraph(),
-                persistentWorldState: worldState,
-                resourceBalancesState: resourceBalances);
+                persistentContext: new RunPersistentContext(
+                    persistentWorldState: worldState,
+                    resourceBalancesState: resourceBalances));
 
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
@@ -157,8 +158,9 @@ namespace Survivalon.Tests.EditMode
             ResourceBalancesState resourceBalances = new ResourceBalancesState();
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateBossCombatNodeState(),
-                persistentWorldState: worldState,
-                resourceBalancesState: resourceBalances);
+                persistentContext: new RunPersistentContext(
+                    persistentWorldState: worldState,
+                    resourceBalancesState: resourceBalances));
 
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
@@ -220,7 +222,8 @@ namespace Survivalon.Tests.EditMode
                 RunLifecycleControllerTestData.CreateCombatNodeState());
             RunLifecycleController upgradedController = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateCombatNodeState(),
-                persistentProgressionState: purchasedProgressionState);
+                persistentContext: new RunPersistentContext(
+                    persistentProgressionState: purchasedProgressionState));
 
             Assert.That(baselineController.TryStartAutomaticFlow(), Is.True);
             Assert.That(upgradedController.TryStartAutomaticFlow(), Is.True);

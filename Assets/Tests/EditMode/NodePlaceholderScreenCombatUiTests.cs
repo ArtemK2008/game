@@ -160,7 +160,7 @@ namespace Survivalon.Tests.EditMode
                     CreateCombatPlaceholderState(),
                     runResult => { },
                     runResult => { },
-                    worldState);
+                    new RunPersistentContext(persistentWorldState: worldState));
 
                 AdvanceToPostRun(hostObject);
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
@@ -196,7 +196,7 @@ namespace Survivalon.Tests.EditMode
                     CreateBossCombatPlaceholderState(),
                     runResult => { },
                     runResult => { },
-                    worldState);
+                    new RunPersistentContext(persistentWorldState: worldState));
 
                 AutoAdvanceCombat(hostObject, 64, 0.25f);
 

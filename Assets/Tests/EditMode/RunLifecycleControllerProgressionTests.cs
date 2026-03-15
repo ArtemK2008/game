@@ -11,7 +11,7 @@ namespace Survivalon.Tests.EditMode
             PersistentWorldState worldState = new PersistentWorldState();
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateCombatNodeState(),
-                persistentWorldState: worldState);
+                persistentContext: new RunPersistentContext(persistentWorldState: worldState));
 
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
 
@@ -40,8 +40,9 @@ namespace Survivalon.Tests.EditMode
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreatePushCombatNodeState(),
                 worldGraph,
-                persistentWorldState: worldState,
-                resourceBalancesState: resourceBalances);
+                persistentContext: new RunPersistentContext(
+                    persistentWorldState: worldState,
+                    resourceBalancesState: resourceBalances));
 
             Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
             pushNodeState.ApplyUnlockProgress(1);
@@ -79,7 +80,7 @@ namespace Survivalon.Tests.EditMode
             RunLifecycleController firstController = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreatePushCombatNodeState(),
                 worldGraph,
-                persistentWorldState: worldState);
+                persistentContext: new RunPersistentContext(persistentWorldState: worldState));
             RunLifecycleControllerTestData.RunToPostRun(firstController);
 
             int nodeStateCountAfterFirstClear = worldState.NodeStates.Count;
@@ -87,7 +88,7 @@ namespace Survivalon.Tests.EditMode
             RunLifecycleController replayController = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreatePushCombatNodeState(),
                 worldGraph,
-                persistentWorldState: worldState);
+                persistentContext: new RunPersistentContext(persistentWorldState: worldState));
             RunLifecycleControllerTestData.RunToPostRun(replayController);
 
             Assert.That(firstController.RunResult.DidUnlockRoute, Is.True);
@@ -103,7 +104,7 @@ namespace Survivalon.Tests.EditMode
             PersistentWorldState worldState = new PersistentWorldState();
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateBossCombatNodeState(),
-                persistentWorldState: worldState);
+                persistentContext: new RunPersistentContext(persistentWorldState: worldState));
 
             RunLifecycleControllerTestData.RunToPostRun(controller);
 
@@ -124,10 +125,10 @@ namespace Survivalon.Tests.EditMode
             PersistentWorldState worldState = new PersistentWorldState();
             RunLifecycleController firstController = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateBossCombatNodeState(),
-                persistentWorldState: worldState);
+                persistentContext: new RunPersistentContext(persistentWorldState: worldState));
             RunLifecycleController replayController = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateBossCombatNodeState(),
-                persistentWorldState: worldState);
+                persistentContext: new RunPersistentContext(persistentWorldState: worldState));
 
             RunLifecycleControllerTestData.RunToPostRun(firstController);
             RunLifecycleControllerTestData.RunToPostRun(replayController);
