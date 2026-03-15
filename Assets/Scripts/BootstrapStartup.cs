@@ -61,9 +61,7 @@ namespace Survivalon.Runtime
                 placeholderState,
                 HandleReturnToWorldRequested,
                 HandleStopSessionRequested,
-                gameState.WorldState,
-                gameState.ResourceBalances,
-                gameState.ProgressionState);
+                RunPersistentContext.FromGameState(gameState));
         }
 
         private void HandleNodeEntryRequested(NodeId nodeId)

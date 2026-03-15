@@ -25,9 +25,7 @@ namespace Survivalon.Runtime
 
         public RunLifecycleController CreateReplayLifecycleController(
             WorldGraph worldGraph = null,
-            PersistentWorldState persistentWorldState = null,
-            ResourceBalancesState resourceBalancesState = null,
-            PersistentProgressionState persistentProgressionState = null)
+            RunPersistentContext persistentContext = null)
         {
             if (!CanReplayNode)
             {
@@ -37,9 +35,7 @@ namespace Survivalon.Runtime
             return new RunLifecycleController(
                 nodeContext,
                 worldGraph,
-                persistentWorldState: persistentWorldState,
-                persistentProgressionState: persistentProgressionState,
-                resourceBalancesState: resourceBalancesState);
+                persistentContext: persistentContext);
         }
     }
 }
