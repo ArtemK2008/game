@@ -183,14 +183,14 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void BuildPostRunSummaryText_ShouldMatchExistingSummaryFormatting()
+        public void PostRunSummaryTextBuilder_ShouldMatchExistingSummaryFormatting()
         {
             RunResult runResult = CreateSucceededRunResult();
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 runResult);
 
-            string summaryText = NodePlaceholderScreenTextBuilder.BuildPostRunSummaryText(
+            string summaryText = PostRunSummaryTextBuilder.Build(
                 postRunStateController,
                 runResult);
 
@@ -199,7 +199,7 @@ namespace Survivalon.Tests.EditMode
                 "Node: region_001_node_004\n" +
                 "Resolution: Succeeded\n" +
                 "Rewards gained: None\n" +
-                "Progress changes: node +2 (2 / 3), persistent +0, route unlock Yes\n" +
+                "Progress changes: node +2 this run; tracked total 2 / 3; persistent +0; route unlock Yes\n" +
                 "Next actions:\n" +
                 "- Replay: Yes\n" +
                 "- Return to world: Yes\n" +
@@ -207,7 +207,7 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void BuildPostRunSummaryText_ShouldIncludeCurrencyAndMaterialRewardsWhenPresent()
+        public void PostRunSummaryTextBuilder_ShouldIncludeCurrencyAndMaterialRewardsWhenPresent()
         {
             RunResult runResult = new RunResult(
                 new NodeId("region_001_node_004"),
@@ -234,16 +234,16 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 runResult);
 
-            string summaryText = NodePlaceholderScreenTextBuilder.BuildPostRunSummaryText(
+            string summaryText = PostRunSummaryTextBuilder.Build(
                 postRunStateController,
                 runResult);
 
             Assert.That(summaryText, Does.Contain("Rewards gained: Soft currency x1, Region material x1"));
-            Assert.That(summaryText, Does.Contain("Progress changes: node +1 (1 / 3), persistent +0, route unlock No"));
+            Assert.That(summaryText, Does.Contain("Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock No"));
         }
 
         [Test]
-        public void BuildPostRunSummaryText_ShouldShowUntrackedProgressWhenThresholdIsZero()
+        public void PostRunSummaryTextBuilder_ShouldShowUntrackedProgressWhenThresholdIsZero()
         {
             RunResult runResult = new RunResult(
                 new NodeId("region_002_node_001"),
@@ -262,11 +262,11 @@ namespace Survivalon.Tests.EditMode
                 NodePlaceholderTestData.CreateServicePlaceholderState(),
                 runResult);
 
-            string summaryText = NodePlaceholderScreenTextBuilder.BuildPostRunSummaryText(
+            string summaryText = PostRunSummaryTextBuilder.Build(
                 postRunStateController,
                 runResult);
 
-            Assert.That(summaryText, Does.Contain("Progress changes: node not tracked, persistent +0, route unlock No"));
+            Assert.That(summaryText, Does.Contain("Progress changes: node not tracked; persistent +0; route unlock No"));
             Assert.That(summaryText, Does.Contain("Resolution: Failed"));
             Assert.That(summaryText, Does.Contain("- Stop: No"));
         }

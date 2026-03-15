@@ -83,12 +83,12 @@ namespace Survivalon.Tests.EditMode
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
                 AdvanceToPostRun(hostObject);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 (2 / 3), persistent +0, route unlock No"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 2 / 3; persistent +0; route unlock No"), Is.True);
 
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 (3 / 3), persistent +0, route unlock Yes"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
@@ -144,7 +144,7 @@ namespace Survivalon.Tests.EditMode
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 (3 / 3), persistent +0, route unlock No"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock No"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
@@ -200,7 +200,7 @@ namespace Survivalon.Tests.EditMode
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 (3 / 3), persistent +0, route unlock No"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock No"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
