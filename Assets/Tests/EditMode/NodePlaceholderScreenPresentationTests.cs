@@ -210,7 +210,7 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
-        public void BuildPostRunSummaryText_ShouldIncludeSoftCurrencyRewardsWhenPresent()
+        public void BuildPostRunSummaryText_ShouldIncludeCurrencyAndMaterialRewardsWhenPresent()
         {
             RunResult runResult = new RunResult(
                 new NodeId("region_001_node_004"),
@@ -220,7 +220,10 @@ namespace Survivalon.Tests.EditMode
                     {
                         new RunCurrencyReward(ResourceCategory.SoftCurrency, 1),
                     },
-                    System.Array.Empty<RunMaterialReward>()),
+                    new[]
+                    {
+                        new RunMaterialReward(ResourceCategory.RegionMaterial, 1),
+                    }),
                 1,
                 1,
                 3,
@@ -238,7 +241,7 @@ namespace Survivalon.Tests.EditMode
                 postRunStateController,
                 runResult);
 
-            Assert.That(summaryText, Does.Contain("Rewards: Soft currency x1"));
+            Assert.That(summaryText, Does.Contain("Rewards: Soft currency x1, Region material x1"));
         }
 
         [Test]
