@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 032b**.
+This summary reflects completed work through **Milestone 033**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -72,6 +72,13 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Re-entering a cleared node preserves its `Cleared` state and does not re-lock already unlocked connected nodes.
 - In the current MVP, cleared-node farming value remains minimal: the node stays replayable and low-friction, but no broader reward economy exists yet.
 
+### Reward payload model
+- Resolved runs now carry a structured `RunRewardPayload`.
+- The payload currently supports:
+  - currency reward entries
+  - material reward entries
+- Reward values and granting are still placeholder-level, so the current run flow uses an empty structured payload until later economy milestones implement actual reward generation and persistence.
+
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.
 - Movement is **not** part of the current MVP combat model.
@@ -80,12 +87,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Current unlock behavior is limited to direct connected-node unlock on clear; advanced branch and gate semantics are still deferred.
 - Broad farm access applies only to persistently `Cleared` nodes; uncleared nodes still follow the normal reachability rules.
 - Failed or incomplete combat runs do **not** currently grant node progress in the MVP, because node progress is still kill-driven and the single-enemy combat prototype has no failed partial-kill case.
-- Rewards and economy are still placeholder-level; runs currently produce minimal reward/result structure without a real reward pipeline.
+- Rewards and economy are still placeholder-level; the run result now has a structured reward payload model, but actual reward generation and granting are not implemented yet.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
-- Structured reward economy beyond placeholder reward payloads
+- Real reward generation and reward persistence
 - Real persistent progression sinks and upgrade spending
 - Expanded character/build systems beyond the current placeholders
 - Multi-entity combat, skills, advanced AI, and broader combat content

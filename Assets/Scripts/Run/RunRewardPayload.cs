@@ -5,23 +5,40 @@ namespace Survivalon.Runtime
 {
     public sealed class RunRewardPayload
     {
-        private static readonly RunRewardPayload EmptyInstance = new RunRewardPayload(Array.Empty<RunResourceReward>());
-        private readonly List<RunResourceReward> resourceRewards;
+        private static readonly RunRewardPayload EmptyInstance = new RunRewardPayload(
+            Array.Empty<RunCurrencyReward>(),
+            Array.Empty<RunMaterialReward>());
+        private readonly List<RunCurrencyReward> currencyRewards;
+        private readonly List<RunMaterialReward> materialRewards;
 
-        public RunRewardPayload(IEnumerable<RunResourceReward> resourceRewards)
+        public RunRewardPayload(
+            IEnumerable<RunCurrencyReward> currencyRewards,
+            IEnumerable<RunMaterialReward> materialRewards)
         {
-            if (resourceRewards == null)
+            if (currencyRewards == null)
             {
-                throw new ArgumentNullException(nameof(resourceRewards));
+                throw new ArgumentNullException(nameof(currencyRewards));
             }
 
-            this.resourceRewards = new List<RunResourceReward>(resourceRewards);
+            if (materialRewards == null)
+            {
+                throw new ArgumentNullException(nameof(materialRewards));
+            }
+
+            this.currencyRewards = new List<RunCurrencyReward>(currencyRewards);
+            this.materialRewards = new List<RunMaterialReward>(materialRewards);
         }
 
         public static RunRewardPayload Empty => EmptyInstance;
 
-        public IReadOnlyList<RunResourceReward> ResourceRewards => resourceRewards;
+        public IReadOnlyList<RunCurrencyReward> CurrencyRewards => currencyRewards;
 
-        public bool HasRewards => resourceRewards.Count > 0;
+        public IReadOnlyList<RunMaterialReward> MaterialRewards => materialRewards;
+
+        public bool HasCurrencyRewards => currencyRewards.Count > 0;
+
+        public bool HasMaterialRewards => materialRewards.Count > 0;
+
+        public bool HasRewards => HasCurrencyRewards || HasMaterialRewards;
     }
 }

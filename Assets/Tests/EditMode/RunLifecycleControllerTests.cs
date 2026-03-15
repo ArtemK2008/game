@@ -31,6 +31,8 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.RunResult.NodeId, Is.EqualTo(new NodeId("region_002_node_001")));
             Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(controller.RunResult.RewardPayload, Is.Not.Null);
+            Assert.That(controller.RunResult.RewardPayload.CurrencyRewards, Is.Empty);
+            Assert.That(controller.RunResult.RewardPayload.MaterialRewards, Is.Empty);
             Assert.That(controller.RunResult.RewardPayload.HasRewards, Is.False);
             Assert.That(controller.RunResult.NextActionContext.CanReplayNode, Is.True);
             Assert.That(controller.RunResult.NextActionContext.CanChooseAnotherNode, Is.True);
