@@ -173,7 +173,7 @@ namespace Survivalon.Tests.EditMode
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 (2 / 3), persistent +0, route unlock No"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 2 / 3; persistent +0; route unlock No"), Is.True);
             }
             finally
             {
@@ -202,7 +202,7 @@ namespace Survivalon.Tests.EditMode
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Failed"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +0 (0 / 3), persistent +0, route unlock No"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress changes: node +0 this run; tracked total 0 / 3; persistent +0; route unlock No"), Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
             }
             finally

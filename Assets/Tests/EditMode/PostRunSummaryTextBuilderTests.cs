@@ -21,7 +21,7 @@ namespace Survivalon.Tests.EditMode
                         new RunMaterialReward(ResourceCategory.RegionMaterial, 1),
                     }),
                 1,
-                1,
+                3,
                 3,
                 0,
                 true,
@@ -40,7 +40,7 @@ namespace Survivalon.Tests.EditMode
                 "Node: region_001_node_004\n" +
                 "Resolution: Succeeded\n" +
                 "Rewards gained: Soft currency x1, Region material x1\n" +
-                "Progress changes: node +1 (1 / 3), persistent +0, route unlock Yes\n" +
+                "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes\n" +
                 "Next actions:\n" +
                 "- Replay: Yes\n" +
                 "- Return to world: Yes\n" +
@@ -70,8 +70,33 @@ namespace Survivalon.Tests.EditMode
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
             Assert.That(summaryText, Does.Contain("Rewards gained: None"));
-            Assert.That(summaryText, Does.Contain("Progress changes: node not tracked, persistent +0, route unlock No"));
+            Assert.That(summaryText, Does.Contain("Progress changes: node not tracked; persistent +0; route unlock No"));
             Assert.That(summaryText, Does.Contain("- Stop: No"));
+        }
+
+        [Test]
+        public void ShouldDistinguishNodeProgressGainedThisRunFromTrackedTotal()
+        {
+            RunResult runResult = new RunResult(
+                new NodeId("region_001_node_004"),
+                RunResolutionState.Succeeded,
+                RunRewardPayload.Empty,
+                1,
+                2,
+                3,
+                0,
+                false,
+                new RunNextActionContext(
+                    canReplayNode: true,
+                    canChooseAnotherNode: true,
+                    canStopSession: true));
+            PostRunStateController postRunStateController = new PostRunStateController(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                runResult);
+
+            string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
+
+            Assert.That(summaryText, Does.Contain("Progress changes: node +1 this run; tracked total 2 / 3; persistent +0; route unlock No"));
         }
 
         [Test]

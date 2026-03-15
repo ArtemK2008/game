@@ -67,10 +67,5 @@ namespace Survivalon.Runtime
                     throw new InvalidOperationException($"Unknown run lifecycle state '{lifecycleState}'.");
             }
         }
-
-        public static string BuildPostRunSummaryText(PostRunStateController postRunStateController, RunResult runResult)
-        {
-            return PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
-        }
     }
 }

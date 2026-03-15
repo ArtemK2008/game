@@ -450,7 +450,7 @@ namespace Survivalon.Runtime
                 return;
             }
 
-            postRunSummaryText.text = NodePlaceholderScreenTextBuilder.BuildPostRunSummaryText(
+            postRunSummaryText.text = PostRunSummaryTextBuilder.Build(
                 postRunStateController,
                 runLifecycleController.RunResult);
         }

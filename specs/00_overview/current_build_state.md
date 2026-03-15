@@ -95,7 +95,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
 - Reward output is grouped into one readable reward line rather than a noisy detailed breakdown.
-- Progress changes are grouped into one readable line that covers node progress delta, tracked total when applicable, persistent progression delta, and route-unlock result.
+- Progress changes are grouped into one readable line that distinguishes node progress gained this run from the current tracked total, while still surfacing persistent progression delta and route-unlock result.
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.

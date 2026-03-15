@@ -64,12 +64,12 @@ namespace Survivalon.Runtime
             }
 
             string nodeProgressSummary = runResult.HasTrackedNodeProgress
-                ? $"node +{runResult.NodeProgressDelta} ({runResult.NodeProgressValue} / {runResult.NodeProgressThreshold})"
+                ? $"node +{runResult.NodeProgressDelta} this run; tracked total {runResult.NodeProgressValue} / {runResult.NodeProgressThreshold}"
                 : "node not tracked";
 
             return
-                $"{nodeProgressSummary}, " +
-                $"persistent +{runResult.PersistentProgressionDelta}, " +
+                $"{nodeProgressSummary}; " +
+                $"persistent +{runResult.PersistentProgressionDelta}; " +
                 $"route unlock {FormatYesNo(runResult.DidUnlockRoute)}";
         }
 

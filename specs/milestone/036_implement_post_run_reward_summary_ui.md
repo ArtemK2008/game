@@ -8,18 +8,19 @@
   - next available actions
 - Reward presentation remains aggregated and readable, showing compact combined reward output instead of a noisy breakdown.
 - Progress presentation now stays compact while still surfacing:
-  - node progress delta
+  - node progress gained this run
   - tracked node progress total when applicable
   - persistent progression delta
   - route unlock result
-- Extracted post-run summary formatting into `PostRunSummaryTextBuilder` so post-run result presentation has one clear owner instead of remaining mixed into the broader node-screen text builder.
+- Post-run summary formatting now lives directly in `PostRunSummaryTextBuilder`; the temporary pass-through from the broader node-screen text builder was removed to keep ownership clearer.
 
 ## Tests
 - Added `PostRunSummaryTextBuilderTests` to verify:
   - aggregated reward/progress formatting for tracked rewarded runs
+  - logically consistent tracked-progress plus route-unlock formatting data
   - readable fallback output for empty rewards and untracked node progress
   - null guard behavior
-- Updated `NodePlaceholderScreenPresentationTests` to verify the node screen still surfaces the grouped reward/progress summary through its existing UI text builder path.
+- Updated `NodePlaceholderScreenPresentationTests` to verify the grouped reward/progress summary through `PostRunSummaryTextBuilder` directly.
 - Updated `BootstrapStartupCombatScreenFlowTests` to verify the real post-run screen now shows the grouped aggregated reward/progress summary after a combat run.
 
 ## Intentionally Left Out
