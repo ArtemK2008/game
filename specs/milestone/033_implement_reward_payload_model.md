@@ -5,6 +5,8 @@
 - Added explicit reward entry types for:
   - currency rewards
   - material rewards
+- Kept the structured payload read-only after construction by copying input collections into internal read-only storage.
+- Centralized reward-category validation in explicit reward-category guard methods so currency/material constraints stay readable and local to the reward payload area.
 - Kept the current run result flow wired through the structured reward payload model.
 - Kept actual reward assignment placeholder-level for now:
   - resolved runs still use `RunRewardPayload.Empty`
