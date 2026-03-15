@@ -180,7 +180,8 @@ namespace Survivalon.Runtime
             RunRewardPayload rewardPayload = runRewardResolutionService.Resolve(
                 nodeContext,
                 resolutionState,
-                worldGraph);
+                worldGraph,
+                progressResolution);
 
             if (resourceBalancesState != null)
             {

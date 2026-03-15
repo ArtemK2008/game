@@ -16,12 +16,27 @@ namespace Survivalon.Runtime
                 throw new ArgumentNullException(nameof(rewardPayload));
             }
 
-            foreach (RunCurrencyReward currencyReward in rewardPayload.CurrencyRewards)
+            GrantCurrencyRewards(resourceBalances, rewardPayload.CurrencyRewards);
+            GrantMaterialRewards(resourceBalances, rewardPayload.MaterialRewards);
+            GrantCurrencyRewards(resourceBalances, rewardPayload.MilestoneCurrencyRewards);
+            GrantMaterialRewards(resourceBalances, rewardPayload.MilestoneMaterialRewards);
+        }
+
+        private static void GrantCurrencyRewards(
+            ResourceBalancesState resourceBalances,
+            System.Collections.Generic.IEnumerable<RunCurrencyReward> currencyRewards)
+        {
+            foreach (RunCurrencyReward currencyReward in currencyRewards)
             {
                 resourceBalances.Add(currencyReward.ResourceCategory, currencyReward.Amount);
             }
+        }
 
-            foreach (RunMaterialReward materialReward in rewardPayload.MaterialRewards)
+        private static void GrantMaterialRewards(
+            ResourceBalancesState resourceBalances,
+            System.Collections.Generic.IEnumerable<RunMaterialReward> materialRewards)
+        {
+            foreach (RunMaterialReward materialReward in materialRewards)
             {
                 resourceBalances.Add(materialReward.ResourceCategory, materialReward.Amount);
             }

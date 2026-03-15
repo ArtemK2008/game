@@ -36,10 +36,12 @@ namespace Survivalon.Tests.EditMode
         {
             WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
             PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            ResourceBalancesState resourceBalances = new ResourceBalancesState();
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreatePushCombatNodeState(),
                 worldGraph,
-                persistentWorldState: worldState);
+                persistentWorldState: worldState,
+                resourceBalancesState: resourceBalances);
 
             Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
             pushNodeState.ApplyUnlockProgress(1);
@@ -55,11 +57,14 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
             Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(controller.RunResult.DidUnlockRoute, Is.True);
+            Assert.That(controller.RunResult.RewardPayload.MilestoneMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.MilestoneMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
             Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out pushNodeState), Is.True);
             Assert.That(pushNodeState.State, Is.EqualTo(NodeState.Cleared));
             Assert.That(pushNodeState.UnlockProgress, Is.EqualTo(3));
             Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState gateNodeState), Is.True);
             Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(1));
         }
 
         [Test]

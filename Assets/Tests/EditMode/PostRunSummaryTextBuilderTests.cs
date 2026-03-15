@@ -19,6 +19,11 @@ namespace Survivalon.Tests.EditMode
                     new[]
                     {
                         new RunMaterialReward(ResourceCategory.RegionMaterial, 1),
+                    },
+                    System.Array.Empty<RunCurrencyReward>(),
+                    new[]
+                    {
+                        new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
                     }),
                 1,
                 3,
@@ -40,6 +45,7 @@ namespace Survivalon.Tests.EditMode
                 "Node: region_001_node_004\n" +
                 "Resolution: Succeeded\n" +
                 "Rewards gained: Soft currency x1, Region material x1\n" +
+                "Milestone rewards: Persistent progression material x1\n" +
                 "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes\n" +
                 "Next actions:\n" +
                 "- Replay: Yes\n" +
@@ -97,6 +103,7 @@ namespace Survivalon.Tests.EditMode
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
             Assert.That(summaryText, Does.Contain("Progress changes: node +1 this run; tracked total 2 / 3; persistent +0; route unlock No"));
+            Assert.That(summaryText, Does.Not.Contain("Milestone rewards:"));
         }
 
         [Test]

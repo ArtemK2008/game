@@ -117,11 +117,14 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.RunResult.RewardPayload.MaterialRewards, Has.Count.EqualTo(1));
             Assert.That(controller.RunResult.RewardPayload.MaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
             Assert.That(controller.RunResult.RewardPayload.MaterialRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.MilestoneCurrencyRewards, Is.Empty);
+            Assert.That(controller.RunResult.RewardPayload.MilestoneMaterialRewards, Is.Empty);
             Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
             Assert.That(resourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
             Assert.That(resourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(1));
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(0));
         }
 
         [Test]

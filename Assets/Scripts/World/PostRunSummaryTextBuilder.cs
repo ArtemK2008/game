@@ -22,6 +22,7 @@ namespace Survivalon.Runtime
                 $"Node: {runResult.NodeId.Value}\n" +
                 $"Resolution: {runResult.ResolutionState}\n" +
                 $"Rewards gained: {BuildRewardSummary(runResult.RewardPayload)}\n" +
+                BuildMilestoneRewardLine(runResult.RewardPayload) +
                 $"Progress changes: {BuildProgressSummary(runResult)}\n" +
                 "Next actions:\n" +
                 $"- Replay: {FormatYesNo(postRunStateController.CanReplayNode)}\n" +
@@ -36,19 +37,41 @@ namespace Survivalon.Runtime
                 throw new ArgumentNullException(nameof(rewardPayload));
             }
 
-            if (!rewardPayload.HasRewards)
+            if (!rewardPayload.HasOrdinaryRewards)
             {
                 return "None";
             }
 
+            return BuildRewardListSummary(rewardPayload.CurrencyRewards, rewardPayload.MaterialRewards);
+        }
+
+        private static string BuildMilestoneRewardLine(RunRewardPayload rewardPayload)
+        {
+            if (rewardPayload == null)
+            {
+                throw new ArgumentNullException(nameof(rewardPayload));
+            }
+
+            if (!rewardPayload.HasMilestoneRewards)
+            {
+                return string.Empty;
+            }
+
+            return $"Milestone rewards: {BuildRewardListSummary(rewardPayload.MilestoneCurrencyRewards, rewardPayload.MilestoneMaterialRewards)}\n";
+        }
+
+        private static string BuildRewardListSummary(
+            IReadOnlyList<RunCurrencyReward> currencyRewards,
+            IReadOnlyList<RunMaterialReward> materialRewards)
+        {
             List<string> rewardSummaries = new List<string>();
 
-            foreach (RunCurrencyReward currencyReward in rewardPayload.CurrencyRewards)
+            foreach (RunCurrencyReward currencyReward in currencyRewards)
             {
                 rewardSummaries.Add($"{FormatResourceCategory(currencyReward.ResourceCategory)} x{currencyReward.Amount}");
             }
 
-            foreach (RunMaterialReward materialReward in rewardPayload.MaterialRewards)
+            foreach (RunMaterialReward materialReward in materialRewards)
             {
                 rewardSummaries.Add($"{FormatResourceCategory(materialReward.ResourceCategory)} x{materialReward.Amount}");
             }
