@@ -19,17 +19,41 @@ namespace Survivalon.Runtime
             {
                 new RunMaterialReward(ResourceCategory.RegionMaterial, 1),
             });
+        private static readonly RunMaterialReward[] SuccessfulClearMilestoneMaterialRewards =
+        {
+            new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
+        };
 
         public RunRewardPayload Resolve(
             NodePlaceholderState nodeContext,
             RunResolutionState resolutionState,
-            WorldGraph worldGraph = null)
+            WorldGraph worldGraph = null,
+            RunProgressResolution? progressResolution = null)
         {
             if (nodeContext == null)
             {
                 throw new ArgumentNullException(nameof(nodeContext));
             }
 
+            RunRewardPayload ordinaryRewards = ResolveOrdinaryRewards(nodeContext, resolutionState, worldGraph);
+
+            if (!ShouldGrantMilestoneRewards(progressResolution))
+            {
+                return ordinaryRewards;
+            }
+
+            return new RunRewardPayload(
+                ordinaryRewards.CurrencyRewards,
+                ordinaryRewards.MaterialRewards,
+                Array.Empty<RunCurrencyReward>(),
+                SuccessfulClearMilestoneMaterialRewards);
+        }
+
+        private static RunRewardPayload ResolveOrdinaryRewards(
+            NodePlaceholderState nodeContext,
+            RunResolutionState resolutionState,
+            WorldGraph worldGraph)
+        {
             if (!ShouldGrantBaselineCombatRewards(nodeContext, resolutionState))
             {
                 return RunRewardPayload.Empty;
@@ -65,6 +89,12 @@ namespace Survivalon.Runtime
             }
 
             return false;
+        }
+
+        private static bool ShouldGrantMilestoneRewards(RunProgressResolution? progressResolution)
+        {
+            return progressResolution.HasValue &&
+                progressResolution.Value.NodeProgressUpdate.DidReachClearThreshold;
         }
     }
 }

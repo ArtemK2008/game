@@ -40,6 +40,25 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldApplyMilestoneMaterialRewardToPersistentBalances()
+        {
+            RunRewardGrantService service = new RunRewardGrantService();
+            ResourceBalancesState resourceBalances = new ResourceBalancesState();
+            RunRewardPayload rewardPayload = new RunRewardPayload(
+                System.Array.Empty<RunCurrencyReward>(),
+                System.Array.Empty<RunMaterialReward>(),
+                System.Array.Empty<RunCurrencyReward>(),
+                new[]
+                {
+                    new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
+                });
+
+            service.Grant(resourceBalances, rewardPayload);
+
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(1));
+        }
+
+        [Test]
         public void ShouldLeaveBalancesUnchangedWhenRewardPayloadIsEmpty()
         {
             RunRewardGrantService service = new RunRewardGrantService();
@@ -48,6 +67,7 @@ namespace Survivalon.Tests.EditMode
             service.Grant(resourceBalances, RunRewardPayload.Empty);
 
             Assert.That(resourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(0));
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(0));
         }
     }
 }

@@ -46,6 +46,9 @@ namespace Survivalon.Tests.EditMode
             Assert.That(runResult.RewardPayload, Is.SameAs(RunRewardPayload.Empty));
             Assert.That(runResult.RewardPayload.CurrencyRewards, Is.Empty);
             Assert.That(runResult.RewardPayload.MaterialRewards, Is.Empty);
+            Assert.That(runResult.RewardPayload.MilestoneCurrencyRewards, Is.Empty);
+            Assert.That(runResult.RewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(runResult.RewardPayload.HasMilestoneRewards, Is.False);
             Assert.That(runResult.RewardPayload.HasRewards, Is.False);
             Assert.That(runResult.NextActionContext.CanReplayNode, Is.True);
             Assert.That(runResult.NextActionContext.CanChooseAnotherNode, Is.True);

@@ -88,6 +88,7 @@ namespace Survivalon.Tests.EditMode
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
+                Assert.That(ContainsText(hostObject, "Milestone rewards: Persistent progression material x1"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
@@ -97,6 +98,7 @@ namespace Survivalon.Tests.EditMode
                 Assert.That(pushNodeState.UnlockProgress, Is.EqualTo(3));
                 Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState gateNodeState), Is.True);
                 Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Available));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(1));
 
                 Button gateNodeButton = FindButton(hostObject, "region_001_node_003_Button");
                 Text gateNodeLabel = gateNodeButton.GetComponentInChildren<Text>(true);

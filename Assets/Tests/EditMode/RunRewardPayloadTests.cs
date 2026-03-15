@@ -22,6 +22,8 @@ namespace Survivalon.Tests.EditMode
             Assert.That(rewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(12));
             Assert.That(rewardPayload.MaterialRewards, Is.Empty);
             Assert.That(rewardPayload.HasCurrencyRewards, Is.True);
+            Assert.That(rewardPayload.HasOrdinaryRewards, Is.True);
+            Assert.That(rewardPayload.HasMilestoneRewards, Is.False);
             Assert.That(rewardPayload.HasRewards, Is.True);
         }
 
@@ -33,16 +35,38 @@ namespace Survivalon.Tests.EditMode
                 new[]
                 {
                     new RunMaterialReward(ResourceCategory.RegionMaterial, 3),
+                });
+
+            Assert.That(rewardPayload.CurrencyRewards, Is.Empty);
+            Assert.That(rewardPayload.MaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.MaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
+            Assert.That(rewardPayload.MaterialRewards[0].Amount, Is.EqualTo(3));
+            Assert.That(rewardPayload.HasMaterialRewards, Is.True);
+            Assert.That(rewardPayload.HasOrdinaryRewards, Is.True);
+            Assert.That(rewardPayload.HasMilestoneRewards, Is.False);
+            Assert.That(rewardPayload.HasRewards, Is.True);
+        }
+
+        [Test]
+        public void ShouldHoldMilestoneMaterialRewards()
+        {
+            RunRewardPayload rewardPayload = new RunRewardPayload(
+                Array.Empty<RunCurrencyReward>(),
+                Array.Empty<RunMaterialReward>(),
+                Array.Empty<RunCurrencyReward>(),
+                new[]
+                {
                     new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
                 });
 
             Assert.That(rewardPayload.CurrencyRewards, Is.Empty);
-            Assert.That(rewardPayload.MaterialRewards, Has.Count.EqualTo(2));
-            Assert.That(rewardPayload.MaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
-            Assert.That(rewardPayload.MaterialRewards[0].Amount, Is.EqualTo(3));
-            Assert.That(rewardPayload.MaterialRewards[1].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
-            Assert.That(rewardPayload.MaterialRewards[1].Amount, Is.EqualTo(1));
-            Assert.That(rewardPayload.HasMaterialRewards, Is.True);
+            Assert.That(rewardPayload.MaterialRewards, Is.Empty);
+            Assert.That(rewardPayload.MilestoneCurrencyRewards, Is.Empty);
+            Assert.That(rewardPayload.MilestoneMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.MilestoneMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(rewardPayload.MilestoneMaterialRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(rewardPayload.HasOrdinaryRewards, Is.False);
+            Assert.That(rewardPayload.HasMilestoneRewards, Is.True);
             Assert.That(rewardPayload.HasRewards, Is.True);
         }
 
@@ -57,6 +81,11 @@ namespace Survivalon.Tests.EditMode
                 new[]
                 {
                     new RunMaterialReward(ResourceCategory.RegionMaterial, 4),
+                },
+                Array.Empty<RunCurrencyReward>(),
+                new[]
+                {
+                    new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
                 });
 
             RunResult runResult = new RunResult(
@@ -75,8 +104,10 @@ namespace Survivalon.Tests.EditMode
 
             Assert.That(runResult.RewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
             Assert.That(runResult.RewardPayload.MaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(runResult.RewardPayload.MilestoneMaterialRewards, Has.Count.EqualTo(1));
             Assert.That(runResult.RewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(18));
             Assert.That(runResult.RewardPayload.MaterialRewards[0].Amount, Is.EqualTo(4));
+            Assert.That(runResult.RewardPayload.MilestoneMaterialRewards[0].Amount, Is.EqualTo(1));
         }
 
         [Test]
@@ -84,19 +115,28 @@ namespace Survivalon.Tests.EditMode
         {
             RunCurrencyReward initialCurrencyReward = new RunCurrencyReward(ResourceCategory.SoftCurrency, 12);
             RunMaterialReward initialMaterialReward = new RunMaterialReward(ResourceCategory.RegionMaterial, 3);
+            RunMaterialReward initialMilestoneMaterialReward = new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1);
             RunRewardPayload rewardPayload;
             List<RunCurrencyReward> currencyRewards = new List<RunCurrencyReward> { initialCurrencyReward };
             List<RunMaterialReward> materialRewards = new List<RunMaterialReward> { initialMaterialReward };
+            List<RunMaterialReward> milestoneMaterialRewards = new List<RunMaterialReward> { initialMilestoneMaterialReward };
 
-            rewardPayload = new RunRewardPayload(currencyRewards, materialRewards);
+            rewardPayload = new RunRewardPayload(
+                currencyRewards,
+                materialRewards,
+                Array.Empty<RunCurrencyReward>(),
+                milestoneMaterialRewards);
 
             currencyRewards.Add(new RunCurrencyReward(ResourceCategory.SoftCurrency, 99));
             materialRewards.Clear();
+            milestoneMaterialRewards.Clear();
 
             Assert.That(rewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
             Assert.That(rewardPayload.CurrencyRewards[0], Is.EqualTo(initialCurrencyReward));
             Assert.That(rewardPayload.MaterialRewards, Has.Count.EqualTo(1));
             Assert.That(rewardPayload.MaterialRewards[0], Is.EqualTo(initialMaterialReward));
+            Assert.That(rewardPayload.MilestoneMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.MilestoneMaterialRewards[0], Is.EqualTo(initialMilestoneMaterialReward));
         }
 
         [Test]
@@ -110,16 +150,25 @@ namespace Survivalon.Tests.EditMode
                 new[]
                 {
                     new RunMaterialReward(ResourceCategory.RegionMaterial, 3),
+                },
+                Array.Empty<RunCurrencyReward>(),
+                new[]
+                {
+                    new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
                 });
 
             IList<RunCurrencyReward> currencyRewards = (IList<RunCurrencyReward>)rewardPayload.CurrencyRewards;
             IList<RunMaterialReward> materialRewards = (IList<RunMaterialReward>)rewardPayload.MaterialRewards;
+            IList<RunMaterialReward> milestoneMaterialRewards = (IList<RunMaterialReward>)rewardPayload.MilestoneMaterialRewards;
 
             Assert.That(
                 () => currencyRewards.Add(new RunCurrencyReward(ResourceCategory.SoftCurrency, 1)),
                 Throws.TypeOf<NotSupportedException>());
             Assert.That(
                 () => materialRewards.Add(new RunMaterialReward(ResourceCategory.RegionMaterial, 1)),
+                Throws.TypeOf<NotSupportedException>());
+            Assert.That(
+                () => milestoneMaterialRewards.Add(new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1)),
                 Throws.TypeOf<NotSupportedException>());
         }
 
@@ -137,6 +186,30 @@ namespace Survivalon.Tests.EditMode
             Assert.That(
                 () => new RunRewardPayload(Array.Empty<RunCurrencyReward>(), null),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("materialRewards"));
+        }
+
+        [Test]
+        public void ShouldRejectMissingMilestoneCurrencyRewardCollection()
+        {
+            Assert.That(
+                () => new RunRewardPayload(
+                    Array.Empty<RunCurrencyReward>(),
+                    Array.Empty<RunMaterialReward>(),
+                    null,
+                    Array.Empty<RunMaterialReward>()),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("milestoneCurrencyRewards"));
+        }
+
+        [Test]
+        public void ShouldRejectMissingMilestoneMaterialRewardCollection()
+        {
+            Assert.That(
+                () => new RunRewardPayload(
+                    Array.Empty<RunCurrencyReward>(),
+                    Array.Empty<RunMaterialReward>(),
+                    Array.Empty<RunCurrencyReward>(),
+                    null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("milestoneMaterialRewards"));
         }
 
         [Test]

@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 036**.
+This summary reflects completed work through **Milestone 037**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -92,9 +92,15 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Granted region material is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
 - The current post-run summary aggregates the region-material reward alongside soft currency when both are granted.
 
+### Ordinary vs milestone rewards
+- Ordinary run rewards currently remain small and repeatable: successful combat runs grant soft currency, and standard combat runs in region-material regions also grant region material.
+- A tracked node reaching its clear threshold now grants a distinct milestone reward using `ResourceCategory.PersistentProgressionMaterial`.
+- That milestone reward is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
+
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
-- Reward output is grouped into one readable reward line rather than a noisy detailed breakdown.
+- Ordinary reward output stays grouped into one readable reward line rather than a noisy detailed breakdown.
+- Milestone rewards are shown on a separate compact line when present, so clear-threshold runs feel distinct without expanding into a detailed reward panel.
 - Progress changes are grouped into one readable line that distinguishes node progress gained this run from the current tracked total, while still surfacing persistent progression delta and route-unlock result.
 
 ## Important current rules / constraints
@@ -105,12 +111,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Current unlock behavior is limited to direct connected-node unlock on clear; advanced branch and gate semantics are still deferred.
 - Broad farm access applies only to persistently `Cleared` nodes; uncleared nodes still follow the normal reachability rules.
 - Failed or incomplete combat runs do **not** currently grant node progress in the MVP, because node progress is still kill-driven and the single-enemy combat prototype has no failed partial-kill case.
-- Rewards and economy are still early and placeholder-level beyond the new soft-currency and one region-material paths; richer reward differentiation, persistent progression material rewards, and real progression sinks are not implemented yet.
+- Rewards and economy are still early and placeholder-level beyond the new soft-currency, one region-material path, and one clear-threshold milestone reward; real progression sinks and broader reward differentiation are not implemented yet.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
-- Real reward generation and reward persistence beyond the current soft-currency and one region-material paths
+- Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
 - Real persistent progression sinks and upgrade spending
 - Expanded character/build systems beyond the current placeholders
 - Multi-entity combat, skills, advanced AI, and broader combat content
