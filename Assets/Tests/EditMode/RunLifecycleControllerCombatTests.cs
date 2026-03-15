@@ -95,6 +95,7 @@ namespace Survivalon.Tests.EditMode
             ResourceBalancesState resourceBalances = new ResourceBalancesState();
             RunLifecycleController controller = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateCombatNodeState(),
+                worldGraph: BootstrapWorldTestData.CreateWorldGraph(),
                 persistentWorldState: worldState,
                 resourceBalancesState: resourceBalances);
 
@@ -113,10 +114,14 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.RunResult.RewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
             Assert.That(controller.RunResult.RewardPayload.CurrencyRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.SoftCurrency));
             Assert.That(controller.RunResult.RewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.MaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.MaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
+            Assert.That(controller.RunResult.RewardPayload.MaterialRewards[0].Amount, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
             Assert.That(resourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(1));
         }
 
         [Test]

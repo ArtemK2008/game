@@ -179,7 +179,8 @@ namespace Survivalon.Runtime
                 worldGraph);
             RunRewardPayload rewardPayload = runRewardResolutionService.Resolve(
                 nodeContext,
-                resolutionState);
+                resolutionState,
+                worldGraph);
 
             if (resourceBalancesState != null)
             {

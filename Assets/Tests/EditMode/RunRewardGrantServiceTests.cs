@@ -23,6 +23,23 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldApplyMaterialRewardToPersistentBalances()
+        {
+            RunRewardGrantService service = new RunRewardGrantService();
+            ResourceBalancesState resourceBalances = new ResourceBalancesState();
+            RunRewardPayload rewardPayload = new RunRewardPayload(
+                System.Array.Empty<RunCurrencyReward>(),
+                new[]
+                {
+                    new RunMaterialReward(ResourceCategory.RegionMaterial, 2),
+                });
+
+            service.Grant(resourceBalances, rewardPayload);
+
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
+        }
+
+        [Test]
         public void ShouldLeaveBalancesUnchangedWhenRewardPayloadIsEmpty()
         {
             RunRewardGrantService service = new RunRewardGrantService();
