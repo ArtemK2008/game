@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 041**.
+This summary reflects completed work through **Milestone 042**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -107,6 +107,13 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The new farm-oriented yield upgrade helps repeatable farming more directly by increasing ordinary region-material rewards on standard region-material combat clears.
 - Dedicated service-hub or town-style runtime access to this sink is not implemented yet; the sink currently exists through persistent domain/state logic and combat integration rather than through a new UI flow.
 
+### Persistent character baseline
+- The build now has one explicit playable character stored in persistent game state: `character_vanguard` / `Vanguard`.
+- Bootstrap fallback state creation and persisted-state startup normalization both ensure this default playable character exists, is unlocked, selectable, and active.
+- Run entry now resolves the current persistent playable character into the player-side combat baseline instead of relying only on an anonymous hardcoded player concept.
+- The current player combat identity and base stats come from that character-backed baseline, and existing account-wide progression effects continue to layer on top of it before combat begins.
+- There is no character selection screen yet, and no second playable character exists yet.
+
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
 - Ordinary reward output stays grouped into one readable reward line rather than a noisy detailed breakdown.
@@ -129,7 +136,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
 - Additional progression sinks and dedicated sink access through the service/town layer
-- Expanded character/build systems beyond the current placeholders
+- Expanded multi-character/build systems beyond the current single-character baseline
 - Multi-entity combat, skills, advanced AI, and broader combat content
 
 ## Known temporary placeholders / technical shortcuts

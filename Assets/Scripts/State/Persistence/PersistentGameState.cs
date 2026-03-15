@@ -36,5 +36,40 @@ namespace Survivalon.Runtime
         public IReadOnlyList<string> OwnedGearIds => ownedGearIds;
 
         public PersistentSafeResumeState SafeResumeState => safeResumeState;
+
+        public void AddCharacterState(PersistentCharacterState characterState)
+        {
+            if (characterState == null)
+            {
+                throw new ArgumentNullException(nameof(characterState));
+            }
+
+            if (TryGetCharacterState(characterState.CharacterId, out _))
+            {
+                throw new InvalidOperationException($"Character state '{characterState.CharacterId}' already exists.");
+            }
+
+            characterStates.Add(characterState);
+        }
+
+        public bool TryGetCharacterState(string characterId, out PersistentCharacterState characterState)
+        {
+            if (string.IsNullOrWhiteSpace(characterId))
+            {
+                throw new ArgumentException("Character id cannot be null or whitespace.", nameof(characterId));
+            }
+
+            for (int index = 0; index < characterStates.Count; index++)
+            {
+                if (characterStates[index].CharacterId == characterId)
+                {
+                    characterState = characterStates[index];
+                    return true;
+                }
+            }
+
+            characterState = null;
+            return false;
+        }
     }
 }

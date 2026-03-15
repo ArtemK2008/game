@@ -198,6 +198,7 @@ namespace Survivalon.Runtime
         {
             return combatShellContextFactory.Create(
                 nodeContext,
+                persistentContext?.PlayableCharacter,
                 ResolveAccountWideProgressionEffects());
         }
 

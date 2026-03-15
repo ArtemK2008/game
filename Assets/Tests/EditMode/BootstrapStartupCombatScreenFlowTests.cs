@@ -19,7 +19,7 @@ namespace Survivalon.Tests.EditMode
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
 
                 Assert.That(ContainsText(hostObject, "Combat Shell: region_001_node_004"), Is.True);
-                Assert.That(ContainsText(hostObject, "Player Unit"), Is.True);
+                Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
                 Assert.That(FindButton(hostObject, "AdvanceRunLifecycleButton").interactable, Is.False);
@@ -105,11 +105,13 @@ namespace Survivalon.Tests.EditMode
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
 
+                Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 130 / 130 | ATK: 14"), Is.True);
 
                 AdvanceToPostRun(hostObject);
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
 
+                Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 130 / 130 | ATK: 14"), Is.True);
             }
             finally

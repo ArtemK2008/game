@@ -17,7 +17,7 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.HasCombatEncounterState, Is.True);
             Assert.That(controller.CombatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
             Assert.That(controller.CombatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
-            Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Player Unit"));
+            Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(controller.CombatContext.PlayerEntity.Side, Is.EqualTo(CombatSide.Player));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
@@ -246,6 +246,51 @@ namespace Survivalon.Tests.EditMode
             Assert.That(
                 upgradedController.CombatEncounterState.PlayerEntity.CurrentHealth,
                 Is.GreaterThan(baselineController.CombatEncounterState.PlayerEntity.CurrentHealth));
+        }
+
+        [Test]
+        public void ShouldUsePersistentPlayableCharacterForCombatEntryWhenRunPersistentContextIsBuiltFromGameState()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: persistentContext);
+
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+
+            Assert.That(persistentContext.PlayableCharacter, Is.Not.Null);
+            Assert.That(persistentContext.PlayableCharacter.CharacterId, Is.EqualTo("character_vanguard"));
+            Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+        }
+
+        [Test]
+        public void ShouldApplyAccountWideProgressionEffectsOnTopOfPersistentPlayableCharacterBaseline()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
+            gameState.ResourceBalances.Add(
+                ResourceCategory.PersistentProgressionMaterial,
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.CombatBaselineProject).CostAmount);
+            Assert.That(
+                boardService.TryPurchase(gameState, AccountWideUpgradeId.CombatBaselineProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+
+            RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: persistentContext);
+
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+
+            Assert.That(persistentContext.PlayableCharacter.CharacterId, Is.EqualTo("character_vanguard"));
+            Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(130f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
         }
 
         [Test]

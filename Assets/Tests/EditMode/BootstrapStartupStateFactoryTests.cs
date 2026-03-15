@@ -23,6 +23,11 @@ namespace Survivalon.Tests.EditMode
             Assert.That(startupState.GameState.WorldState.HasCurrentNode, Is.True);
             Assert.That(startupState.SessionContext.HasRecentNode, Is.True);
             Assert.That(startupState.SessionContext.RecentNodeId, Is.EqualTo(startupState.GameState.WorldState.CurrentNodeId));
+            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(1));
+            Assert.That(startupState.GameState.CharacterStates[0].CharacterId, Is.EqualTo("character_vanguard"));
+            Assert.That(startupState.GameState.CharacterStates[0].IsUnlocked, Is.True);
+            Assert.That(startupState.GameState.CharacterStates[0].IsSelectable, Is.True);
+            Assert.That(startupState.GameState.CharacterStates[0].IsActive, Is.True);
         }
 
         [Test]
@@ -44,6 +49,9 @@ namespace Survivalon.Tests.EditMode
             Assert.That(startupState.EntryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
             Assert.That(startupState.SessionContext.HasRecentNode, Is.True);
             Assert.That(startupState.SessionContext.RecentNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(1));
+            Assert.That(startupState.GameState.CharacterStates[0].CharacterId, Is.EqualTo("character_vanguard"));
+            Assert.That(startupState.GameState.CharacterStates[0].IsActive, Is.True);
         }
 
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
