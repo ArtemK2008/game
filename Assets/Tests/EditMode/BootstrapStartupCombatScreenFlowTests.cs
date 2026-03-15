@@ -45,9 +45,8 @@ namespace Survivalon.Tests.EditMode
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Rewards: Soft currency x1, Region material x1"), Is.True);
-                Assert.That(ContainsText(hostObject, "Node progress total: 1 / 3"), Is.True);
-                Assert.That(ContainsText(hostObject, "Node progress delta: 1"), Is.True);
+                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x1"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress changes: node +1 (1 / 3), persistent +0, route unlock No"), Is.True);
                 Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
             }

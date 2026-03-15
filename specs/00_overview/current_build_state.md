@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 034**.
+This summary reflects completed work through **Milestone 036**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -34,6 +34,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### Run lifecycle and post-run flow
 - Runs use explicit lifecycle states: `RunStart`, `RunActive`, `RunResolved`, and `PostRun`.
 - Post-run shows a compact summary and allows replay, return to world, or stop session.
+- The post-run summary now presents rewards and progress changes in a more clearly grouped aggregated format.
 - Replay re-enters the same node cleanly.
 - Return/stop save a world-level safe resume context.
 
@@ -90,6 +91,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Successful standard combat runs in regions whose resource identity is `RegionMaterial` currently grant a small region-material reward through the structured run reward payload.
 - Granted region material is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
 - The current post-run summary aggregates the region-material reward alongside soft currency when both are granted.
+
+### Post-run reward summary UI
+- The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
+- Reward output is grouped into one readable reward line rather than a noisy detailed breakdown.
+- Progress changes are grouped into one readable line that covers node progress delta, tracked total when applicable, persistent progression delta, and route-unlock result.
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.
