@@ -6,6 +6,13 @@ namespace Survivalon.Runtime
     {
         public CombatShellContext Create(NodePlaceholderState nodeContext)
         {
+            return Create(nodeContext, default);
+        }
+
+        public CombatShellContext Create(
+            NodePlaceholderState nodeContext,
+            AccountWideProgressionEffectState progressionEffects)
+        {
             if (nodeContext == null)
             {
                 throw new ArgumentNullException(nameof(nodeContext));
@@ -22,7 +29,7 @@ namespace Survivalon.Runtime
                     new CombatEntityId("player_main"),
                     "Player Unit",
                     CombatSide.Player,
-                    CreatePlayerBaseStats()),
+                    CreatePlayerBaseStats(progressionEffects)),
                 new CombatEntityState(
                     new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
                     GetEnemyDisplayName(nodeContext),
@@ -30,10 +37,10 @@ namespace Survivalon.Runtime
                     CreateEnemyBaseStats(nodeContext)));
         }
 
-        private static CombatStatBlock CreatePlayerBaseStats()
+        private static CombatStatBlock CreatePlayerBaseStats(AccountWideProgressionEffectState progressionEffects)
         {
             return new CombatStatBlock(
-                maxHealth: 120f,
+                maxHealth: 120f + progressionEffects.PlayerMaxHealthBonus,
                 attackPower: 14f,
                 attackRate: 1.2f,
                 defense: 12f);

@@ -84,5 +84,38 @@ namespace Survivalon.Tests.EditMode
                 Object.DestroyImmediate(hostObject);
             }
         }
+
+        [Test]
+        public void ShouldApplyPurchasedAccountWideCombatBaselineUpgradeToCombatEntryAndReplay()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
+
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+            Assert.That(
+                boardService.TryPurchase(gameState, AccountWideUpgradeId.CombatBaselineProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            storage.Seed(gameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+
+                Assert.That(ContainsText(hostObject, "HP: 130 / 130 | ATK: 14"), Is.True);
+
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "HP: 130 / 130 | ATK: 14"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 038**.
+This summary reflects completed work through **Milestone 039**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -100,8 +100,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### One account-wide progression sink
 - The build now has one persistent account-wide upgrade sink stored in `PersistentProgressionState`.
 - It currently contains one upgrade/project that consumes `ResourceCategory.PersistentProgressionMaterial` and permanently records an account-wide combat-baseline benefit in persistent data.
-- Purchased upgrade state persists through the normal saved game-state flow and resolves into a small account-wide effect model for later gameplay integration.
-- Dedicated service-hub or town-style runtime access to this sink is not implemented yet; the milestone currently establishes the sink structurally and persistently rather than through a new UI flow.
+- Purchased upgrade state persists through the normal saved game-state flow and resolves into a small account-wide effect model that now feeds the player combat baseline before future combat runs start.
+- The current single account-wide upgrade increases player max health in future combat runs, making later runs visibly safer without changing enemy baseline stats.
+- Dedicated service-hub or town-style runtime access to this sink is not implemented yet; the sink currently exists through persistent domain/state logic and combat integration rather than through a new UI flow.
 
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
@@ -118,7 +119,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Broad farm access applies only to persistently `Cleared` nodes; uncleared nodes still follow the normal reachability rules.
 - Failed or incomplete combat runs do **not** currently grant node progress in the MVP, because node progress is still kill-driven and the single-enemy combat prototype has no failed partial-kill case.
 - Rewards and economy are still early and placeholder-level beyond the new soft-currency, one region-material path, one clear-threshold milestone reward, and one structural account-wide progression sink; broader reward differentiation and additional sinks are not implemented yet.
-- The new account-wide sink currently exists in persistent domain/state logic, but its effect is not yet wired into live combat outcomes and it is not yet exposed through a dedicated service/town UI.
+- The new account-wide sink is now wired into live player combat baseline stats, but it is not yet exposed through a dedicated service/town UI.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet

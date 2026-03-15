@@ -24,6 +24,7 @@ namespace Survivalon.Runtime
         private Font uiFont;
         private WorldGraph worldGraph;
         private PersistentWorldState persistentWorldState;
+        private PersistentProgressionState persistentProgressionState;
         private ResourceBalancesState resourceBalancesState;
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
@@ -36,7 +37,8 @@ namespace Survivalon.Runtime
             Action<RunResult> returnToWorldRequested,
             Action<RunResult> stopSessionRequested = null,
             PersistentWorldState persistentWorldState = null,
-            ResourceBalancesState resourceBalancesState = null)
+            ResourceBalancesState resourceBalancesState = null,
+            PersistentProgressionState persistentProgressionState = null)
         {
             if (worldGraph == null)
             {
@@ -51,6 +53,7 @@ namespace Survivalon.Runtime
             this.worldGraph = worldGraph;
             this.persistentWorldState = persistentWorldState;
             this.resourceBalancesState = resourceBalancesState;
+            this.persistentProgressionState = persistentProgressionState;
             runLifecycleController = CreateRunLifecycleController(placeholderState);
             postRunStateController = null;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
@@ -120,7 +123,8 @@ namespace Survivalon.Runtime
             RunLifecycleController replayController = postRunStateController.CreateReplayLifecycleController(
                 worldGraph,
                 persistentWorldState,
-                resourceBalancesState);
+                resourceBalancesState,
+                persistentProgressionState);
             postRunStateController = null;
             runLifecycleController = replayController;
             runLifecycleController.TryStartAutomaticFlow();
@@ -461,6 +465,7 @@ namespace Survivalon.Runtime
                 placeholderState,
                 worldGraph,
                 persistentWorldState: persistentWorldState,
+                persistentProgressionState: persistentProgressionState,
                 resourceBalancesState: resourceBalancesState);
         }
 
