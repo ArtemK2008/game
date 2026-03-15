@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Survivalon.Runtime
 {
@@ -71,80 +70,7 @@ namespace Survivalon.Runtime
 
         public static string BuildPostRunSummaryText(PostRunStateController postRunStateController, RunResult runResult)
         {
-            if (postRunStateController == null)
-            {
-                throw new ArgumentNullException(nameof(postRunStateController));
-            }
-
-            if (runResult == null)
-            {
-                throw new ArgumentNullException(nameof(runResult));
-            }
-
-            string nodeProgressSummary = runResult.HasTrackedNodeProgress
-                ? $"{runResult.NodeProgressValue} / {runResult.NodeProgressThreshold}"
-                : "not tracked";
-
-            return
-                "Run finished.\n" +
-                $"Node: {runResult.NodeId.Value}\n" +
-                $"Resolution: {runResult.ResolutionState}\n" +
-                $"Node progress total: {nodeProgressSummary}\n" +
-                $"Rewards: {BuildRewardSummary(runResult.RewardPayload)}\n" +
-                $"Node progress delta: {runResult.NodeProgressDelta}\n" +
-                $"Persistent progression delta: {runResult.PersistentProgressionDelta}\n" +
-                $"Route unlock changed: {FormatYesNo(runResult.DidUnlockRoute)}\n" +
-                "Next actions:\n" +
-                $"- Replay: {FormatYesNo(postRunStateController.CanReplayNode)}\n" +
-                $"- Return to world: {FormatYesNo(postRunStateController.CanReturnToWorld)}\n" +
-                $"- Stop: {FormatYesNo(postRunStateController.CanStopSession)}";
-        }
-
-        private static string BuildRewardSummary(RunRewardPayload rewardPayload)
-        {
-            if (rewardPayload == null)
-            {
-                throw new ArgumentNullException(nameof(rewardPayload));
-            }
-
-            if (!rewardPayload.HasRewards)
-            {
-                return "None";
-            }
-
-            List<string> rewardSummaries = new List<string>();
-
-            foreach (RunCurrencyReward currencyReward in rewardPayload.CurrencyRewards)
-            {
-                rewardSummaries.Add($"{FormatResourceCategory(currencyReward.ResourceCategory)} x{currencyReward.Amount}");
-            }
-
-            foreach (RunMaterialReward materialReward in rewardPayload.MaterialRewards)
-            {
-                rewardSummaries.Add($"{FormatResourceCategory(materialReward.ResourceCategory)} x{materialReward.Amount}");
-            }
-
-            return string.Join(", ", rewardSummaries);
-        }
-
-        private static string FormatYesNo(bool value)
-        {
-            return value ? "Yes" : "No";
-        }
-
-        private static string FormatResourceCategory(ResourceCategory resourceCategory)
-        {
-            switch (resourceCategory)
-            {
-                case ResourceCategory.SoftCurrency:
-                    return "Soft currency";
-                case ResourceCategory.RegionMaterial:
-                    return "Region material";
-                case ResourceCategory.PersistentProgressionMaterial:
-                    return "Persistent progression material";
-                default:
-                    return resourceCategory.ToString();
-            }
+            return PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
         }
     }
 }

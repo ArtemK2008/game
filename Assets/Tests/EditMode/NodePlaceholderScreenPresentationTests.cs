@@ -198,11 +198,8 @@ namespace Survivalon.Tests.EditMode
                 "Run finished.\n" +
                 "Node: region_001_node_004\n" +
                 "Resolution: Succeeded\n" +
-                "Node progress total: 2 / 3\n" +
-                "Rewards: None\n" +
-                "Node progress delta: 2\n" +
-                "Persistent progression delta: 0\n" +
-                "Route unlock changed: Yes\n" +
+                "Rewards gained: None\n" +
+                "Progress changes: node +2 (2 / 3), persistent +0, route unlock Yes\n" +
                 "Next actions:\n" +
                 "- Replay: Yes\n" +
                 "- Return to world: Yes\n" +
@@ -241,7 +238,8 @@ namespace Survivalon.Tests.EditMode
                 postRunStateController,
                 runResult);
 
-            Assert.That(summaryText, Does.Contain("Rewards: Soft currency x1, Region material x1"));
+            Assert.That(summaryText, Does.Contain("Rewards gained: Soft currency x1, Region material x1"));
+            Assert.That(summaryText, Does.Contain("Progress changes: node +1 (1 / 3), persistent +0, route unlock No"));
         }
 
         [Test]
@@ -268,7 +266,7 @@ namespace Survivalon.Tests.EditMode
                 postRunStateController,
                 runResult);
 
-            Assert.That(summaryText, Does.Contain("Node progress total: not tracked"));
+            Assert.That(summaryText, Does.Contain("Progress changes: node not tracked, persistent +0, route unlock No"));
             Assert.That(summaryText, Does.Contain("Resolution: Failed"));
             Assert.That(summaryText, Does.Contain("- Stop: No"));
         }
