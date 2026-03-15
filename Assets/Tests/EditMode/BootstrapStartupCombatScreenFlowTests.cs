@@ -117,5 +117,43 @@ namespace Survivalon.Tests.EditMode
                 Object.DestroyImmediate(hostObject);
             }
         }
+
+        [Test]
+        public void ShouldShowIncreasedOrdinaryRegionMaterialRewardWhenFarmYieldProjectIsPurchased()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
+
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+            Assert.That(
+                boardService.TryPurchase(gameState, AccountWideUpgradeId.FarmYieldProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            storage.Seed(gameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Milestone rewards:"), Is.False);
+
+                ReturnToWorldMap(hostObject);
+
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
+                Assert.That(
+                    storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                    Is.EqualTo(0));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
     }
 }

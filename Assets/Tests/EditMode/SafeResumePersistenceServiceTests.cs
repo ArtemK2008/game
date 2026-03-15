@@ -48,16 +48,19 @@ namespace Survivalon.Tests.EditMode
             AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
             AccountWideProgressionEffectResolver effectResolver = new AccountWideProgressionEffectResolver();
             PersistentGameState gameState = CreateGameState("region_002_node_001", "region_001_node_002");
-            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 3);
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 4);
 
             AccountWideUpgradePurchaseStatus healthPurchaseStatus =
                 boardService.TryPurchase(gameState, AccountWideUpgradeId.CombatBaselineProject);
             AccountWideUpgradePurchaseStatus pushPurchaseStatus =
                 boardService.TryPurchase(gameState, AccountWideUpgradeId.PushOffenseProject);
+            AccountWideUpgradePurchaseStatus farmPurchaseStatus =
+                boardService.TryPurchase(gameState, AccountWideUpgradeId.FarmYieldProject);
             service.SaveResolvedWorldContext(gameState);
 
             Assert.That(healthPurchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
             Assert.That(pushPurchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            Assert.That(farmPurchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
             Assert.That(
                 storage.SavedGameState.ProgressionState.TryGetEntry(
                     "account_wide_combat_baseline_project",
@@ -72,10 +75,18 @@ namespace Survivalon.Tests.EditMode
                 Is.True);
             Assert.That(pushEntry.IsUnlocked, Is.True);
             Assert.That(pushEntry.CurrentValue, Is.EqualTo(1));
+            Assert.That(
+                storage.SavedGameState.ProgressionState.TryGetEntry(
+                    "account_wide_farm_yield_project",
+                    out ProgressionEntryState farmEntry),
+                Is.True);
+            Assert.That(farmEntry.IsUnlocked, Is.True);
+            Assert.That(farmEntry.CurrentValue, Is.EqualTo(1));
 
             AccountWideProgressionEffectState effects = effectResolver.Resolve(storage.SavedGameState.ProgressionState);
             Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(10));
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(4));
+            Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(1));
         }
 
         private static PersistentGameState CreateGameState(string currentNodeIdValue, string lastSafeNodeIdValue)
