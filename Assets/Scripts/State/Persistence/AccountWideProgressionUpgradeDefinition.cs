@@ -1,0 +1,49 @@
+using System;
+
+namespace Survivalon.Runtime
+{
+    public sealed class AccountWideProgressionUpgradeDefinition
+    {
+        public AccountWideProgressionUpgradeDefinition(
+            AccountWideUpgradeId upgradeId,
+            string progressionId,
+            ResourceCategory costResourceCategory,
+            int costAmount,
+            int playerMaxHealthBonus)
+        {
+            if (string.IsNullOrWhiteSpace(progressionId))
+            {
+                throw new ArgumentException("Progression id cannot be null or whitespace.", nameof(progressionId));
+            }
+
+            if (costAmount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(costAmount), "Upgrade cost cannot be negative.");
+            }
+
+            if (playerMaxHealthBonus < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(playerMaxHealthBonus), "Player max-health bonus cannot be negative.");
+            }
+
+            UpgradeId = upgradeId;
+            ProgressionId = progressionId;
+            LayerType = ProgressionLayerType.AccountWide;
+            CostResourceCategory = costResourceCategory;
+            CostAmount = costAmount;
+            PlayerMaxHealthBonus = playerMaxHealthBonus;
+        }
+
+        public AccountWideUpgradeId UpgradeId { get; }
+
+        public string ProgressionId { get; }
+
+        public ProgressionLayerType LayerType { get; }
+
+        public ResourceCategory CostResourceCategory { get; }
+
+        public int CostAmount { get; }
+
+        public int PlayerMaxHealthBonus { get; }
+    }
+}

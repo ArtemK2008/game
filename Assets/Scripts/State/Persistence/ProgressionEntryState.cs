@@ -51,5 +51,25 @@ namespace Survivalon.Runtime
         public bool IsUnlocked => isUnlocked;
 
         public int CurrentValue => currentValue;
+
+        public void Unlock()
+        {
+            isUnlocked = true;
+        }
+
+        public void IncreaseValue(int delta)
+        {
+            if (delta < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(delta), "Progression value delta cannot be negative.");
+            }
+
+            if (delta == 0)
+            {
+                return;
+            }
+
+            currentValue += delta;
+        }
     }
 }
