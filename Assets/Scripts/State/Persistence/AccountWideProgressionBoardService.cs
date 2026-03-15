@@ -11,7 +11,7 @@ namespace Survivalon.Runtime
 
     public sealed class AccountWideProgressionBoardService
     {
-        public bool CanAfford(PersistentGameState gameState, AccountWideUpgradeId upgradeId)
+        public bool HasRequiredResources(PersistentGameState gameState, AccountWideUpgradeId upgradeId)
         {
             if (gameState == null)
             {
@@ -21,6 +21,17 @@ namespace Survivalon.Runtime
             AccountWideProgressionUpgradeDefinition upgradeDefinition =
                 AccountWideProgressionUpgradeCatalog.Get(upgradeId);
             return gameState.ResourceBalances.GetAmount(upgradeDefinition.CostResourceCategory) >= upgradeDefinition.CostAmount;
+        }
+
+        public bool CanPurchase(PersistentGameState gameState, AccountWideUpgradeId upgradeId)
+        {
+            if (gameState == null)
+            {
+                throw new ArgumentNullException(nameof(gameState));
+            }
+
+            return !IsPurchased(gameState, upgradeId) &&
+                HasRequiredResources(gameState, upgradeId);
         }
 
         public bool IsPurchased(PersistentGameState gameState, AccountWideUpgradeId upgradeId)
