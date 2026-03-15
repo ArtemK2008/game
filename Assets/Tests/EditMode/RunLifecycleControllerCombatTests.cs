@@ -211,5 +211,50 @@ namespace Survivalon.Tests.EditMode
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
             Assert.That(controller.HasRunResult, Is.False);
         }
+
+        [Test]
+        public void ShouldIncreasePlayerCombatBaselineAndRemainingHealthWhenAccountWideUpgradeIsPurchased()
+        {
+            PersistentProgressionState purchasedProgressionState = CreatePurchasedCombatBaselineProgressionState();
+            RunLifecycleController baselineController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState());
+            RunLifecycleController upgradedController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentProgressionState: purchasedProgressionState);
+
+            Assert.That(baselineController.TryStartAutomaticFlow(), Is.True);
+            Assert.That(upgradedController.TryStartAutomaticFlow(), Is.True);
+
+            for (int index = 0; index < 24 && baselineController.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                baselineController.TryAdvanceAutomaticTime(0.25f);
+            }
+
+            for (int index = 0; index < 24 && upgradedController.CurrentState != RunLifecycleState.PostRun; index++)
+            {
+                upgradedController.TryAdvanceAutomaticTime(0.25f);
+            }
+
+            Assert.That(baselineController.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
+            Assert.That(upgradedController.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(130f));
+            Assert.That(baselineController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(upgradedController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(
+                upgradedController.CombatEncounterState.PlayerEntity.CurrentHealth,
+                Is.GreaterThan(baselineController.CombatEncounterState.PlayerEntity.CurrentHealth));
+        }
+
+        private static PersistentProgressionState CreatePurchasedCombatBaselineProgressionState()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+
+            AccountWideUpgradePurchaseStatus purchaseStatus =
+                boardService.TryPurchase(gameState, AccountWideUpgradeId.CombatBaselineProject);
+
+            Assert.That(purchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            return gameState.ProgressionState;
+        }
     }
 }

@@ -63,5 +63,23 @@ namespace Survivalon.Tests.EditMode
             Assert.That(combatContext.PlayerEntity.IsAlive, Is.True);
             Assert.That(combatContext.EnemyEntity.IsActive, Is.True);
         }
+
+        [Test]
+        public void ShouldApplyPurchasedAccountWideCombatBaselineEffectToPlayerCombatStats()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                new AccountWideProgressionEffectState(playerMaxHealthBonus: 10));
+
+            Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(130f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(75f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(8f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.9f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(4f));
+        }
     }
 }

@@ -7,8 +7,10 @@ namespace Survivalon.Runtime
         private readonly NodePlaceholderState nodeContext;
         private readonly WorldGraph worldGraph;
         private readonly PersistentWorldState persistentWorldState;
+        private readonly PersistentProgressionState persistentProgressionState;
         private readonly ResourceBalancesState resourceBalancesState;
         private readonly CombatShellContextFactory combatShellContextFactory;
+        private readonly AccountWideProgressionEffectResolver accountWideProgressionEffectResolver;
         private readonly CombatEncounterResolver combatEncounterResolver;
         private readonly CombatAutoAdvanceLoop combatAutoAdvanceLoop;
         private readonly RunProgressResolutionService runProgressResolutionService;
@@ -26,11 +28,13 @@ namespace Survivalon.Runtime
             CombatEncounterResolver combatEncounterResolver = null,
             CombatAutoAdvanceLoop combatAutoAdvanceLoop = null,
             PersistentWorldState persistentWorldState = null,
+            PersistentProgressionState persistentProgressionState = null,
             NodeProgressMeterService nodeProgressMeterService = null,
             NextNodeUnlockService nextNodeUnlockService = null,
             ResourceBalancesState resourceBalancesState = null,
             RunRewardResolutionService runRewardResolutionService = null,
-            RunRewardGrantService runRewardGrantService = null)
+            RunRewardGrantService runRewardGrantService = null,
+            AccountWideProgressionEffectResolver accountWideProgressionEffectResolver = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
             this.worldGraph = worldGraph;
@@ -38,7 +42,10 @@ namespace Survivalon.Runtime
             this.combatEncounterResolver = combatEncounterResolver ?? new CombatEncounterResolver();
             this.combatAutoAdvanceLoop = combatAutoAdvanceLoop ?? new CombatAutoAdvanceLoop();
             this.persistentWorldState = persistentWorldState;
+            this.persistentProgressionState = persistentProgressionState;
             this.resourceBalancesState = resourceBalancesState;
+            this.accountWideProgressionEffectResolver = accountWideProgressionEffectResolver
+                ?? new AccountWideProgressionEffectResolver();
             runProgressResolutionService = new RunProgressResolutionService(
                 nodeProgressMeterService,
                 nextNodeUnlockService);
@@ -77,7 +84,7 @@ namespace Survivalon.Runtime
 
             combatAutoAdvanceLoop.Reset();
             combatShellContext = nodeContext.UsesCombatShell
-                ? combatShellContextFactory.Create(nodeContext)
+                ? CreateCombatShellContext()
                 : null;
             combatEncounterState = combatShellContext == null
                 ? null
@@ -189,6 +196,20 @@ namespace Survivalon.Runtime
             }
 
             return RunResultFactory.Create(nodeContext, resolutionState, progressResolution, rewardPayload);
+        }
+
+        private CombatShellContext CreateCombatShellContext()
+        {
+            return combatShellContextFactory.Create(
+                nodeContext,
+                ResolveAccountWideProgressionEffects());
+        }
+
+        private AccountWideProgressionEffectState ResolveAccountWideProgressionEffects()
+        {
+            return persistentProgressionState == null
+                ? default
+                : accountWideProgressionEffectResolver.Resolve(persistentProgressionState);
         }
     }
 }
