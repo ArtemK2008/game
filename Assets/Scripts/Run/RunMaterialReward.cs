@@ -6,12 +6,7 @@ namespace Survivalon.Runtime
     {
         public RunMaterialReward(ResourceCategory resourceCategory, int amount)
         {
-            if (!RunRewardResourceCategoryRules.IsMaterial(resourceCategory))
-            {
-                throw new ArgumentException(
-                    $"Resource category '{resourceCategory}' is not a supported material reward category.",
-                    nameof(resourceCategory));
-            }
+            RunRewardResourceCategoryRules.EnsureMaterialCategory(resourceCategory);
 
             if (amount < 0)
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Survivalon.Runtime
 {
@@ -8,8 +9,8 @@ namespace Survivalon.Runtime
         private static readonly RunRewardPayload EmptyInstance = new RunRewardPayload(
             Array.Empty<RunCurrencyReward>(),
             Array.Empty<RunMaterialReward>());
-        private readonly List<RunCurrencyReward> currencyRewards;
-        private readonly List<RunMaterialReward> materialRewards;
+        private readonly ReadOnlyCollection<RunCurrencyReward> currencyRewards;
+        private readonly ReadOnlyCollection<RunMaterialReward> materialRewards;
 
         public RunRewardPayload(
             IEnumerable<RunCurrencyReward> currencyRewards,
@@ -25,8 +26,8 @@ namespace Survivalon.Runtime
                 throw new ArgumentNullException(nameof(materialRewards));
             }
 
-            this.currencyRewards = new List<RunCurrencyReward>(currencyRewards);
-            this.materialRewards = new List<RunMaterialReward>(materialRewards);
+            this.currencyRewards = Array.AsReadOnly(CopyRewards(currencyRewards));
+            this.materialRewards = Array.AsReadOnly(CopyRewards(materialRewards));
         }
 
         public static RunRewardPayload Empty => EmptyInstance;
@@ -40,5 +41,10 @@ namespace Survivalon.Runtime
         public bool HasMaterialRewards => materialRewards.Count > 0;
 
         public bool HasRewards => HasCurrencyRewards || HasMaterialRewards;
+
+        private static TReward[] CopyRewards<TReward>(IEnumerable<TReward> rewards)
+        {
+            return new List<TReward>(rewards).ToArray();
+        }
     }
 }

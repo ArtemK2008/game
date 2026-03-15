@@ -6,12 +6,7 @@ namespace Survivalon.Runtime
     {
         public RunCurrencyReward(ResourceCategory resourceCategory, int amount)
         {
-            if (!RunRewardResourceCategoryRules.IsCurrency(resourceCategory))
-            {
-                throw new ArgumentException(
-                    $"Resource category '{resourceCategory}' is not a supported currency reward category.",
-                    nameof(resourceCategory));
-            }
+            RunRewardResourceCategoryRules.EnsureCurrencyCategory(resourceCategory);
 
             if (amount < 0)
             {
