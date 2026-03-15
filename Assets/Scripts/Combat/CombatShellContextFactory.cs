@@ -6,17 +6,27 @@ namespace Survivalon.Runtime
     {
         public CombatShellContext Create(NodePlaceholderState nodeContext)
         {
-            return Create(nodeContext, default);
+            return Create(nodeContext, PlayableCharacterCatalog.Default, default);
         }
 
         public CombatShellContext Create(
             NodePlaceholderState nodeContext,
             AccountWideProgressionEffectState progressionEffects)
         {
+            return Create(nodeContext, PlayableCharacterCatalog.Default, progressionEffects);
+        }
+
+        public CombatShellContext Create(
+            NodePlaceholderState nodeContext,
+            PlayableCharacterProfile playableCharacter,
+            AccountWideProgressionEffectState progressionEffects)
+        {
             if (nodeContext == null)
             {
                 throw new ArgumentNullException(nameof(nodeContext));
             }
+
+            PlayableCharacterProfile resolvedCharacter = playableCharacter ?? PlayableCharacterCatalog.Default;
 
             if (!nodeContext.UsesCombatShell)
             {
@@ -26,10 +36,10 @@ namespace Survivalon.Runtime
             return new CombatShellContext(
                 nodeContext.NodeId,
                 new CombatEntityState(
-                    new CombatEntityId("player_main"),
-                    "Player Unit",
+                    resolvedCharacter.CombatEntityId,
+                    resolvedCharacter.DisplayName,
                     CombatSide.Player,
-                    CreatePlayerBaseStats(progressionEffects)),
+                    CreatePlayerBaseStats(resolvedCharacter.BaseStats, progressionEffects)),
                 new CombatEntityState(
                     new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
                     GetEnemyDisplayName(nodeContext),
@@ -37,13 +47,15 @@ namespace Survivalon.Runtime
                     CreateEnemyBaseStats(nodeContext)));
         }
 
-        private static CombatStatBlock CreatePlayerBaseStats(AccountWideProgressionEffectState progressionEffects)
+        private static CombatStatBlock CreatePlayerBaseStats(
+            CombatStatBlock characterBaseStats,
+            AccountWideProgressionEffectState progressionEffects)
         {
             return new CombatStatBlock(
-                maxHealth: 120f + progressionEffects.PlayerMaxHealthBonus,
-                attackPower: 14f + progressionEffects.PlayerAttackPowerBonus,
-                attackRate: 1.2f,
-                defense: 12f);
+                maxHealth: characterBaseStats.MaxHealth + progressionEffects.PlayerMaxHealthBonus,
+                attackPower: characterBaseStats.AttackPower + progressionEffects.PlayerAttackPowerBonus,
+                attackRate: characterBaseStats.AttackRate,
+                defense: characterBaseStats.Defense);
         }
 
         private static CombatStatBlock CreateEnemyBaseStats(NodePlaceholderState nodeContext)

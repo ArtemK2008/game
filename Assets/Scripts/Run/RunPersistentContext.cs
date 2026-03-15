@@ -7,11 +7,13 @@ namespace Survivalon.Runtime
         public RunPersistentContext(
             PersistentWorldState persistentWorldState = null,
             ResourceBalancesState resourceBalancesState = null,
-            PersistentProgressionState persistentProgressionState = null)
+            PersistentProgressionState persistentProgressionState = null,
+            PlayableCharacterProfile playableCharacter = null)
         {
             PersistentWorldState = persistentWorldState;
             ResourceBalancesState = resourceBalancesState;
             PersistentProgressionState = persistentProgressionState;
+            PlayableCharacter = playableCharacter;
         }
 
         public PersistentWorldState PersistentWorldState { get; }
@@ -20,6 +22,8 @@ namespace Survivalon.Runtime
 
         public PersistentProgressionState PersistentProgressionState { get; }
 
+        public PlayableCharacterProfile PlayableCharacter { get; }
+
         public static RunPersistentContext FromGameState(PersistentGameState gameState)
         {
             if (gameState == null)
@@ -27,10 +31,13 @@ namespace Survivalon.Runtime
                 throw new ArgumentNullException(nameof(gameState));
             }
 
+            PlayableCharacterProfile playableCharacter = new PlayableCharacterResolver().ResolveCurrent(gameState);
+
             return new RunPersistentContext(
                 gameState.WorldState,
                 gameState.ResourceBalances,
-                gameState.ProgressionState);
+                gameState.ProgressionState,
+                playableCharacter);
         }
     }
 }

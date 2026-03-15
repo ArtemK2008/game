@@ -49,6 +49,7 @@ namespace Survivalon.Tests.EditMode
 
             Assert.That(combatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
             Assert.That(combatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(combatContext.PlayerEntity.Side, Is.EqualTo(CombatSide.Player));
             Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
@@ -75,6 +76,7 @@ namespace Survivalon.Tests.EditMode
                     playerAttackPowerBonus: 0,
                     ordinaryRegionMaterialRewardBonus: 0));
 
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(130f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
@@ -96,6 +98,7 @@ namespace Survivalon.Tests.EditMode
                     playerAttackPowerBonus: 4,
                     ordinaryRegionMaterialRewardBonus: 0));
 
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
@@ -117,6 +120,7 @@ namespace Survivalon.Tests.EditMode
                     playerAttackPowerBonus: 0,
                     ordinaryRegionMaterialRewardBonus: 1));
 
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
@@ -125,6 +129,23 @@ namespace Survivalon.Tests.EditMode
             Assert.That(combatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(8f));
             Assert.That(combatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.9f));
             Assert.That(combatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(4f));
+        }
+
+        [Test]
+        public void ShouldApplyResolvedPlayableCharacterIdentityToCombatContext()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                PlayableCharacterCatalog.Default,
+                default);
+
+            Assert.That(combatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
         }
     }
 }

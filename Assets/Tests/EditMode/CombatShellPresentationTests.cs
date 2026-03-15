@@ -24,7 +24,7 @@ namespace Survivalon.Tests.EditMode
 
             Assert.That(summaryText, Is.EqualTo(
                 "Elapsed: 0s | Outcome: Ongoing\n" +
-                "Targeting: Player Unit -> Enemy Unit; Enemy Unit -> Player Unit"));
+                "Targeting: Vanguard -> Enemy Unit; Enemy Unit -> Vanguard"));
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace Survivalon.Tests.EditMode
 
             Assert.That(summaryText, Is.EqualTo(
                 "Elapsed: 0s | Outcome: PlayerVictory\n" +
-                "Targeting: Player Unit -> Enemy Unit; Enemy Unit -> Player Unit"));
+                "Targeting: Vanguard -> Enemy Unit; Enemy Unit -> Vanguard"));
         }
 
         [Test]
@@ -48,7 +48,7 @@ namespace Survivalon.Tests.EditMode
             string playerCardText = CombatShellTextBuilder.BuildEntityCardText(encounterState.PlayerEntity);
 
             Assert.That(playerCardText, Is.EqualTo(
-                "Player Unit\n" +
+                "Vanguard\n" +
                 "Player | Alive: Yes | Act: Yes\n" +
                 "HP: 120 / 120 | ATK: 14\n" +
                 $"Rate: {1.2f.ToString("0.##")}/s | DEF: 12"));

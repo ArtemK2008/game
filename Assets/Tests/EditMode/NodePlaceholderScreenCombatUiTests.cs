@@ -28,8 +28,8 @@ namespace Survivalon.Tests.EditMode
 
                 Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
                 Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.True);
-                Assert.That(ContainsText(hostObject, "Targeting: Player Unit -> Enemy Unit; Enemy Unit -> Player Unit"), Is.True);
-                Assert.That(ContainsText(hostObject, "Player Unit"), Is.True);
+                Assert.That(ContainsText(hostObject, "Targeting: Vanguard -> Enemy Unit; Enemy Unit -> Vanguard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy | Alive: Yes | Act: Yes"), Is.True);
@@ -59,7 +59,7 @@ namespace Survivalon.Tests.EditMode
 
                 AutoAdvanceCombat(hostObject, 5, 0.25f);
 
-                Assert.That(ContainsText(hostObject, "Targeting: Player Unit -> Enemy Unit; Enemy Unit -> Player Unit"), Is.True);
+                Assert.That(ContainsText(hostObject, "Targeting: Vanguard -> Enemy Unit; Enemy Unit -> Vanguard"), Is.True);
                 Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Contain("Player | Alive: Yes | Act: Yes"));
                 Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Not.Contain("HP: 120 / 120"));
                 Assert.That(FindTextInObject(hostObject, "EnemyCombatEntity"), Does.Contain("Enemy | Alive: Yes | Act: Yes"));

@@ -30,6 +30,40 @@ namespace Survivalon.Runtime
         [SerializeField]
         private PersistentLoadoutState loadoutState = new PersistentLoadoutState();
 
+        public PersistentCharacterState()
+        {
+        }
+
+        public PersistentCharacterState(
+            string characterId,
+            bool isUnlocked,
+            bool isSelectable,
+            bool isActive,
+            int progressionRank = 0,
+            CombatStatBlockData persistentStatModifiers = null,
+            string skillPackageId = "",
+            PersistentLoadoutState loadoutState = null)
+        {
+            if (string.IsNullOrWhiteSpace(characterId))
+            {
+                throw new ArgumentException("Character id cannot be null or whitespace.", nameof(characterId));
+            }
+
+            if (progressionRank < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(progressionRank), "Progression rank cannot be negative.");
+            }
+
+            this.characterId = characterId;
+            this.isUnlocked = isUnlocked;
+            this.isSelectable = isSelectable;
+            this.isActive = isActive;
+            this.progressionRank = progressionRank;
+            this.persistentStatModifiers = persistentStatModifiers ?? new CombatStatBlockData();
+            this.skillPackageId = skillPackageId ?? string.Empty;
+            this.loadoutState = loadoutState ?? new PersistentLoadoutState();
+        }
+
         public string CharacterId => characterId;
 
         public bool IsUnlocked => isUnlocked;
@@ -45,5 +79,20 @@ namespace Survivalon.Runtime
         public string SkillPackageId => skillPackageId;
 
         public PersistentLoadoutState LoadoutState => loadoutState;
+
+        public void Unlock()
+        {
+            isUnlocked = true;
+        }
+
+        public void SetSelectable(bool selectable)
+        {
+            isSelectable = selectable;
+        }
+
+        public void SetActive(bool active)
+        {
+            isActive = active;
+        }
     }
 }

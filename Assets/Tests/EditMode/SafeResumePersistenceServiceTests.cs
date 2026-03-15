@@ -89,6 +89,33 @@ namespace Survivalon.Tests.EditMode
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(1));
         }
 
+        [Test]
+        public void ShouldPersistPlayableCharacterStateInResolvedWorldSnapshot()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
+            PersistentGameState gameState = CreateGameState("region_002_node_001", "region_001_node_002");
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                progressionRank: 2,
+                skillPackageId: "skill_package_vanguard_default"));
+
+            service.SaveResolvedWorldContext(gameState);
+
+            Assert.That(storage.SavedGameState.CharacterStates, Has.Count.EqualTo(1));
+            Assert.That(
+                storage.SavedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
+                Is.True);
+            Assert.That(characterState.IsUnlocked, Is.True);
+            Assert.That(characterState.IsSelectable, Is.True);
+            Assert.That(characterState.IsActive, Is.True);
+            Assert.That(characterState.ProgressionRank, Is.EqualTo(2));
+            Assert.That(characterState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+        }
+
         private static PersistentGameState CreateGameState(string currentNodeIdValue, string lastSafeNodeIdValue)
         {
             PersistentGameState gameState = new PersistentGameState();
