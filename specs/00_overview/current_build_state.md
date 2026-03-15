@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 039**.
+This summary reflects completed work through **Milestone 040**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -99,9 +99,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### One account-wide progression sink
 - The build now has one persistent account-wide upgrade sink stored in `PersistentProgressionState`.
-- It currently contains one upgrade/project that consumes `ResourceCategory.PersistentProgressionMaterial` and permanently records an account-wide combat-baseline benefit in persistent data.
+- It currently contains two small upgrades/projects that consume `ResourceCategory.PersistentProgressionMaterial` and permanently record account-wide combat-baseline benefits in persistent data.
 - Purchased upgrade state persists through the normal saved game-state flow and resolves into a small account-wide effect model that now feeds the player combat baseline before future combat runs start.
-- The current single account-wide upgrade increases player max health in future combat runs, making later runs visibly safer without changing enemy baseline stats.
+- The current account-wide upgrades increase player max health and player attack power in future combat runs, without changing enemy baseline stats.
+- The new push-oriented offense upgrade helps harder combat more directly by increasing player-side baseline damage enough to visibly improve tougher future encounters.
 - Dedicated service-hub or town-style runtime access to this sink is not implemented yet; the sink currently exists through persistent domain/state logic and combat integration rather than through a new UI flow.
 
 ### Post-run reward summary UI

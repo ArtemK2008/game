@@ -41,7 +41,7 @@ namespace Survivalon.Runtime
         {
             return new CombatStatBlock(
                 maxHealth: 120f + progressionEffects.PlayerMaxHealthBonus,
-                attackPower: 14f,
+                attackPower: 14f + progressionEffects.PlayerAttackPowerBonus,
                 attackRate: 1.2f,
                 defense: 12f);
         }

@@ -217,7 +217,8 @@ namespace Survivalon.Tests.EditMode
         [Test]
         public void ShouldIncreasePlayerCombatBaselineAndRemainingHealthWhenAccountWideUpgradeIsPurchased()
         {
-            PersistentProgressionState purchasedProgressionState = CreatePurchasedCombatBaselineProgressionState();
+            PersistentProgressionState purchasedProgressionState =
+                CreatePurchasedProgressionState(AccountWideUpgradeId.CombatBaselineProject);
             RunLifecycleController baselineController = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateCombatNodeState());
             RunLifecycleController upgradedController = new RunLifecycleController(
@@ -247,16 +248,49 @@ namespace Survivalon.Tests.EditMode
                 Is.GreaterThan(baselineController.CombatEncounterState.PlayerEntity.CurrentHealth));
         }
 
-        private static PersistentProgressionState CreatePurchasedCombatBaselineProgressionState()
+        [Test]
+        public void ShouldTurnCurrentBossCombatFromFailureIntoSuccessWhenPushOffenseProjectIsPurchased()
+        {
+            RunLifecycleController baselineController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState());
+            RunLifecycleController upgradedController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: new RunPersistentContext(
+                    persistentProgressionState: CreatePurchasedProgressionState(AccountWideUpgradeId.PushOffenseProject)));
+
+            RunLifecycleControllerTestData.RunToPostRun(baselineController);
+            RunLifecycleControllerTestData.RunToPostRun(upgradedController);
+
+            Assert.That(baselineController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(baselineController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
+            Assert.That(upgradedController.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
+            Assert.That(upgradedController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(upgradedController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+            Assert.That(
+                upgradedController.CombatEncounterState.ElapsedCombatSeconds,
+                Is.LessThan(baselineController.CombatEncounterState.ElapsedCombatSeconds));
+        }
+
+        private static PersistentProgressionState CreatePurchasedProgressionState(params AccountWideUpgradeId[] upgradeIds)
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
             AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
-            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+            int requiredMaterial = 0;
 
-            AccountWideUpgradePurchaseStatus purchaseStatus =
-                boardService.TryPurchase(gameState, AccountWideUpgradeId.CombatBaselineProject);
+            foreach (AccountWideUpgradeId upgradeId in upgradeIds)
+            {
+                requiredMaterial += AccountWideProgressionUpgradeCatalog.Get(upgradeId).CostAmount;
+            }
 
-            Assert.That(purchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, requiredMaterial);
+
+            foreach (AccountWideUpgradeId upgradeId in upgradeIds)
+            {
+                AccountWideUpgradePurchaseStatus purchaseStatus =
+                    boardService.TryPurchase(gameState, upgradeId);
+                Assert.That(purchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            }
+
             return gameState.ProgressionState;
         }
     }

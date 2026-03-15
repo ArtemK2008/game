@@ -9,7 +9,8 @@ namespace Survivalon.Runtime
             string progressionId,
             ResourceCategory costResourceCategory,
             int costAmount,
-            int playerMaxHealthBonus)
+            int playerMaxHealthBonus,
+            int playerAttackPowerBonus)
         {
             if (string.IsNullOrWhiteSpace(progressionId))
             {
@@ -26,12 +27,18 @@ namespace Survivalon.Runtime
                 throw new ArgumentOutOfRangeException(nameof(playerMaxHealthBonus), "Player max-health bonus cannot be negative.");
             }
 
+            if (playerAttackPowerBonus < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(playerAttackPowerBonus), "Player attack-power bonus cannot be negative.");
+            }
+
             UpgradeId = upgradeId;
             ProgressionId = progressionId;
             LayerType = ProgressionLayerType.AccountWide;
             CostResourceCategory = costResourceCategory;
             CostAmount = costAmount;
             PlayerMaxHealthBonus = playerMaxHealthBonus;
+            PlayerAttackPowerBonus = playerAttackPowerBonus;
         }
 
         public AccountWideUpgradeId UpgradeId { get; }
@@ -45,5 +52,7 @@ namespace Survivalon.Runtime
         public int CostAmount { get; }
 
         public int PlayerMaxHealthBonus { get; }
+
+        public int PlayerAttackPowerBonus { get; }
     }
 }
