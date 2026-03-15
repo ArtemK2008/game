@@ -199,7 +199,7 @@ namespace Survivalon.Tests.EditMode
                 "Node: region_001_node_004\n" +
                 "Resolution: Succeeded\n" +
                 "Rewards gained: None\n" +
-                "Progress changes: node +2 this run; tracked total 2 / 3; persistent +0; route unlock Yes\n" +
+                "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes\n" +
                 "Next actions:\n" +
                 "- Replay: Yes\n" +
                 "- Return to world: Yes\n" +
@@ -305,8 +305,8 @@ namespace Survivalon.Tests.EditMode
                 new NodeId("region_001_node_004"),
                 RunResolutionState.Succeeded,
                 RunRewardPayload.Empty,
-                2,
-                2,
+                1,
+                3,
                 3,
                 0,
                 true,
