@@ -13,6 +13,7 @@ namespace Survivalon.Tests.EditMode
             AccountWideProgressionEffectState effects = resolver.Resolve(new PersistentProgressionState());
 
             Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(0));
+            Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
         }
 
         [Test]
@@ -32,6 +33,42 @@ namespace Survivalon.Tests.EditMode
             AccountWideProgressionEffectState effects = resolver.Resolve(progressionState);
 
             Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(10));
+            Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ShouldResolvePurchasedPushOffenseProjectIntoAppliedEffectState()
+        {
+            PersistentProgressionState progressionState = new PersistentProgressionState();
+            AccountWideProgressionUpgradeDefinition upgradeDefinition =
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.PushOffenseProject);
+            ProgressionEntryState progressionEntry = progressionState.GetOrAddEntry(
+                upgradeDefinition.ProgressionId,
+                upgradeDefinition.LayerType);
+            AccountWideProgressionEffectResolver resolver = new AccountWideProgressionEffectResolver();
+
+            progressionEntry.Unlock();
+            progressionEntry.IncreaseValue(1);
+
+            AccountWideProgressionEffectState effects = resolver.Resolve(progressionState);
+
+            Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(0));
+            Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void ShouldResolveMultiplePurchasedProjectsWithoutRegressingExistingEffects()
+        {
+            PersistentProgressionState progressionState = new PersistentProgressionState();
+            AccountWideProgressionEffectResolver resolver = new AccountWideProgressionEffectResolver();
+
+            UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.CombatBaselineProject);
+            UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.PushOffenseProject);
+
+            AccountWideProgressionEffectState effects = resolver.Resolve(progressionState);
+
+            Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(10));
+            Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(4));
         }
 
         [Test]
@@ -42,6 +79,19 @@ namespace Survivalon.Tests.EditMode
             Assert.That(
                 () => resolver.Resolve(null),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("progressionState"));
+        }
+
+        private static void UnlockPurchasedUpgrade(
+            PersistentProgressionState progressionState,
+            AccountWideUpgradeId upgradeId)
+        {
+            AccountWideProgressionUpgradeDefinition upgradeDefinition =
+                AccountWideProgressionUpgradeCatalog.Get(upgradeId);
+            ProgressionEntryState progressionEntry = progressionState.GetOrAddEntry(
+                upgradeDefinition.ProgressionId,
+                upgradeDefinition.LayerType);
+            progressionEntry.Unlock();
+            progressionEntry.IncreaseValue(1);
         }
     }
 }
