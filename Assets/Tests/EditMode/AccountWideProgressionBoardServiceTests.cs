@@ -6,15 +6,29 @@ namespace Survivalon.Tests.EditMode
     public sealed class AccountWideProgressionBoardServiceTests
     {
         [Test]
-        public void ShouldReportUpgradeAffordableWhenPersistentProgressionMaterialBalanceMeetsCost()
+        public void ShouldReportRequiredResourcesAvailableWhenPersistentProgressionMaterialBalanceMeetsCost()
         {
             PersistentGameState gameState = new PersistentGameState();
             AccountWideProgressionBoardService service = new AccountWideProgressionBoardService();
             gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
 
-            bool canAfford = service.CanAfford(gameState, AccountWideUpgradeId.CombatBaselineProject);
+            bool hasRequiredResources = service.HasRequiredResources(
+                gameState,
+                AccountWideUpgradeId.CombatBaselineProject);
 
-            Assert.That(canAfford, Is.True);
+            Assert.That(hasRequiredResources, Is.True);
+        }
+
+        [Test]
+        public void ShouldReportUpgradeBuyableWhenResourcesAreAvailableAndUpgradeIsNotPurchased()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            AccountWideProgressionBoardService service = new AccountWideProgressionBoardService();
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+
+            bool canPurchase = service.CanPurchase(gameState, AccountWideUpgradeId.CombatBaselineProject);
+
+            Assert.That(canPurchase, Is.True);
         }
 
         [Test]
@@ -62,6 +76,23 @@ namespace Survivalon.Tests.EditMode
         }
 
         [Test]
+        public void ShouldReportUpgradeNotBuyableWhenPersistentProgressionMaterialIsInsufficient()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            AccountWideProgressionBoardService service = new AccountWideProgressionBoardService();
+
+            bool hasRequiredResources = service.HasRequiredResources(
+                gameState,
+                AccountWideUpgradeId.CombatBaselineProject);
+            bool canPurchase = service.CanPurchase(
+                gameState,
+                AccountWideUpgradeId.CombatBaselineProject);
+
+            Assert.That(hasRequiredResources, Is.False);
+            Assert.That(canPurchase, Is.False);
+        }
+
+        [Test]
         public void ShouldRejectRepurchasingAlreadyPurchasedAccountWideUpgrade()
         {
             PersistentGameState gameState = new PersistentGameState();
@@ -76,6 +107,26 @@ namespace Survivalon.Tests.EditMode
             Assert.That(firstPurchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
             Assert.That(secondPurchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.AlreadyPurchased));
             Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ShouldReportAlreadyPurchasedUpgradeAsNotBuyableEvenWhenResourcesRemain()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            AccountWideProgressionBoardService service = new AccountWideProgressionBoardService();
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 2);
+
+            service.TryPurchase(gameState, AccountWideUpgradeId.CombatBaselineProject);
+
+            bool hasRequiredResources = service.HasRequiredResources(
+                gameState,
+                AccountWideUpgradeId.CombatBaselineProject);
+            bool canPurchase = service.CanPurchase(
+                gameState,
+                AccountWideUpgradeId.CombatBaselineProject);
+
+            Assert.That(hasRequiredResources, Is.True);
+            Assert.That(canPurchase, Is.False);
         }
     }
 }
