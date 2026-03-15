@@ -10,7 +10,8 @@ namespace Survivalon.Runtime
             ResourceCategory costResourceCategory,
             int costAmount,
             int playerMaxHealthBonus,
-            int playerAttackPowerBonus)
+            int playerAttackPowerBonus,
+            int ordinaryRegionMaterialRewardBonus)
         {
             if (string.IsNullOrWhiteSpace(progressionId))
             {
@@ -32,6 +33,13 @@ namespace Survivalon.Runtime
                 throw new ArgumentOutOfRangeException(nameof(playerAttackPowerBonus), "Player attack-power bonus cannot be negative.");
             }
 
+            if (ordinaryRegionMaterialRewardBonus < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(ordinaryRegionMaterialRewardBonus),
+                    "Ordinary region-material reward bonus cannot be negative.");
+            }
+
             UpgradeId = upgradeId;
             ProgressionId = progressionId;
             LayerType = ProgressionLayerType.AccountWide;
@@ -39,6 +47,7 @@ namespace Survivalon.Runtime
             CostAmount = costAmount;
             PlayerMaxHealthBonus = playerMaxHealthBonus;
             PlayerAttackPowerBonus = playerAttackPowerBonus;
+            OrdinaryRegionMaterialRewardBonus = ordinaryRegionMaterialRewardBonus;
         }
 
         public AccountWideUpgradeId UpgradeId { get; }
@@ -54,5 +63,7 @@ namespace Survivalon.Runtime
         public int PlayerMaxHealthBonus { get; }
 
         public int PlayerAttackPowerBonus { get; }
+
+        public int OrdinaryRegionMaterialRewardBonus { get; }
     }
 }

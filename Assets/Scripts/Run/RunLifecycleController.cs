@@ -172,6 +172,7 @@ namespace Survivalon.Runtime
 
         private RunResult CreateRunResult(RunResolutionState resolutionState)
         {
+            AccountWideProgressionEffectState progressionEffects = ResolveAccountWideProgressionEffects();
             RunProgressResolution progressResolution = runProgressResolutionService.Resolve(
                 nodeContext,
                 resolutionState,
@@ -182,7 +183,8 @@ namespace Survivalon.Runtime
                 nodeContext,
                 resolutionState,
                 worldGraph,
-                progressResolution);
+                progressResolution,
+                progressionEffects);
 
             if (persistentContext?.ResourceBalancesState != null)
             {

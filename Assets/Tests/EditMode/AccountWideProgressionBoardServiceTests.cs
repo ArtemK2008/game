@@ -56,6 +56,7 @@ namespace Survivalon.Tests.EditMode
             Assert.That(purchasedEntry.CurrentValue, Is.EqualTo(1));
             Assert.That(appliedEffects.PlayerMaxHealthBonus, Is.EqualTo(10));
             Assert.That(appliedEffects.PlayerAttackPowerBonus, Is.EqualTo(0));
+            Assert.That(appliedEffects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
         }
 
         [Test]
@@ -183,6 +184,62 @@ namespace Survivalon.Tests.EditMode
             Assert.That(purchasedEntry.CurrentValue, Is.EqualTo(1));
             Assert.That(appliedEffects.PlayerMaxHealthBonus, Is.EqualTo(0));
             Assert.That(appliedEffects.PlayerAttackPowerBonus, Is.EqualTo(4));
+            Assert.That(appliedEffects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ShouldReportFarmYieldProjectBuyableWhenOneMaterialIsAvailable()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            AccountWideProgressionBoardService service = new AccountWideProgressionBoardService();
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+
+            bool hasRequiredResources = service.HasRequiredResources(gameState, AccountWideUpgradeId.FarmYieldProject);
+            bool canPurchase = service.CanPurchase(gameState, AccountWideUpgradeId.FarmYieldProject);
+
+            Assert.That(hasRequiredResources, Is.True);
+            Assert.That(canPurchase, Is.True);
+        }
+
+        [Test]
+        public void ShouldRejectFarmYieldProjectWhenPersistentProgressionMaterialIsMissing()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            AccountWideProgressionBoardService service = new AccountWideProgressionBoardService();
+
+            bool hasRequiredResources = service.HasRequiredResources(gameState, AccountWideUpgradeId.FarmYieldProject);
+            bool canPurchase = service.CanPurchase(gameState, AccountWideUpgradeId.FarmYieldProject);
+
+            Assert.That(hasRequiredResources, Is.False);
+            Assert.That(canPurchase, Is.False);
+        }
+
+        [Test]
+        public void ShouldPurchaseFarmYieldProjectAndApplyOrdinaryRegionMaterialRewardBonus()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            AccountWideProgressionBoardService service = new AccountWideProgressionBoardService();
+            AccountWideProgressionEffectResolver effectResolver = new AccountWideProgressionEffectResolver();
+            AccountWideProgressionUpgradeDefinition upgradeDefinition =
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.FarmYieldProject);
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, upgradeDefinition.CostAmount);
+
+            AccountWideUpgradePurchaseStatus purchaseStatus =
+                service.TryPurchase(gameState, AccountWideUpgradeId.FarmYieldProject);
+            AccountWideProgressionEffectState appliedEffects =
+                effectResolver.Resolve(gameState.ProgressionState);
+
+            Assert.That(purchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(0));
+            Assert.That(
+                gameState.ProgressionState.TryGetEntry(upgradeDefinition.ProgressionId, out ProgressionEntryState purchasedEntry),
+                Is.True);
+            Assert.That(purchasedEntry.LayerType, Is.EqualTo(ProgressionLayerType.AccountWide));
+            Assert.That(purchasedEntry.IsUnlocked, Is.True);
+            Assert.That(purchasedEntry.CurrentValue, Is.EqualTo(1));
+            Assert.That(appliedEffects.PlayerMaxHealthBonus, Is.EqualTo(0));
+            Assert.That(appliedEffects.PlayerAttackPowerBonus, Is.EqualTo(0));
+            Assert.That(appliedEffects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(1));
         }
     }
 }

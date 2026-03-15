@@ -12,7 +12,8 @@ namespace Survivalon.Runtime
                 ResourceCategory.PersistentProgressionMaterial,
                 costAmount: 1,
                 playerMaxHealthBonus: 10,
-                playerAttackPowerBonus: 0);
+                playerAttackPowerBonus: 0,
+                ordinaryRegionMaterialRewardBonus: 0);
         private static readonly AccountWideProgressionUpgradeDefinition PushOffenseProject =
             new AccountWideProgressionUpgradeDefinition(
                 AccountWideUpgradeId.PushOffenseProject,
@@ -20,11 +21,22 @@ namespace Survivalon.Runtime
                 ResourceCategory.PersistentProgressionMaterial,
                 costAmount: 2,
                 playerMaxHealthBonus: 0,
-                playerAttackPowerBonus: 4);
+                playerAttackPowerBonus: 4,
+                ordinaryRegionMaterialRewardBonus: 0);
+        private static readonly AccountWideProgressionUpgradeDefinition FarmYieldProject =
+            new AccountWideProgressionUpgradeDefinition(
+                AccountWideUpgradeId.FarmYieldProject,
+                "account_wide_farm_yield_project",
+                ResourceCategory.PersistentProgressionMaterial,
+                costAmount: 1,
+                playerMaxHealthBonus: 0,
+                playerAttackPowerBonus: 0,
+                ordinaryRegionMaterialRewardBonus: 1);
         private static readonly AccountWideProgressionUpgradeDefinition[] AllDefinitions =
         {
             CombatBaselineProject,
             PushOffenseProject,
+            FarmYieldProject,
         };
 
         public static IReadOnlyList<AccountWideProgressionUpgradeDefinition> All => AllDefinitions;
@@ -37,6 +49,8 @@ namespace Survivalon.Runtime
                     return CombatBaselineProject;
                 case AccountWideUpgradeId.PushOffenseProject:
                     return PushOffenseProject;
+                case AccountWideUpgradeId.FarmYieldProject:
+                    return FarmYieldProject;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(upgradeId), upgradeId, "Unknown account-wide upgrade id.");
             }

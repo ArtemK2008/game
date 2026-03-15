@@ -4,21 +4,6 @@ namespace Survivalon.Runtime
 {
     public sealed class RunRewardResolutionService
     {
-        private static readonly RunRewardPayload SuccessfulCombatRewardPayload = new RunRewardPayload(
-            new[]
-            {
-                new RunCurrencyReward(ResourceCategory.SoftCurrency, 1),
-            },
-            Array.Empty<RunMaterialReward>());
-        private static readonly RunRewardPayload SuccessfulRegionMaterialCombatRewardPayload = new RunRewardPayload(
-            new[]
-            {
-                new RunCurrencyReward(ResourceCategory.SoftCurrency, 1),
-            },
-            new[]
-            {
-                new RunMaterialReward(ResourceCategory.RegionMaterial, 1),
-            });
         private static readonly RunMaterialReward[] SuccessfulClearMilestoneMaterialRewards =
         {
             new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
@@ -28,14 +13,19 @@ namespace Survivalon.Runtime
             NodePlaceholderState nodeContext,
             RunResolutionState resolutionState,
             WorldGraph worldGraph = null,
-            RunProgressResolution? progressResolution = null)
+            RunProgressResolution? progressResolution = null,
+            AccountWideProgressionEffectState progressionEffects = default)
         {
             if (nodeContext == null)
             {
                 throw new ArgumentNullException(nameof(nodeContext));
             }
 
-            RunRewardPayload ordinaryRewards = ResolveOrdinaryRewards(nodeContext, resolutionState, worldGraph);
+            RunRewardPayload ordinaryRewards = ResolveOrdinaryRewards(
+                nodeContext,
+                resolutionState,
+                worldGraph,
+                progressionEffects);
 
             if (!ShouldGrantMilestoneRewards(progressResolution))
             {
@@ -52,16 +42,41 @@ namespace Survivalon.Runtime
         private static RunRewardPayload ResolveOrdinaryRewards(
             NodePlaceholderState nodeContext,
             RunResolutionState resolutionState,
-            WorldGraph worldGraph)
+            WorldGraph worldGraph,
+            AccountWideProgressionEffectState progressionEffects)
         {
             if (!ShouldGrantBaselineCombatRewards(nodeContext, resolutionState))
             {
                 return RunRewardPayload.Empty;
             }
 
-            return ShouldGrantRegionMaterialReward(nodeContext, worldGraph)
-                ? SuccessfulRegionMaterialCombatRewardPayload
-                : SuccessfulCombatRewardPayload;
+            return CreateOrdinaryCombatRewardPayload(
+                ShouldGrantRegionMaterialReward(nodeContext, worldGraph),
+                progressionEffects);
+        }
+
+        private static RunRewardPayload CreateOrdinaryCombatRewardPayload(
+            bool shouldGrantRegionMaterialReward,
+            AccountWideProgressionEffectState progressionEffects)
+        {
+            RunCurrencyReward[] currencyRewards =
+            {
+                new RunCurrencyReward(ResourceCategory.SoftCurrency, 1),
+            };
+
+            if (!shouldGrantRegionMaterialReward)
+            {
+                return new RunRewardPayload(currencyRewards, Array.Empty<RunMaterialReward>());
+            }
+
+            RunMaterialReward[] materialRewards =
+            {
+                new RunMaterialReward(
+                    ResourceCategory.RegionMaterial,
+                    1 + progressionEffects.OrdinaryRegionMaterialRewardBonus),
+            };
+
+            return new RunRewardPayload(currencyRewards, materialRewards);
         }
 
         private static bool ShouldGrantBaselineCombatRewards(

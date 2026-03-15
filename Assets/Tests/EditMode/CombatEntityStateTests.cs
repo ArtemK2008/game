@@ -70,7 +70,10 @@ namespace Survivalon.Tests.EditMode
             CombatShellContextFactory factory = new CombatShellContextFactory();
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
-                new AccountWideProgressionEffectState(playerMaxHealthBonus: 10, playerAttackPowerBonus: 0));
+                new AccountWideProgressionEffectState(
+                    playerMaxHealthBonus: 10,
+                    playerAttackPowerBonus: 0,
+                    ordinaryRegionMaterialRewardBonus: 0));
 
             Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(130f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
@@ -88,10 +91,34 @@ namespace Survivalon.Tests.EditMode
             CombatShellContextFactory factory = new CombatShellContextFactory();
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
-                new AccountWideProgressionEffectState(playerMaxHealthBonus: 0, playerAttackPowerBonus: 4));
+                new AccountWideProgressionEffectState(
+                    playerMaxHealthBonus: 0,
+                    playerAttackPowerBonus: 4,
+                    ordinaryRegionMaterialRewardBonus: 0));
 
             Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(75f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(8f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.9f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(4f));
+        }
+
+        [Test]
+        public void ShouldKeepCombatBaselineUnchangedWhenOnlyFarmYieldProjectIsPurchased()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                new AccountWideProgressionEffectState(
+                    playerMaxHealthBonus: 0,
+                    playerAttackPowerBonus: 0,
+                    ordinaryRegionMaterialRewardBonus: 1));
+
+            Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
             Assert.That(combatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(75f));

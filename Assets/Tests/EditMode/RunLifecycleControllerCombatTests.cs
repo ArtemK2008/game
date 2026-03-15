@@ -271,6 +271,38 @@ namespace Survivalon.Tests.EditMode
                 Is.LessThan(baselineController.CombatEncounterState.ElapsedCombatSeconds));
         }
 
+        [Test]
+        public void ShouldIncreaseOrdinaryRegionMaterialRewardWhenFarmYieldProjectIsPurchased()
+        {
+            ResourceBalancesState baselineBalances = new ResourceBalancesState();
+            ResourceBalancesState upgradedBalances = new ResourceBalancesState();
+            RunLifecycleController baselineController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                worldGraph: BootstrapWorldTestData.CreateWorldGraph(),
+                persistentContext: new RunPersistentContext(resourceBalancesState: baselineBalances));
+            RunLifecycleController upgradedController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                worldGraph: BootstrapWorldTestData.CreateWorldGraph(),
+                persistentContext: new RunPersistentContext(
+                    resourceBalancesState: upgradedBalances,
+                    persistentProgressionState: CreatePurchasedProgressionState(AccountWideUpgradeId.FarmYieldProject)));
+
+            RunLifecycleControllerTestData.RunToPostRun(baselineController);
+            RunLifecycleControllerTestData.RunToPostRun(upgradedController);
+
+            Assert.That(baselineController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(upgradedController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(baselineController.RunResult.RewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(upgradedController.RunResult.RewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(baselineController.RunResult.RewardPayload.MaterialRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(upgradedController.RunResult.RewardPayload.MaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(baselineController.RunResult.RewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(upgradedController.RunResult.RewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(baselineBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(1));
+            Assert.That(upgradedBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
+            Assert.That(upgradedBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
+        }
+
         private static PersistentProgressionState CreatePurchasedProgressionState(params AccountWideUpgradeId[] upgradeIds)
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();

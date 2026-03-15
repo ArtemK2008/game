@@ -4,5 +4,6 @@ namespace Survivalon.Runtime
     {
         CombatBaselineProject = 0,
         PushOffenseProject = 1,
+        FarmYieldProject = 2,
     }
 }
