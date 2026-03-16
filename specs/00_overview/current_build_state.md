@@ -149,3 +149,4 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ## Source note
 This file is derived from the milestone notes in `specs/milestone/` plus the current codebase entry flow. It should be updated after each completed milestone so it remains the compact source for current implemented build state.
+- Shared cross-domain identifiers and category types are now physically grouped under `Assets/Scripts/Core/`, with matching EditMode ownership tests under `Assets/Tests/EditMode/Core/`.
