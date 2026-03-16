@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class RunNextActionContext
     {
@@ -20,3 +20,4 @@ namespace Survivalon.Runtime.Run
         public bool CanStopSession { get; }
     }
 }
+

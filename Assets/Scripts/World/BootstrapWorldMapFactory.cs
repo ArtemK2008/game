@@ -1,6 +1,6 @@
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public sealed class BootstrapWorldMapFactory
     {
@@ -31,3 +31,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

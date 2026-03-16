@@ -1,7 +1,7 @@
 using UnityEngine;
-using Survivalon.Runtime.Data.Combat;
+using Survivalon.Data.Combat;
 
-namespace Survivalon.Runtime.Data.Gear
+namespace Survivalon.Data.Gear
 {
     [CreateAssetMenu(
         fileName = "GearDefinition",
@@ -29,3 +29,4 @@ namespace Survivalon.Runtime.Data.Gear
         public CombatStatBlockData StatModifiers => statModifiers;
     }
 }
+

@@ -1,8 +1,8 @@
 using System;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Core;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public sealed class NextNodeUnlockService
     {
@@ -68,3 +68,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

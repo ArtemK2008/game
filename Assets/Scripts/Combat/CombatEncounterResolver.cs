@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public sealed class CombatEncounterResolver
     {
@@ -139,3 +139,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+

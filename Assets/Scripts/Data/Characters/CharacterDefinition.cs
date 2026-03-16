@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Survivalon.Runtime.Data.Combat;
-using Survivalon.Runtime.Data.Gear;
+using Survivalon.Data.Combat;
+using Survivalon.Data.Gear;
 
-namespace Survivalon.Runtime.Data.Characters
+namespace Survivalon.Data.Characters
 {
     [CreateAssetMenu(
         fileName = "CharacterDefinition",
@@ -36,3 +36,4 @@ namespace Survivalon.Runtime.Data.Characters
         public IReadOnlyList<GearCategory> SupportedGearCategories => supportedGearCategories;
     }
 }
+

@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Survivalon.Runtime.Data.Gear;
+using Survivalon.Data.Gear;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     [Serializable]
     public sealed class EquippedGearState
@@ -33,3 +33,4 @@ namespace Survivalon.Runtime.State.Persistence
         public GearCategory GearCategory => gearCategory;
     }
 }
+

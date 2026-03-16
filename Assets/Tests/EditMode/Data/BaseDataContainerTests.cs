@@ -1,11 +1,11 @@
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Data.Characters;
-using Survivalon.Runtime.Data.Gear;
-using Survivalon.Runtime.Data.Rewards;
-using Survivalon.Runtime.Data.World;
+using Survivalon.Core;
+using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
+using Survivalon.Data.Rewards;
+using Survivalon.Data.World;
 
 namespace Survivalon.Tests.EditMode.Data
 {
@@ -71,3 +71,4 @@ namespace Survivalon.Tests.EditMode.Data
         }
     }
 }
+

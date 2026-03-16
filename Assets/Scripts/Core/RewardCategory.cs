@@ -1,4 +1,4 @@
-namespace Survivalon.Runtime.Core
+namespace Survivalon.Core
 {
     public enum RewardCategory
     {
@@ -8,3 +8,4 @@ namespace Survivalon.Runtime.Core
         Milestone = 3,
     }
 }
+

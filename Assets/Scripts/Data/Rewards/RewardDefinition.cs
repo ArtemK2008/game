@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Data.Gear;
+using Survivalon.Core;
+using Survivalon.Data.Gear;
 
-namespace Survivalon.Runtime.Data.Rewards
+namespace Survivalon.Data.Rewards
 {
     [CreateAssetMenu(
         fileName = "RewardDefinition",
@@ -31,3 +31,4 @@ namespace Survivalon.Runtime.Data.Rewards
         public IReadOnlyList<GearDefinition> GearRewards => gearRewards;
     }
 }
+

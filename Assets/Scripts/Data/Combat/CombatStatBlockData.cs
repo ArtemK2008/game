@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Survivalon.Runtime.Data.Combat
+namespace Survivalon.Data.Combat
 {
     [Serializable]
     public sealed class CombatStatBlockData
@@ -27,3 +27,4 @@ namespace Survivalon.Runtime.Data.Combat
         public float Defense => defense;
     }
 }
+

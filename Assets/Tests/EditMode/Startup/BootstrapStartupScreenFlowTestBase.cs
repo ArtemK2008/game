@@ -1,11 +1,11 @@
 using System.Reflection;
 using NUnit.Framework;
-using Survivalon.Runtime.Startup;
+using Survivalon.Startup;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.Startup
 {
@@ -180,3 +180,4 @@ namespace Survivalon.Tests.EditMode.Startup
         }
     }
 }
+

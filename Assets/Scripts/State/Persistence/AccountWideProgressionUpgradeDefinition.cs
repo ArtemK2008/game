@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public sealed class AccountWideProgressionUpgradeDefinition
     {
@@ -68,3 +68,4 @@ namespace Survivalon.Runtime.State.Persistence
         public int OrdinaryRegionMaterialRewardBonus { get; }
     }
 }
+

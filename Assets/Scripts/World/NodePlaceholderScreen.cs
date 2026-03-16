@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Run;
+using Survivalon.Combat;
+using Survivalon.Core;
+using Survivalon.Run;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public sealed class NodePlaceholderScreen : MonoBehaviour
     {
@@ -464,3 +464,4 @@ namespace Survivalon.Runtime.World
 
     }
 }
+

@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public enum CombatSide
     {
@@ -7,3 +7,4 @@ namespace Survivalon.Runtime.Combat
         Enemy = 1,
     }
 }
+

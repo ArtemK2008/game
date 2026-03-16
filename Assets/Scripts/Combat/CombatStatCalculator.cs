@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public static class CombatStatCalculator
     {
@@ -37,3 +37,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+

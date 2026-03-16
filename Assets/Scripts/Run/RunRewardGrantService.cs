@@ -1,8 +1,8 @@
 using System;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Core;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class RunRewardGrantService
     {
@@ -45,3 +45,4 @@ namespace Survivalon.Runtime.Run
         }
     }
 }
+

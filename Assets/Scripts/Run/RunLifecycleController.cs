@@ -1,9 +1,9 @@
 using System;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.Combat;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class RunLifecycleController
     {
@@ -211,3 +211,4 @@ namespace Survivalon.Runtime.Run
         }
     }
 }
+

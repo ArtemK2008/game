@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public enum RunResolutionState
     {
@@ -8,3 +8,4 @@ namespace Survivalon.Runtime.Run
         ExitedEarly = 2,
     }
 }
+

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Core;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public sealed class WorldNodeEntryFlowController
     {
@@ -76,3 +76,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

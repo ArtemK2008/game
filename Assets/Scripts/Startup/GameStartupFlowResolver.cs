@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.Startup
+namespace Survivalon.Startup
 {
     public sealed class GameStartupFlowResolver
     {
@@ -27,3 +27,4 @@ namespace Survivalon.Runtime.Startup
         }
     }
 }
+

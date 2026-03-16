@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public static class CombatShellStateResolver
     {
@@ -19,3 +19,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+

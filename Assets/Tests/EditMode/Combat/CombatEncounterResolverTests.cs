@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Core;
+using Survivalon.Combat;
+using Survivalon.Core;
 
 namespace Survivalon.Tests.EditMode.Combat
 {
@@ -209,3 +209,4 @@ namespace Survivalon.Tests.EditMode.Combat
         }
     }
 }
+

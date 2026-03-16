@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Combat;
+using Survivalon.Combat;
 
-namespace Survivalon.Runtime.Data.Characters
+namespace Survivalon.Data.Characters
 {
     public sealed class PlayableCharacterProfile
     {
@@ -40,3 +40,4 @@ namespace Survivalon.Runtime.Data.Characters
         public string DefaultSkillPackageId { get; }
     }
 }
+

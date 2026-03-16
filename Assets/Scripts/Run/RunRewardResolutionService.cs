@@ -1,9 +1,9 @@
 using System;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.Core;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class RunRewardResolutionService
     {
@@ -116,3 +116,4 @@ namespace Survivalon.Runtime.Run
         }
     }
 }
+

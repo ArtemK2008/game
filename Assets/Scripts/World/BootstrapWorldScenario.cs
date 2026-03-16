@@ -1,6 +1,6 @@
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public static class BootstrapWorldScenario
     {
@@ -14,3 +14,4 @@ namespace Survivalon.Runtime.World
         public static readonly RegionId CavernRegionId = new RegionId("region_002");
     }
 }
+

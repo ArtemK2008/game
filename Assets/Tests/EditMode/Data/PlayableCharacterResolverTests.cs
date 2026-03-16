@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Data.Characters;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Combat;
+using Survivalon.Data.Characters;
+using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.Data
 {
@@ -59,3 +59,4 @@ namespace Survivalon.Tests.EditMode.Data
         }
     }
 }
+

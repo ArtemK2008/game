@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.Core;
+using Survivalon.State;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -129,3 +129,4 @@ namespace Survivalon.Tests.EditMode.World
 
     }
 }
+

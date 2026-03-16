@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using Survivalon.Runtime.Combat;
+using Survivalon.Combat;
 
 namespace Survivalon.Tests.EditMode.Combat
 {
@@ -64,3 +64,4 @@ namespace Survivalon.Tests.EditMode.Combat
         }
     }
 }
+

@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public static class RuntimeUiSupport
     {
@@ -129,3 +129,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

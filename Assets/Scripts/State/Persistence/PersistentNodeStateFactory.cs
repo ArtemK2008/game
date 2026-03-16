@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public static class PersistentNodeStateFactory
     {
@@ -45,3 +45,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

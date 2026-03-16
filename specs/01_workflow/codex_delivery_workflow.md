@@ -224,14 +224,14 @@ Future compatibility is good. Speculative architecture is not.
 Namespaces should correlate with runtime script paths under `Assets/Scripts/`.
 
 Preferred pattern:
-- `Assets/Scripts/Core/...` -> `Survivalon.Runtime.Core...`
-- `Assets/Scripts/Startup/...` -> `Survivalon.Runtime.Startup...`
-- `Assets/Scripts/Combat/...` -> `Survivalon.Runtime.Combat...`
-- `Assets/Scripts/Run/...` -> `Survivalon.Runtime.Run...`
-- `Assets/Scripts/World/...` -> `Survivalon.Runtime.World...`
-- `Assets/Scripts/State/...` -> `Survivalon.Runtime.State...`
-- `Assets/Scripts/State/Persistence/...` -> `Survivalon.Runtime.State.Persistence...`
-- `Assets/Scripts/Data/...` -> `Survivalon.Runtime.Data...`
+- `Assets/Scripts/Core/...` -> `Survivalon.Core...`
+- `Assets/Scripts/Startup/...` -> `Survivalon.Startup...`
+- `Assets/Scripts/Combat/...` -> `Survivalon.Combat...`
+- `Assets/Scripts/Run/...` -> `Survivalon.Run...`
+- `Assets/Scripts/World/...` -> `Survivalon.World...`
+- `Assets/Scripts/State/...` -> `Survivalon.State...`
+- `Assets/Scripts/State/Persistence/...` -> `Survivalon.State.Persistence...`
+- `Assets/Scripts/Data/...` -> `Survivalon.Data...`
 
 ### Test namespace convention
 EditMode test namespaces should correlate with test paths under `Assets/Tests/EditMode/`.

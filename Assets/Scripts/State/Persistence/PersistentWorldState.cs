@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     [Serializable]
     public sealed class PersistentWorldState
@@ -121,3 +121,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

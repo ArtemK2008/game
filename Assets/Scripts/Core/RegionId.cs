@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.Core
+namespace Survivalon.Core
 {
     public readonly struct RegionId : IEquatable<RegionId>
     {
@@ -47,3 +47,4 @@ namespace Survivalon.Runtime.Core
         }
     }
 }
+

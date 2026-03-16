@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public sealed class FilePersistentGameStateStorage : IPersistentGameStateStorage
     {
@@ -55,3 +55,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

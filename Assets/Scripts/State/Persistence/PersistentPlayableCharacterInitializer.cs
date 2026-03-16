@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Data.Characters;
+using Survivalon.Data.Characters;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public sealed class PersistentPlayableCharacterInitializer
     {
@@ -31,3 +31,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

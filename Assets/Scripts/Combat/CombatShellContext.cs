@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public sealed class CombatShellContext
     {
@@ -22,3 +22,4 @@ namespace Survivalon.Runtime.Combat
         public CombatEntityState EnemyEntity { get; }
     }
 }
+

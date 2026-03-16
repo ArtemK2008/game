@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     [Serializable]
     public sealed class PersistentGameState
@@ -73,3 +73,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Core;
+using Survivalon.State;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public sealed class WorldMapScreenController
     {
@@ -170,3 +170,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.World;
+using Survivalon.World;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class PostRunStateController
     {
@@ -38,3 +38,4 @@ namespace Survivalon.Runtime.Run
         }
     }
 }
+

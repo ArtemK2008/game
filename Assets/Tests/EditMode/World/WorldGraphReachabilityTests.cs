@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.World;
+using Survivalon.Core;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -169,3 +169,4 @@ namespace Survivalon.Tests.EditMode.World
         }
     }
 }
+

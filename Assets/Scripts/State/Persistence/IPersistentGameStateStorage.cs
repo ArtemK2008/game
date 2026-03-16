@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public interface IPersistentGameStateStorage
     {
@@ -8,3 +8,4 @@ namespace Survivalon.Runtime.State.Persistence
         void Save(PersistentGameState gameState);
     }
 }
+

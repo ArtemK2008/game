@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Run;
+using Survivalon.Run;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public static class NodePlaceholderScreenStateResolver
     {
@@ -113,3 +113,4 @@ namespace Survivalon.Runtime.World
         public NodePlaceholderScreenButtonState StopSessionButton { get; }
     }
 }
+

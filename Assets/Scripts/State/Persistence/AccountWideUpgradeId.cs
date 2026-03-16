@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public enum AccountWideUpgradeId
     {
@@ -8,3 +8,4 @@ namespace Survivalon.Runtime.State.Persistence
         FarmYieldProject = 2,
     }
 }
+

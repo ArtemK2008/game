@@ -1,5 +1,5 @@
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -21,3 +21,4 @@ namespace Survivalon.Tests.EditMode.World
         }
     }
 }
+

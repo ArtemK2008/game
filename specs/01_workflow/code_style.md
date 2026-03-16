@@ -208,6 +208,12 @@ Future compatibility is good. Speculative architecture is not.
 - Keep scenes, prefabs, sprites, audio, ScriptableObjects, and scripts organized consistently.
 - Shared modules should only exist when code is genuinely reused and conceptually shared.
 
+### Namespace convention
+- Namespaces should correlate with the current domain-oriented folder structure.
+- Runtime namespaces should follow `Survivalon.<Domain>...` rather than `Survivalon.Runtime.<Domain>...`.
+- EditMode test namespaces should continue to follow `Survivalon.Tests.EditMode.<Domain>...`.
+- Cross-domain root exceptions should stay minimal and explicit.
+
 ---
 
 ## Comments and documentation rules

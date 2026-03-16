@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public enum RunLifecycleState
     {
@@ -9,3 +9,4 @@ namespace Survivalon.Runtime.Run
         PostRun = 3,
     }
 }
+

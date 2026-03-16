@@ -1,9 +1,9 @@
 using NUnit.Framework;
-using Survivalon.Runtime.Startup;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Run;
-using Survivalon.Runtime.State;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Startup;
+using Survivalon.Core;
+using Survivalon.Run;
+using Survivalon.State;
+using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.Startup
 {
@@ -90,3 +90,4 @@ namespace Survivalon.Tests.EditMode.Startup
         }
     }
 }
+

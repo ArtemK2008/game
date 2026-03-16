@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public sealed class CombatEntityRuntimeState
     {
@@ -86,3 +86,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+

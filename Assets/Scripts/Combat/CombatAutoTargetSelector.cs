@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public sealed class CombatAutoTargetSelector
     {
@@ -30,3 +30,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+

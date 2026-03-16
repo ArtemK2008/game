@@ -1,4 +1,4 @@
-namespace Survivalon.Runtime.Core
+namespace Survivalon.Core
 {
     public enum ResourceCategory
     {
@@ -7,3 +7,4 @@ namespace Survivalon.Runtime.Core
         PersistentProgressionMaterial = 2,
     }
 }
+

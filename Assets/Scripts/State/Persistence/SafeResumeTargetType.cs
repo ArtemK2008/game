@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public enum SafeResumeTargetType
     {
@@ -7,3 +7,4 @@ namespace Survivalon.Runtime.State.Persistence
         WorldMap = 1,
     }
 }
+

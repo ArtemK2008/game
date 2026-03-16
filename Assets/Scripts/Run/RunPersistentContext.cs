@@ -1,8 +1,8 @@
 using System;
-using Survivalon.Runtime.Data.Characters;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Data.Characters;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class RunPersistentContext
     {
@@ -43,3 +43,4 @@ namespace Survivalon.Runtime.Run
         }
     }
 }
+

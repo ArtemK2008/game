@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Survivalon.Runtime;
+using Survivalon;
 
 namespace Survivalon.Tests.EditMode
 {
@@ -12,3 +12,4 @@ namespace Survivalon.Tests.EditMode
         }
     }
 }
+

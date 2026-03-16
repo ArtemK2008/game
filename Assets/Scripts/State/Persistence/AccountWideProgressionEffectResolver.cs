@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public sealed class AccountWideProgressionEffectResolver
     {
@@ -40,3 +40,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

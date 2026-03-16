@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Core;
+using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
@@ -43,3 +43,4 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         }
     }
 }
+

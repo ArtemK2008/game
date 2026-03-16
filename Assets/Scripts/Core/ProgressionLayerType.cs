@@ -1,4 +1,4 @@
-namespace Survivalon.Runtime.Core
+namespace Survivalon.Core
 {
     public enum ProgressionLayerType
     {
@@ -8,3 +8,4 @@ namespace Survivalon.Runtime.Core
         SystemOrInfrastructure = 3,
     }
 }
+

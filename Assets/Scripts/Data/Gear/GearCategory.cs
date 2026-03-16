@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.Data.Gear
+namespace Survivalon.Data.Gear
 {
     public enum GearCategory
     {
@@ -8,3 +8,4 @@ namespace Survivalon.Runtime.Data.Gear
         GeneralModifier = 2,
     }
 }
+

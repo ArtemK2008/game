@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Run;
+using Survivalon.Run;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     /// <summary>
     /// Advances active combat encounters in fixed time steps based on accumulated elapsed time.
@@ -83,3 +83,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+
