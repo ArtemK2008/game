@@ -17,8 +17,8 @@ namespace Survivalon.Tests.EditMode.Run
             bool enteredActive = controller.TryEnterActiveState();
 
             Assert.That(enteredActive, Is.True);
-            Assert.That(controller.HasCombatContext, Is.True);
             Assert.That(controller.HasCombatEncounterState, Is.True);
+            Assert.That(controller.CombatContext, Is.Not.Null);
             Assert.That(controller.CombatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
             Assert.That(controller.CombatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
             Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));

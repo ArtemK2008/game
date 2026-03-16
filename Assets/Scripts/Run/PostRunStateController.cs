@@ -14,8 +14,6 @@ namespace Survivalon.Runtime.Run
             this.runResult = runResult ?? throw new ArgumentNullException(nameof(runResult));
         }
 
-        public NodePlaceholderState NodeContext => nodeContext;
-
         public RunResult RunResult => runResult;
 
         public bool CanReplayNode => runResult.NextActionContext.CanReplayNode;
