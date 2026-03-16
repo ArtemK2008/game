@@ -22,12 +22,13 @@ namespace Survivalon.Tests.EditMode.Run
         [Test]
         public void ShouldCreateFreshRunLifecycleControllerForReplay()
         {
-            PostRunStateController controller = CreateController();
+            NodePlaceholderState placeholderState = NodePlaceholderTestData.CreateServicePlaceholderState();
+            PostRunStateController controller = CreateController(placeholderState);
 
             RunLifecycleController replayController = controller.CreateReplayLifecycleController();
 
             Assert.That(replayController.CurrentState, Is.EqualTo(RunLifecycleState.RunStart));
-            Assert.That(replayController.NodeContext.NodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            Assert.That(replayController.NodeContext.NodeId, Is.EqualTo(placeholderState.NodeId));
             Assert.That(replayController.HasRunResult, Is.False);
         }
 
@@ -53,9 +54,9 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
         }
 
-        private static PostRunStateController CreateController()
+        private static PostRunStateController CreateController(NodePlaceholderState placeholderState = null)
         {
-            NodePlaceholderState placeholderState = NodePlaceholderTestData.CreateServicePlaceholderState();
+            placeholderState ??= NodePlaceholderTestData.CreateServicePlaceholderState();
             RunResult runResult = new RunResult(
                 placeholderState.NodeId,
                 RunResolutionState.Succeeded,

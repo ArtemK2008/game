@@ -105,7 +105,8 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 StartupPlaceholderView placeholderView = hostObject.GetComponentInChildren<StartupPlaceholderView>(true);
                 Assert.That(placeholderView, Is.Not.Null);
-                Assert.That(placeholderView.name, Is.EqualTo(StartupEntryTarget.MainMenuPlaceholder.ToString()));
+                Assert.That(ContainsText(hostObject, "Main Menu Placeholder"), Is.True);
+                Assert.That(ContainsText(hostObject, "Session stopped at a safe post-run point."), Is.True);
                 Assert.That(storage.HasSavedState, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
