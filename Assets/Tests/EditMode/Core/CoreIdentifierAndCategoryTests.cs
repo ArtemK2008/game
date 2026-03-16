@@ -1,8 +1,9 @@
 using System;
 using NUnit.Framework;
 using Survivalon.Runtime;
+using Survivalon.Runtime.Core;
 
-namespace Survivalon.Tests.EditMode
+namespace Survivalon.Tests.EditMode.Core
 {
     public sealed class CoreIdentifierAndCategoryTests
     {

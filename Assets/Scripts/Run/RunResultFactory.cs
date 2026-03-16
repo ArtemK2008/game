@@ -1,6 +1,12 @@
 using System;
+using Survivalon.Runtime.Combat;
+using Survivalon.Runtime.Core;
+using Survivalon.Runtime.Data.Characters;
+using Survivalon.Runtime.State;
+using Survivalon.Runtime.State.Persistence;
+using Survivalon.Runtime.World;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Run
 {
     public static class RunResultFactory
     {

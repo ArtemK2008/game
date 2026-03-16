@@ -1,7 +1,15 @@
 using NUnit.Framework;
 using Survivalon.Runtime;
+using Survivalon.Runtime.Combat;
+using Survivalon.Runtime.Core;
+using Survivalon.Runtime.Data.Characters;
+using Survivalon.Runtime.Data.Combat;
+using Survivalon.Runtime.Data.Gear;
+using Survivalon.Runtime.State.Persistence;
+using Survivalon.Runtime.Data.Rewards;
+using Survivalon.Runtime.Data.World;
 
-namespace Survivalon.Tests.EditMode
+namespace Survivalon.Tests.EditMode.Data
 {
     public sealed class PlayableCharacterResolverTests
     {

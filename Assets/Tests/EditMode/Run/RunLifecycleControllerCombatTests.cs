@@ -1,7 +1,14 @@
 using NUnit.Framework;
 using Survivalon.Runtime;
+using Survivalon.Runtime.Combat;
+using Survivalon.Runtime.Core;
+using Survivalon.Runtime.Run;
+using Survivalon.Runtime.State;
+using Survivalon.Runtime.State.Persistence;
+using Survivalon.Runtime.World;
+using Survivalon.Tests.EditMode.World;
 
-namespace Survivalon.Tests.EditMode
+namespace Survivalon.Tests.EditMode.Run
 {
     public sealed class RunLifecycleControllerCombatTests
     {
