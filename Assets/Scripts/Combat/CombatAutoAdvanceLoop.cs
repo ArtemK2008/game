@@ -2,6 +2,9 @@ using System;
 
 namespace Survivalon.Runtime
 {
+    /// <summary>
+    /// Advances active combat encounters in fixed time steps based on accumulated elapsed time.
+    /// </summary>
     public sealed class CombatAutoAdvanceLoop
     {
         private const float TickEpsilon = 0.0001f;

@@ -1,7 +1,8 @@
+using Survivalon.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Startup
 {
     public sealed class StartupPlaceholderView : MonoBehaviour
     {

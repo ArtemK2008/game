@@ -1,11 +1,12 @@
 using System.Reflection;
 using NUnit.Framework;
 using Survivalon.Runtime;
+using Survivalon.Runtime.Startup;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Survivalon.Tests.EditMode
+namespace Survivalon.Tests.EditMode.Startup
 {
     public abstract class BootstrapStartupScreenFlowTestBase
     {

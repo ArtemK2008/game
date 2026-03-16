@@ -1,6 +1,7 @@
 using System;
+using Survivalon.Runtime;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Startup
 {
     public sealed class BootstrapPostRunTransitionService
     {

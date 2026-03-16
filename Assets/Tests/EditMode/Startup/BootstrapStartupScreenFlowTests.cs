@@ -1,8 +1,9 @@
 using NUnit.Framework;
 using Survivalon.Runtime;
+using Survivalon.Runtime.Startup;
 using UnityEngine;
 
-namespace Survivalon.Tests.EditMode
+namespace Survivalon.Tests.EditMode.Startup
 {
     public sealed class BootstrapStartupScreenFlowTests : BootstrapStartupScreenFlowTestBase
     {
