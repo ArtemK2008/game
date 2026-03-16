@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Data.Combat;
-using Survivalon.Runtime.Data.Gear;
-using Survivalon.Runtime.State.Persistence;
 
 namespace Survivalon.Runtime.Data.Characters
 {
@@ -22,8 +18,6 @@ namespace Survivalon.Runtime.Data.Characters
         };
 
         public static PlayableCharacterProfile Default => DefaultCharacterProfile;
-
-        public static IReadOnlyList<PlayableCharacterProfile> All => AllProfiles;
 
         public static bool Contains(string characterId)
         {

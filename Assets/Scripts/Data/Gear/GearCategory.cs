@@ -1,4 +1,3 @@
-using Survivalon.Runtime.Data.Combat;
 
 namespace Survivalon.Runtime.Data.Gear
 {
