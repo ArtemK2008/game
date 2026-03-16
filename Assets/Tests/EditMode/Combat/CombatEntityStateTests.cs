@@ -1,12 +1,8 @@
 using NUnit.Framework;
-using Survivalon.Runtime;
 using Survivalon.Runtime.Combat;
 using Survivalon.Runtime.Core;
 using Survivalon.Runtime.Data.Characters;
-using Survivalon.Runtime.Data.Combat;
-using Survivalon.Runtime.Run;
 using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
 using Survivalon.Tests.EditMode.World;
 
 namespace Survivalon.Tests.EditMode.Combat
@@ -53,7 +49,10 @@ namespace Survivalon.Tests.EditMode.Combat
         public void ShouldCreateCombatShellContextUsingCombatEntityState()
         {
             CombatShellContextFactory factory = new CombatShellContextFactory();
-            CombatShellContext combatContext = factory.Create(NodePlaceholderTestData.CreateCombatPlaceholderState());
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                null,
+                default);
 
             Assert.That(combatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
             Assert.That(combatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
@@ -79,6 +78,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatShellContextFactory factory = new CombatShellContextFactory();
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                null,
                 new AccountWideProgressionEffectState(
                     playerMaxHealthBonus: 10,
                     playerAttackPowerBonus: 0,
@@ -101,6 +101,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatShellContextFactory factory = new CombatShellContextFactory();
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                null,
                 new AccountWideProgressionEffectState(
                     playerMaxHealthBonus: 0,
                     playerAttackPowerBonus: 4,
@@ -123,6 +124,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatShellContextFactory factory = new CombatShellContextFactory();
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                null,
                 new AccountWideProgressionEffectState(
                     playerMaxHealthBonus: 0,
                     playerAttackPowerBonus: 0,

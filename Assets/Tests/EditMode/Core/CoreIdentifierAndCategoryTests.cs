@@ -1,6 +1,5 @@
 using System;
 using NUnit.Framework;
-using Survivalon.Runtime;
 using Survivalon.Runtime.Core;
 
 namespace Survivalon.Tests.EditMode.Core

@@ -1,12 +1,8 @@
 using NUnit.Framework;
-using Survivalon.Runtime;
 using Survivalon.Runtime.Combat;
 using Survivalon.Runtime.Core;
 using Survivalon.Runtime.Run;
-using Survivalon.Runtime.State;
-using Survivalon.Runtime.State.Persistence;
 using Survivalon.Runtime.World;
-using Survivalon.Tests.EditMode.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -297,7 +293,10 @@ namespace Survivalon.Tests.EditMode.World
         private static CombatEncounterState CreateActiveCombatEncounterState()
         {
             CombatShellContextFactory combatShellContextFactory = new CombatShellContextFactory();
-            CombatShellContext combatContext = combatShellContextFactory.Create(NodePlaceholderTestData.CreateCombatPlaceholderState());
+            CombatShellContext combatContext = combatShellContextFactory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                null,
+                default);
             return new CombatEncounterState(combatContext);
         }
 
