@@ -1,4 +1,4 @@
-namespace Survivalon.Runtime.Core
+namespace Survivalon.Core
 {
     public enum NodeType
     {
@@ -7,3 +7,4 @@ namespace Survivalon.Runtime.Core
         ServiceOrProgression = 2,
     }
 }
+

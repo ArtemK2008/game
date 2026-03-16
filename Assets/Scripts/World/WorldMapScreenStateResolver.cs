@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public static class WorldMapScreenStateResolver
     {
@@ -69,3 +69,4 @@ namespace Survivalon.Runtime.World
         public bool IsInteractable { get; }
     }
 }
+

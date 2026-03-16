@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State;
+using Survivalon.Core;
+using Survivalon.State;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public static class WorldMapScreenTextBuilder
     {
@@ -115,3 +115,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

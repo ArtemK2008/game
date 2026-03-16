@@ -3,7 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Survivalon.Runtime.World;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -202,3 +202,4 @@ namespace Survivalon.Tests.EditMode.World
         }
     }
 }
+

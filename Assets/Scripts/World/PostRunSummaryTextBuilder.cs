@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Run;
+using Survivalon.Core;
+using Survivalon.Run;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public static class PostRunSummaryTextBuilder
     {
@@ -119,3 +119,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

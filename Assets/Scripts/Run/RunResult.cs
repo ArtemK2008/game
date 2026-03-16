@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class RunResult
     {
@@ -78,3 +78,4 @@ namespace Survivalon.Runtime.Run
         public RunNextActionContext NextActionContext { get; }
     }
 }
+

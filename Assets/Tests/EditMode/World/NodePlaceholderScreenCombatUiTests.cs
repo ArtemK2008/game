@@ -1,10 +1,10 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Run;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.Combat;
+using Survivalon.Run;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -215,3 +215,4 @@ namespace Survivalon.Tests.EditMode.World
         }
     }
 }
+

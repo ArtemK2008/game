@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public static class CombatShellTextBuilder
     {
@@ -46,3 +46,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+

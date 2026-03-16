@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     internal static class WorldGraphTraversal
     {
@@ -90,3 +90,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

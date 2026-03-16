@@ -1,10 +1,10 @@
 using System;
-using Survivalon.Runtime.Run;
-using Survivalon.Runtime.State;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.Core;
+using Survivalon.Run;
+using Survivalon.State;
+using Survivalon.State.Persistence;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.Startup
+namespace Survivalon.Startup
 {
     public sealed class BootstrapPostRunTransitionService
     {
@@ -58,3 +58,4 @@ namespace Survivalon.Runtime.Startup
         }
     }
 }
+

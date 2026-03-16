@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public static class AccountWideProgressionUpgradeCatalog
     {
@@ -58,3 +58,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

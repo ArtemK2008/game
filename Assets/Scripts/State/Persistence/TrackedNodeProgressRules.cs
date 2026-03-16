@@ -1,6 +1,6 @@
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public static class TrackedNodeProgressRules
     {
@@ -17,3 +17,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

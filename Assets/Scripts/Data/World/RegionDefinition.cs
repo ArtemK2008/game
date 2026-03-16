@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.Data.World
+namespace Survivalon.Data.World
 {
     [CreateAssetMenu(
         fileName = "RegionDefinition",
@@ -40,3 +40,4 @@ namespace Survivalon.Runtime.Data.World
         public string DifficultyBand => difficultyBand;
     }
 }
+

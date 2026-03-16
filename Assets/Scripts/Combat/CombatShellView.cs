@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.World;
+using Survivalon.Core;
+using Survivalon.World;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public sealed class CombatShellView : MonoBehaviour
     {
@@ -178,3 +178,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+

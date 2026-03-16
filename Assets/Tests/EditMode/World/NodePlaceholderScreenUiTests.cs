@@ -1,8 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
-using Survivalon.Runtime.Run;
-using Survivalon.Runtime.World;
+using Survivalon.Run;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -136,3 +136,4 @@ namespace Survivalon.Tests.EditMode.World
         }
     }
 }
+

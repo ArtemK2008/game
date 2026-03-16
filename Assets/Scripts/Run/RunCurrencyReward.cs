@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public readonly struct RunCurrencyReward
     {
@@ -23,3 +23,4 @@ namespace Survivalon.Runtime.Run
         public int Amount { get; }
     }
 }
+

@@ -1,8 +1,8 @@
 using System;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.World;
+using Survivalon.Core;
+using Survivalon.World;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public sealed class NodeProgressMeterService
     {
@@ -61,3 +61,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

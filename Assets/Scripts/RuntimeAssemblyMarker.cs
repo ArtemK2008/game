@@ -1,6 +1,7 @@
-namespace Survivalon.Runtime
+namespace Survivalon
 {
     public static class RuntimeAssemblyMarker
     {
     }
 }
+

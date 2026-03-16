@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public enum CombatEncounterOutcome
     {
@@ -8,3 +8,4 @@ namespace Survivalon.Runtime.Combat
         EnemyVictory = 2,
     }
 }
+

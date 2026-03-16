@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Survivalon.Runtime.Data.Combat;
+using Survivalon.Data.Combat;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     [Serializable]
     public sealed class PersistentCharacterState
@@ -97,3 +97,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

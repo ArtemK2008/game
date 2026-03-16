@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public sealed class SafeResumePersistenceService
     {
@@ -75,3 +75,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

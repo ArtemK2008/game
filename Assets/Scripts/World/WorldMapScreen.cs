@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Core;
+using Survivalon.State;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public sealed class WorldMapScreen : MonoBehaviour
     {
@@ -324,3 +324,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

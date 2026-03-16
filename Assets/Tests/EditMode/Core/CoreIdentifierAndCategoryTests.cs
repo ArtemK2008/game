@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
 namespace Survivalon.Tests.EditMode.Core
 {
@@ -72,3 +72,4 @@ namespace Survivalon.Tests.EditMode.Core
         }
     }
 }
+

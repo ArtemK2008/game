@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public enum AccountWideUpgradePurchaseStatus
     {
@@ -80,3 +80,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

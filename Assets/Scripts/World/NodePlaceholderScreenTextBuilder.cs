@@ -1,9 +1,9 @@
 using System;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Run;
+using Survivalon.Combat;
+using Survivalon.Core;
+using Survivalon.Run;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public static class NodePlaceholderScreenTextBuilder
     {
@@ -72,3 +72,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

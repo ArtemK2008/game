@@ -1,8 +1,8 @@
 using System;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.World;
+using Survivalon.Core;
+using Survivalon.World;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public static class RunResultFactory
     {
@@ -33,3 +33,4 @@ namespace Survivalon.Runtime.Run
         }
     }
 }
+

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     internal static class WorldGraphValidation
     {
@@ -120,3 +120,4 @@ namespace Survivalon.Runtime.World
         }
     }
 }
+

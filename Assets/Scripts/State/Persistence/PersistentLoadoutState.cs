@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     [Serializable]
     public sealed class PersistentLoadoutState
@@ -18,3 +18,4 @@ namespace Survivalon.Runtime.State.Persistence
         public IReadOnlyList<EquippedGearState> EquippedGearStates => equippedGearStates;
     }
 }
+

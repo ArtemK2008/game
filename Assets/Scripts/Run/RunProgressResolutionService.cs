@@ -1,10 +1,10 @@
 using System;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.Combat;
+using Survivalon.Core;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class RunProgressResolutionService
     {
@@ -94,3 +94,4 @@ namespace Survivalon.Runtime.Run
         }
     }
 }
+

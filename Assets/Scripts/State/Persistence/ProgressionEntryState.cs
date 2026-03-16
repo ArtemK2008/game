@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     [Serializable]
     public sealed class ProgressionEntryState
@@ -74,3 +74,4 @@ namespace Survivalon.Runtime.State.Persistence
         }
     }
 }
+

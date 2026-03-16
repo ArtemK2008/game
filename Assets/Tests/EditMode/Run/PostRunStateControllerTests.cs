@@ -1,8 +1,8 @@
 using NUnit.Framework;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Run;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.Core;
+using Survivalon.Run;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 using Survivalon.Tests.EditMode.World;
 
 namespace Survivalon.Tests.EditMode.Run
@@ -95,3 +95,4 @@ namespace Survivalon.Tests.EditMode.Run
         }
     }
 }
+

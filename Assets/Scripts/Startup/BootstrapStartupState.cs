@@ -1,9 +1,9 @@
 using System;
-using Survivalon.Runtime.State;
-using Survivalon.Runtime.State.Persistence;
-using Survivalon.Runtime.World;
+using Survivalon.State;
+using Survivalon.State.Persistence;
+using Survivalon.World;
 
-namespace Survivalon.Runtime.Startup
+namespace Survivalon.Startup
 {
     public sealed class BootstrapStartupState
     {
@@ -32,3 +32,4 @@ namespace Survivalon.Runtime.Startup
         public StartupEntryTarget EntryTarget { get; }
     }
 }
+

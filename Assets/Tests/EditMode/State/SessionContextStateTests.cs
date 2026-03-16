@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.State;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Core;
+using Survivalon.State;
+using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State
 {
@@ -43,3 +43,4 @@ namespace Survivalon.Tests.EditMode.State
         }
     }
 }
+

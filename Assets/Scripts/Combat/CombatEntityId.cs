@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.Combat
+namespace Survivalon.Combat
 {
     public readonly struct CombatEntityId : IEquatable<CombatEntityId>
     {
@@ -47,3 +47,4 @@ namespace Survivalon.Runtime.Combat
         }
     }
 }
+

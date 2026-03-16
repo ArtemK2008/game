@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public sealed class RunRewardPayload
     {
@@ -89,3 +89,4 @@ namespace Survivalon.Runtime.Run
         }
     }
 }
+

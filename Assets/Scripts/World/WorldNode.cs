@@ -1,6 +1,6 @@
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.World
+namespace Survivalon.World
 {
     public sealed class WorldNode
     {
@@ -21,3 +21,4 @@ namespace Survivalon.Runtime.World
         public NodeState State { get; }
     }
 }
+

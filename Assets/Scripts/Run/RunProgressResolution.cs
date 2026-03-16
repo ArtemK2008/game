@@ -1,7 +1,7 @@
 using System;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.Runtime.Run
+namespace Survivalon.Run
 {
     public readonly struct RunProgressResolution
     {
@@ -27,3 +27,4 @@ namespace Survivalon.Runtime.Run
         public bool DidUnlockRoute { get; }
     }
 }
+

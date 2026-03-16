@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Survivalon.Runtime.Data.World
+namespace Survivalon.Data.World
 {
     [Serializable]
     public sealed class NodeConnectionData
@@ -12,3 +12,4 @@ namespace Survivalon.Runtime.Data.World
         public NodeDefinition TargetNode => targetNode;
     }
 }
+

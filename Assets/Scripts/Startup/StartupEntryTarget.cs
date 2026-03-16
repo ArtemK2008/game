@@ -1,5 +1,5 @@
 
-namespace Survivalon.Runtime.Startup
+namespace Survivalon.Startup
 {
     public enum StartupEntryTarget
     {
@@ -7,3 +7,4 @@ namespace Survivalon.Runtime.Startup
         WorldViewPlaceholder = 1,
     }
 }
+

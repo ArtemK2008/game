@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime.State.Persistence
+namespace Survivalon.State.Persistence
 {
     public readonly struct AccountWideProgressionEffectState
     {
@@ -38,3 +38,4 @@ namespace Survivalon.Runtime.State.Persistence
         public int OrdinaryRegionMaterialRewardBonus { get; }
     }
 }
+

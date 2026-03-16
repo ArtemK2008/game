@@ -1,8 +1,8 @@
 using NUnit.Framework;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Data.Characters;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.Combat;
+using Survivalon.Core;
+using Survivalon.Data.Characters;
+using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
 
 namespace Survivalon.Tests.EditMode.Combat
@@ -159,3 +159,4 @@ namespace Survivalon.Tests.EditMode.Combat
         }
     }
 }
+

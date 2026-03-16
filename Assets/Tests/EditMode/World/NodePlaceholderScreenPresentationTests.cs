@@ -1,8 +1,8 @@
 using NUnit.Framework;
-using Survivalon.Runtime.Combat;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Run;
-using Survivalon.Runtime.World;
+using Survivalon.Combat;
+using Survivalon.Core;
+using Survivalon.Run;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -338,3 +338,4 @@ namespace Survivalon.Tests.EditMode.World
         }
     }
 }
+

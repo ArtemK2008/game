@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using Survivalon.Runtime.Core;
+using Survivalon.Core;
 
-namespace Survivalon.Runtime.Data.Rewards
+namespace Survivalon.Data.Rewards
 {
     [Serializable]
     public sealed class ResourceAmountData
@@ -18,3 +18,4 @@ namespace Survivalon.Runtime.Data.Rewards
         public int Amount => amount;
     }
 }
+

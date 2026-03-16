@@ -1,4 +1,4 @@
-namespace Survivalon.Runtime.Core
+namespace Survivalon.Core
 {
     public enum RewardSourceCategory
     {
@@ -8,3 +8,4 @@ namespace Survivalon.Runtime.Core
         BossOrMilestone = 3,
     }
 }
+

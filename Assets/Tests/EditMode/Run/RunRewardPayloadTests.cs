@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Survivalon.Runtime.Core;
-using Survivalon.Runtime.Run;
+using Survivalon.Core;
+using Survivalon.Run;
 
 namespace Survivalon.Tests.EditMode.Run
 {
@@ -230,3 +230,4 @@ namespace Survivalon.Tests.EditMode.Run
         }
     }
 }
+

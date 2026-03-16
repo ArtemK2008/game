@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Survivalon.Runtime.State.Persistence;
+using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
@@ -46,3 +46,4 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         }
     }
 }
+
