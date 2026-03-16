@@ -1,387 +1,498 @@
-# Codex Delivery Workflow
-
-## Path convention
-All paths in this spec are relative to the repository root unless explicitly stated otherwise.
+# Code Style
 
 ## Purpose
-Define how Codex should work on this project, how results should be delivered, how milestones should be structured, and what repository/spec workflow must be followed.
+Define the engineering and code-style rules for the Unity project and establish the implementation constraints that all generated or written code must follow.
 
 ---
 
 ## Scope
 This spec defines:
-- how Codex should use project specs
-- how implementation steps should be sized
-- how results should be delivered in the repository
-- git-related rules
-- milestone documentation rules
-- asset dependency rules
-- completion criteria for each milestone
-- constraints for all future implementation work
+- general engineering principles
+- Unity / C# code style rules
+- architecture and design expectations
+- naming rules
+- folder and namespace correlation rules
+- testing expectations
+- refactoring expectations
+- MVP vs future-proofing balance
+- constraints for all implementation work
 
 This spec does not define:
-- gameplay design itself
-- exact code architecture
-- exact CI/CD behavior
-- exact branch naming strategy
+- the full detailed folder tree for every future feature
+- exact Unity package list
+- exact CI/CD pipeline
+- exact assembly definition layout
+- exact static-analysis tool setup
 
 ---
 
 ## Core statement
-Codex must work in small, complete, spec-driven milestones.
+Code must be written for long-term maintainability, safe iteration, and clear reasoning.
 
-Each milestone must:
-- be based on the specs in the `specs/` folder,
-- implement one small coherent slice of the project,
-- include all project-related code/assets/work needed for that slice to be actually usable,
-- include tests for the milestone behavior,
-- produce a milestone file in `specs/milestone/`,
-- stop before the next unrelated slice begins.
+The codebase must favor:
+- readability over cleverness
+- simple designs over speculative abstraction
+- explicit intent over hidden behavior
+- small safe increments over large rewrites
+- strong test coverage around implemented behavior
 
-Codex must stage all project-related created/changed files with `git add` before stopping.
-Codex must not commit changes.
-The user will commit manually.
-
----
-
-## Core workflow rule
-Default workflow:
-
-`read relevant specs in specs/ -> choose one small milestone -> implement the complete milestone -> add/update all required project files -> add milestone note in specs/milestone/ -> git add all project-related created/changed files -> stop without committing`
-
-Do not skip spec reading.
-Do not skip milestone documentation.
-Do not commit.
+Primary engineering principles:
+- **SOLID**
+- **KISS**
+- **YAGNI**
+- **Clean Code**
 
 ---
 
-## Source of truth rule
-The source of truth for project decisions is:
-- `specs/` directory
+## Core implementation rule
+Default engineering flow:
 
-Required behavior:
-- before implementing a feature, Codex should read the relevant specs
-- if multiple specs apply, Codex should align them rather than guessing
-- if specs appear to conflict, Codex should surface the conflict instead of silently inventing a new rule
-
-Milestone files are records of completed work, not replacements for specs.
+`implement the smallest correct solution for current requirements -> keep responsibilities clear -> name things explicitly -> cover behavior with tests -> refactor only when it improves clarity without adding speculative complexity`
 
 ---
 
-## Repository output rule
-All project-related implementation artifacts created or changed for a milestone must exist in the working tree and be staged with `git add` before completion.
-
-Required behavior:
-- create/update code files
-- create/update test files
-- create/update Unity asset metadata/files when needed
-- create/update spec milestone record
-- stage all project-related created/changed files with `git add`
-- do not stage local/editor-generated files such as `.idea/` unless explicitly requested
-- add local-only files that should not be versioned to `.gitignore`
-
-### Git rule
-- **Stage project-related created/changed files with `git add`**
-- **Do not create commits**
-- **Do not auto-commit**
-- **Do not rewrite git history**
-- **Do not decide commit boundaries**
-- the user performs commits manually
+## General engineering principles
+- Prefer simple solutions that are easy to read and debug.
+- Do not add abstractions before there is a real need.
+- Optimize first for correctness and clarity, then for extensibility where it is clearly justified.
+- Keep behavior easy to trace from entry point to result.
+- Avoid hidden side effects.
+- Keep code modular, but do not fragment it into meaningless layers.
+- Favor composition over deep inheritance unless inheritance is clearly justified.
+- Keep the implementation aligned with current specs, not imagined future features.
+- Prefer Unity-friendly architecture that separates scene wiring from gameplay logic.
 
 ---
 
-## Milestone sizing rule
-Milestones must be small.
+## SOLID application rules
+### Single Responsibility Principle
+- Each class should have one clear reason to change.
+- Do not mix unrelated responsibilities in one class.
+- Separate gameplay logic, orchestration, scene wiring, persistence, UI, and asset hookup concerns.
 
-Small means:
-- one coherent slice of functionality
-- limited blast radius
-- easy to review
-- easy to test
-- easy to revert or adjust
+### Open/Closed Principle
+- Prefer extension through clear interfaces, strategies, ScriptableObject-driven configuration, or composition when variation is already known.
+- Do not introduce abstraction layers only because variation might exist later.
 
-Milestones must not try to implement a broad system family all at once.
+### Liskov Substitution Principle
+- Subtypes must behave consistently with their contract.
+- Do not create inheritance hierarchies where child behavior breaks parent assumptions.
 
-Examples of acceptable milestone scope:
-- one stable world-node selection flow
-- one basic autobattle combat loop
-- one node-progress and unlock rule
-- one basic reward screen with connected data flow
+### Interface Segregation Principle
+- Prefer small focused interfaces over large “god interfaces”.
+- Do not force classes to implement methods they do not meaningfully support.
 
-Examples of bad milestone scope:
-- all combat + all progression + all UI + all assets together
-- full character/gear/skill/town system in one step
-- broad cleanup/refactor plus new features plus asset overhaul in one step
-
----
-
-## Milestone completeness rule
-Even though milestones must be small, each milestone must be complete for its intended slice.
-
-Complete means:
-- the gameplay/code path works end-to-end for the scope of that milestone
-- all directly required project files are included
-- all directly required supporting assets for that milestone are included if available
-- tests for the implemented behavior are included where applicable
-- the result is not left intentionally half-wired
-
-Do not leave a milestone in a state where a feature is “almost there” but unusable because obvious directly-related pieces were skipped.
+### Dependency Inversion Principle
+- High-level gameplay logic should depend on clear abstractions where appropriate.
+- Use abstractions at meaningful boundaries, not everywhere by default.
 
 ---
 
-## Asset completeness rule
-If a milestone requires assets to be meaningfully complete, Codex should ensure the milestone includes them.
+## KISS rules
+- Prefer straightforward control flow.
+- Prefer explicit code over overly generic helpers.
+- Prefer small understandable methods over dense multi-purpose methods.
+- Prefer a few clear gameplay concepts over many micro-abstractions.
+- Avoid advanced patterns unless they clearly simplify the current problem.
+- Prefer simple Unity scene composition over complicated runtime object-graph magic.
 
-Examples:
-- sprites
-- animations
-- sound/music
-- prefab hookups
-- ScriptableObject data if needed
-
-Required principle:
-- if an asset is necessary to make the milestone genuinely complete and the asset is missing, Codex should ask the user for that asset with a clear description of what is needed
-- do not silently ignore the missing asset if it makes the milestone incomplete
-- do not pretend the milestone is complete when an obvious required asset is absent
+If two designs solve the same problem, prefer the one that is easier to explain to another developer.
 
 ---
 
-## Missing asset request rule
-When required assets are missing, Codex should ask specifically for them.
+## YAGNI rules
+- Do not implement unused extension points.
+- Do not create classes/interfaces “just in case”.
+- Do not build generalized systems for features that currently have one use case.
+- Do not add settings, flags, or modes that are not required by the current milestone/spec.
+- Do not add custom editor tooling unless it clearly improves the current workflow.
+- Do not add speculative optimization before profiling or a demonstrated need.
 
-The request should include:
-- what asset type is needed
-- what it will be used for
-- minimum required characteristics
-- preferred format if relevant
-
-Examples:
-- missing sprite sheet for a basic enemy
-- missing idle/walk/attack animation frames for a character
-- missing music loop for combat or town context
-- missing SFX for important combat feedback
-
-Codex should not ask for assets that are optional for the milestone if simple placeholders are acceptable and do not invalidate the milestone.
+Future compatibility is good. Speculative architecture is not.
 
 ---
 
-## Placeholder rule
-Placeholders are allowed only when they do not undermine the milestone goal.
-
-Allowed placeholder use:
-- temporary simple art/audio placeholder for non-critical polish
-- temporary primitive visual for testing and implementation flow
-- temporary default UI layout if the feature remains usable and reviewable
-
-Disallowed placeholder use:
-- placeholder instead of a required asset when the milestone’s purpose depends on that asset being real
-- placeholder used to hide that a milestone is functionally incomplete
-
-If the milestone is about a system, placeholders may be acceptable.
-If the milestone is about presentation/feel/readability, required presentation assets may need to be requested.
+## Clean Code rules
+- Code should read like a clear explanation of intent.
+- Every method/class should communicate why it exists.
+- Avoid long methods when extraction improves clarity.
+- Avoid deep nesting when early return or better decomposition helps.
+- Keep conditionals readable and intention-revealing.
+- Reduce duplication when the duplication is real and stable, not accidental and premature.
+- Prefer domain language from specs in code naming.
+- Avoid “magic” behavior hidden in utility classes or MonoBehaviours.
 
 ---
 
-## Milestone record rule
-After each completed milestone, Codex must create a milestone file in:
-- `specs/milestone/`
-
-Each milestone file must contain a short description of:
-- what was implemented
-- what files/systems were changed at a high level
-- what the milestone now enables
-- any important limitation or dependency still remaining
-
-The milestone record should be short, factual, and review-friendly.
-
----
-
-## Milestone file naming rule
-Milestone files should be easy to order and review.
-
-Recommended format:
-- sequential numbering or date + short slug
-
-Examples:
-- `001_basic_world_navigation.md`
-- `002_node_progress_and_unlock.md`
-- `2026-03-11_basic_autobattle_loop.md`
-
-The naming scheme should stay consistent once chosen.
+## Unity / C# specific rules
+- Use C# features only when they improve readability.
+- Prefer explicit types when they improve understanding.
+- Avoid overusing `var` if it makes the code harder to read.
+- Favor immutable data where practical.
+- Keep mutable gameplay state controlled and localized.
+- Prefer enums for stable gameplay categories.
+- Use ScriptableObjects for static/configurable data when they improve data-driven design.
+- Do not put heavy gameplay logic directly into MonoBehaviour lifecycle methods if it can live in plain C# classes.
+- Keep MonoBehaviours thin when possible: wiring, references, lifecycle bridging, and view updates.
+- Put reusable gameplay rules/calculations into plain C# classes/services rather than scene-bound components when appropriate.
+- Use Unity events/callbacks carefully; avoid hidden execution chains.
+- Keep serialization needs explicit.
+- Avoid unnecessary runtime allocations in hot update paths when the path is frequent enough to matter.
+- Avoid using `Find`, `GetComponent` repeatedly inside hot loops when references can be cached safely.
+- Avoid singletons unless the lifetime/global ownership is truly clear and justified.
 
 ---
 
-## Spec usage rule per task
-For each task, Codex should read only the relevant subset of specs, but must not ignore dependencies.
-
-Required behavior:
-- identify the directly relevant spec(s)
-- also read any foundational specs they depend on when needed
-- implement according to those specs
-- avoid unrelated scope creep from non-relevant specs
-
-Example:
-If implementing node unlock flow, relevant specs likely include:
-- `specs/02_core/core_gameplay_loop.md`
-- `specs/02_core/progression/progression_structure_unlock_flow.md`
-- `specs/03_world/world_structure.md`
-- `specs/03_world/moving_between_maps.md`
-- `specs/03_world/what_does_it_mean_to_beat_a_map.md`
+## Class design rules
+- Each class must have a clear role.
+- Avoid “god classes”.
+- Avoid anemic pass-through classes that add no value.
+- Service classes should orchestrate, not own all domain logic.
+- Domain logic should live close to the domain it describes.
+- Utility classes should be rare and focused.
+- MonoBehaviours should not become giant all-purpose controllers.
+- Presenter/view/controller-like scene components should not hide important gameplay rules.
+- ScriptableObjects should define data/configuration, not become dumping grounds for arbitrary runtime state.
 
 ---
 
-## Implementation stopping rule
-After finishing one milestone, Codex should stop.
-
-Required behavior:
-- do not automatically start the next milestone
-- do not continue expanding scope because more related work is possible
-- wait for the next user instruction after the milestone is completed and documented
-
-This preserves reviewability and control.
-
----
-
-## Testing rule
-Every milestone must include tests for the behavior introduced or changed in that milestone, where testing is applicable.
-
-Required behavior:
-- add or update unit tests for milestone behavior
-- keep tests focused on the implemented slice
-- do not leave milestone logic untested if it can reasonably be tested
-
-If Unity-specific integration/play mode coverage is truly needed, add it when appropriate, but do not replace straightforward unit tests with heavy scene tests unnecessarily.
+## Method design rules
+- Methods should do one clear thing.
+- Method names must describe intent, not implementation detail.
+- Avoid methods with too many arguments.
+- If a method needs many parameters, consider whether a small domain object or request object is clearer.
+- Keep method side effects obvious.
+- Prefer early returns to reduce nesting when it improves clarity.
+- Do not hide important state changes inside generic helper methods.
 
 ---
 
-## Refactoring rule during milestone work
-Refactoring is allowed only when it directly supports the milestone.
+## Naming rules
+### General naming principles
+- Use meaningful names.
+- Names must explain gameplay/domain purpose.
+- Avoid vague names like `data`, `value`, `item`, `stuff`, `helper`, `manager`, `controller` unless they are truly the best domain term.
+- Avoid one-letter names except for trivial loop indexes in very small scopes.
+- Prefer full words over abbreviations unless the abbreviation is a stable domain term.
+- Use names from the project specs/domain language when possible.
 
-Allowed:
-- small refactor to make the milestone implementable
-- small refactor to improve clarity of touched code
-- small refactor to keep tests sane
+### Variables
+- Variable names must be meaningful and specific.
+- A variable should tell the reader what it holds and why it exists.
+- Prefer names like `currentNodeProgress`, `activeEnemyCount`, `selectedCharacterData`, `pendingRewardSummary` over vague names like `data`, `result`, `tmp`, `val`.
 
-Not allowed:
-- broad unrelated cleanup
-- architecture rewrite because it “might help later”
-- opportunistic large refactor unrelated to the current milestone
+### Methods
+- Use verb-based names.
+- Method names should describe the action and gameplay meaning.
+- Examples: `CalculateNodeProgress`, `UnlockNextNode`, `GrantRunRewards`, `ResolveCombatTick`, `LoadAvailableWorldNodes`.
 
-Milestones should stay focused.
+### Classes
+- Use noun-based names.
+- A class name should describe the concept or responsibility.
+- Examples: `NodeProgressService`, `RunRewardCalculator`, `WorldStateRepository`, `AutoCombatController`.
 
----
+### Booleans
+- Boolean names should read clearly as true/false statements.
+- Prefer names like `IsCleared`, `IsAvailable`, `HasUnlockedBranch`, `CanAutoPickUpgrades`.
 
-## Completion criteria rule
-A milestone is complete only if:
-- the scoped feature works end-to-end
-- directly related code is present
-- directly related tests are present where applicable
-- directly required assets are present or explicitly requested from the user
-- milestone documentation file is created in `specs/milestone/`
-- no commit is created
-
-If one of these is missing, the milestone is not complete.
-
----
-
-## Communication rule for blocked work
-If Codex cannot complete a milestone because something essential is missing, it should say so clearly.
-
-Valid blockers include:
-- required missing asset
-- conflicting specs
-- missing repository context
-- missing scene/prefab dependency needed for the requested slice
-
-When blocked by missing assets, Codex should ask for the exact asset and describe what is needed.
+### Unity assets/scripts
+- Script names must match class names.
+- ScriptableObject asset types should have names that clearly describe the data they hold.
+- Prefab-related scripts should describe role, not only object type.
 
 ---
 
-## Repository hygiene rule
-Codex should keep repository changes coherent.
-
-Required behavior:
-- change only files relevant to the milestone
-- avoid accidental unrelated edits
-- keep milestone output reviewable
-- keep asset/code/spec changes aligned
-
-Do not create noise changes unrelated to the milestone.
+## Folder/module rules
+- Group code by gameplay domain or feature when practical, not only by technical layer.
+- Keep folder names predictable and stable.
+- Avoid dumping unrelated logic into shared/common folders.
+- Keep scenes, prefabs, sprites, audio, ScriptableObjects, and scripts organized consistently.
+- Shared modules should only exist when code is genuinely reused and conceptually shared.
 
 ---
 
-## Unity-specific workflow rule
-Because this is a Unity project, milestone completeness may include:
-- scripts
-- prefabs
-- scenes
-- ScriptableObjects
-- sprite/audio asset hookups
-- animations/controllers
-- related meta files where needed
+## Folder and namespace correlation rules
+- Runtime scripts should be grouped by gameplay/domain feature under `Assets/Scripts/`.
+- EditMode tests should mirror runtime domain ownership under `Assets/Tests/EditMode/` when practical.
+- Folder structure should be predictable, domain-oriented, and easy to navigate.
+- Avoid keeping ordinary domain classes directly under `Assets/Scripts/` unless they truly belong to the runtime root.
+- Shared cross-domain primitives should live under `Assets/Scripts/Core/` rather than a flat root script folder.
+- Tests do not need to mirror runtime file-for-file, but they should mirror runtime domain structure closely enough that ownership is obvious.
+- A developer should be able to find the relevant runtime slice and its tests through the same domain path.
 
-If the milestone depends on Unity asset wiring, Codex should include that wiring as part of the milestone rather than stopping at only raw C# code.
+### Runtime namespace convention
+Namespaces should correlate with runtime script paths under `Assets/Scripts/`.
+
+Preferred pattern:
+- `Assets/Scripts/Core/...` -> `Survivalon.Runtime.Core...`
+- `Assets/Scripts/Startup/...` -> `Survivalon.Runtime.Startup...`
+- `Assets/Scripts/Combat/...` -> `Survivalon.Runtime.Combat...`
+- `Assets/Scripts/Run/...` -> `Survivalon.Runtime.Run...`
+- `Assets/Scripts/World/...` -> `Survivalon.Runtime.World...`
+- `Assets/Scripts/State/...` -> `Survivalon.Runtime.State...`
+- `Assets/Scripts/State/Persistence/...` -> `Survivalon.Runtime.State.Persistence...`
+- `Assets/Scripts/Data/...` -> `Survivalon.Runtime.Data...`
+
+### Test namespace convention
+EditMode test namespaces should correlate with test paths under `Assets/Tests/EditMode/`.
+
+Preferred pattern:
+- `Assets/Tests/EditMode/Core/...` -> `Survivalon.Tests.EditMode.Core...`
+- `Assets/Tests/EditMode/Startup/...` -> `Survivalon.Tests.EditMode.Startup...`
+- `Assets/Tests/EditMode/Combat/...` -> `Survivalon.Tests.EditMode.Combat...`
+- `Assets/Tests/EditMode/Run/...` -> `Survivalon.Tests.EditMode.Run...`
+- `Assets/Tests/EditMode/World/...` -> `Survivalon.Tests.EditMode.World...`
+- `Assets/Tests/EditMode/State/...` -> `Survivalon.Tests.EditMode.State...`
+- `Assets/Tests/EditMode/State/Persistence/...` -> `Survivalon.Tests.EditMode.State.Persistence...`
+- `Assets/Tests/EditMode/Data/...` -> `Survivalon.Tests.EditMode.Data...`
+
+### Root-folder rule
+- The root of `Assets/Scripts/` should remain minimal.
+- Keep only files that truly belong to the runtime root there.
+- Prefer moving domain types into `Core`, `Startup`, `Combat`, `Run`, `World`, `State`, or `Data` instead of growing a flat root script folder.
+
+### Exceptions rule
+- Temporary exceptions are allowed only when a small milestone would otherwise become unnecessarily broad.
+- Any intentional exception should be easy to explain and should be cleaned up in a later focused refactor milestone.
+- New code should follow the target folder/namespace convention unless there is a clear reason not to.
 
 ---
 
-## MVP implementation rule
+## Comments and documentation rules
+- Prefer self-explanatory code over excessive comments.
+- Add comments only when they explain **why**, not what obvious code already shows.
+- Do not leave stale or misleading comments.
+- Avoid noise comments.
+- Public APIs and important gameplay boundaries may use concise documentation where helpful.
+- If a rule is important enough to require repeated explanation, consider improving naming or decomposition first.
+
+---
+
+## Error-handling rules
+- Handle errors explicitly.
+- Error messages should be useful and specific.
+- Do not swallow exceptions silently.
+- Do not catch broad exceptions unless there is a clear recovery or translation purpose.
+- Validation failures and impossible states should be distinguishable.
+- Fail fast in development when required scene/config references are missing.
+- Prefer explicit guard clauses for invalid setup and missing dependencies.
+
+---
+
+## State and side-effect rules
+- Keep mutable state as small and localized as possible.
+- Make important state transitions explicit.
+- Avoid hidden global state.
+- Avoid side effects inside code that appears to be pure.
+- If a method mutates state, the method contract should make that obvious.
+- Avoid mixing transient runtime state with persistent save state in the same object unless the responsibility is truly unified.
+
+---
+
+## Logging and debugging rules
+- Log meaningful events and failures.
+- Logs should help trace important flow, not flood with noise.
+- Do not log every frame/update path unless specifically debugging.
+- Prefer structured, contextual logs where possible.
+- Log gameplay-significant transitions, failures, and unexpected states.
+- Remove temporary debug spam when the milestone is complete unless the logging remains valuable.
+
+---
+
+## Testing rules
+Testing is required.
+
+### Core testing rule
+Every milestone must include tests for the behavior introduced or changed in that milestone.
+
+### Required testing principles
+- Write tests for behavior, not implementation details.
+- Tests must prove correctness of the current milestone.
+- Tests must be readable and intention-revealing.
+- Tests must have deterministic expectations.
+- New behavior must not be considered complete without tests, unless explicitly impossible or out of scope.
+- Bug fixes should include regression tests when practical.
+
+### Unit test expectations
+- Each important rule/service/calculation should have direct unit test coverage.
+- Prefer focused unit tests over huge scene/integration-style tests for core logic.
+- Test names should explain the scenario and expected result.
+- Arrange/Act/Assert structure is preferred when it improves readability.
+- Keep gameplay logic testable outside MonoBehaviour where possible.
+
+### Testing priorities
+Focus tests on:
+- progression rules
+- combat calculations
+- reward generation
+- unlock logic
+- automation decisions if deterministic
+- persistence boundary behavior
+- bug-prone branching logic
+
+### Optional Unity-specific testing
+Use play mode/integration tests only when scene interaction, prefab wiring, or engine behavior genuinely needs them.
+Do not push ordinary gameplay logic into play mode tests if plain C# unit tests are enough.
+
+### Test naming examples
+- `ShouldUnlockNextNodeWhenProgressReachesThreshold`
+- `ShouldGrantPartialProgressWhenRunFailsBeforeClear`
+- `ShouldReturnOnlyReachableNodesForCurrentWorldState`
+
+### Testing anti-rules
+- Do not write fragile tests tied to incidental implementation details.
+- Do not skip tests for milestone behavior because “it is simple”.
+- Do not create overly broad tests that make failures hard to diagnose.
+- Do not duplicate the same coverage shape across many tests without added value.
+
+---
+
+## Refactoring rules
+- Refactor to improve readability, naming, structure, or duplication when the change has clear value.
+- Do not refactor unrelated areas during a milestone unless necessary for correctness or maintainability.
+- Prefer small safe refactorings.
+- Preserve behavior unless the task explicitly changes behavior.
+- When refactoring, keep or improve test coverage.
+
+Good reasons to refactor:
+- class has multiple responsibilities
+- method is hard to read
+- naming hides intent
+- duplication is stable and clearly harmful
+- testability is poor because structure is unclear
+- MonoBehaviour is carrying too much logic that should live elsewhere
+
+Bad reasons to refactor:
+- speculative future design
+- style churn with no clarity gain
+- pattern introduction for its own sake
+
+---
+
+## Dependency and abstraction rules
+- Introduce interfaces at meaningful boundaries.
+- Do not create interfaces for every class by default.
+- Prefer concrete implementations until variation/testing/design clearly benefit from abstraction.
+- Keep dependency graphs simple.
+- Avoid cyclic dependencies.
+- Prefer constructor injection for plain C# classes where dependency injection is used.
+- For MonoBehaviours, prefer explicit serialized references or clear composition over hidden service-location patterns.
+
+---
+
+## Complexity control rules
+- Keep branching logic understandable.
+- Prefer explicit domain models over encoded primitive combinations when complexity grows.
+- Split large flows into named steps when that improves traceability.
+- Avoid boolean-flag explosions in public APIs.
+- Avoid deeply nested conditionals when a clearer model exists.
+- Avoid scattering gameplay rules across many lifecycle callbacks without a clear reason.
+
+---
+
+## Data structure rules
+- Choose data structures for clarity first, then efficiency when needed.
+- Prefer domain objects over loosely structured dictionaries when behavior matters.
+- Use collections intentionally and validate assumptions about emptiness/order/uniqueness when relevant.
+- Do not expose mutable internal collections without reason.
+- Use ScriptableObject data assets or serializable DTO/config classes when they improve data clarity.
+
+---
+
+## API and boundary rules
+- Public methods/classes should expose clear contracts.
+- Input validation should happen at appropriate boundaries.
+- Boundary code should translate Unity scene/input/data into gameplay-friendly structures.
+- Keep scene/view/controller layer thin if applicable.
+- Keep persistence layer from leaking directly into higher-level gameplay logic without purpose.
+
+---
+
+## MVP implementation rules
 For early milestones, optimize for:
-- one small usable slice at a time
-- spec compliance
-- clean, staged project changes with no commit
-- test coverage
-- reviewable milestone notes
-- minimal but complete asset wiring
+- correctness
+- readability
+- testability
+- low conceptual overhead
+- easy iteration
+- clear Unity integration points
 
 Do not optimize early for:
-- huge vertical slices
-- speculative future systems
-- polishing multiple unrelated systems in one milestone
+- speculative extensibility
+- framework cleverness
+- generic engines
+- advanced optimization without evidence
+- over-engineered custom tooling
+
+The first implementation of a feature should be the smallest clean version that satisfies the current spec.
 
 ---
 
-## Constraints for all future implementation work
-- Stage all project-related created/changed files with `git add`.
-- Do not commit.
-- Do not skip creating milestone files.
-- Do not ignore the `specs/` folder as the source of truth.
-- Do not make milestones broad.
-- Do not leave directly related work half-done.
-- Do not silently ignore missing required assets.
-- Do not stage local/editor-generated files such as `.idea/` unless explicitly requested.
-- Do not continue to the next milestone without user instruction.
-- Do not treat placeholder-only presentation as complete if the milestone requires real presentation assets.
+## Asset-code boundary rules
+- Keep asset references explicit.
+- Do not hardcode asset paths in gameplay logic unless there is no better short-term option.
+- Separate gameplay data from visual/audio asset hookup where practical.
+- Missing required assets should fail clearly, not silently.
+- If a milestone depends on missing sprites/audio/animations, request them rather than faking invisible final content.
+
+---
+
+## Consistency rules
+- Similar problems should be solved in similar ways.
+- Naming, test style, error handling, and structure should remain consistent across the codebase.
+- When introducing a new pattern, ensure it is actually better than the existing local pattern.
+- Prefer consistency with project rules over personal style preferences.
+
+---
+
+## Constraints for all future implementation
+- Do not sacrifice readability for cleverness.
+- Do not introduce speculative abstractions without real need.
+- Do not leave milestone behavior without tests.
+- Do not use vague variable names.
+- Do not create god classes or giant methods.
+- Do not mix unrelated responsibilities.
+- Do not hide important gameplay rules in generic utility code.
+- Do not refactor broadly without need.
+- Do not bypass the spec language with unclear technical naming.
+- Do not push too much gameplay logic into MonoBehaviour lifecycle code when it can live in testable classes.
+- Do not add new code that breaks the folder and namespace correlation rules without a clear reason.
 
 ---
 
 ## Extension points
-This workflow must remain compatible with later addition of:
-- stricter milestone templates
-- automated changelog generation
-- spec-to-milestone traceability links
-- checklists per milestone
-- richer asset request templates
-- review gates or QA notes
+The engineering style must remain compatible with later addition of:
+- stricter assembly/module boundaries
+- static analysis rules
+- architectural tests
+- integration/play mode test suites
+- contract tests
+- performance profiling/optimization rules
+- code-generation helpers where justified
+- custom editor tooling where justified
 
-These additions must extend the same small-step, spec-driven workflow.
+These additions must strengthen clarity and maintainability, not replace them.
 
 ---
 
 ## Out of scope
 This spec does not define:
-- exact git branching model
-- exact commit-message format
-- exact CI requirements
-- exact release packaging workflow
+- exact formatter configuration
+- exact linter/analyzer ruleset
+- exact Unity package selection
+- exact assembly definition topology
+- exact CI gating rules
 
 ---
 
 ## Validation checklist
-- [ ] Codex reads relevant specs from `specs/` before implementing.
-- [ ] Work is delivered in small milestones.
-- [ ] Each milestone is complete for its intended slice.
-- [ ] All project-related created/changed files for the milestone are staged with `git add`.
-- [ ] No commit is created.
-- [ ] A milestone file is created in `specs/milestone/` after each completed step.
-- [ ] Missing required assets are explicitly requested from the user.
-- [ ] Unity-specific asset wiring is included when required for milestone completeness
+- [ ] Code uses meaningful names for classes, methods, variables, and booleans.
+- [ ] Code follows SOLID where it improves clarity and maintainability.
+- [ ] Code follows KISS and avoids unnecessary complexity.
+- [ ] Code follows YAGNI and avoids speculative abstractions.
+- [ ] Runtime files are placed under the correct domain-oriented folders.
+- [ ] EditMode tests are placed under the correct domain-oriented test folders.
+- [ ] Namespaces correlate with the current file paths.
+- [ ] Core behavior is covered by unit tests for each milestone.
+- [ ] Refactorings improve clarity without unnecessary scope expansion.
+- [ ] Code remains aligned with specs and current milestone boundaries.
