@@ -1,4 +1,6 @@
-namespace Survivalon.Runtime
+using Survivalon.Runtime.Data.Combat;
+
+namespace Survivalon.Runtime.Data.Gear
 {
     public enum GearCategory
     {

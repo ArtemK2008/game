@@ -1,6 +1,6 @@
 using System;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Core
 {
     public readonly struct NodeId : IEquatable<NodeId>
     {

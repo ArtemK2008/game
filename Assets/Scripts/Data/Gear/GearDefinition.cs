@@ -1,6 +1,7 @@
 using UnityEngine;
+using Survivalon.Runtime.Data.Combat;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Data.Gear
 {
     [CreateAssetMenu(
         fileName = "GearDefinition",

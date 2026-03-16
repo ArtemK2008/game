@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Survivalon.Runtime.Core;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Data.World
 {
     [CreateAssetMenu(
         fileName = "RegionDefinition",

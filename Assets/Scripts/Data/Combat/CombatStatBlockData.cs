@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Data.Combat
 {
     [Serializable]
     public sealed class CombatStatBlockData

@@ -1,4 +1,4 @@
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Core
 {
     public enum RewardCategory
     {

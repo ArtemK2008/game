@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Runtime.Combat;
+using Survivalon.Runtime.Data.Combat;
+using Survivalon.Runtime.Data.Gear;
+using Survivalon.Runtime.State.Persistence;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Data.Characters
 {
     public static class PlayableCharacterCatalog
     {

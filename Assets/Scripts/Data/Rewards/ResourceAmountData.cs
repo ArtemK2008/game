@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
+using Survivalon.Runtime.Core;
+using Survivalon.Runtime.Data.Gear;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Data.Rewards
 {
     [Serializable]
     public sealed class ResourceAmountData

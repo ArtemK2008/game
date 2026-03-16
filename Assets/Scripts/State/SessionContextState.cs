@@ -1,6 +1,8 @@
 using System;
+using Survivalon.Runtime.Core;
+using Survivalon.Runtime.State.Persistence;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.State
 {
     public sealed class SessionContextState
     {

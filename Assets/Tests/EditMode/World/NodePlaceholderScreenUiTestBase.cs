@@ -4,8 +4,15 @@ using Survivalon.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Survivalon.Runtime.Combat;
+using Survivalon.Runtime.Core;
+using Survivalon.Runtime.Run;
+using Survivalon.Runtime.State;
+using Survivalon.Runtime.State.Persistence;
+using Survivalon.Runtime.World;
+using Survivalon.Tests.EditMode.State.Persistence;
 
-namespace Survivalon.Tests.EditMode
+namespace Survivalon.Tests.EditMode.World
 {
     public abstract class NodePlaceholderScreenUiTestBase
     {

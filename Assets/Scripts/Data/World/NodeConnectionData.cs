@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using Survivalon.Runtime.Core;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Data.World
 {
     [Serializable]
     public sealed class NodeConnectionData
