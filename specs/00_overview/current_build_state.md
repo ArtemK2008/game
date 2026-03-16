@@ -153,3 +153,4 @@ This file is derived from the milestone notes in `specs/milestone/` plus the cur
 - EditMode tests are now physically grouped much more closely to runtime domain ownership through `Core`, `Startup`, `Combat`, `Run`, `World`, `State`, `State/Persistence`, and `Data` test folders.
 - Runtime and EditMode test namespaces now mirror that domain folder structure under `Survivalon.Runtime.*` and `Survivalon.Tests.EditMode.*`, with only the intentionally cross-domain root assembly marker/smoke-test exceptions left unchanged.
 - The follow-up namespace cleanup removed the broad redundant cross-domain `using` noise from runtime and EditMode files; runtime behavior stayed unchanged.
+- A small follow-up dead-code pass removed a few runtime convenience accessors that existed only for EditMode tests; runtime behavior stayed unchanged.

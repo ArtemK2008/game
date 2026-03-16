@@ -27,7 +27,7 @@ namespace Survivalon.Tests.EditMode.Run
             RunLifecycleController replayController = controller.CreateReplayLifecycleController();
 
             Assert.That(replayController.CurrentState, Is.EqualTo(RunLifecycleState.RunStart));
-            Assert.That(replayController.NodeContext.NodeId, Is.EqualTo(controller.NodeContext.NodeId));
+            Assert.That(replayController.NodeContext.NodeId, Is.EqualTo(new NodeId("region_002_node_001")));
             Assert.That(replayController.HasRunResult, Is.False);
         }
 

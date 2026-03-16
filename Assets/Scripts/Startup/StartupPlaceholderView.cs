@@ -12,8 +12,6 @@ namespace Survivalon.Runtime.Startup
         private Text summaryText;
         private Font uiFont;
 
-        public StartupEntryTarget ActiveTarget => activeTarget;
-
         public void Show(StartupEntryTarget target)
         {
             activeTarget = target;

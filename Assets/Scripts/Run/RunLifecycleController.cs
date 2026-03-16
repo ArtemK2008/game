@@ -57,8 +57,6 @@ namespace Survivalon.Runtime.Run
 
         public bool HasRunResult => runResult != null;
 
-        public bool HasCombatContext => combatShellContext != null;
-
         public bool HasCombatEncounterState => combatEncounterState != null;
 
         public bool UsesCombatShell => nodeContext.UsesCombatShell;
