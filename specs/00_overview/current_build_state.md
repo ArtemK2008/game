@@ -24,6 +24,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The project launches through `BootstrapScene` and `BootstrapStartup`.
 - Startup resolves into a world-map safe context or a main-menu placeholder target.
 - Safe-stop persistence exists for resolved world-level context; startup can reload that safe context.
+- The startup/bootstrap runtime flow is now grouped under a dedicated `Startup` domain folder/namespace for clearer ownership and navigation.
 
 ### World map and node entry
 - A runtime world graph exists with regions, nodes, explicit connections, and limited branching.

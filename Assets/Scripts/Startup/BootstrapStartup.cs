@@ -1,8 +1,9 @@
 using System;
 using System.IO;
+using Survivalon.Runtime;
 using UnityEngine;
 
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Startup
 {
     public sealed class BootstrapStartup : MonoBehaviour
     {

@@ -1,4 +1,4 @@
-namespace Survivalon.Runtime
+namespace Survivalon.Runtime.Startup
 {
     public enum StartupEntryTarget
     {
