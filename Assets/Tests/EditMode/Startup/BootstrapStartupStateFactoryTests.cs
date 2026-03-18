@@ -57,6 +57,33 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(startupState.GameState.CharacterStates[0].IsActive, Is.True);
         }
 
+        [Test]
+        public void ShouldNormalizePlayableCharacterSelectionWhenPersistedStateHasNoActiveSelectableCharacter()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState persistedGameState = new PersistentGameState();
+            persistedGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            persistedGameState.WorldState.SetLastSafeNode(new NodeId("region_001_node_001"));
+            persistedGameState.SafeResumeState.MarkWorldMap(new NodeId("region_002_node_001"));
+            persistedGameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: "skill_package_vanguard_default"));
+            storage.Seed(persistedGameState);
+
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            BootstrapStartupState startupState = stateFactory.Create(new BootstrapWorldMapFactory());
+
+            Assert.That(startupState.GameState, Is.SameAs(persistedGameState));
+            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(1));
+            Assert.That(startupState.GameState.CharacterStates[0].CharacterId, Is.EqualTo("character_vanguard"));
+            Assert.That(startupState.GameState.CharacterStates[0].IsActive, Is.True);
+        }
+
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
         {
             private PersistentGameState savedGameState;

@@ -5,6 +5,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using Survivalon.Core;
 using Survivalon.State;
+using Survivalon.State.Persistence;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
@@ -34,6 +35,7 @@ namespace Survivalon.Tests.EditMode.World
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             SessionContextState sessionContext = new SessionContextState();
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
 
             try
             {
@@ -41,7 +43,8 @@ namespace Survivalon.Tests.EditMode.World
                 worldMapScreen.Show(
                     BootstrapWorldTestData.CreateWorldGraph(),
                     BootstrapWorldTestData.CreateWorldState(),
-                    sessionContext: sessionContext);
+                    sessionContext: sessionContext,
+                    gameState: gameState);
 
                 Canvas canvas = hostObject.GetComponent<Canvas>();
                 Assert.That(canvas, Is.Not.Null);
@@ -60,6 +63,7 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsStateLabel = false;
                 bool containsForwardRouteSummary = false;
                 bool containsRecentNodeSummary = false;
+                bool containsCharacterSelectionSummary = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("State:"))
@@ -76,11 +80,18 @@ namespace Survivalon.Tests.EditMode.World
                     {
                         containsRecentNodeSummary = true;
                     }
+
+                    if (label.text.Contains("Selected character: Vanguard"))
+                    {
+                        containsCharacterSelectionSummary = true;
+                    }
                 }
 
                 Assert.That(containsStateLabel, Is.True);
                 Assert.That(containsForwardRouteSummary, Is.True);
                 Assert.That(containsRecentNodeSummary, Is.True);
+                Assert.That(containsCharacterSelectionSummary, Is.True);
+                Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
             }
             finally
             {
@@ -92,6 +103,7 @@ namespace Survivalon.Tests.EditMode.World
         public void Show_ShouldInvokeNodeEntryCallbackWhenSelectedNodeIsConfirmed()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
             bool wasInvoked = false;
             NodeId enteredNodeId = default;
 
@@ -105,7 +117,8 @@ namespace Survivalon.Tests.EditMode.World
                     {
                         wasInvoked = true;
                         enteredNodeId = nodeId;
-                    });
+                    },
+                    gameState: gameState);
 
                 Button selectableNodeButton = FindButton(hostObject, "region_002_node_001_Button");
                 selectableNodeButton.onClick.Invoke();
@@ -129,6 +142,7 @@ namespace Survivalon.Tests.EditMode.World
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             SessionContextState sessionContext = new SessionContextState();
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
 
             try
             {
@@ -136,7 +150,8 @@ namespace Survivalon.Tests.EditMode.World
                 worldMapScreen.Show(
                     BootstrapWorldTestData.CreateWorldGraph(),
                     BootstrapWorldTestData.CreateWorldState(),
-                    sessionContext: sessionContext);
+                    sessionContext: sessionContext,
+                    gameState: gameState);
 
                 ForceUiLayout(hostObject);
 
@@ -147,6 +162,33 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(RectanglesOverlap(summaryRect, enterButtonRect), Is.False);
                 Assert.That(RectangleContains(panelRect, summaryRect), Is.True);
                 Assert.That(RectangleContains(panelRect, enterButtonRect), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldKeepPlayableCharacterSelectedWhenCharacterButtonIsPressed()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                FindButton(hostObject, "character_vanguard_CharacterButton").onClick.Invoke();
+
+                Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState), Is.True);
+                Assert.That(characterState.IsActive, Is.True);
+                Assert.That(ContainsText(hostObject, "Selected character: Vanguard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Selected: Vanguard"), Is.True);
             }
             finally
             {
@@ -167,6 +209,20 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.Fail($"Button '{buttonObjectName}' was not found.");
             return null;
+        }
+
+        private static bool ContainsText(GameObject rootObject, string textFragment)
+        {
+            Text[] labels = rootObject.GetComponentsInChildren<Text>(true);
+            foreach (Text label in labels)
+            {
+                if (label.text.Contains(textFragment))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static RectTransform FindRectTransform(GameObject rootObject, string objectName)

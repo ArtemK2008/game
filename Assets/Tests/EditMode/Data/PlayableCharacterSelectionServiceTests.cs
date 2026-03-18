@@ -1,0 +1,105 @@
+using System.Collections.Generic;
+using NUnit.Framework;
+using Survivalon.Data.Characters;
+using Survivalon.State.Persistence;
+
+namespace Survivalon.Tests.EditMode.Data
+{
+    public sealed class PlayableCharacterSelectionServiceTests
+    {
+        [Test]
+        public void ShouldBuildOnlySelectableKnownCharacterOptionsAndMarkCurrentSelection()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: "skill_package_vanguard_default"));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_unknown",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false));
+            PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
+
+            IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions = service.BuildSelectableOptions(gameState);
+
+            Assert.That(selectionOptions, Has.Count.EqualTo(1));
+            Assert.That(selectionOptions[0].CharacterId, Is.EqualTo("character_vanguard"));
+            Assert.That(selectionOptions[0].DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(selectionOptions[0].IsSelected, Is.True);
+        }
+
+        [Test]
+        public void ShouldNormalizeSelectionToOnlySelectablePlayableCharacterWhenCurrentActiveStateIsInvalid()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_unknown",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: "skill_package_vanguard_default"));
+            PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
+
+            service.EnsureValidSelection(gameState);
+
+            Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+            Assert.That(vanguardState.IsActive, Is.True);
+            Assert.That(gameState.TryGetCharacterState("character_unknown", out PersistentCharacterState unknownState), Is.True);
+            Assert.That(unknownState.IsActive, Is.False);
+        }
+
+        [Test]
+        public void ShouldSelectOnlySelectablePlayableCharacterWhenRequested()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_unknown",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: "skill_package_vanguard_default"));
+            PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
+
+            bool didSelect = service.TrySelectCharacter(gameState, "character_vanguard");
+
+            Assert.That(didSelect, Is.True);
+            Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+            Assert.That(vanguardState.IsActive, Is.True);
+            Assert.That(gameState.TryGetCharacterState("character_unknown", out PersistentCharacterState unknownState), Is.True);
+            Assert.That(unknownState.IsActive, Is.False);
+        }
+
+        [Test]
+        public void ShouldRejectSelectingUnknownPlayableCharacterId()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: "skill_package_vanguard_default"));
+            PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
+
+            bool didSelect = service.TrySelectCharacter(gameState, "character_unknown");
+
+            Assert.That(didSelect, Is.False);
+            Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+            Assert.That(vanguardState.IsActive, Is.True);
+        }
+    }
+}

@@ -51,7 +51,8 @@ namespace Survivalon.Startup
                 worldGraph,
                 gameState.WorldState,
                 HandleNodeEntryRequested,
-                sessionContext);
+                sessionContext,
+                gameState);
         }
 
         private void ShowNodePlaceholder(NodePlaceholderState placeholderState)

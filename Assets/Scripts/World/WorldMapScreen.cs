@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.State;
 using Survivalon.State.Persistence;
 
@@ -11,22 +12,29 @@ namespace Survivalon.World
     public sealed class WorldMapScreen : MonoBehaviour
     {
         private const float SummaryPreferredHeight = 176f;
+        private const float CharacterSelectionSummaryPreferredHeight = 54f;
+        private const float CharacterSelectionButtonPreferredHeight = 44f;
 
         private Canvas canvas;
         private Text titleText;
         private Text summaryText;
+        private Text characterSelectionText;
         private Button enterSelectedNodeButton;
         private Text enterSelectedNodeButtonText;
+        private RectTransform characterSelectionContainer;
         private RectTransform nodeListContainer;
         private Font uiFont;
         private WorldMapScreenController screenController;
         private Action<NodeId> onNodeEntryRequested;
+        private PersistentGameState gameState;
+        private PlayableCharacterSelectionService characterSelectionService;
 
         public void Show(
             WorldGraph worldGraph,
             PersistentWorldState worldState,
             Action<NodeId> nodeEntryRequested = null,
-            SessionContextState sessionContext = null)
+            SessionContextState sessionContext = null,
+            PersistentGameState gameState = null)
         {
             if (worldGraph == null)
             {
@@ -40,6 +48,8 @@ namespace Survivalon.World
 
             screenController = new WorldMapScreenController(worldGraph, worldState, sessionContext: sessionContext);
             onNodeEntryRequested = nodeEntryRequested;
+            this.gameState = gameState;
+            characterSelectionService = gameState == null ? null : new PlayableCharacterSelectionService();
             gameObject.name = "WorldMapScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
@@ -58,6 +68,7 @@ namespace Survivalon.World
                 screenController.SessionContext,
                 screenController.HasForwardRouteChoice,
                 screenController.ForwardSelectableNodeCount);
+            RefreshCharacterSelection();
             RefreshEntryButton();
 
             ClearNodeButtons();
@@ -75,6 +86,22 @@ namespace Survivalon.World
             }
 
             Debug.Log($"World map node selected: {nodeId}.");
+            Refresh();
+        }
+
+        private void HandleCharacterSelection(string characterId)
+        {
+            if (characterSelectionService == null || gameState == null)
+            {
+                return;
+            }
+
+            if (!characterSelectionService.TrySelectCharacter(gameState, characterId))
+            {
+                return;
+            }
+
+            Debug.Log($"World map character selected: {characterId}.");
             Refresh();
         }
 
@@ -168,6 +195,43 @@ namespace Survivalon.World
                 new Color(0.88f, 0.90f, 0.94f, 1f));
             RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, SummaryPreferredHeight);
 
+            characterSelectionText = RuntimeUiSupport.CreateText(
+                panelObject.transform,
+                uiFont,
+                "CharacterSelectionSummary",
+                18,
+                FontStyle.Normal,
+                TextAnchor.UpperLeft,
+                new Color(0.88f, 0.90f, 0.94f, 1f));
+            RuntimeUiSupport.AddLayoutElement(
+                characterSelectionText.gameObject,
+                CharacterSelectionSummaryPreferredHeight);
+
+            GameObject characterSelectionObject = new GameObject(
+                "CharacterSelectionList",
+                typeof(RectTransform),
+                typeof(VerticalLayoutGroup),
+                typeof(ContentSizeFitter));
+            characterSelectionObject.transform.SetParent(panelObject.transform, false);
+
+            VerticalLayoutGroup characterSelectionLayout = characterSelectionObject.GetComponent<VerticalLayoutGroup>();
+            characterSelectionLayout.spacing = 8f;
+            characterSelectionLayout.childAlignment = TextAnchor.UpperLeft;
+            characterSelectionLayout.childControlWidth = true;
+            characterSelectionLayout.childControlHeight = true;
+            characterSelectionLayout.childForceExpandWidth = true;
+            characterSelectionLayout.childForceExpandHeight = false;
+
+            ContentSizeFitter characterSelectionFitter = characterSelectionObject.GetComponent<ContentSizeFitter>();
+            characterSelectionFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            characterSelectionFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            characterSelectionContainer = characterSelectionObject.GetComponent<RectTransform>();
+            characterSelectionContainer.anchorMin = new Vector2(0f, 1f);
+            characterSelectionContainer.anchorMax = new Vector2(1f, 1f);
+            characterSelectionContainer.pivot = new Vector2(0.5f, 1f);
+            characterSelectionContainer.localScale = Vector3.one;
+
             enterSelectedNodeButton = CreateActionButton(
                 panelObject.transform,
                 "EnterSelectedNodeButton",
@@ -215,6 +279,42 @@ namespace Survivalon.World
             }
         }
 
+        private void ClearCharacterButtons()
+        {
+            for (int index = characterSelectionContainer.childCount - 1; index >= 0; index--)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(characterSelectionContainer.GetChild(index).gameObject);
+                    continue;
+                }
+
+                DestroyImmediate(characterSelectionContainer.GetChild(index).gameObject);
+            }
+        }
+
+        private void RefreshCharacterSelection()
+        {
+            IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions = BuildCharacterSelectionOptions();
+            characterSelectionText.text = WorldMapScreenTextBuilder.BuildCharacterSelectionText(selectionOptions);
+
+            ClearCharacterButtons();
+            foreach (PlayableCharacterSelectionOption selectionOption in selectionOptions)
+            {
+                CreateCharacterButton(selectionOption);
+            }
+        }
+
+        private IReadOnlyList<PlayableCharacterSelectionOption> BuildCharacterSelectionOptions()
+        {
+            if (characterSelectionService == null || gameState == null)
+            {
+                return Array.Empty<PlayableCharacterSelectionOption>();
+            }
+
+            return characterSelectionService.BuildSelectableOptions(gameState);
+        }
+
         private void CreateNodeButton(WorldMapNodeOption nodeOption)
         {
             GameObject buttonObject = new GameObject(
@@ -257,6 +357,58 @@ namespace Survivalon.World
                 TextAnchor.MiddleLeft,
                 Color.white);
             buttonText.text = WorldMapScreenTextBuilder.BuildNodeLabel(nodeOption);
+
+            RectTransform textRectTransform = buttonText.rectTransform;
+            textRectTransform.anchorMin = Vector2.zero;
+            textRectTransform.anchorMax = Vector2.one;
+            textRectTransform.offsetMin = new Vector2(14f, 8f);
+            textRectTransform.offsetMax = new Vector2(-14f, -8f);
+            textRectTransform.localScale = Vector3.one;
+        }
+
+        private void CreateCharacterButton(PlayableCharacterSelectionOption selectionOption)
+        {
+            GameObject buttonObject = new GameObject(
+                $"{selectionOption.CharacterId}_CharacterButton",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button),
+                typeof(LayoutElement));
+            buttonObject.transform.SetParent(characterSelectionContainer, false);
+
+            RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
+            buttonRectTransform.localScale = Vector3.one;
+
+            LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
+            layoutElement.minHeight = CharacterSelectionButtonPreferredHeight;
+            layoutElement.preferredHeight = CharacterSelectionButtonPreferredHeight;
+
+            Image buttonImage = buttonObject.GetComponent<Image>();
+            buttonImage.color = selectionOption.IsSelected
+                ? new Color(0.20f, 0.45f, 0.28f, 1f)
+                : new Color(0.25f, 0.33f, 0.58f, 1f);
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.targetGraphic = buttonImage;
+            button.onClick.AddListener(() => HandleCharacterSelection(selectionOption.CharacterId));
+
+            ColorBlock colors = button.colors;
+            colors.normalColor = buttonImage.color;
+            colors.selectedColor = buttonImage.color;
+            colors.highlightedColor = Color.Lerp(buttonImage.color, Color.white, 0.15f);
+            colors.pressedColor = Color.Lerp(buttonImage.color, Color.black, 0.15f);
+            colors.disabledColor = buttonImage.color * 0.7f;
+            button.colors = colors;
+
+            Text buttonText = RuntimeUiSupport.CreateText(
+                buttonObject.transform,
+                uiFont,
+                "Label",
+                16,
+                FontStyle.Bold,
+                TextAnchor.MiddleCenter,
+                Color.white);
+            buttonText.text = WorldMapScreenTextBuilder.BuildCharacterButtonLabel(selectionOption);
 
             RectTransform textRectTransform = buttonText.rectTransform;
             textRectTransform.anchorMin = Vector2.zero;
