@@ -19,21 +19,29 @@ namespace Survivalon.State.Persistence
                 throw new ArgumentNullException(nameof(gameState));
             }
 
-            PlayableCharacterProfile defaultCharacter = PlayableCharacterCatalog.Default;
-            if (!gameState.TryGetCharacterState(defaultCharacter.CharacterId, out PersistentCharacterState characterState))
+            for (int index = 0; index < PlayableCharacterCatalog.All.Count; index++)
+            {
+                EnsureCharacterState(gameState, PlayableCharacterCatalog.All[index]);
+            }
+
+            selectionService.EnsureValidSelection(gameState);
+        }
+
+        private static void EnsureCharacterState(PersistentGameState gameState, PlayableCharacterProfile characterProfile)
+        {
+            if (!gameState.TryGetCharacterState(characterProfile.CharacterId, out PersistentCharacterState characterState))
             {
                 characterState = new PersistentCharacterState(
-                    defaultCharacter.CharacterId,
+                    characterProfile.CharacterId,
                     isUnlocked: true,
                     isSelectable: true,
                     isActive: false,
-                    skillPackageId: defaultCharacter.DefaultSkillPackageId);
+                    skillPackageId: characterProfile.DefaultSkillPackageId);
                 gameState.AddCharacterState(characterState);
             }
 
             characterState.Unlock();
             characterState.SetSelectable(true);
-            selectionService.EnsureValidSelection(gameState);
         }
     }
 }

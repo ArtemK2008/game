@@ -1,6 +1,6 @@
 using NUnit.Framework;
-using Survivalon.Startup;
 using Survivalon.Core;
+using Survivalon.Startup;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 
@@ -26,21 +26,25 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(startupState.GameState.WorldState.HasCurrentNode, Is.True);
             Assert.That(startupState.SessionContext.HasRecentNode, Is.True);
             Assert.That(startupState.SessionContext.RecentNodeId, Is.EqualTo(startupState.GameState.WorldState.CurrentNodeId));
-            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(1));
-            Assert.That(startupState.GameState.CharacterStates[0].CharacterId, Is.EqualTo("character_vanguard"));
-            Assert.That(startupState.GameState.CharacterStates[0].IsUnlocked, Is.True);
-            Assert.That(startupState.GameState.CharacterStates[0].IsSelectable, Is.True);
-            Assert.That(startupState.GameState.CharacterStates[0].IsActive, Is.True);
+            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(2));
+            AssertCharacterState(startupState.GameState, "character_vanguard", true, "skill_package_vanguard_default");
+            AssertCharacterState(startupState.GameState, "character_striker", false, "skill_package_striker_default");
         }
 
         [Test]
-        public void ShouldUsePersistedGameStateWhenStorageHasSavedState()
+        public void ShouldUsePersistedGameStateAndPreserveExistingValidSelectionWhenStorageHasSavedState()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
             PersistentGameState persistedGameState = new PersistentGameState();
             persistedGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
             persistedGameState.WorldState.SetLastSafeNode(new NodeId("region_001_node_001"));
             persistedGameState.SafeResumeState.MarkWorldMap(new NodeId("region_002_node_001"));
+            persistedGameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: "skill_package_striker_default"));
             storage.Seed(persistedGameState);
 
             SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
@@ -52,9 +56,9 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(startupState.EntryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
             Assert.That(startupState.SessionContext.HasRecentNode, Is.True);
             Assert.That(startupState.SessionContext.RecentNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
-            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(1));
-            Assert.That(startupState.GameState.CharacterStates[0].CharacterId, Is.EqualTo("character_vanguard"));
-            Assert.That(startupState.GameState.CharacterStates[0].IsActive, Is.True);
+            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(2));
+            AssertCharacterState(startupState.GameState, "character_vanguard", false, "skill_package_vanguard_default");
+            AssertCharacterState(startupState.GameState, "character_striker", true, "skill_package_striker_default");
         }
 
         [Test]
@@ -71,6 +75,12 @@ namespace Survivalon.Tests.EditMode.Startup
                 isSelectable: true,
                 isActive: false,
                 skillPackageId: "skill_package_vanguard_default"));
+            persistedGameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: "skill_package_striker_default"));
             storage.Seed(persistedGameState);
 
             SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
@@ -79,9 +89,22 @@ namespace Survivalon.Tests.EditMode.Startup
             BootstrapStartupState startupState = stateFactory.Create(new BootstrapWorldMapFactory());
 
             Assert.That(startupState.GameState, Is.SameAs(persistedGameState));
-            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(1));
-            Assert.That(startupState.GameState.CharacterStates[0].CharacterId, Is.EqualTo("character_vanguard"));
-            Assert.That(startupState.GameState.CharacterStates[0].IsActive, Is.True);
+            Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(2));
+            AssertCharacterState(startupState.GameState, "character_vanguard", true, "skill_package_vanguard_default");
+            AssertCharacterState(startupState.GameState, "character_striker", false, "skill_package_striker_default");
+        }
+
+        private static void AssertCharacterState(
+            PersistentGameState gameState,
+            string characterId,
+            bool isActive,
+            string expectedSkillPackageId)
+        {
+            Assert.That(gameState.TryGetCharacterState(characterId, out PersistentCharacterState characterState), Is.True);
+            Assert.That(characterState.IsUnlocked, Is.True);
+            Assert.That(characterState.IsSelectable, Is.True);
+            Assert.That(characterState.IsActive, Is.EqualTo(isActive));
+            Assert.That(characterState.SkillPackageId, Is.EqualTo(expectedSkillPackageId));
         }
 
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
@@ -106,4 +129,3 @@ namespace Survivalon.Tests.EditMode.Startup
         }
     }
 }
-

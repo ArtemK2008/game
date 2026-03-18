@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Survivalon.Combat;
 
 namespace Survivalon.Data.Characters
@@ -12,12 +13,22 @@ namespace Survivalon.Data.Characters
                 "Vanguard",
                 new CombatStatBlock(120f, 14f, 1.2f, 12f),
                 "skill_package_vanguard_default");
-        private static readonly PlayableCharacterProfile[] AllProfiles =
+        private static readonly PlayableCharacterProfile StrikerCharacterProfile =
+            new PlayableCharacterProfile(
+                "character_striker",
+                new CombatEntityId("player_striker"),
+                "Striker",
+                new CombatStatBlock(110f, 18f, 1.35f, 8f),
+                "skill_package_striker_default");
+        private static readonly IReadOnlyList<PlayableCharacterProfile> AllProfiles = Array.AsReadOnly(new[]
         {
             DefaultCharacterProfile,
-        };
+            StrikerCharacterProfile,
+        });
 
         public static PlayableCharacterProfile Default => DefaultCharacterProfile;
+
+        public static IReadOnlyList<PlayableCharacterProfile> All => AllProfiles;
 
         public static bool Contains(string characterId)
         {
@@ -26,7 +37,7 @@ namespace Survivalon.Data.Characters
                 return false;
             }
 
-            for (int index = 0; index < AllProfiles.Length; index++)
+            for (int index = 0; index < AllProfiles.Count; index++)
             {
                 if (AllProfiles[index].CharacterId == characterId)
                 {
@@ -44,7 +55,7 @@ namespace Survivalon.Data.Characters
                 throw new ArgumentException("Character id cannot be null or whitespace.", nameof(characterId));
             }
 
-            for (int index = 0; index < AllProfiles.Length; index++)
+            for (int index = 0; index < AllProfiles.Count; index++)
             {
                 if (AllProfiles[index].CharacterId == characterId)
                 {

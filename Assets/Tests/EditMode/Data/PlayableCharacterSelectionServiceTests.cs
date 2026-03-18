@@ -15,8 +15,14 @@ namespace Survivalon.Tests.EditMode.Data
                 "character_vanguard",
                 isUnlocked: true,
                 isSelectable: true,
-                isActive: true,
+                isActive: false,
                 skillPackageId: "skill_package_vanguard_default"));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: "skill_package_striker_default"));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_unknown",
                 isUnlocked: true,
@@ -26,10 +32,13 @@ namespace Survivalon.Tests.EditMode.Data
 
             IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions = service.BuildSelectableOptions(gameState);
 
-            Assert.That(selectionOptions, Has.Count.EqualTo(1));
+            Assert.That(selectionOptions, Has.Count.EqualTo(2));
             Assert.That(selectionOptions[0].CharacterId, Is.EqualTo("character_vanguard"));
             Assert.That(selectionOptions[0].DisplayName, Is.EqualTo("Vanguard"));
-            Assert.That(selectionOptions[0].IsSelected, Is.True);
+            Assert.That(selectionOptions[0].IsSelected, Is.False);
+            Assert.That(selectionOptions[1].CharacterId, Is.EqualTo("character_striker"));
+            Assert.That(selectionOptions[1].DisplayName, Is.EqualTo("Striker"));
+            Assert.That(selectionOptions[1].IsSelected, Is.True);
         }
 
         [Test]
@@ -47,12 +56,20 @@ namespace Survivalon.Tests.EditMode.Data
                 isSelectable: true,
                 isActive: false,
                 skillPackageId: "skill_package_vanguard_default"));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: "skill_package_striker_default"));
             PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
 
             service.EnsureValidSelection(gameState);
 
             Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
             Assert.That(vanguardState.IsActive, Is.True);
+            Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
+            Assert.That(strikerState.IsActive, Is.False);
             Assert.That(gameState.TryGetCharacterState("character_unknown", out PersistentCharacterState unknownState), Is.True);
             Assert.That(unknownState.IsActive, Is.False);
         }
@@ -70,15 +87,23 @@ namespace Survivalon.Tests.EditMode.Data
                 "character_vanguard",
                 isUnlocked: true,
                 isSelectable: true,
-                isActive: false,
+                isActive: true,
                 skillPackageId: "skill_package_vanguard_default"));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: "skill_package_striker_default"));
             PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
 
-            bool didSelect = service.TrySelectCharacter(gameState, "character_vanguard");
+            bool didSelect = service.TrySelectCharacter(gameState, "character_striker");
 
             Assert.That(didSelect, Is.True);
             Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
-            Assert.That(vanguardState.IsActive, Is.True);
+            Assert.That(vanguardState.IsActive, Is.False);
+            Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
+            Assert.That(strikerState.IsActive, Is.True);
             Assert.That(gameState.TryGetCharacterState("character_unknown", out PersistentCharacterState unknownState), Is.True);
             Assert.That(unknownState.IsActive, Is.False);
         }
@@ -93,6 +118,12 @@ namespace Survivalon.Tests.EditMode.Data
                 isSelectable: true,
                 isActive: true,
                 skillPackageId: "skill_package_vanguard_default"));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: "skill_package_striker_default"));
             PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
 
             bool didSelect = service.TrySelectCharacter(gameState, "character_unknown");
@@ -100,6 +131,8 @@ namespace Survivalon.Tests.EditMode.Data
             Assert.That(didSelect, Is.False);
             Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
             Assert.That(vanguardState.IsActive, Is.True);
+            Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
+            Assert.That(strikerState.IsActive, Is.False);
         }
     }
 }
