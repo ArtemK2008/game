@@ -17,6 +17,7 @@ namespace Survivalon.Run
         private readonly RunProgressResolutionService runProgressResolutionService;
         private readonly RunRewardResolutionService runRewardResolutionService;
         private readonly RunRewardGrantService runRewardGrantService;
+        private readonly PlayableCharacterProgressionService playableCharacterProgressionService;
         private RunLifecycleState currentState;
         private CombatShellContext combatShellContext;
         private CombatEncounterState combatEncounterState;
@@ -33,7 +34,8 @@ namespace Survivalon.Run
             NextNodeUnlockService nextNodeUnlockService = null,
             RunRewardResolutionService runRewardResolutionService = null,
             RunRewardGrantService runRewardGrantService = null,
-            AccountWideProgressionEffectResolver accountWideProgressionEffectResolver = null)
+            AccountWideProgressionEffectResolver accountWideProgressionEffectResolver = null,
+            PlayableCharacterProgressionService playableCharacterProgressionService = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
             this.worldGraph = worldGraph;
@@ -48,6 +50,8 @@ namespace Survivalon.Run
                 nextNodeUnlockService);
             this.runRewardResolutionService = runRewardResolutionService ?? new RunRewardResolutionService();
             this.runRewardGrantService = runRewardGrantService ?? new RunRewardGrantService();
+            this.playableCharacterProgressionService =
+                playableCharacterProgressionService ?? new PlayableCharacterProgressionService();
             currentState = RunLifecycleState.RunStart;
         }
 
@@ -192,6 +196,7 @@ namespace Survivalon.Run
                 runRewardGrantService.Grant(persistentContext.ResourceBalancesState, rewardPayload);
             }
 
+            ApplyPlayableCharacterProgression(resolutionState);
             return RunResultFactory.Create(nodeContext, resolutionState, progressResolution, rewardPayload);
         }
 
@@ -200,7 +205,21 @@ namespace Survivalon.Run
             return combatShellContextFactory.Create(
                 nodeContext,
                 persistentContext?.PlayableCharacter,
+                persistentContext?.PlayableCharacterState,
                 ResolveAccountWideProgressionEffects());
+        }
+
+        private void ApplyPlayableCharacterProgression(RunResolutionState resolutionState)
+        {
+            if (persistentContext?.PlayableCharacterState == null)
+            {
+                return;
+            }
+
+            playableCharacterProgressionService.TryApplyResolvedRunProgression(
+                nodeContext,
+                resolutionState,
+                persistentContext.PlayableCharacterState);
         }
 
         private AccountWideProgressionEffectState ResolveAccountWideProgressionEffects()

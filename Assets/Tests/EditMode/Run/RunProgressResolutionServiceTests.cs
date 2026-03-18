@@ -184,7 +184,7 @@ namespace Survivalon.Tests.EditMode.Run
         {
             CombatShellContextFactory contextFactory = new CombatShellContextFactory();
             CombatEncounterState encounterState = new CombatEncounterState(
-                contextFactory.Create(nodeState, null, default));
+                contextFactory.Create(nodeState, null, null, default));
 
             switch (outcome)
             {

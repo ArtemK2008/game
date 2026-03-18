@@ -8,9 +8,18 @@ namespace Survivalon.Combat
 {
     public sealed class CombatShellContextFactory
     {
+        private readonly PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver;
+
+        public CombatShellContextFactory(PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver = null)
+        {
+            this.playableCharacterProgressionEffectResolver =
+                playableCharacterProgressionEffectResolver ?? new PlayableCharacterProgressionEffectResolver();
+        }
+
         public CombatShellContext Create(
             NodePlaceholderState nodeContext,
             PlayableCharacterProfile playableCharacter,
+            PersistentCharacterState playableCharacterState,
             AccountWideProgressionEffectState progressionEffects)
         {
             if (nodeContext == null)
@@ -31,7 +40,10 @@ namespace Survivalon.Combat
                     resolvedCharacter.CombatEntityId,
                     resolvedCharacter.DisplayName,
                     CombatSide.Player,
-                    CreatePlayerBaseStats(resolvedCharacter.BaseStats, progressionEffects)),
+                    CreatePlayerBaseStats(
+                        resolvedCharacter.BaseStats,
+                        playableCharacterState,
+                        progressionEffects)),
                 new CombatEntityState(
                     new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
                     GetEnemyDisplayName(nodeContext),
@@ -39,12 +51,19 @@ namespace Survivalon.Combat
                     CreateEnemyBaseStats(nodeContext)));
         }
 
-        private static CombatStatBlock CreatePlayerBaseStats(
+        private CombatStatBlock CreatePlayerBaseStats(
             CombatStatBlock characterBaseStats,
+            PersistentCharacterState playableCharacterState,
             AccountWideProgressionEffectState progressionEffects)
         {
+            float characterProgressionMaxHealthBonus = playableCharacterState == null
+                ? 0f
+                : playableCharacterProgressionEffectResolver.ResolveMaxHealthBonus(playableCharacterState);
+
             return new CombatStatBlock(
-                maxHealth: characterBaseStats.MaxHealth + progressionEffects.PlayerMaxHealthBonus,
+                maxHealth: characterBaseStats.MaxHealth +
+                    characterProgressionMaxHealthBonus +
+                    progressionEffects.PlayerMaxHealthBonus,
                 attackPower: characterBaseStats.AttackPower + progressionEffects.PlayerAttackPowerBonus,
                 attackRate: characterBaseStats.AttackRate,
                 defense: characterBaseStats.Defense);

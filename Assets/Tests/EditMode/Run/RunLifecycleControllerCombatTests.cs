@@ -264,7 +264,9 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
 
             Assert.That(persistentContext.PlayableCharacter, Is.Not.Null);
+            Assert.That(persistentContext.PlayableCharacterState, Is.Not.Null);
             Assert.That(persistentContext.PlayableCharacter.CharacterId, Is.EqualTo("character_vanguard"));
+            Assert.That(persistentContext.PlayableCharacterState.CharacterId, Is.EqualTo("character_vanguard"));
             Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
@@ -293,6 +295,56 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(130f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
+        }
+
+        [Test]
+        public void ShouldIncreaseSelectedPlayableCharacterProgressionRankAfterSuccessfulCombatRun()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: persistentContext);
+
+            RunLifecycleControllerTestData.RunToPostRun(controller);
+
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(persistentContext.PlayableCharacterState.ProgressionRank, Is.EqualTo(1));
+            Assert.That(
+                gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
+                Is.True);
+            Assert.That(characterState.ProgressionRank, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ShouldApplyCharacterProgressionOnTopOfAccountWideEffectsForFutureRunEntry()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 3);
+            Assert.That(
+                boardService.TryPurchase(gameState, AccountWideUpgradeId.CombatBaselineProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            Assert.That(
+                boardService.TryPurchase(gameState, AccountWideUpgradeId.PushOffenseProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            Assert.That(
+                gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
+                Is.True);
+            characterState.IncreaseProgressionRank(2);
+
+            RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: persistentContext);
+
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+
+            Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(140f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
         }
