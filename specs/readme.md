@@ -22,6 +22,7 @@ If multiple specs apply, align them instead of guessing.
 - `07_progression_hubs/` — towns and service-layer systems
 - `08_interface/` — UX, menus, settings, persistence/offline flow
 - `09_presentation/` — visual style and sound/music
+- `10_art/` — gameplay-facing art production rules, asset pipeline specs, sprite/animation delivery contracts
 - `milestone/` — short records of completed implementation steps
 
 ---
@@ -35,6 +36,8 @@ For any task:
 5. Stage all project-related created/changed files with `git add`.
 6. Do not commit; the user commits manually.
 
+When a task depends on art assets, also read the relevant files in `10_art/` together with the gameplay-facing spec they support.
+
 ---
 
 ## Naming rule
@@ -47,7 +50,7 @@ For any task:
 ## Implementation rule
 - Work in small complete milestones.
 - Follow specs, do not invent major behavior.
-- If required sprites, animation, music, or other assets are missing, ask for them clearly.
+- If required sprites, animation, music, models, or other assets are missing, ask for them clearly.
 - Stage all project-related created/changed files with `git add`.
 - Add local/editor-generated files that should not be versioned to `.gitignore` instead of staging them.
 - No commit is created by Codex; the user commits manually.
