@@ -2,6 +2,11 @@ using System;
 
 namespace Survivalon.Combat
 {
+    /// <summary>
+    /// Сервис выбора цели для автоматической атаки в рамках текущего боевого столкновения.
+    /// Для каждой стороны возвращает противника и проверяет, что выбранная цель ещё может действовать.
+    /// Если подходящая цель отсутствует, выбрасывает исключение.
+    /// </summary>
     public sealed class CombatAutoTargetSelector
     {
         public CombatEntityRuntimeState SelectTarget(

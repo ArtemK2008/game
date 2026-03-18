@@ -5,6 +5,13 @@ namespace Survivalon.State.Persistence
 {
     public sealed class PersistentPlayableCharacterInitializer
     {
+        private readonly PlayableCharacterSelectionService selectionService;
+
+        public PersistentPlayableCharacterInitializer(PlayableCharacterSelectionService selectionService = null)
+        {
+            this.selectionService = selectionService ?? new PlayableCharacterSelectionService();
+        }
+
         public void EnsureInitialized(PersistentGameState gameState)
         {
             if (gameState == null)
@@ -19,15 +26,14 @@ namespace Survivalon.State.Persistence
                     defaultCharacter.CharacterId,
                     isUnlocked: true,
                     isSelectable: true,
-                    isActive: true,
+                    isActive: false,
                     skillPackageId: defaultCharacter.DefaultSkillPackageId);
                 gameState.AddCharacterState(characterState);
-                return;
             }
 
             characterState.Unlock();
             characterState.SetSelectable(true);
-            characterState.SetActive(true);
+            selectionService.EnsureValidSelection(gameState);
         }
     }
 }

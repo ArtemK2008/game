@@ -34,6 +34,29 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldShowSelectedCharacterOnWorldMapAndKeepItForRunEntry()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                Assert.That(ContainsText(hostObject, "Selected character: Vanguard"), Is.True);
+
+                FindButton(hostObject, "character_vanguard_CharacterButton").onClick.Invoke();
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+
+                Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldResolveCombatNodeRunWithoutManualCombatInteractionAfterNodeEntry()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");

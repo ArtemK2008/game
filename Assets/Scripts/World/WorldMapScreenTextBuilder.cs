@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.State;
 
 namespace Survivalon.World
@@ -62,6 +63,40 @@ namespace Survivalon.World
                 $"Forward route options: {forwardSelectableNodeCount} ({routeChoiceLabel})\n" +
                 $"Selected node: {selectedNodeLabel}\n" +
                 "Select a reachable node, then confirm entry to start the placeholder node flow.";
+        }
+
+        public static string BuildCharacterSelectionText(IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions)
+        {
+            if (selectionOptions == null)
+            {
+                throw new ArgumentNullException(nameof(selectionOptions));
+            }
+
+            string selectedCharacterLabel = "none";
+            for (int index = 0; index < selectionOptions.Count; index++)
+            {
+                if (selectionOptions[index].IsSelected)
+                {
+                    selectedCharacterLabel = selectionOptions[index].DisplayName;
+                    break;
+                }
+            }
+
+            return
+                $"Selected character: {selectedCharacterLabel}\n" +
+                $"Available characters: {selectionOptions.Count}";
+        }
+
+        public static string BuildCharacterButtonLabel(PlayableCharacterSelectionOption selectionOption)
+        {
+            if (selectionOption == null)
+            {
+                throw new ArgumentNullException(nameof(selectionOption));
+            }
+
+            return selectionOption.IsSelected
+                ? $"Selected: {selectionOption.DisplayName}"
+                : $"Select: {selectionOption.DisplayName}";
         }
 
         public static string BuildNodeLabel(WorldMapNodeOption nodeOption)

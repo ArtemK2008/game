@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.State;
 using Survivalon.World;
 
@@ -75,6 +76,32 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void BuildCharacterSelectionText_ShouldShowCurrentSelectionAndAvailableCount()
+        {
+            string selectionText = WorldMapScreenTextBuilder.BuildCharacterSelectionText(
+                new[]
+                {
+                    new PlayableCharacterSelectionOption("character_vanguard", "Vanguard", isSelected: true),
+                });
+
+            Assert.That(selectionText, Is.EqualTo(
+                "Selected character: Vanguard\n" +
+                "Available characters: 1"));
+        }
+
+        [Test]
+        public void BuildCharacterButtonLabel_ShouldShowSelectedFormatting()
+        {
+            string selectedLabel = WorldMapScreenTextBuilder.BuildCharacterButtonLabel(
+                new PlayableCharacterSelectionOption("character_vanguard", "Vanguard", isSelected: true));
+            string unselectedLabel = WorldMapScreenTextBuilder.BuildCharacterButtonLabel(
+                new PlayableCharacterSelectionOption("character_vanguard", "Vanguard", isSelected: false));
+
+            Assert.That(selectedLabel, Is.EqualTo("Selected: Vanguard"));
+            Assert.That(unselectedLabel, Is.EqualTo("Select: Vanguard"));
+        }
+
+        [Test]
         public void BuildNodeLabel_ShouldMatchExistingFormatting()
         {
             string labelText = WorldMapScreenTextBuilder.BuildNodeLabel(
@@ -98,6 +125,22 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 () => WorldMapScreenTextBuilder.BuildNodeLabel(null),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeOption"));
+        }
+
+        [Test]
+        public void BuildCharacterSelectionText_ShouldRejectMissingSelectionOptions()
+        {
+            Assert.That(
+                () => WorldMapScreenTextBuilder.BuildCharacterSelectionText(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("selectionOptions"));
+        }
+
+        [Test]
+        public void BuildCharacterButtonLabel_ShouldRejectMissingSelectionOption()
+        {
+            Assert.That(
+                () => WorldMapScreenTextBuilder.BuildCharacterButtonLabel(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("selectionOption"));
         }
 
         [Test]

@@ -2,6 +2,11 @@ using System;
 
 namespace Survivalon.Combat
 {
+    /// <summary>
+    /// Оркеструет пошаговое продвижение боевого столкновения во времени.
+    /// Продвигает таймеры сторон, определяет наступившие атаки, делегирует выбор цели
+    /// и фиксирует исход боя, если одна из сторон погибает.
+    /// </summary>
     public sealed class CombatEncounterResolver
     {
         private const float AttackTimingEpsilon = 0.0001f;
