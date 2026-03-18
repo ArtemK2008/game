@@ -164,6 +164,24 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldApplySecondPlayableCharacterIdentityToCombatContext()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                PlayableCharacterCatalog.Get("character_striker"),
+                null,
+                default);
+
+            Assert.That(combatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_striker")));
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Striker"));
+            Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(110f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.35f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(8f));
+        }
+
+        [Test]
         public void ShouldApplyPersistentCharacterProgressionRankBonusToPlayerCombatStats()
         {
             CombatShellContextFactory factory = new CombatShellContextFactory();

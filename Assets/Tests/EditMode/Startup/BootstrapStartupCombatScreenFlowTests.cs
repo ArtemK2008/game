@@ -34,7 +34,7 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldShowSelectedCharacterOnWorldMapAndKeepItForRunEntry()
+        public void ShouldShowSelectedCharacterOnWorldMapAndUseSelectedCharacterForRunEntry()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -45,10 +45,11 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Selected character: Vanguard"), Is.True);
 
-                FindButton(hostObject, "character_vanguard_CharacterButton").onClick.Invoke();
+                FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
 
-                Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Striker"), Is.True);
+                Assert.That(ContainsText(hostObject, "HP: 110 / 110 | ATK: 18"), Is.True);
             }
             finally
             {

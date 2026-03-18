@@ -100,21 +100,36 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                 "character_vanguard",
                 isUnlocked: true,
                 isSelectable: true,
-                isActive: true,
+                isActive: false,
                 progressionRank: 2,
                 skillPackageId: "skill_package_vanguard_default"));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                progressionRank: 1,
+                skillPackageId: "skill_package_striker_default"));
 
             service.SaveResolvedWorldContext(gameState);
 
-            Assert.That(storage.SavedGameState.CharacterStates, Has.Count.EqualTo(1));
+            Assert.That(storage.SavedGameState.CharacterStates, Has.Count.EqualTo(2));
             Assert.That(
                 storage.SavedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
                 Is.True);
             Assert.That(characterState.IsUnlocked, Is.True);
             Assert.That(characterState.IsSelectable, Is.True);
-            Assert.That(characterState.IsActive, Is.True);
+            Assert.That(characterState.IsActive, Is.False);
             Assert.That(characterState.ProgressionRank, Is.EqualTo(2));
             Assert.That(characterState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+            Assert.That(
+                storage.SavedGameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
+                Is.True);
+            Assert.That(strikerState.IsUnlocked, Is.True);
+            Assert.That(strikerState.IsSelectable, Is.True);
+            Assert.That(strikerState.IsActive, Is.True);
+            Assert.That(strikerState.ProgressionRank, Is.EqualTo(1));
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
         }
 
         private static PersistentGameState CreateGameState(string currentNodeIdValue, string lastSafeNodeIdValue)

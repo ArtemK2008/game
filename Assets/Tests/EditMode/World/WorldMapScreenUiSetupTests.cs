@@ -92,6 +92,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(containsRecentNodeSummary, Is.True);
                 Assert.That(containsCharacterSelectionSummary, Is.True);
                 Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
+                Assert.That(FindButton(hostObject, "character_striker_CharacterButton"), Is.Not.Null);
             }
             finally
             {
@@ -170,7 +171,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldKeepPlayableCharacterSelectedWhenCharacterButtonIsPressed()
+        public void Show_ShouldSwitchSelectedPlayableCharacterWhenCharacterButtonIsPressed()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -183,12 +184,15 @@ namespace Survivalon.Tests.EditMode.World
                     BootstrapWorldTestData.CreateWorldState(),
                     gameState: gameState);
 
-                FindButton(hostObject, "character_vanguard_CharacterButton").onClick.Invoke();
+                FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
 
-                Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState), Is.True);
-                Assert.That(characterState.IsActive, Is.True);
-                Assert.That(ContainsText(hostObject, "Selected character: Vanguard"), Is.True);
-                Assert.That(ContainsText(hostObject, "Selected: Vanguard"), Is.True);
+                Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+                Assert.That(vanguardState.IsActive, Is.False);
+                Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
+                Assert.That(strikerState.IsActive, Is.True);
+                Assert.That(ContainsText(hostObject, "Selected character: Striker"), Is.True);
+                Assert.That(ContainsText(hostObject, "Selected: Striker"), Is.True);
+                Assert.That(ContainsText(hostObject, "Select: Vanguard"), Is.True);
             }
             finally
             {

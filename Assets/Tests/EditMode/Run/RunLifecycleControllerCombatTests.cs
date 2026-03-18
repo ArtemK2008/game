@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Combat;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
@@ -273,6 +274,32 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldUseSelectedSecondPlayableCharacterForCombatEntryWhenRunPersistentContextIsBuiltFromGameState()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+
+            RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: persistentContext);
+
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+
+            Assert.That(persistentContext.PlayableCharacter, Is.Not.Null);
+            Assert.That(persistentContext.PlayableCharacterState, Is.Not.Null);
+            Assert.That(persistentContext.PlayableCharacter.CharacterId, Is.EqualTo("character_striker"));
+            Assert.That(persistentContext.PlayableCharacterState.CharacterId, Is.EqualTo("character_striker"));
+            Assert.That(controller.CombatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_striker")));
+            Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Striker"));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(110f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.35f));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(8f));
+        }
+
+        [Test]
         public void ShouldApplyAccountWideProgressionEffectsOnTopOfPersistentPlayableCharacterBaseline()
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -319,6 +346,32 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldIncreaseSelectedSecondPlayableCharacterProgressionRankWithoutChangingInactiveCharacter()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+            RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: persistentContext);
+
+            RunLifecycleControllerTestData.RunToPostRun(controller);
+
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(persistentContext.PlayableCharacterState.CharacterId, Is.EqualTo("character_striker"));
+            Assert.That(persistentContext.PlayableCharacterState.ProgressionRank, Is.EqualTo(1));
+            Assert.That(
+                gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState),
+                Is.True);
+            Assert.That(vanguardState.ProgressionRank, Is.EqualTo(0));
+            Assert.That(
+                gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
+                Is.True);
+            Assert.That(strikerState.ProgressionRank, Is.EqualTo(1));
+        }
+
+        [Test]
         public void ShouldApplyCharacterProgressionOnTopOfAccountWideEffectsForFutureRunEntry()
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -347,6 +400,36 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
+        }
+
+        [Test]
+        public void ShouldTurnCurrentBossCombatFromVanguardFailureIntoStrikerSuccess()
+        {
+            PersistentGameState vanguardGameState = BootstrapWorldTestData.CreateGameState();
+            PersistentGameState strikerGameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+            Assert.That(selectionService.TrySelectCharacter(strikerGameState, "character_striker"), Is.True);
+
+            RunLifecycleController vanguardController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(vanguardGameState));
+            RunLifecycleController strikerController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(strikerGameState));
+
+            RunLifecycleControllerTestData.RunToPostRun(vanguardController);
+            RunLifecycleControllerTestData.RunToPostRun(strikerController);
+
+            Assert.That(vanguardController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(vanguardController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(vanguardController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
+            Assert.That(strikerController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Striker"));
+            Assert.That(strikerController.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
+            Assert.That(strikerController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(strikerController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+            Assert.That(
+                strikerController.CombatEncounterState.ElapsedCombatSeconds,
+                Is.LessThan(vanguardController.CombatEncounterState.ElapsedCombatSeconds));
         }
 
         [Test]

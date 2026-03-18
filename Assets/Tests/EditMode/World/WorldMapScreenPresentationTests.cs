@@ -81,12 +81,13 @@ namespace Survivalon.Tests.EditMode.World
             string selectionText = WorldMapScreenTextBuilder.BuildCharacterSelectionText(
                 new[]
                 {
-                    new PlayableCharacterSelectionOption("character_vanguard", "Vanguard", isSelected: true),
+                    new PlayableCharacterSelectionOption("character_vanguard", "Vanguard", isSelected: false),
+                    new PlayableCharacterSelectionOption("character_striker", "Striker", isSelected: true),
                 });
 
             Assert.That(selectionText, Is.EqualTo(
-                "Selected character: Vanguard\n" +
-                "Available characters: 1"));
+                "Selected character: Striker\n" +
+                "Available characters: 2"));
         }
 
         [Test]
