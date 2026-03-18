@@ -104,6 +104,10 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(1));
+                Assert.That(
+                    storage.SavedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
+                    Is.True);
+                Assert.That(characterState.ProgressionRank, Is.EqualTo(1));
             }
             finally
             {
@@ -138,7 +142,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
-                Assert.That(ContainsText(hostObject, "HP: 130 / 130 | ATK: 14"), Is.True);
+                Assert.That(ContainsText(hostObject, "HP: 135 / 135 | ATK: 14"), Is.True);
             }
             finally
             {

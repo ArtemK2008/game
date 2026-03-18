@@ -296,6 +296,7 @@ namespace Survivalon.Tests.EditMode.World
             CombatShellContext combatContext = combatShellContextFactory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 null,
+                null,
                 default);
             return new CombatEncounterState(combatContext);
         }

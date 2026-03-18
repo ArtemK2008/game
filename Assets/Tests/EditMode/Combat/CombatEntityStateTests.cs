@@ -52,6 +52,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 null,
+                null,
                 default);
 
             Assert.That(combatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_004")));
@@ -79,6 +80,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 null,
+                null,
                 new AccountWideProgressionEffectState(
                     playerMaxHealthBonus: 10,
                     playerAttackPowerBonus: 0,
@@ -101,6 +103,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatShellContextFactory factory = new CombatShellContextFactory();
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                null,
                 null,
                 new AccountWideProgressionEffectState(
                     playerMaxHealthBonus: 0,
@@ -125,6 +128,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 null,
+                null,
                 new AccountWideProgressionEffectState(
                     playerMaxHealthBonus: 0,
                     playerAttackPowerBonus: 0,
@@ -148,11 +152,36 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 PlayableCharacterCatalog.Default,
+                null,
                 default);
 
             Assert.That(combatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
             Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
+        }
+
+        [Test]
+        public void ShouldApplyPersistentCharacterProgressionRankBonusToPlayerCombatStats()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            PersistentCharacterState characterState = new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                progressionRank: 2,
+                skillPackageId: "skill_package_vanguard_default");
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                PlayableCharacterCatalog.Default,
+                characterState,
+                default);
+
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(130f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));

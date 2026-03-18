@@ -95,6 +95,16 @@ namespace Survivalon.State.Persistence
         {
             isActive = active;
         }
+
+        public void IncreaseProgressionRank(int amount = 1)
+        {
+            if (amount <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), amount, "Progression rank increase must be positive.");
+            }
+
+            progressionRank += amount;
+        }
     }
 }
 

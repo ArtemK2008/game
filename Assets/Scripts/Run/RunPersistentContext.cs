@@ -10,12 +10,14 @@ namespace Survivalon.Run
             PersistentWorldState persistentWorldState = null,
             ResourceBalancesState resourceBalancesState = null,
             PersistentProgressionState persistentProgressionState = null,
-            PlayableCharacterProfile playableCharacter = null)
+            PlayableCharacterProfile playableCharacter = null,
+            PersistentCharacterState playableCharacterState = null)
         {
             PersistentWorldState = persistentWorldState;
             ResourceBalancesState = resourceBalancesState;
             PersistentProgressionState = persistentProgressionState;
             PlayableCharacter = playableCharacter;
+            PlayableCharacterState = playableCharacterState;
         }
 
         public PersistentWorldState PersistentWorldState { get; }
@@ -26,6 +28,8 @@ namespace Survivalon.Run
 
         public PlayableCharacterProfile PlayableCharacter { get; }
 
+        public PersistentCharacterState PlayableCharacterState { get; }
+
         public static RunPersistentContext FromGameState(PersistentGameState gameState)
         {
             if (gameState == null)
@@ -33,13 +37,16 @@ namespace Survivalon.Run
                 throw new ArgumentNullException(nameof(gameState));
             }
 
-            PlayableCharacterProfile playableCharacter = new PlayableCharacterResolver().ResolveCurrent(gameState);
+            PlayableCharacterResolver characterResolver = new PlayableCharacterResolver();
+            PersistentCharacterState playableCharacterState = characterResolver.ResolveCurrentState(gameState);
+            PlayableCharacterProfile playableCharacter = PlayableCharacterCatalog.Get(playableCharacterState.CharacterId);
 
             return new RunPersistentContext(
                 gameState.WorldState,
                 gameState.ResourceBalances,
                 gameState.ProgressionState,
-                playableCharacter);
+                playableCharacter,
+                playableCharacterState);
         }
     }
 }

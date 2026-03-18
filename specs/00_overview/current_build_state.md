@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 043**, plus the accepted cleanup/refactor milestones **042b** through **042h**.
+This summary reflects completed work through **Milestone 044**, plus the accepted cleanup/refactor milestones **042b** through **042h**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -108,7 +108,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The new farm-oriented yield upgrade helps repeatable farming more directly by increasing ordinary region-material rewards on standard region-material combat clears.
 - Dedicated service-hub or town-style runtime access to this sink is not implemented yet; the sink currently exists through persistent domain/state logic and combat integration rather than through a new UI flow.
 
-### Persistent character baseline and selection placeholder
+### Persistent character baseline, selection placeholder, and linked progression
 - The build now has one explicit playable character stored in persistent game state: `character_vanguard` / `Vanguard`.
 - Bootstrap fallback state creation and persisted-state startup normalization both ensure this default playable character exists, is unlocked, and selectable.
 - The build now also has an explicit character-selection placeholder model:
@@ -117,8 +117,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - the current world map shows the selected character and one small placeholder selection button per selectable playable character
 - Run entry now resolves the current selected persistent playable character into the player-side combat baseline instead of relying only on an anonymous hardcoded player concept.
 - The current player combat identity and base stats come from that character-backed baseline, and existing account-wide progression effects continue to layer on top of it before combat begins.
+- The selected playable character now also has one live character-linked progression path:
+  - successful combat-compatible runs increase that character's persistent `ProgressionRank` by `+1`
+  - each rank currently grants `+5` max health to that same character on future combat run entry
+  - this character-owned bonus is resolved separately from the account-wide progression sink and stacks with existing account-wide combat bonuses
 - The current build still ships only one playable character, so the new selection path stays placeholder-level but future-compatible rather than hardcoded.
-- There is no dedicated character selection screen yet, and no second playable character exists yet.
+- There is no dedicated character selection screen yet, no second playable character exists yet, and no dedicated character-progression UI exists yet.
 
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
@@ -137,13 +141,14 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Rewards and economy are still early and placeholder-level beyond the new soft-currency, one region-material path, one clear-threshold milestone reward, and one structural account-wide progression sink; broader reward differentiation and additional sinks are not implemented yet.
 - The new account-wide sink is now wired into live player combat baseline stats, but it is not yet exposed through a dedicated service/town UI.
 - Character selection now exists only as a minimal world-map placeholder path; broader multi-character UI and deeper roster systems are still deferred.
+- Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
 - Additional progression sinks and dedicated sink access through the service/town layer
-- Expanded multi-character/build systems beyond the current single-character selection placeholder
+- Expanded multi-character/build systems beyond the current single-character selection placeholder and simple rank-based character growth
 - Multi-entity combat, skills, advanced AI, and broader combat content
 
 ## Known temporary placeholders / technical shortcuts
