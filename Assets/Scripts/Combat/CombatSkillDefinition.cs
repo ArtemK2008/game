@@ -5,16 +5,19 @@ namespace Survivalon.Combat
     public enum CombatSkillCategory
     {
         BasicAttack = 0,
+        Passive = 1,
     }
 
     public enum CombatSkillActivationType
     {
         AutomatedInterval = 0,
+        AlwaysOn = 1,
     }
 
     public enum CombatSkillEffectType
     {
         DirectDamage = 0,
+        DirectDamageModifier = 1,
     }
 
     public sealed class CombatSkillDefinition
@@ -24,7 +27,8 @@ namespace Survivalon.Combat
             string displayName,
             CombatSkillCategory category,
             CombatSkillActivationType activationType,
-            CombatSkillEffectType effectType)
+            CombatSkillEffectType effectType,
+            float directDamageMultiplier = 1f)
         {
             if (string.IsNullOrWhiteSpace(skillId))
             {
@@ -36,11 +40,20 @@ namespace Survivalon.Combat
                 throw new ArgumentException("Display name cannot be null or whitespace.", nameof(displayName));
             }
 
+            if (directDamageMultiplier <= 0f)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(directDamageMultiplier),
+                    directDamageMultiplier,
+                    "Direct damage multiplier must be greater than zero.");
+            }
+
             SkillId = skillId;
             DisplayName = displayName;
             Category = category;
             ActivationType = activationType;
             EffectType = effectType;
+            DirectDamageMultiplier = directDamageMultiplier;
         }
 
         public string SkillId { get; }
@@ -52,6 +65,8 @@ namespace Survivalon.Combat
         public CombatSkillActivationType ActivationType { get; }
 
         public CombatSkillEffectType EffectType { get; }
+
+        public float DirectDamageMultiplier { get; }
     }
 
     public static class CombatSkillCatalog
@@ -62,5 +77,13 @@ namespace Survivalon.Combat
             category: CombatSkillCategory.BasicAttack,
             activationType: CombatSkillActivationType.AutomatedInterval,
             effectType: CombatSkillEffectType.DirectDamage);
+
+        public static CombatSkillDefinition RelentlessAssault { get; } = new CombatSkillDefinition(
+            skillId: "combat_passive_relentless_assault",
+            displayName: "Relentless Assault",
+            category: CombatSkillCategory.Passive,
+            activationType: CombatSkillActivationType.AlwaysOn,
+            effectType: CombatSkillEffectType.DirectDamageModifier,
+            directDamageMultiplier: 1.2f);
     }
 }

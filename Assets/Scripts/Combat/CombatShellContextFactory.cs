@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
@@ -43,7 +44,8 @@ namespace Survivalon.Combat
                     CreatePlayerBaseStats(
                         resolvedCharacter.BaseStats,
                         playableCharacterState,
-                        progressionEffects)),
+                        progressionEffects),
+                    passiveSkills: ResolvePassiveSkills(resolvedCharacter, playableCharacterState)),
                 new CombatEntityState(
                     new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
                     GetEnemyDisplayName(nodeContext),
@@ -67,6 +69,17 @@ namespace Survivalon.Combat
                 attackPower: characterBaseStats.AttackPower + progressionEffects.PlayerAttackPowerBonus,
                 attackRate: characterBaseStats.AttackRate,
                 defense: characterBaseStats.Defense);
+        }
+
+        private static IReadOnlyList<CombatSkillDefinition> ResolvePassiveSkills(
+            PlayableCharacterProfile playableCharacter,
+            PersistentCharacterState playableCharacterState)
+        {
+            string skillPackageId = !string.IsNullOrWhiteSpace(playableCharacterState?.SkillPackageId)
+                ? playableCharacterState.SkillPackageId
+                : playableCharacter.DefaultSkillPackageId;
+
+            return CombatSkillPackageCatalog.GetPassiveSkills(skillPackageId);
         }
 
         private static CombatStatBlock CreateEnemyBaseStats(NodePlaceholderState nodeContext)

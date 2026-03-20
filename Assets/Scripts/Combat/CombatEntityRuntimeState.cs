@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Survivalon.Combat
 {
@@ -35,6 +36,8 @@ namespace Survivalon.Combat
         public float MaxHealth => CombatEntity.BaseStats.MaxHealth;
 
         public CombatSkillDefinition BaselineAttackSkill => CombatEntity.BaselineAttackSkill;
+
+        public IReadOnlyList<CombatSkillDefinition> PassiveSkills => CombatEntity.PassiveSkills;
 
         public float CurrentHealth { get; private set; }
 

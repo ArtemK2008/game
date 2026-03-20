@@ -9,6 +9,14 @@ namespace Survivalon.Combat
 
     public sealed class CombatSkillExecutor : ICombatSkillExecutor
     {
+        private readonly CombatPassiveSkillEffectResolver combatPassiveSkillEffectResolver;
+
+        public CombatSkillExecutor(CombatPassiveSkillEffectResolver combatPassiveSkillEffectResolver = null)
+        {
+            this.combatPassiveSkillEffectResolver =
+                combatPassiveSkillEffectResolver ?? new CombatPassiveSkillEffectResolver();
+        }
+
         public void Execute(CombatSkillExecutionRequest executionRequest, CombatEncounterState encounterState)
         {
             if (executionRequest == null)
@@ -32,7 +40,7 @@ namespace Survivalon.Combat
             switch (executionRequest.SkillDefinition.EffectType)
             {
                 case CombatSkillEffectType.DirectDamage:
-                    ResolveDirectDamage(executionRequest, encounterState);
+                    ResolveDirectDamage(executionRequest, encounterState, combatPassiveSkillEffectResolver);
                     return;
                 default:
                     throw new InvalidOperationException(
@@ -42,12 +50,16 @@ namespace Survivalon.Combat
 
         private static void ResolveDirectDamage(
             CombatSkillExecutionRequest executionRequest,
-            CombatEncounterState encounterState)
+            CombatEncounterState encounterState,
+            CombatPassiveSkillEffectResolver combatPassiveSkillEffectResolver)
         {
             CombatEntityRuntimeState sourceEntity = executionRequest.SourceEntity;
             CombatEntityRuntimeState targetEntity = executionRequest.TargetEntity;
+            float directDamageMultiplier = combatPassiveSkillEffectResolver.ResolveOutgoingDirectDamageMultiplier(
+                sourceEntity,
+                executionRequest.SkillDefinition);
             float mitigatedDamage = CombatStatCalculator.CalculateMitigatedDamage(
-                sourceEntity.CombatEntity.BaseStats.AttackPower,
+                sourceEntity.CombatEntity.BaseStats.AttackPower * directDamageMultiplier,
                 targetEntity.CombatEntity.BaseStats);
 
             targetEntity.ApplyDamage(mitigatedDamage);
