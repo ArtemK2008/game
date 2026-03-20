@@ -87,6 +87,39 @@ namespace Survivalon.World
                 $"Available characters: {selectionOptions.Count}";
         }
 
+        public static string BuildSkillPackageAssignmentText(
+            string selectedCharacterDisplayName,
+            IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions)
+        {
+            if (selectedCharacterDisplayName == null)
+            {
+                throw new ArgumentNullException(nameof(selectedCharacterDisplayName));
+            }
+
+            if (skillPackageOptions == null)
+            {
+                throw new ArgumentNullException(nameof(skillPackageOptions));
+            }
+
+            string assignedPackageLabel = "none";
+            string assignedPackageSummary = "No valid package assigned.";
+            for (int index = 0; index < skillPackageOptions.Count; index++)
+            {
+                if (skillPackageOptions[index].IsAssigned)
+                {
+                    assignedPackageLabel = skillPackageOptions[index].DisplayName;
+                    assignedPackageSummary = skillPackageOptions[index].Summary;
+                    break;
+                }
+            }
+
+            return
+                $"Selected character package: {selectedCharacterDisplayName}\n" +
+                $"Assigned package: {assignedPackageLabel}\n" +
+                $"Package effect: {assignedPackageSummary}\n" +
+                $"Available packages: {skillPackageOptions.Count}";
+        }
+
         public static string BuildCharacterButtonLabel(PlayableCharacterSelectionOption selectionOption)
         {
             if (selectionOption == null)
@@ -97,6 +130,18 @@ namespace Survivalon.World
             return selectionOption.IsSelected
                 ? $"Selected: {selectionOption.DisplayName}"
                 : $"Select: {selectionOption.DisplayName}";
+        }
+
+        public static string BuildSkillPackageButtonLabel(PlayableCharacterSkillPackageOption skillPackageOption)
+        {
+            if (skillPackageOption == null)
+            {
+                throw new ArgumentNullException(nameof(skillPackageOption));
+            }
+
+            return skillPackageOption.IsAssigned
+                ? $"Assigned: {skillPackageOption.DisplayName}"
+                : $"Assign: {skillPackageOption.DisplayName}";
         }
 
         public static string BuildNodeLabel(WorldMapNodeOption nodeOption)

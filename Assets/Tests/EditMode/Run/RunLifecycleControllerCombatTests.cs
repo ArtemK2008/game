@@ -306,6 +306,28 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldUseAssignedSkillPackageForCombatEntryWhenSelectedCharacterOverridesProfileDefault()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            Assert.That(
+                gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState),
+                Is.True);
+            vanguardState.SetSkillPackageId("skill_package_vanguard_burst_drill");
+
+            RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: persistentContext);
+
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+
+            Assert.That(persistentContext.PlayableCharacter.CharacterId, Is.EqualTo("character_vanguard"));
+            Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills, Is.Empty);
+        }
+
+        [Test]
         public void ShouldApplyAccountWideProgressionEffectsOnTopOfPersistentPlayableCharacterBaseline()
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -466,6 +488,39 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(
                 strikerController.CombatEncounterState.ElapsedCombatSeconds,
                 Is.LessThan(vanguardController.CombatEncounterState.ElapsedCombatSeconds));
+        }
+
+        [Test]
+        public void ShouldTurnCurrentBossCombatFromVanguardFailureIntoSuccessWhenBurstDrillPackageIsAssigned()
+        {
+            PersistentGameState baselineGameState = BootstrapWorldTestData.CreateGameState();
+            PersistentGameState assignedGameState = BootstrapWorldTestData.CreateGameState();
+            Assert.That(
+                assignedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState assignedVanguardState),
+                Is.True);
+            assignedVanguardState.SetSkillPackageId("skill_package_vanguard_burst_drill");
+
+            RunLifecycleController baselineController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(baselineGameState));
+            RunLifecycleController assignedController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(assignedGameState));
+
+            RunLifecycleControllerTestData.RunToPostRun(baselineController);
+            RunLifecycleControllerTestData.RunToPostRun(assignedController);
+
+            Assert.That(baselineController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(baselineController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.Null);
+            Assert.That(baselineController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
+            Assert.That(baselineController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
+            Assert.That(assignedController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(assignedController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(assignedController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(assignedController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+            Assert.That(
+                assignedController.CombatEncounterState.ElapsedCombatSeconds,
+                Is.LessThan(baselineController.CombatEncounterState.ElapsedCombatSeconds));
         }
 
         [Test]

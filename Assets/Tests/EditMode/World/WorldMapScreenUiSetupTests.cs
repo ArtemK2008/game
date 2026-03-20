@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.State;
 using Survivalon.State.Persistence;
 using Survivalon.World;
@@ -65,6 +66,7 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsForwardRouteSummary = false;
                 bool containsRecentNodeSummary = false;
                 bool containsCharacterSelectionSummary = false;
+                bool containsSkillPackageAssignmentSummary = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("State:"))
@@ -86,14 +88,22 @@ namespace Survivalon.Tests.EditMode.World
                     {
                         containsCharacterSelectionSummary = true;
                     }
+
+                    if (label.text.Contains("Assigned package: Standard Guard"))
+                    {
+                        containsSkillPackageAssignmentSummary = true;
+                    }
                 }
 
                 Assert.That(containsStateLabel, Is.True);
                 Assert.That(containsForwardRouteSummary, Is.True);
                 Assert.That(containsRecentNodeSummary, Is.True);
                 Assert.That(containsCharacterSelectionSummary, Is.True);
+                Assert.That(containsSkillPackageAssignmentSummary, Is.True);
                 Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "character_striker_CharacterButton"), Is.Not.Null);
+                Assert.That(FindButton(hostObject, "skill_package_vanguard_default_SkillPackageButton"), Is.Not.Null);
+                Assert.That(FindButton(hostObject, "skill_package_vanguard_burst_drill_SkillPackageButton"), Is.Not.Null);
             }
             finally
             {
@@ -298,6 +308,38 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Selected character: Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Selected: Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Select: Vanguard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Assigned package: Relentless Burst"), Is.True);
+                Assert.That(FindButton(hostObject, "skill_package_striker_default_SkillPackageButton"), Is.Not.Null);
+                Assert.That(TryFindButton(hostObject, "skill_package_vanguard_burst_drill_SkillPackageButton"), Is.Null);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldAssignSkillPackageForCurrentlySelectedPlayableCharacterWhenPackageButtonIsPressed()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                FindButton(hostObject, "skill_package_vanguard_burst_drill_SkillPackageButton").onClick.Invoke();
+
+                Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+                Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_burst_drill"));
+                Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Package effect: Adds Burst Strike."), Is.True);
+                Assert.That(ContainsText(hostObject, "Assigned: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Assign: Standard Guard"), Is.True);
             }
             finally
             {
@@ -329,6 +371,18 @@ namespace Survivalon.Tests.EditMode.World
 
         private static Button FindButton(GameObject rootObject, string buttonObjectName)
         {
+            Button button = TryFindButton(rootObject, buttonObjectName);
+            if (button != null)
+            {
+                return button;
+            }
+
+            Assert.Fail($"Button '{buttonObjectName}' was not found.");
+            return null;
+        }
+
+        private static Button TryFindButton(GameObject rootObject, string buttonObjectName)
+        {
             Button[] buttons = rootObject.GetComponentsInChildren<Button>(true);
             foreach (Button button in buttons)
             {
@@ -338,7 +392,6 @@ namespace Survivalon.Tests.EditMode.World
                 }
             }
 
-            Assert.Fail($"Button '{buttonObjectName}' was not found.");
             return null;
         }
 

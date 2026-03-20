@@ -10,6 +10,7 @@ namespace Survivalon.Combat
         {
             CombatSkillCatalog.RelentlessAssault,
         };
+        private static readonly CombatSkillDefinition VanguardBurstDrillTriggeredActiveSkill = CombatSkillCatalog.BurstStrike;
         private static readonly CombatSkillDefinition StrikerDefaultTriggeredActiveSkill = CombatSkillCatalog.BurstStrike;
 
         public static IReadOnlyList<CombatSkillDefinition> GetPassiveSkills(string skillPackageId)
@@ -22,6 +23,7 @@ namespace Survivalon.Combat
             return skillPackageId switch
             {
                 "skill_package_vanguard_default" => EmptyPassiveSkills,
+                "skill_package_vanguard_burst_drill" => EmptyPassiveSkills,
                 "skill_package_striker_default" => StrikerDefaultPassiveSkills,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(skillPackageId),
@@ -40,6 +42,7 @@ namespace Survivalon.Combat
             return skillPackageId switch
             {
                 "skill_package_vanguard_default" => null,
+                "skill_package_vanguard_burst_drill" => VanguardBurstDrillTriggeredActiveSkill,
                 "skill_package_striker_default" => StrikerDefaultTriggeredActiveSkill,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(skillPackageId),

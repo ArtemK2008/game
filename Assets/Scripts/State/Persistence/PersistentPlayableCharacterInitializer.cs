@@ -6,10 +6,15 @@ namespace Survivalon.State.Persistence
     public sealed class PersistentPlayableCharacterInitializer
     {
         private readonly PlayableCharacterSelectionService selectionService;
+        private readonly PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService;
 
-        public PersistentPlayableCharacterInitializer(PlayableCharacterSelectionService selectionService = null)
+        public PersistentPlayableCharacterInitializer(
+            PlayableCharacterSelectionService selectionService = null,
+            PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService = null)
         {
             this.selectionService = selectionService ?? new PlayableCharacterSelectionService();
+            this.skillPackageAssignmentService =
+                skillPackageAssignmentService ?? new PlayableCharacterSkillPackageAssignmentService(this.selectionService);
         }
 
         public void EnsureInitialized(PersistentGameState gameState)
@@ -24,6 +29,7 @@ namespace Survivalon.State.Persistence
                 EnsureCharacterState(gameState, PlayableCharacterCatalog.All[index]);
             }
 
+            skillPackageAssignmentService.EnsureValidAssignments(gameState);
             selectionService.EnsureValidSelection(gameState);
         }
 
