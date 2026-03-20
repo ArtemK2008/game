@@ -194,6 +194,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(scrollRect.viewport.gameObject.name, Is.EqualTo("NodeListViewport"));
                 Assert.That(scrollRect.content, Is.Not.Null);
                 Assert.That(scrollRect.content.gameObject.name, Is.EqualTo("NodeList"));
+                Assert.That(GetWorldRect(scrollRect.content).xMin, Is.EqualTo(GetWorldRect(scrollRect.viewport).xMin).Within(1f));
+                Assert.That(GetWorldRect(scrollRect.content).xMax, Is.EqualTo(GetWorldRect(scrollRect.viewport).xMax).Within(1f));
             }
             finally
             {
@@ -220,6 +222,7 @@ namespace Survivalon.Tests.EditMode.World
 
                 ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
                 RectTransform lastNodeRect = FindRectTransform(hostObject, "region_scroll_node_018_Button");
+                RectTransform lastNodeLabelRect = GetButtonLabelRectTransform(FindButton(hostObject, "region_scroll_node_018_Button"));
 
                 Assert.That(scrollRect.content.rect.height, Is.GreaterThan(scrollRect.viewport.rect.height));
                 Assert.That(RectanglesOverlap(lastNodeRect, scrollRect.viewport), Is.False);
@@ -228,6 +231,43 @@ namespace Survivalon.Tests.EditMode.World
                 ForceUiLayout(hostObject);
 
                 Assert.That(RectanglesOverlap(lastNodeRect, scrollRect.viewport), Is.True);
+                AssertHorizontallyContained(scrollRect.viewport, lastNodeRect);
+                AssertHorizontallyContained(scrollRect.viewport, lastNodeLabelRect);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldKeepNodeButtonsHorizontallyAlignedWithinViewportAfterRefresh()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                ForceUiLayout(hostObject);
+
+                ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
+                Button nodeButton = FindButton(hostObject, "region_002_node_001_Button");
+                AssertNodeButtonReadableWithinViewport(scrollRect.viewport, nodeButton);
+
+                nodeButton.onClick.Invoke();
+                ForceUiLayout(hostObject);
+
+                scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
+                nodeButton = FindButton(hostObject, "region_002_node_001_Button");
+                Assert.That(GetWorldRect(scrollRect.content).xMin, Is.EqualTo(GetWorldRect(scrollRect.viewport).xMin).Within(1f));
+                Assert.That(GetWorldRect(scrollRect.content).xMax, Is.EqualTo(GetWorldRect(scrollRect.viewport).xMax).Within(1f));
+                AssertNodeButtonReadableWithinViewport(scrollRect.viewport, nodeButton);
             }
             finally
             {
@@ -278,6 +318,13 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.Fail($"ScrollRect '{objectName}' was not found.");
             return null;
+        }
+
+        private static RectTransform GetButtonLabelRectTransform(Button button)
+        {
+            Text label = button.GetComponentInChildren<Text>(true);
+            Assert.That(label, Is.Not.Null);
+            return label.rectTransform;
         }
 
         private static Button FindButton(GameObject rootObject, string buttonObjectName)
@@ -362,6 +409,21 @@ namespace Survivalon.Tests.EditMode.World
                 containerRect.xMax >= childRect.xMax &&
                 containerRect.yMin <= childRect.yMin &&
                 containerRect.yMax >= childRect.yMax;
+        }
+
+        private static void AssertNodeButtonReadableWithinViewport(RectTransform viewport, Button button)
+        {
+            AssertHorizontallyContained(viewport, button.GetComponent<RectTransform>());
+            AssertHorizontallyContained(viewport, GetButtonLabelRectTransform(button));
+        }
+
+        private static void AssertHorizontallyContained(RectTransform viewport, RectTransform child)
+        {
+            Rect viewportRect = GetWorldRect(viewport);
+            Rect childRect = GetWorldRect(child);
+
+            Assert.That(childRect.xMin, Is.GreaterThanOrEqualTo(viewportRect.xMin - 1f));
+            Assert.That(childRect.xMax, Is.LessThanOrEqualTo(viewportRect.xMax + 1f));
         }
 
         private static WorldGraph CreateOverflowWorldGraph(int nodeCount)
