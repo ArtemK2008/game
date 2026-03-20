@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
@@ -15,7 +16,7 @@ namespace Survivalon.Tests.EditMode.Data
                 isSelectable: true,
                 isActive: true,
                 progressionRank: 0,
-                skillPackageId: "skill_package_vanguard_default");
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault);
             PlayableCharacterProgressionEffectResolver resolver = new PlayableCharacterProgressionEffectResolver();
 
             float maxHealthBonus = resolver.ResolveMaxHealthBonus(characterState);
@@ -32,7 +33,7 @@ namespace Survivalon.Tests.EditMode.Data
                 isSelectable: true,
                 isActive: true,
                 progressionRank: 3,
-                skillPackageId: "skill_package_vanguard_default");
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault);
             PlayableCharacterProgressionEffectResolver resolver = new PlayableCharacterProgressionEffectResolver();
 
             float maxHealthBonus = resolver.ResolveMaxHealthBonus(characterState);

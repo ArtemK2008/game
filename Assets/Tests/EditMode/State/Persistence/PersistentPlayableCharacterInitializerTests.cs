@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Core;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
@@ -20,14 +21,14 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(vanguardState.IsUnlocked, Is.True);
             Assert.That(vanguardState.IsSelectable, Is.True);
             Assert.That(vanguardState.IsActive, Is.True);
-            Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+            Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
             Assert.That(
                 gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
                 Is.True);
             Assert.That(strikerState.IsUnlocked, Is.True);
             Assert.That(strikerState.IsSelectable, Is.True);
             Assert.That(strikerState.IsActive, Is.False);
-            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
         }
 
         [Test]
@@ -45,7 +46,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
 
             initializer.EnsureInitialized(gameState);
 
@@ -56,14 +57,14 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(vanguardState.IsUnlocked, Is.True);
             Assert.That(vanguardState.IsSelectable, Is.True);
             Assert.That(vanguardState.IsActive, Is.False);
-            Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+            Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
             Assert.That(
                 gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
                 Is.True);
             Assert.That(strikerState.IsUnlocked, Is.True);
             Assert.That(strikerState.IsSelectable, Is.True);
             Assert.That(strikerState.IsActive, Is.True);
-            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
         }
 
         [Test]
@@ -76,20 +77,20 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_vanguard_burst_drill"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardBurstDrill));
 
             initializer.EnsureInitialized(gameState);
 
             Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
-            Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+            Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
             Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
-            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
         }
     }
 }

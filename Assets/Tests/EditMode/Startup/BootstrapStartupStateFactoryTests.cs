@@ -27,8 +27,16 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(startupState.SessionContext.HasRecentNode, Is.True);
             Assert.That(startupState.SessionContext.RecentNodeId, Is.EqualTo(startupState.GameState.WorldState.CurrentNodeId));
             Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(2));
-            AssertCharacterState(startupState.GameState, "character_vanguard", true, "skill_package_vanguard_default");
-            AssertCharacterState(startupState.GameState, "character_striker", false, "skill_package_striker_default");
+            AssertCharacterState(
+                startupState.GameState,
+                "character_vanguard",
+                true,
+                PlayableCharacterSkillPackageIds.VanguardDefault);
+            AssertCharacterState(
+                startupState.GameState,
+                "character_striker",
+                false,
+                PlayableCharacterSkillPackageIds.StrikerDefault);
         }
 
         [Test]
@@ -44,7 +52,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
             storage.Seed(persistedGameState);
 
             SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
@@ -57,8 +65,16 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(startupState.SessionContext.HasRecentNode, Is.True);
             Assert.That(startupState.SessionContext.RecentNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
             Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(2));
-            AssertCharacterState(startupState.GameState, "character_vanguard", false, "skill_package_vanguard_default");
-            AssertCharacterState(startupState.GameState, "character_striker", true, "skill_package_striker_default");
+            AssertCharacterState(
+                startupState.GameState,
+                "character_vanguard",
+                false,
+                PlayableCharacterSkillPackageIds.VanguardDefault);
+            AssertCharacterState(
+                startupState.GameState,
+                "character_striker",
+                true,
+                PlayableCharacterSkillPackageIds.StrikerDefault);
         }
 
         [Test]
@@ -74,13 +90,13 @@ namespace Survivalon.Tests.EditMode.Startup
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             persistedGameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
             storage.Seed(persistedGameState);
 
             SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
@@ -90,8 +106,16 @@ namespace Survivalon.Tests.EditMode.Startup
 
             Assert.That(startupState.GameState, Is.SameAs(persistedGameState));
             Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(2));
-            AssertCharacterState(startupState.GameState, "character_vanguard", true, "skill_package_vanguard_default");
-            AssertCharacterState(startupState.GameState, "character_striker", false, "skill_package_striker_default");
+            AssertCharacterState(
+                startupState.GameState,
+                "character_vanguard",
+                true,
+                PlayableCharacterSkillPackageIds.VanguardDefault);
+            AssertCharacterState(
+                startupState.GameState,
+                "character_striker",
+                false,
+                PlayableCharacterSkillPackageIds.StrikerDefault);
         }
 
         private static void AssertCharacterState(

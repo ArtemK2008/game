@@ -111,13 +111,13 @@ namespace Survivalon.Tests.EditMode.World
                 {
                     new PlayableCharacterSkillPackageOption(
                         "character_vanguard",
-                        "skill_package_vanguard_default",
+                        PlayableCharacterSkillPackageIds.VanguardDefault,
                         "Standard Guard",
                         "No passive or active skill.",
                         isAssigned: false),
                     new PlayableCharacterSkillPackageOption(
                         "character_vanguard",
-                        "skill_package_vanguard_burst_drill",
+                        PlayableCharacterSkillPackageIds.VanguardBurstDrill,
                         "Burst Drill",
                         "Adds Burst Strike.",
                         isAssigned: true),
@@ -136,14 +136,14 @@ namespace Survivalon.Tests.EditMode.World
             string assignedLabel = WorldMapScreenTextBuilder.BuildSkillPackageButtonLabel(
                 new PlayableCharacterSkillPackageOption(
                     "character_vanguard",
-                    "skill_package_vanguard_default",
+                    PlayableCharacterSkillPackageIds.VanguardDefault,
                     "Standard Guard",
                     "No passive or active skill.",
                     isAssigned: true));
             string unassignedLabel = WorldMapScreenTextBuilder.BuildSkillPackageButtonLabel(
                 new PlayableCharacterSkillPackageOption(
                     "character_vanguard",
-                    "skill_package_vanguard_burst_drill",
+                    PlayableCharacterSkillPackageIds.VanguardBurstDrill,
                     "Burst Drill",
                     "Adds Burst Strike.",
                     isAssigned: false));

@@ -102,14 +102,14 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                 isSelectable: true,
                 isActive: false,
                 progressionRank: 2,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
                 progressionRank: 1,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
 
             service.SaveResolvedWorldContext(gameState);
 
@@ -121,7 +121,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(characterState.IsSelectable, Is.True);
             Assert.That(characterState.IsActive, Is.False);
             Assert.That(characterState.ProgressionRank, Is.EqualTo(2));
-            Assert.That(characterState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+            Assert.That(characterState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
             Assert.That(
                 storage.SavedGameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
                 Is.True);
@@ -129,7 +129,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(strikerState.IsSelectable, Is.True);
             Assert.That(strikerState.IsActive, Is.True);
             Assert.That(strikerState.ProgressionRank, Is.EqualTo(1));
-            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
         }
 
         private static PersistentGameState CreateGameState(string currentNodeIdValue, string lastSafeNodeIdValue)

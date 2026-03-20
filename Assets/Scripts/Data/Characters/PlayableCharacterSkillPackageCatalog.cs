@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Core;
 
 namespace Survivalon.Data.Characters
 {
@@ -9,13 +10,13 @@ namespace Survivalon.Data.Characters
         {
             new PlayableCharacterSkillPackageOption(
                 "character_vanguard",
-                "skill_package_vanguard_default",
+                PlayableCharacterSkillPackageIds.VanguardDefault,
                 "Standard Guard",
                 "No passive or active skill.",
                 isAssigned: false),
             new PlayableCharacterSkillPackageOption(
                 "character_vanguard",
-                "skill_package_vanguard_burst_drill",
+                PlayableCharacterSkillPackageIds.VanguardBurstDrill,
                 "Burst Drill",
                 "Adds Burst Strike.",
                 isAssigned: false),
@@ -25,7 +26,7 @@ namespace Survivalon.Data.Characters
         {
             new PlayableCharacterSkillPackageOption(
                 "character_striker",
-                "skill_package_striker_default",
+                PlayableCharacterSkillPackageIds.StrikerDefault,
                 "Relentless Burst",
                 "Relentless Assault plus Burst Strike.",
                 isAssigned: false),

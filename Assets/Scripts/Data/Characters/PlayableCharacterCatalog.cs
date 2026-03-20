@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Survivalon.Combat;
+using Survivalon.Core;
 
 namespace Survivalon.Data.Characters
 {
@@ -12,14 +13,14 @@ namespace Survivalon.Data.Characters
                 new CombatEntityId("player_main"),
                 "Vanguard",
                 new CombatStatBlock(120f, 14f, 1.2f, 12f),
-                "skill_package_vanguard_default");
+                PlayableCharacterSkillPackageIds.VanguardDefault);
         private static readonly PlayableCharacterProfile StrikerCharacterProfile =
             new PlayableCharacterProfile(
                 "character_striker",
                 new CombatEntityId("player_striker"),
                 "Striker",
                 new CombatStatBlock(110f, 18f, 1.35f, 8f),
-                "skill_package_striker_default");
+                PlayableCharacterSkillPackageIds.StrikerDefault);
         private static readonly IReadOnlyList<PlayableCharacterProfile> AllProfiles = Array.AsReadOnly(new[]
         {
             DefaultCharacterProfile,
