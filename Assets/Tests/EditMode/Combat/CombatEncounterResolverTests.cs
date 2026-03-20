@@ -169,11 +169,35 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldExecuteDueTriggeredActiveSkillThroughSkillExecutor()
+        {
+            CombatEncounterState encounterState = CreateEncounterState(
+                new CombatStatBlock(100f, 10f, 0.1f, 0f),
+                new CombatStatBlock(100f, 7f, 0.1f, 0f),
+                CombatSkillCatalog.BurstStrike);
+            SpyCombatSkillExecutor skillExecutor = new SpyCombatSkillExecutor();
+            CombatEncounterResolver resolver = new CombatEncounterResolver(combatSkillExecutor: skillExecutor);
+
+            bool advanced = resolver.TryAdvance(encounterState, 2.5f);
+
+            Assert.That(advanced, Is.True);
+            Assert.That(skillExecutor.CallCount, Is.EqualTo(1));
+            Assert.That(skillExecutor.LastExecutionRequest, Is.Not.Null);
+            Assert.That(
+                skillExecutor.LastExecutionRequest.SkillDefinition,
+                Is.SameAs(encounterState.PlayerEntity.TriggeredActiveSkill));
+            Assert.That(skillExecutor.LastExecutionRequest.SourceEntity, Is.SameAs(encounterState.PlayerEntity));
+            Assert.That(skillExecutor.LastExecutionRequest.TargetEntity, Is.SameAs(encounterState.EnemyEntity));
+            Assert.That(encounterState.PlayerEntity.TimeUntilTriggeredActiveSkillSeconds, Is.EqualTo(2.5f).Within(0.001f));
+        }
+
+        [Test]
         public void ShouldApplyPassiveDirectDamageModifierDuringAutomatedBaselineAttackFlow()
         {
             CombatEncounterState encounterState = CreateEncounterState(
                 new CombatStatBlock(100f, 10f, 1f, 0f),
                 new CombatStatBlock(100f, 7f, 0.25f, 0f),
+                null,
                 CombatSkillCatalog.RelentlessAssault);
 
             bool advanced = new CombatEncounterResolver().TryAdvance(encounterState, 1f);
@@ -181,6 +205,33 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(advanced, Is.True);
             Assert.That(encounterState.PlayerEntity.CurrentHealth, Is.EqualTo(100f));
             Assert.That(encounterState.EnemyEntity.CurrentHealth, Is.EqualTo(88f));
+        }
+
+        [Test]
+        public void ShouldAutoTriggerPeriodicActiveSkillAndChangeCombatOutcomeMeaningfully()
+        {
+            CombatEncounterState activeEncounterState = CreateEncounterState(
+                new CombatStatBlock(110f, 18f, 1.35f, 8f),
+                new CombatStatBlock(75f, 8f, 0.9f, 4f),
+                CombatSkillCatalog.BurstStrike,
+                CombatSkillCatalog.RelentlessAssault);
+            CombatEncounterState controlEncounterState = CreateEncounterState(
+                new CombatStatBlock(110f, 18f, 1.35f, 8f),
+                new CombatStatBlock(75f, 8f, 0.9f, 4f),
+                null,
+                CombatSkillCatalog.RelentlessAssault);
+
+            bool activeAdvanced = new CombatEncounterResolver().TryAdvance(activeEncounterState, 2.5f);
+            bool controlAdvanced = new CombatEncounterResolver().TryAdvance(controlEncounterState, 2.5f);
+
+            Assert.That(activeAdvanced, Is.True);
+            Assert.That(controlAdvanced, Is.True);
+            Assert.That(activeEncounterState.IsResolved, Is.True);
+            Assert.That(activeEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+            Assert.That(activeEncounterState.EnemyEntity.IsAlive, Is.False);
+            Assert.That(controlEncounterState.IsResolved, Is.False);
+            Assert.That(controlEncounterState.EnemyEntity.IsAlive, Is.True);
+            Assert.That(controlEncounterState.EnemyEntity.CurrentHealth, Is.GreaterThan(0f));
         }
 
         [Test]
@@ -228,6 +279,7 @@ namespace Survivalon.Tests.EditMode.Combat
         private static CombatEncounterState CreateEncounterState(
             CombatStatBlock playerStats,
             CombatStatBlock enemyStats,
+            CombatSkillDefinition playerTriggeredActiveSkill = null,
             params CombatSkillDefinition[] playerPassiveSkills)
         {
             CombatShellContext combatContext = new CombatShellContext(
@@ -237,6 +289,7 @@ namespace Survivalon.Tests.EditMode.Combat
                     "Player Unit",
                     CombatSide.Player,
                     playerStats,
+                    triggeredActiveSkill: playerTriggeredActiveSkill,
                     passiveSkills: playerPassiveSkills),
                 new CombatEntityState(
                     new CombatEntityId("enemy_main"),

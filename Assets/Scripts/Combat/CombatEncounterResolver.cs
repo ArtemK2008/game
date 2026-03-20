@@ -41,28 +41,33 @@ namespace Survivalon.Combat
             float remainingSeconds = elapsedSeconds;
             while (remainingSeconds > AttackTimingEpsilon && !encounterState.IsResolved)
             {
-                float playerTimeToAttack = encounterState.PlayerEntity.CanAct
+                float playerTimeToBaselineAttack = encounterState.PlayerEntity.CanAct
                     ? encounterState.PlayerEntity.TimeUntilNextBaselineAttackSeconds
+                    : float.PositiveInfinity;
+                float playerTimeToTriggeredActiveSkill = encounterState.PlayerEntity.CanAct
+                    ? encounterState.PlayerEntity.TimeUntilTriggeredActiveSkillSeconds
                     : float.PositiveInfinity;
                 float enemyTimeToAttack = encounterState.EnemyEntity.CanAct
                     ? encounterState.EnemyEntity.TimeUntilNextBaselineAttackSeconds
                     : float.PositiveInfinity;
-                float nextAttackWindow = Math.Min(playerTimeToAttack, enemyTimeToAttack);
+                float nextActionWindow = Math.Min(
+                    Math.Min(playerTimeToBaselineAttack, playerTimeToTriggeredActiveSkill),
+                    enemyTimeToAttack);
 
-                if (float.IsPositiveInfinity(nextAttackWindow))
+                if (float.IsPositiveInfinity(nextActionWindow))
                 {
                     return true;
                 }
 
-                if (remainingSeconds + AttackTimingEpsilon < nextAttackWindow)
+                if (remainingSeconds + AttackTimingEpsilon < nextActionWindow)
                 {
                     AdvanceEncounter(encounterState, remainingSeconds);
                     return true;
                 }
 
-                AdvanceEncounter(encounterState, nextAttackWindow);
-                remainingSeconds -= nextAttackWindow;
-                ResolveDueAttacks(encounterState);
+                AdvanceEncounter(encounterState, nextActionWindow);
+                remainingSeconds -= nextActionWindow;
+                ResolveDueActions(encounterState);
             }
 
             return true;
@@ -71,12 +76,18 @@ namespace Survivalon.Combat
         private static void AdvanceEncounter(CombatEncounterState encounterState, float elapsedSeconds)
         {
             encounterState.PlayerEntity.AdvanceBaselineAttackTimer(elapsedSeconds);
+            encounterState.PlayerEntity.AdvanceTriggeredActiveSkillTimer(elapsedSeconds);
             encounterState.EnemyEntity.AdvanceBaselineAttackTimer(elapsedSeconds);
             encounterState.AdvanceElapsedTime(elapsedSeconds);
         }
 
-        private void ResolveDueAttacks(CombatEncounterState encounterState)
+        private void ResolveDueActions(CombatEncounterState encounterState)
         {
+            if (ResolvePlayerTriggeredActiveSkillIfDue(encounterState))
+            {
+                return;
+            }
+
             if (ResolvePlayerAttackIfDue(encounterState))
             {
                 return;
@@ -95,6 +106,23 @@ namespace Survivalon.Combat
             }
 
             ExecuteBaselineAttack(
+                encounterState.PlayerEntity,
+                combatAutoTargetSelector.SelectTarget(encounterState, encounterState.PlayerEntity.Side),
+                encounterState);
+            return encounterState.IsResolved;
+        }
+
+        private bool ResolvePlayerTriggeredActiveSkillIfDue(CombatEncounterState encounterState)
+        {
+            bool playerTriggeredActiveSkillIsDue = encounterState.PlayerEntity.CanAct &&
+                encounterState.PlayerEntity.TriggeredActiveSkill != null &&
+                encounterState.PlayerEntity.TimeUntilTriggeredActiveSkillSeconds <= AttackTimingEpsilon;
+            if (!playerTriggeredActiveSkillIsDue)
+            {
+                return false;
+            }
+
+            ExecuteTriggeredActiveSkill(
                 encounterState.PlayerEntity,
                 combatAutoTargetSelector.SelectTarget(encounterState, encounterState.PlayerEntity.Side),
                 encounterState);
@@ -129,6 +157,22 @@ namespace Survivalon.Combat
             attacker.ResetBaselineAttackTimer();
             combatSkillExecutor.Execute(
                 new CombatSkillExecutionRequest(attacker.BaselineAttackSkill, attacker, defender),
+                encounterState);
+        }
+
+        private void ExecuteTriggeredActiveSkill(
+            CombatEntityRuntimeState attacker,
+            CombatEntityRuntimeState defender,
+            CombatEncounterState encounterState)
+        {
+            if (!attacker.CanAct || attacker.TriggeredActiveSkill == null || !defender.IsAlive)
+            {
+                return;
+            }
+
+            attacker.ResetTriggeredActiveSkillTimer();
+            combatSkillExecutor.Execute(
+                new CombatSkillExecutionRequest(attacker.TriggeredActiveSkill, attacker, defender),
                 encounterState);
         }
     }

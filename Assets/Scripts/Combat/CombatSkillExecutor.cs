@@ -10,11 +10,16 @@ namespace Survivalon.Combat
     public sealed class CombatSkillExecutor : ICombatSkillExecutor
     {
         private readonly CombatPassiveSkillEffectResolver combatPassiveSkillEffectResolver;
+        private readonly CombatDirectDamageSkillEffectResolver combatDirectDamageSkillEffectResolver;
 
-        public CombatSkillExecutor(CombatPassiveSkillEffectResolver combatPassiveSkillEffectResolver = null)
+        public CombatSkillExecutor(
+            CombatPassiveSkillEffectResolver combatPassiveSkillEffectResolver = null,
+            CombatDirectDamageSkillEffectResolver combatDirectDamageSkillEffectResolver = null)
         {
             this.combatPassiveSkillEffectResolver =
                 combatPassiveSkillEffectResolver ?? new CombatPassiveSkillEffectResolver();
+            this.combatDirectDamageSkillEffectResolver =
+                combatDirectDamageSkillEffectResolver ?? new CombatDirectDamageSkillEffectResolver();
         }
 
         public void Execute(CombatSkillExecutionRequest executionRequest, CombatEncounterState encounterState)
@@ -40,7 +45,11 @@ namespace Survivalon.Combat
             switch (executionRequest.SkillDefinition.EffectType)
             {
                 case CombatSkillEffectType.DirectDamage:
-                    ResolveDirectDamage(executionRequest, encounterState, combatPassiveSkillEffectResolver);
+                    ResolveDirectDamage(
+                        executionRequest,
+                        encounterState,
+                        combatPassiveSkillEffectResolver,
+                        combatDirectDamageSkillEffectResolver);
                     return;
                 default:
                     throw new InvalidOperationException(
@@ -51,15 +60,18 @@ namespace Survivalon.Combat
         private static void ResolveDirectDamage(
             CombatSkillExecutionRequest executionRequest,
             CombatEncounterState encounterState,
-            CombatPassiveSkillEffectResolver combatPassiveSkillEffectResolver)
+            CombatPassiveSkillEffectResolver combatPassiveSkillEffectResolver,
+            CombatDirectDamageSkillEffectResolver combatDirectDamageSkillEffectResolver)
         {
             CombatEntityRuntimeState sourceEntity = executionRequest.SourceEntity;
             CombatEntityRuntimeState targetEntity = executionRequest.TargetEntity;
+            float skillAttackPowerMultiplier = combatDirectDamageSkillEffectResolver.ResolveAttackPowerMultiplier(
+                executionRequest.SkillDefinition);
             float directDamageMultiplier = combatPassiveSkillEffectResolver.ResolveOutgoingDirectDamageMultiplier(
                 sourceEntity,
                 executionRequest.SkillDefinition);
             float mitigatedDamage = CombatStatCalculator.CalculateMitigatedDamage(
-                sourceEntity.CombatEntity.BaseStats.AttackPower * directDamageMultiplier,
+                sourceEntity.CombatEntity.BaseStats.AttackPower * skillAttackPowerMultiplier * directDamageMultiplier,
                 targetEntity.CombatEntity.BaseStats);
 
             targetEntity.ApplyDamage(mitigatedDamage);

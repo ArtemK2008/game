@@ -24,6 +24,7 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(combatEntity.Side, Is.EqualTo(CombatSide.Player));
             Assert.That(combatEntity.BaseStats, Is.EqualTo(baseStats));
             Assert.That(combatEntity.BaselineAttackSkill, Is.SameAs(CombatSkillCatalog.BasicAttack));
+            Assert.That(combatEntity.TriggeredActiveSkill, Is.Null);
             Assert.That(combatEntity.PassiveSkills, Is.Empty);
             Assert.That(combatEntity.IsAlive, Is.True);
             Assert.That(combatEntity.IsActive, Is.True);
@@ -73,6 +74,7 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(
                 combatContext.PlayerEntity.BaselineAttackSkill.EffectType,
                 Is.EqualTo(CombatSkillEffectType.DirectDamage));
+            Assert.That(combatContext.PlayerEntity.TriggeredActiveSkill, Is.Null);
             Assert.That(combatContext.PlayerEntity.PassiveSkills, Is.Empty);
             Assert.That(combatContext.EnemyEntity.EntityId, Is.EqualTo(new CombatEntityId("region_001_node_004_enemy_001")));
             Assert.That(combatContext.EnemyEntity.Side, Is.EqualTo(CombatSide.Enemy));
@@ -81,6 +83,7 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(combatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.9f));
             Assert.That(combatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(4f));
             Assert.That(combatContext.EnemyEntity.BaselineAttackSkill, Is.SameAs(CombatSkillCatalog.BasicAttack));
+            Assert.That(combatContext.EnemyEntity.TriggeredActiveSkill, Is.Null);
             Assert.That(combatContext.EnemyEntity.PassiveSkills, Is.Empty);
             Assert.That(combatContext.PlayerEntity.IsAlive, Is.True);
             Assert.That(combatContext.EnemyEntity.IsActive, Is.True);
@@ -192,6 +195,15 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.35f));
             Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(8f));
+            Assert.That(combatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(combatContext.PlayerEntity.TriggeredActiveSkill.SkillId, Is.EqualTo("combat_active_burst_strike"));
+            Assert.That(combatContext.PlayerEntity.TriggeredActiveSkill.Category, Is.EqualTo(CombatSkillCategory.TriggeredActive));
+            Assert.That(
+                combatContext.PlayerEntity.TriggeredActiveSkill.ActivationType,
+                Is.EqualTo(CombatSkillActivationType.PeriodicAutoTrigger));
+            Assert.That(
+                combatContext.PlayerEntity.TriggeredActiveSkill.EffectType,
+                Is.EqualTo(CombatSkillEffectType.DirectDamage));
             Assert.That(combatContext.PlayerEntity.PassiveSkills.Count, Is.EqualTo(1));
             Assert.That(combatContext.PlayerEntity.PassiveSkills[0].SkillId, Is.EqualTo("combat_passive_relentless_assault"));
             Assert.That(combatContext.PlayerEntity.PassiveSkills[0].Category, Is.EqualTo(CombatSkillCategory.Passive));
@@ -244,6 +256,7 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
+            Assert.That(combatContext.PlayerEntity.TriggeredActiveSkill, Is.Null);
         }
     }
 }

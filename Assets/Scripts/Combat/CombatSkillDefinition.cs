@@ -6,12 +6,14 @@ namespace Survivalon.Combat
     {
         BasicAttack = 0,
         Passive = 1,
+        TriggeredActive = 2,
     }
 
     public enum CombatSkillActivationType
     {
         AutomatedInterval = 0,
         AlwaysOn = 1,
+        PeriodicAutoTrigger = 2,
     }
 
     public enum CombatSkillEffectType
@@ -72,5 +74,12 @@ namespace Survivalon.Combat
             category: CombatSkillCategory.Passive,
             activationType: CombatSkillActivationType.AlwaysOn,
             effectType: CombatSkillEffectType.DirectDamageModifier);
+
+        public static CombatSkillDefinition BurstStrike { get; } = new CombatSkillDefinition(
+            skillId: "combat_active_burst_strike",
+            displayName: "Burst Strike",
+            category: CombatSkillCategory.TriggeredActive,
+            activationType: CombatSkillActivationType.PeriodicAutoTrigger,
+            effectType: CombatSkillEffectType.DirectDamage);
     }
 }
