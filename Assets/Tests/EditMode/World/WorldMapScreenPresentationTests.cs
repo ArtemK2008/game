@@ -103,6 +103,56 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void BuildSkillPackageAssignmentText_ShouldShowAssignedPackageAndSummary()
+        {
+            string assignmentText = WorldMapScreenTextBuilder.BuildSkillPackageAssignmentText(
+                "Vanguard",
+                new[]
+                {
+                    new PlayableCharacterSkillPackageOption(
+                        "character_vanguard",
+                        "skill_package_vanguard_default",
+                        "Standard Guard",
+                        "No passive or active skill.",
+                        isAssigned: false),
+                    new PlayableCharacterSkillPackageOption(
+                        "character_vanguard",
+                        "skill_package_vanguard_burst_drill",
+                        "Burst Drill",
+                        "Adds Burst Strike.",
+                        isAssigned: true),
+                });
+
+            Assert.That(assignmentText, Is.EqualTo(
+                "Selected character package: Vanguard\n" +
+                "Assigned package: Burst Drill\n" +
+                "Package effect: Adds Burst Strike.\n" +
+                "Available packages: 2"));
+        }
+
+        [Test]
+        public void BuildSkillPackageButtonLabel_ShouldShowAssignedFormatting()
+        {
+            string assignedLabel = WorldMapScreenTextBuilder.BuildSkillPackageButtonLabel(
+                new PlayableCharacterSkillPackageOption(
+                    "character_vanguard",
+                    "skill_package_vanguard_default",
+                    "Standard Guard",
+                    "No passive or active skill.",
+                    isAssigned: true));
+            string unassignedLabel = WorldMapScreenTextBuilder.BuildSkillPackageButtonLabel(
+                new PlayableCharacterSkillPackageOption(
+                    "character_vanguard",
+                    "skill_package_vanguard_burst_drill",
+                    "Burst Drill",
+                    "Adds Burst Strike.",
+                    isAssigned: false));
+
+            Assert.That(assignedLabel, Is.EqualTo("Assigned: Standard Guard"));
+            Assert.That(unassignedLabel, Is.EqualTo("Assign: Burst Drill"));
+        }
+
+        [Test]
         public void BuildNodeLabel_ShouldMatchExistingFormatting()
         {
             string labelText = WorldMapScreenTextBuilder.BuildNodeLabel(
@@ -142,6 +192,22 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 () => WorldMapScreenTextBuilder.BuildCharacterButtonLabel(null),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("selectionOption"));
+        }
+
+        [Test]
+        public void BuildSkillPackageAssignmentText_ShouldRejectMissingSkillPackageOptions()
+        {
+            Assert.That(
+                () => WorldMapScreenTextBuilder.BuildSkillPackageAssignmentText("Vanguard", null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("skillPackageOptions"));
+        }
+
+        [Test]
+        public void BuildSkillPackageButtonLabel_ShouldRejectMissingSkillPackageOption()
+        {
+            Assert.That(
+                () => WorldMapScreenTextBuilder.BuildSkillPackageButtonLabel(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("skillPackageOption"));
         }
 
         [Test]

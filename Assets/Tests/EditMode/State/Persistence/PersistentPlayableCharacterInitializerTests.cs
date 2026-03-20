@@ -56,12 +56,40 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(vanguardState.IsUnlocked, Is.True);
             Assert.That(vanguardState.IsSelectable, Is.True);
             Assert.That(vanguardState.IsActive, Is.False);
+            Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
             Assert.That(
                 gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
                 Is.True);
             Assert.That(strikerState.IsUnlocked, Is.True);
             Assert.That(strikerState.IsSelectable, Is.True);
             Assert.That(strikerState.IsActive, Is.True);
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
+        }
+
+        [Test]
+        public void ShouldNormalizeInvalidPersistedSkillPackageAssignmentsDuringInitialization()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            PersistentPlayableCharacterInitializer initializer = new PersistentPlayableCharacterInitializer();
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: "skill_package_striker_default"));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: "skill_package_vanguard_burst_drill"));
+
+            initializer.EnsureInitialized(gameState);
+
+            Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+            Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+            Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
         }
     }
 }

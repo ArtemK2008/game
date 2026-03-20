@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 048**, plus the accepted cleanup/refactor milestones **042b** through **042h** and **047a**.
+This summary reflects completed work through **Milestone 049**, plus the accepted cleanup/refactor milestones **042b** through **042h** and **047a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -130,6 +130,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - selectable playable characters are resolved through a dedicated selection service
   - the active/current playable character is normalized so one valid selectable character remains active
   - the current world map shows the selected character and one small placeholder selection button per selectable playable character
+- The current world map also now exposes one minimal build-facing skill-package assignment placeholder:
+  - the selected character's currently assigned package is shown next to the existing character-selection area
+  - only valid package choices for the currently selected character are shown
+  - changing the package updates that character's persistent `skillPackageId`, and future run entry uses the assigned package instead of only the profile default
 - Run entry now resolves the current selected persistent playable character into the player-side combat baseline instead of relying only on an anonymous hardcoded player concept.
 - The current player combat identity and base stats come from that character-backed baseline, and existing account-wide progression effects continue to layer on top of it before combat begins.
 - The selected playable character now also has one live character-linked progression path:
@@ -140,10 +144,16 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Vanguard` is the sturdier default baseline
   - `Striker` trades durability/defense for higher offense and faster attack cadence
   - `Striker`'s default skill package now carries both the current passive skill layer, `Relentless Assault`, and the current periodic active skill, `Burst Strike`
+- The current shipped skill-package assignment options are intentionally tiny:
+  - `Vanguard` can use `Standard Guard` (default, no passive or active skill) or `Burst Drill` (adds `Burst Strike`)
+  - `Striker` currently has one valid package, `Relentless Burst`, which carries `Relentless Assault` plus `Burst Strike`
 - In the current prototype, that differentiation is already visible and testable:
   - selecting `Striker` changes future combat entry stats
   - selecting `Striker` also adds the current always-on passive direct-damage bonus and periodic active skill to future combat entry
   - the current boss/gate placeholder encounter that defeats `Vanguard` can be cleared by `Striker` without needing account-wide offense upgrades
+- The new assignment flow is also already visible and testable:
+  - assigning `Vanguard` to `Burst Drill` adds the same current periodic active skill to `Vanguard`'s future combat entry
+  - that package assignment is persistent and can turn the current boss/gate placeholder encounter from `Vanguard` failure into success without changing `Vanguard`'s base character identity
 - There is no dedicated character selection screen yet and no dedicated character-progression UI exists yet.
 
 ### Post-run reward summary UI
@@ -164,7 +174,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The new account-wide sink is now wired into live player combat baseline stats, but it is not yet exposed through a dedicated service/town UI.
 - Character selection now exists only as a minimal world-map placeholder path; broader roster UI and deeper multi-character systems are still deferred.
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
-- The skill layer is still intentionally small: one passive skill and one periodic auto-triggered active skill exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
+- The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet

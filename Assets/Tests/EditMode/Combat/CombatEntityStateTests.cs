@@ -180,6 +180,28 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldApplyAssignedSkillPackageOverrideToCombatContext()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            PersistentCharacterState characterState = new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: "skill_package_vanguard_burst_drill");
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                PlayableCharacterCatalog.Default,
+                characterState,
+                default);
+
+            Assert.That(combatContext.PlayerEntity.EntityId, Is.EqualTo(new CombatEntityId("player_main")));
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(combatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(combatContext.PlayerEntity.PassiveSkills, Is.Empty);
+        }
+
+        [Test]
         public void ShouldApplySecondPlayableCharacterIdentityToCombatContext()
         {
             CombatShellContextFactory factory = new CombatShellContextFactory();

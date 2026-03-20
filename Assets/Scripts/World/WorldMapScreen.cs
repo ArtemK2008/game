@@ -14,15 +14,19 @@ namespace Survivalon.World
         private const float SummaryPreferredHeight = 176f;
         private const float CharacterSelectionSummaryPreferredHeight = 54f;
         private const float CharacterSelectionButtonPreferredHeight = 44f;
+        private const float SkillPackageAssignmentSummaryPreferredHeight = 88f;
+        private const float SkillPackageAssignmentButtonPreferredHeight = 40f;
 
         private Canvas canvas;
         private RectTransform panelRectTransform;
         private Text titleText;
         private Text summaryText;
         private Text characterSelectionText;
+        private Text skillPackageAssignmentText;
         private Button enterSelectedNodeButton;
         private Text enterSelectedNodeButtonText;
         private RectTransform characterSelectionContainer;
+        private RectTransform skillPackageAssignmentContainer;
         private RectTransform nodeListViewport;
         private RectTransform nodeListContainer;
         private ScrollRect nodeListScrollRect;
@@ -31,6 +35,7 @@ namespace Survivalon.World
         private Action<NodeId> onNodeEntryRequested;
         private PersistentGameState gameState;
         private PlayableCharacterSelectionService characterSelectionService;
+        private PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService;
 
         public void Show(
             WorldGraph worldGraph,
@@ -53,6 +58,9 @@ namespace Survivalon.World
             onNodeEntryRequested = nodeEntryRequested;
             this.gameState = gameState;
             characterSelectionService = gameState == null ? null : new PlayableCharacterSelectionService();
+            skillPackageAssignmentService = gameState == null
+                ? null
+                : new PlayableCharacterSkillPackageAssignmentService(characterSelectionService);
             gameObject.name = "WorldMapScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
@@ -72,6 +80,7 @@ namespace Survivalon.World
                 screenController.HasForwardRouteChoice,
                 screenController.ForwardSelectableNodeCount);
             RefreshCharacterSelection();
+            RefreshSkillPackageAssignment();
             RefreshEntryButton();
 
             ClearNodeButtons();
@@ -107,6 +116,22 @@ namespace Survivalon.World
             }
 
             Debug.Log($"World map character selected: {characterId}.");
+            Refresh();
+        }
+
+        private void HandleSkillPackageAssignment(string skillPackageId)
+        {
+            if (skillPackageAssignmentService == null || gameState == null)
+            {
+                return;
+            }
+
+            if (!skillPackageAssignmentService.TryAssignSelectedCharacterSkillPackage(gameState, skillPackageId))
+            {
+                return;
+            }
+
+            Debug.Log($"World map skill package assigned: {skillPackageId}.");
             Refresh();
         }
 
@@ -237,6 +262,43 @@ namespace Survivalon.World
             characterSelectionContainer.pivot = new Vector2(0.5f, 1f);
             characterSelectionContainer.localScale = Vector3.one;
 
+            skillPackageAssignmentText = RuntimeUiSupport.CreateText(
+                panelObject.transform,
+                uiFont,
+                "SkillPackageAssignmentSummary",
+                18,
+                FontStyle.Normal,
+                TextAnchor.UpperLeft,
+                new Color(0.88f, 0.90f, 0.94f, 1f));
+            RuntimeUiSupport.AddLayoutElement(
+                skillPackageAssignmentText.gameObject,
+                SkillPackageAssignmentSummaryPreferredHeight);
+
+            GameObject skillPackageAssignmentObject = new GameObject(
+                "SkillPackageAssignmentList",
+                typeof(RectTransform),
+                typeof(VerticalLayoutGroup),
+                typeof(ContentSizeFitter));
+            skillPackageAssignmentObject.transform.SetParent(panelObject.transform, false);
+
+            VerticalLayoutGroup skillPackageAssignmentLayout = skillPackageAssignmentObject.GetComponent<VerticalLayoutGroup>();
+            skillPackageAssignmentLayout.spacing = 8f;
+            skillPackageAssignmentLayout.childAlignment = TextAnchor.UpperLeft;
+            skillPackageAssignmentLayout.childControlWidth = true;
+            skillPackageAssignmentLayout.childControlHeight = true;
+            skillPackageAssignmentLayout.childForceExpandWidth = true;
+            skillPackageAssignmentLayout.childForceExpandHeight = false;
+
+            ContentSizeFitter skillPackageAssignmentFitter = skillPackageAssignmentObject.GetComponent<ContentSizeFitter>();
+            skillPackageAssignmentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            skillPackageAssignmentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            skillPackageAssignmentContainer = skillPackageAssignmentObject.GetComponent<RectTransform>();
+            skillPackageAssignmentContainer.anchorMin = new Vector2(0f, 1f);
+            skillPackageAssignmentContainer.anchorMax = new Vector2(1f, 1f);
+            skillPackageAssignmentContainer.pivot = new Vector2(0.5f, 1f);
+            skillPackageAssignmentContainer.localScale = Vector3.one;
+
             enterSelectedNodeButton = CreateActionButton(
                 panelObject.transform,
                 "EnterSelectedNodeButton",
@@ -341,6 +403,20 @@ namespace Survivalon.World
             }
         }
 
+        private void ClearSkillPackageButtons()
+        {
+            for (int index = skillPackageAssignmentContainer.childCount - 1; index >= 0; index--)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(skillPackageAssignmentContainer.GetChild(index).gameObject);
+                    continue;
+                }
+
+                DestroyImmediate(skillPackageAssignmentContainer.GetChild(index).gameObject);
+            }
+        }
+
         private void RefreshCharacterSelection()
         {
             IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions = BuildCharacterSelectionOptions();
@@ -353,6 +429,20 @@ namespace Survivalon.World
             }
         }
 
+        private void RefreshSkillPackageAssignment()
+        {
+            IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions = BuildSkillPackageOptions();
+            skillPackageAssignmentText.text = WorldMapScreenTextBuilder.BuildSkillPackageAssignmentText(
+                BuildSelectedCharacterDisplayName(),
+                skillPackageOptions);
+
+            ClearSkillPackageButtons();
+            foreach (PlayableCharacterSkillPackageOption skillPackageOption in skillPackageOptions)
+            {
+                CreateSkillPackageButton(skillPackageOption);
+            }
+        }
+
         private IReadOnlyList<PlayableCharacterSelectionOption> BuildCharacterSelectionOptions()
         {
             if (characterSelectionService == null || gameState == null)
@@ -361,6 +451,26 @@ namespace Survivalon.World
             }
 
             return characterSelectionService.BuildSelectableOptions(gameState);
+        }
+
+        private IReadOnlyList<PlayableCharacterSkillPackageOption> BuildSkillPackageOptions()
+        {
+            if (skillPackageAssignmentService == null || gameState == null)
+            {
+                return Array.Empty<PlayableCharacterSkillPackageOption>();
+            }
+
+            return skillPackageAssignmentService.BuildOptionsForSelectedCharacter(gameState);
+        }
+
+        private string BuildSelectedCharacterDisplayName()
+        {
+            if (skillPackageAssignmentService == null || gameState == null)
+            {
+                return "none";
+            }
+
+            return skillPackageAssignmentService.ResolveSelectedCharacterDisplayName(gameState);
         }
 
         private void CreateNodeButton(WorldMapNodeOption nodeOption)
@@ -470,6 +580,58 @@ namespace Survivalon.World
             textRectTransform.localScale = Vector3.one;
         }
 
+        private void CreateSkillPackageButton(PlayableCharacterSkillPackageOption skillPackageOption)
+        {
+            GameObject buttonObject = new GameObject(
+                $"{skillPackageOption.SkillPackageId}_SkillPackageButton",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button),
+                typeof(LayoutElement));
+            buttonObject.transform.SetParent(skillPackageAssignmentContainer, false);
+
+            RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
+            buttonRectTransform.localScale = Vector3.one;
+
+            LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
+            layoutElement.minHeight = SkillPackageAssignmentButtonPreferredHeight;
+            layoutElement.preferredHeight = SkillPackageAssignmentButtonPreferredHeight;
+
+            Image buttonImage = buttonObject.GetComponent<Image>();
+            buttonImage.color = skillPackageOption.IsAssigned
+                ? new Color(0.38f, 0.32f, 0.16f, 1f)
+                : new Color(0.23f, 0.28f, 0.48f, 1f);
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.targetGraphic = buttonImage;
+            button.onClick.AddListener(() => HandleSkillPackageAssignment(skillPackageOption.SkillPackageId));
+
+            ColorBlock colors = button.colors;
+            colors.normalColor = buttonImage.color;
+            colors.selectedColor = buttonImage.color;
+            colors.highlightedColor = Color.Lerp(buttonImage.color, Color.white, 0.15f);
+            colors.pressedColor = Color.Lerp(buttonImage.color, Color.black, 0.15f);
+            colors.disabledColor = buttonImage.color * 0.7f;
+            button.colors = colors;
+
+            Text buttonText = RuntimeUiSupport.CreateText(
+                buttonObject.transform,
+                uiFont,
+                "Label",
+                16,
+                FontStyle.Bold,
+                TextAnchor.MiddleCenter,
+                Color.white);
+            buttonText.text = WorldMapScreenTextBuilder.BuildSkillPackageButtonLabel(skillPackageOption);
+
+            RectTransform textRectTransform = buttonText.rectTransform;
+            textRectTransform.anchorMin = Vector2.zero;
+            textRectTransform.anchorMax = Vector2.one;
+            textRectTransform.offsetMin = new Vector2(14f, 8f);
+            textRectTransform.offsetMax = new Vector2(-14f, -8f);
+            textRectTransform.localScale = Vector3.one;
+        }
+
         private Button CreateActionButton(Transform parent, string objectName, string label, out Text buttonText)
         {
             GameObject buttonObject = new GameObject(
@@ -531,6 +693,7 @@ namespace Survivalon.World
         {
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(characterSelectionContainer);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(skillPackageAssignmentContainer);
             ConfigureNodeListContentRect();
             LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListContainer);
             LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListViewport);

@@ -105,6 +105,18 @@ namespace Survivalon.State.Persistence
 
             progressionRank += amount;
         }
+
+        public void SetSkillPackageId(string assignedSkillPackageId)
+        {
+            if (string.IsNullOrWhiteSpace(assignedSkillPackageId))
+            {
+                throw new ArgumentException(
+                    "Assigned skill package id cannot be null or whitespace.",
+                    nameof(assignedSkillPackageId));
+            }
+
+            skillPackageId = assignedSkillPackageId;
+        }
     }
 }
 
