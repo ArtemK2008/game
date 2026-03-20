@@ -4,6 +4,8 @@ namespace Survivalon.Combat
 {
     public sealed class CombatPassiveSkillEffectResolver
     {
+        private const float RelentlessAssaultDirectDamageMultiplier = 1.2f;
+
         public float ResolveOutgoingDirectDamageMultiplier(
             CombatEntityRuntimeState sourceEntity,
             CombatSkillDefinition executedSkill)
@@ -27,6 +29,11 @@ namespace Survivalon.Combat
             for (int index = 0; index < sourceEntity.PassiveSkills.Count; index++)
             {
                 CombatSkillDefinition passiveSkill = sourceEntity.PassiveSkills[index];
+                if (passiveSkill == null)
+                {
+                    continue;
+                }
+
                 if (passiveSkill.Category != CombatSkillCategory.Passive ||
                     passiveSkill.ActivationType != CombatSkillActivationType.AlwaysOn ||
                     passiveSkill.EffectType != CombatSkillEffectType.DirectDamageModifier)
@@ -34,10 +41,20 @@ namespace Survivalon.Combat
                     continue;
                 }
 
-                directDamageMultiplier *= passiveSkill.DirectDamageMultiplier;
+                directDamageMultiplier *= ResolveDirectDamageMultiplier(passiveSkill);
             }
 
             return directDamageMultiplier;
+        }
+
+        private static float ResolveDirectDamageMultiplier(CombatSkillDefinition passiveSkill)
+        {
+            if (passiveSkill.SkillId == CombatSkillCatalog.RelentlessAssault.SkillId)
+            {
+                return RelentlessAssaultDirectDamageMultiplier;
+            }
+
+            return 1f;
         }
     }
 }

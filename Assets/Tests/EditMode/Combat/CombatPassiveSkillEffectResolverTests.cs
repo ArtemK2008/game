@@ -31,6 +31,19 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(directDamageMultiplier, Is.EqualTo(1.2f));
         }
 
+        [Test]
+        public void ShouldIgnoreNullPassiveSkillEntriesWhenResolvingOutgoingDirectDamageMultiplier()
+        {
+            CombatPassiveSkillEffectResolver resolver = new CombatPassiveSkillEffectResolver();
+            CombatEntityRuntimeState sourceEntity = CreateRuntimeState(null, CombatSkillCatalog.RelentlessAssault, null);
+
+            float directDamageMultiplier = resolver.ResolveOutgoingDirectDamageMultiplier(
+                sourceEntity,
+                CombatSkillCatalog.BasicAttack);
+
+            Assert.That(directDamageMultiplier, Is.EqualTo(1.2f));
+        }
+
         private static CombatEntityRuntimeState CreateRuntimeState(params CombatSkillDefinition[] passiveSkills)
         {
             return new CombatEntityRuntimeState(

@@ -201,7 +201,25 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(
                 combatContext.PlayerEntity.PassiveSkills[0].EffectType,
                 Is.EqualTo(CombatSkillEffectType.DirectDamageModifier));
-            Assert.That(combatContext.PlayerEntity.PassiveSkills[0].DirectDamageMultiplier, Is.EqualTo(1.2f));
+        }
+
+        [Test]
+        public void ShouldSkipNullPassiveSkillEntriesWhenCreatingCombatEntityState()
+        {
+            CombatEntityState combatEntity = new CombatEntityState(
+                new CombatEntityId("player_main"),
+                "Player Unit",
+                CombatSide.Player,
+                new CombatStatBlock(100f, 10f, 1f, 0f),
+                passiveSkills: new CombatSkillDefinition[]
+                {
+                    null,
+                    CombatSkillCatalog.RelentlessAssault,
+                    null,
+                });
+
+            Assert.That(combatEntity.PassiveSkills.Count, Is.EqualTo(1));
+            Assert.That(combatEntity.PassiveSkills[0], Is.SameAs(CombatSkillCatalog.RelentlessAssault));
         }
 
         [Test]

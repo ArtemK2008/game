@@ -25,7 +25,7 @@ namespace Survivalon.Combat
             Side = side;
             BaseStats = baseStats;
             BaselineAttackSkill = baselineAttackSkill ?? CombatSkillCatalog.BasicAttack;
-            PassiveSkills = passiveSkills ?? Array.Empty<CombatSkillDefinition>();
+            PassiveSkills = CreatePassiveSkillSnapshot(passiveSkills);
             IsAlive = isAlive;
             IsActive = isActive;
         }
@@ -45,6 +45,31 @@ namespace Survivalon.Combat
         public bool IsAlive { get; }
 
         public bool IsActive { get; }
+
+        private static IReadOnlyList<CombatSkillDefinition> CreatePassiveSkillSnapshot(
+            IReadOnlyList<CombatSkillDefinition> passiveSkills)
+        {
+            if (passiveSkills == null || passiveSkills.Count == 0)
+            {
+                return Array.Empty<CombatSkillDefinition>();
+            }
+
+            List<CombatSkillDefinition> passiveSkillSnapshot = new List<CombatSkillDefinition>(passiveSkills.Count);
+            for (int index = 0; index < passiveSkills.Count; index++)
+            {
+                CombatSkillDefinition passiveSkill = passiveSkills[index];
+                if (passiveSkill == null)
+                {
+                    continue;
+                }
+
+                passiveSkillSnapshot.Add(passiveSkill);
+            }
+
+            return passiveSkillSnapshot.Count == 0
+                ? Array.Empty<CombatSkillDefinition>()
+                : passiveSkillSnapshot.ToArray();
+        }
     }
 }
 
