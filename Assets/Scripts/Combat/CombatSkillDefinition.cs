@@ -27,8 +27,7 @@ namespace Survivalon.Combat
             string displayName,
             CombatSkillCategory category,
             CombatSkillActivationType activationType,
-            CombatSkillEffectType effectType,
-            float directDamageMultiplier = 1f)
+            CombatSkillEffectType effectType)
         {
             if (string.IsNullOrWhiteSpace(skillId))
             {
@@ -40,20 +39,11 @@ namespace Survivalon.Combat
                 throw new ArgumentException("Display name cannot be null or whitespace.", nameof(displayName));
             }
 
-            if (directDamageMultiplier <= 0f)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(directDamageMultiplier),
-                    directDamageMultiplier,
-                    "Direct damage multiplier must be greater than zero.");
-            }
-
             SkillId = skillId;
             DisplayName = displayName;
             Category = category;
             ActivationType = activationType;
             EffectType = effectType;
-            DirectDamageMultiplier = directDamageMultiplier;
         }
 
         public string SkillId { get; }
@@ -65,8 +55,6 @@ namespace Survivalon.Combat
         public CombatSkillActivationType ActivationType { get; }
 
         public CombatSkillEffectType EffectType { get; }
-
-        public float DirectDamageMultiplier { get; }
     }
 
     public static class CombatSkillCatalog
@@ -83,7 +71,6 @@ namespace Survivalon.Combat
             displayName: "Relentless Assault",
             category: CombatSkillCategory.Passive,
             activationType: CombatSkillActivationType.AlwaysOn,
-            effectType: CombatSkillEffectType.DirectDamageModifier,
-            directDamageMultiplier: 1.2f);
+            effectType: CombatSkillEffectType.DirectDamageModifier);
     }
 }

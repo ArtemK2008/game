@@ -175,6 +175,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The world map, node screen, post-run panel, and combat shell are runtime-generated placeholder UI.
 - Main menu flow is still a placeholder target rather than a real menu system.
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.
+- The current passive skill layer is still interpreted through a small hardcoded resolver path for the single shipped passive, `Relentless Assault`.
 - Boss/gate node progress behavior is intentionally temporary and should be revisited in the later progression/boss milestones.
 
 ## Source note
