@@ -301,10 +301,7 @@ namespace Survivalon.World
             nodeListFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             nodeListContainer = nodeListObject.GetComponent<RectTransform>();
-            nodeListContainer.anchorMin = new Vector2(0f, 1f);
-            nodeListContainer.anchorMax = new Vector2(1f, 1f);
-            nodeListContainer.pivot = new Vector2(0.5f, 1f);
-            nodeListContainer.localScale = Vector3.one;
+            ConfigureNodeListContentRect();
 
             nodeListScrollRect = scrollViewObject.GetComponent<ScrollRect>();
             nodeListScrollRect.content = nodeListContainer;
@@ -378,10 +375,14 @@ namespace Survivalon.World
 
             RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
             buttonRectTransform.localScale = Vector3.one;
+            buttonRectTransform.anchorMin = new Vector2(0f, 1f);
+            buttonRectTransform.anchorMax = new Vector2(1f, 1f);
+            buttonRectTransform.pivot = new Vector2(0.5f, 1f);
 
             LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
             layoutElement.minHeight = 72f;
             layoutElement.preferredHeight = 72f;
+            layoutElement.flexibleWidth = 1f;
 
             Image buttonImage = buttonObject.GetComponent<Image>();
             buttonImage.color = WorldMapScreenStateResolver.ResolveNodeColor(nodeOption);
@@ -530,10 +531,45 @@ namespace Survivalon.World
         {
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(characterSelectionContainer);
+            ConfigureNodeListContentRect();
             LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListContainer);
             LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListViewport);
             LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
             Canvas.ForceUpdateCanvases();
+        }
+
+        private void ConfigureNodeListContentRect()
+        {
+            if (nodeListContainer == null)
+            {
+                return;
+            }
+
+            nodeListContainer.anchorMin = new Vector2(0f, 1f);
+            nodeListContainer.anchorMax = new Vector2(1f, 1f);
+            nodeListContainer.pivot = new Vector2(0.5f, 1f);
+            nodeListContainer.localScale = Vector3.one;
+
+            Vector2 sizeDelta = nodeListContainer.sizeDelta;
+            sizeDelta.x = 0f;
+            nodeListContainer.sizeDelta = sizeDelta;
+
+            Vector2 offsetMin = nodeListContainer.offsetMin;
+            offsetMin.x = 0f;
+            nodeListContainer.offsetMin = offsetMin;
+
+            Vector2 offsetMax = nodeListContainer.offsetMax;
+            offsetMax.x = 0f;
+            nodeListContainer.offsetMax = offsetMax;
+
+            Vector2 anchoredPosition = nodeListContainer.anchoredPosition;
+            anchoredPosition.x = 0f;
+            nodeListContainer.anchoredPosition = anchoredPosition;
+
+            if (nodeListScrollRect != null)
+            {
+                nodeListScrollRect.horizontalNormalizedPosition = 0f;
+            }
         }
     }
 }
