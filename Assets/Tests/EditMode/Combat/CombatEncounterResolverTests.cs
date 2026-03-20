@@ -137,13 +137,35 @@ namespace Survivalon.Tests.EditMode.Combat
             resolver.TryAdvance(encounterState, 1f);
             float playerHealthAfterVictory = encounterState.PlayerEntity.CurrentHealth;
 
-            encounterState.EnemyEntity.AdvanceAttackTimer(10f);
+            encounterState.EnemyEntity.AdvanceBaselineAttackTimer(10f);
 
             Assert.That(encounterState.EnemyEntity.IsAlive, Is.False);
             Assert.That(encounterState.EnemyEntity.IsActive, Is.False);
             Assert.That(encounterState.EnemyEntity.CanAct, Is.False);
-            Assert.That(encounterState.EnemyEntity.TimeUntilNextAttackSeconds, Is.EqualTo(0f));
+            Assert.That(encounterState.EnemyEntity.TimeUntilNextBaselineAttackSeconds, Is.EqualTo(0f));
             Assert.That(encounterState.PlayerEntity.CurrentHealth, Is.EqualTo(playerHealthAfterVictory));
+        }
+
+        [Test]
+        public void ShouldExecuteDueBaselineAttackThroughSkillExecutor()
+        {
+            CombatEncounterState encounterState = CreateEncounterState(
+                new CombatStatBlock(100f, 10f, 1f, 0f),
+                new CombatStatBlock(100f, 7f, 0.5f, 0f));
+            SpyCombatSkillExecutor skillExecutor = new SpyCombatSkillExecutor();
+            CombatEncounterResolver resolver = new CombatEncounterResolver(combatSkillExecutor: skillExecutor);
+
+            bool advanced = resolver.TryAdvance(encounterState, 1f);
+
+            Assert.That(advanced, Is.True);
+            Assert.That(skillExecutor.CallCount, Is.EqualTo(1));
+            Assert.That(skillExecutor.LastExecutionRequest, Is.Not.Null);
+            Assert.That(
+                skillExecutor.LastExecutionRequest.SkillDefinition,
+                Is.SameAs(encounterState.PlayerEntity.BaselineAttackSkill));
+            Assert.That(skillExecutor.LastExecutionRequest.SourceEntity, Is.SameAs(encounterState.PlayerEntity));
+            Assert.That(skillExecutor.LastExecutionRequest.TargetEntity, Is.SameAs(encounterState.EnemyEntity));
+            Assert.That(encounterState.PlayerEntity.TimeUntilNextBaselineAttackSeconds, Is.EqualTo(1f).Within(0.001f));
         }
 
         [Test]
@@ -206,6 +228,19 @@ namespace Survivalon.Tests.EditMode.Combat
                     enemyStats));
 
             return new CombatEncounterState(combatContext);
+        }
+
+        private sealed class SpyCombatSkillExecutor : ICombatSkillExecutor
+        {
+            public int CallCount { get; private set; }
+
+            public CombatSkillExecutionRequest LastExecutionRequest { get; private set; }
+
+            public void Execute(CombatSkillExecutionRequest executionRequest, CombatEncounterState encounterState)
+            {
+                CallCount++;
+                LastExecutionRequest = executionRequest;
+            }
         }
     }
 }

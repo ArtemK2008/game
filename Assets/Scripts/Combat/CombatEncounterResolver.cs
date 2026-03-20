@@ -11,10 +11,14 @@ namespace Survivalon.Combat
     {
         private const float AttackTimingEpsilon = 0.0001f;
         private readonly CombatAutoTargetSelector combatAutoTargetSelector;
+        private readonly ICombatSkillExecutor combatSkillExecutor;
 
-        public CombatEncounterResolver(CombatAutoTargetSelector combatAutoTargetSelector = null)
+        public CombatEncounterResolver(
+            CombatAutoTargetSelector combatAutoTargetSelector = null,
+            ICombatSkillExecutor combatSkillExecutor = null)
         {
             this.combatAutoTargetSelector = combatAutoTargetSelector ?? new CombatAutoTargetSelector();
+            this.combatSkillExecutor = combatSkillExecutor ?? new CombatSkillExecutor();
         }
 
         public bool TryAdvance(CombatEncounterState encounterState, float elapsedSeconds)
@@ -38,10 +42,10 @@ namespace Survivalon.Combat
             while (remainingSeconds > AttackTimingEpsilon && !encounterState.IsResolved)
             {
                 float playerTimeToAttack = encounterState.PlayerEntity.CanAct
-                    ? encounterState.PlayerEntity.TimeUntilNextAttackSeconds
+                    ? encounterState.PlayerEntity.TimeUntilNextBaselineAttackSeconds
                     : float.PositiveInfinity;
                 float enemyTimeToAttack = encounterState.EnemyEntity.CanAct
-                    ? encounterState.EnemyEntity.TimeUntilNextAttackSeconds
+                    ? encounterState.EnemyEntity.TimeUntilNextBaselineAttackSeconds
                     : float.PositiveInfinity;
                 float nextAttackWindow = Math.Min(playerTimeToAttack, enemyTimeToAttack);
 
@@ -66,8 +70,8 @@ namespace Survivalon.Combat
 
         private static void AdvanceEncounter(CombatEncounterState encounterState, float elapsedSeconds)
         {
-            encounterState.PlayerEntity.AdvanceAttackTimer(elapsedSeconds);
-            encounterState.EnemyEntity.AdvanceAttackTimer(elapsedSeconds);
+            encounterState.PlayerEntity.AdvanceBaselineAttackTimer(elapsedSeconds);
+            encounterState.EnemyEntity.AdvanceBaselineAttackTimer(elapsedSeconds);
             encounterState.AdvanceElapsedTime(elapsedSeconds);
         }
 
@@ -84,13 +88,13 @@ namespace Survivalon.Combat
         private bool ResolvePlayerAttackIfDue(CombatEncounterState encounterState)
         {
             bool playerAttackIsDue = encounterState.PlayerEntity.CanAct &&
-                encounterState.PlayerEntity.TimeUntilNextAttackSeconds <= AttackTimingEpsilon;
+                encounterState.PlayerEntity.TimeUntilNextBaselineAttackSeconds <= AttackTimingEpsilon;
             if (!playerAttackIsDue)
             {
                 return false;
             }
 
-            ResolveAttack(
+            ExecuteBaselineAttack(
                 encounterState.PlayerEntity,
                 combatAutoTargetSelector.SelectTarget(encounterState, encounterState.PlayerEntity.Side),
                 encounterState);
@@ -100,47 +104,32 @@ namespace Survivalon.Combat
         private void ResolveEnemyHostilityIfDue(CombatEncounterState encounterState)
         {
             bool enemyAttackIsDue = encounterState.EnemyEntity.CanAct &&
-                encounterState.EnemyEntity.TimeUntilNextAttackSeconds <= AttackTimingEpsilon;
+                encounterState.EnemyEntity.TimeUntilNextBaselineAttackSeconds <= AttackTimingEpsilon;
             if (!enemyAttackIsDue)
             {
                 return;
             }
 
-            ResolveAttack(
+            ExecuteBaselineAttack(
                 encounterState.EnemyEntity,
                 combatAutoTargetSelector.SelectTarget(encounterState, encounterState.EnemyEntity.Side),
                 encounterState);
         }
 
-        private static void ResolveAttack(
+        private void ExecuteBaselineAttack(
             CombatEntityRuntimeState attacker,
             CombatEntityRuntimeState defender,
             CombatEncounterState encounterState)
         {
-            if (defender == null)
-            {
-                throw new ArgumentNullException(nameof(defender));
-            }
-
             if (!attacker.CanAct || !defender.IsAlive)
             {
                 return;
             }
 
-            float mitigatedDamage = CombatStatCalculator.CalculateMitigatedDamage(
-                attacker.CombatEntity.BaseStats.AttackPower,
-                defender.CombatEntity.BaseStats);
-
-            attacker.ResetAttackTimer();
-            defender.ApplyDamage(mitigatedDamage);
-
-            if (!defender.IsAlive)
-            {
-                encounterState.Resolve(
-                    attacker.Side == CombatSide.Player
-                        ? CombatEncounterOutcome.PlayerVictory
-                        : CombatEncounterOutcome.EnemyVictory);
-            }
+            attacker.ResetBaselineAttackTimer();
+            combatSkillExecutor.Execute(
+                new CombatSkillExecutionRequest(attacker.BaselineAttackSkill, attacker, defender),
+                encounterState);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(combatEntity.DisplayName, Is.EqualTo("Player Unit"));
             Assert.That(combatEntity.Side, Is.EqualTo(CombatSide.Player));
             Assert.That(combatEntity.BaseStats, Is.EqualTo(baseStats));
+            Assert.That(combatEntity.BaselineAttackSkill, Is.SameAs(CombatSkillCatalog.BasicAttack));
             Assert.That(combatEntity.IsAlive, Is.True);
             Assert.That(combatEntity.IsActive, Is.True);
         }
@@ -63,12 +64,21 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
+            Assert.That(combatContext.PlayerEntity.BaselineAttackSkill.SkillId, Is.EqualTo("combat_skill_basic_attack"));
+            Assert.That(combatContext.PlayerEntity.BaselineAttackSkill.Category, Is.EqualTo(CombatSkillCategory.BasicAttack));
+            Assert.That(
+                combatContext.PlayerEntity.BaselineAttackSkill.ActivationType,
+                Is.EqualTo(CombatSkillActivationType.AutomatedInterval));
+            Assert.That(
+                combatContext.PlayerEntity.BaselineAttackSkill.EffectType,
+                Is.EqualTo(CombatSkillEffectType.DirectDamage));
             Assert.That(combatContext.EnemyEntity.EntityId, Is.EqualTo(new CombatEntityId("region_001_node_004_enemy_001")));
             Assert.That(combatContext.EnemyEntity.Side, Is.EqualTo(CombatSide.Enemy));
             Assert.That(combatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(75f));
             Assert.That(combatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(8f));
             Assert.That(combatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.9f));
             Assert.That(combatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(4f));
+            Assert.That(combatContext.EnemyEntity.BaselineAttackSkill, Is.SameAs(CombatSkillCatalog.BasicAttack));
             Assert.That(combatContext.PlayerEntity.IsAlive, Is.True);
             Assert.That(combatContext.EnemyEntity.IsActive, Is.True);
         }
