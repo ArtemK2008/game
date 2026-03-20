@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 045**, plus the accepted cleanup/refactor milestones **042b** through **042h**.
+This summary reflects completed work through **Milestone 046**, plus the accepted cleanup/refactor milestones **042b** through **042h**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -48,6 +48,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### Auto-battle / hostility / no-manual-combat loop
 - Combat uses deterministic auto-targeting.
 - Player and enemy both attack automatically on their own timing.
+- The baseline attack now resolves through a small explicit skill-compatible combat structure instead of a one-off direct resolver path:
+  - combat entities carry a baseline attack definition
+  - the automated combat loop triggers that baseline attack on its existing interval timing
+  - attack effect application now routes through a dedicated combat-skill executor seam
 - Enemy hostility is explicit and can defeat the player.
 - Defeated entities become inactive and stop contributing to combat.
 - Combat auto-advances until one side wins, then the run resolves automatically into post-run.
@@ -149,6 +153,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The new account-wide sink is now wired into live player combat baseline stats, but it is not yet exposed through a dedicated service/town UI.
 - Character selection now exists only as a minimal world-map placeholder path; broader roster UI and deeper multi-character systems are still deferred.
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
+- The new baseline attack structure is only the first skill-compatible seam; passive skills, additional active skills, cooldown/UI complexity, and broader skill packages are still deferred.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet
@@ -156,7 +161,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
 - Additional progression sinks and dedicated sink access through the service/town layer
 - Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
-- Multi-entity combat, skills, advanced AI, and broader combat content
+- Multi-entity combat, broader skill systems, advanced AI, and broader combat content
 
 ## Known temporary placeholders / technical shortcuts
 - The world graph and initial persistent state are currently seeded by `BootstrapWorldMapFactory`.

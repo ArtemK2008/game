@@ -21,7 +21,7 @@ namespace Survivalon.Combat
             CurrentHealth = combatEntity.BaseStats.MaxHealth;
             IsAlive = true;
             IsActive = true;
-            TimeUntilNextAttackSeconds = CombatStatCalculator.CalculateAttackIntervalSeconds(combatEntity.BaseStats);
+            TimeUntilNextBaselineAttackSeconds = CombatStatCalculator.CalculateAttackIntervalSeconds(combatEntity.BaseStats);
         }
 
         public CombatEntityState CombatEntity { get; }
@@ -34,6 +34,8 @@ namespace Survivalon.Combat
 
         public float MaxHealth => CombatEntity.BaseStats.MaxHealth;
 
+        public CombatSkillDefinition BaselineAttackSkill => CombatEntity.BaselineAttackSkill;
+
         public float CurrentHealth { get; private set; }
 
         public bool IsAlive { get; private set; }
@@ -42,9 +44,9 @@ namespace Survivalon.Combat
 
         public bool CanAct => IsAlive && IsActive;
 
-        public float TimeUntilNextAttackSeconds { get; private set; }
+        public float TimeUntilNextBaselineAttackSeconds { get; private set; }
 
-        public void AdvanceAttackTimer(float elapsedSeconds)
+        public void AdvanceBaselineAttackTimer(float elapsedSeconds)
         {
             if (elapsedSeconds < 0f)
             {
@@ -56,12 +58,12 @@ namespace Survivalon.Combat
                 return;
             }
 
-            TimeUntilNextAttackSeconds = Math.Max(0f, TimeUntilNextAttackSeconds - elapsedSeconds);
+            TimeUntilNextBaselineAttackSeconds = Math.Max(0f, TimeUntilNextBaselineAttackSeconds - elapsedSeconds);
         }
 
-        public void ResetAttackTimer()
+        public void ResetBaselineAttackTimer()
         {
-            TimeUntilNextAttackSeconds = CombatStatCalculator.CalculateAttackIntervalSeconds(CombatEntity.BaseStats);
+            TimeUntilNextBaselineAttackSeconds = CombatStatCalculator.CalculateAttackIntervalSeconds(CombatEntity.BaseStats);
         }
 
         public void ApplyDamage(float damage)
@@ -81,7 +83,7 @@ namespace Survivalon.Combat
             {
                 IsAlive = false;
                 IsActive = false;
-                TimeUntilNextAttackSeconds = 0f;
+                TimeUntilNextBaselineAttackSeconds = 0f;
             }
         }
     }

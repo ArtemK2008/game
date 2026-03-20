@@ -9,6 +9,7 @@ namespace Survivalon.Combat
             string displayName,
             CombatSide side,
             CombatStatBlock baseStats,
+            CombatSkillDefinition baselineAttackSkill = null,
             bool isAlive = true,
             bool isActive = true)
         {
@@ -21,6 +22,7 @@ namespace Survivalon.Combat
             DisplayName = displayName;
             Side = side;
             BaseStats = baseStats;
+            BaselineAttackSkill = baselineAttackSkill ?? CombatSkillCatalog.BasicAttack;
             IsAlive = isAlive;
             IsActive = isActive;
         }
@@ -32,6 +34,8 @@ namespace Survivalon.Combat
         public CombatSide Side { get; }
 
         public CombatStatBlock BaseStats { get; }
+
+        public CombatSkillDefinition BaselineAttackSkill { get; }
 
         public bool IsAlive { get; }
 
