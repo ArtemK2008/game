@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence

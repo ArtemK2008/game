@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using Survivalon.Core;
+using Survivalon.Data.Characters;
 
-namespace Survivalon.Tests.EditMode.Core
+namespace Survivalon.Tests.EditMode.Data
 {
     public sealed class PlayableCharacterSkillPackageIdsTests
     {

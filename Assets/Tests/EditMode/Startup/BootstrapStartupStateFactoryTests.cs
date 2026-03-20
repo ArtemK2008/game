@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.Startup;
 using Survivalon.State.Persistence;
 using Survivalon.World;

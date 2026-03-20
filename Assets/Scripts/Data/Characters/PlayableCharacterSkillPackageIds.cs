@@ -1,4 +1,4 @@
-namespace Survivalon.Core
+namespace Survivalon.Data.Characters
 {
     public static class PlayableCharacterSkillPackageIds
     {
