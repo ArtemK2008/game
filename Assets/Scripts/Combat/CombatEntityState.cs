@@ -11,6 +11,7 @@ namespace Survivalon.Combat
             CombatSide side,
             CombatStatBlock baseStats,
             CombatSkillDefinition baselineAttackSkill = null,
+            CombatSkillDefinition triggeredActiveSkill = null,
             IReadOnlyList<CombatSkillDefinition> passiveSkills = null,
             bool isAlive = true,
             bool isActive = true)
@@ -25,6 +26,7 @@ namespace Survivalon.Combat
             Side = side;
             BaseStats = baseStats;
             BaselineAttackSkill = baselineAttackSkill ?? CombatSkillCatalog.BasicAttack;
+            TriggeredActiveSkill = triggeredActiveSkill;
             PassiveSkills = CreatePassiveSkillSnapshot(passiveSkills);
             IsAlive = isAlive;
             IsActive = isActive;
@@ -39,6 +41,8 @@ namespace Survivalon.Combat
         public CombatStatBlock BaseStats { get; }
 
         public CombatSkillDefinition BaselineAttackSkill { get; }
+
+        public CombatSkillDefinition TriggeredActiveSkill { get; }
 
         public IReadOnlyList<CombatSkillDefinition> PassiveSkills { get; }
 

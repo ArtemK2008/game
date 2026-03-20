@@ -45,6 +45,7 @@ namespace Survivalon.Combat
                         resolvedCharacter.BaseStats,
                         playableCharacterState,
                         progressionEffects),
+                    triggeredActiveSkill: ResolveTriggeredActiveSkill(resolvedCharacter, playableCharacterState),
                     passiveSkills: ResolvePassiveSkills(resolvedCharacter, playableCharacterState)),
                 new CombatEntityState(
                     new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
@@ -75,11 +76,25 @@ namespace Survivalon.Combat
             PlayableCharacterProfile playableCharacter,
             PersistentCharacterState playableCharacterState)
         {
-            string skillPackageId = !string.IsNullOrWhiteSpace(playableCharacterState?.SkillPackageId)
+            return CombatSkillPackageCatalog.GetPassiveSkills(
+                ResolveSkillPackageId(playableCharacter, playableCharacterState));
+        }
+
+        private static CombatSkillDefinition ResolveTriggeredActiveSkill(
+            PlayableCharacterProfile playableCharacter,
+            PersistentCharacterState playableCharacterState)
+        {
+            return CombatSkillPackageCatalog.GetTriggeredActiveSkill(
+                ResolveSkillPackageId(playableCharacter, playableCharacterState));
+        }
+
+        private static string ResolveSkillPackageId(
+            PlayableCharacterProfile playableCharacter,
+            PersistentCharacterState playableCharacterState)
+        {
+            return !string.IsNullOrWhiteSpace(playableCharacterState?.SkillPackageId)
                 ? playableCharacterState.SkillPackageId
                 : playableCharacter.DefaultSkillPackageId;
-
-            return CombatSkillPackageCatalog.GetPassiveSkills(skillPackageId);
         }
 
         private static CombatStatBlock CreateEnemyBaseStats(NodePlaceholderState nodeContext)

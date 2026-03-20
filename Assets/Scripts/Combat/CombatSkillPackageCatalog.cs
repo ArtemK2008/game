@@ -10,6 +10,7 @@ namespace Survivalon.Combat
         {
             CombatSkillCatalog.RelentlessAssault,
         };
+        private static readonly CombatSkillDefinition StrikerDefaultTriggeredActiveSkill = CombatSkillCatalog.BurstStrike;
 
         public static IReadOnlyList<CombatSkillDefinition> GetPassiveSkills(string skillPackageId)
         {
@@ -22,6 +23,24 @@ namespace Survivalon.Combat
             {
                 "skill_package_vanguard_default" => EmptyPassiveSkills,
                 "skill_package_striker_default" => StrikerDefaultPassiveSkills,
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(skillPackageId),
+                    skillPackageId,
+                    "Unknown combat skill package id."),
+            };
+        }
+
+        public static CombatSkillDefinition GetTriggeredActiveSkill(string skillPackageId)
+        {
+            if (string.IsNullOrWhiteSpace(skillPackageId))
+            {
+                return null;
+            }
+
+            return skillPackageId switch
+            {
+                "skill_package_vanguard_default" => null,
+                "skill_package_striker_default" => StrikerDefaultTriggeredActiveSkill,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(skillPackageId),
                     skillPackageId,

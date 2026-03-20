@@ -271,6 +271,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.Null);
             Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills, Is.Empty);
         }
 
@@ -298,6 +299,8 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.35f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(8f));
+            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill.SkillId, Is.EqualTo("combat_active_burst_strike"));
             Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills.Count, Is.EqualTo(1));
             Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills[0].SkillId, Is.EqualTo("combat_passive_relentless_assault"));
         }
@@ -428,8 +431,38 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(vanguardController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
             Assert.That(strikerController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Striker"));
             Assert.That(strikerController.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
+            Assert.That(strikerController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
             Assert.That(strikerController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(strikerController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
+            Assert.That(
+                strikerController.CombatEncounterState.ElapsedCombatSeconds,
+                Is.LessThan(vanguardController.CombatEncounterState.ElapsedCombatSeconds));
+        }
+
+        [Test]
+        public void ShouldResolveSelectedStrikerCombatRunFasterThanVanguardBecauseOfCurrentActiveSkillPackage()
+        {
+            PersistentGameState vanguardGameState = BootstrapWorldTestData.CreateGameState();
+            PersistentGameState strikerGameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+            Assert.That(selectionService.TrySelectCharacter(strikerGameState, "character_striker"), Is.True);
+
+            RunLifecycleController vanguardController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(vanguardGameState));
+            RunLifecycleController strikerController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(strikerGameState));
+
+            RunLifecycleControllerTestData.RunToPostRun(vanguardController);
+            RunLifecycleControllerTestData.RunToPostRun(strikerController);
+
+            Assert.That(vanguardController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(strikerController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(vanguardController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(vanguardController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.Null);
+            Assert.That(strikerController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Striker"));
+            Assert.That(strikerController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
             Assert.That(
                 strikerController.CombatEncounterState.ElapsedCombatSeconds,
                 Is.LessThan(vanguardController.CombatEncounterState.ElapsedCombatSeconds));
