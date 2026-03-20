@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -171,6 +172,70 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldCreateScrollableNodeListViewport()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                ForceUiLayout(hostObject);
+
+                ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
+                Assert.That(scrollRect.horizontal, Is.False);
+                Assert.That(scrollRect.vertical, Is.True);
+                Assert.That(scrollRect.viewport, Is.Not.Null);
+                Assert.That(scrollRect.viewport.gameObject.name, Is.EqualTo("NodeListViewport"));
+                Assert.That(scrollRect.content, Is.Not.Null);
+                Assert.That(scrollRect.content.gameObject.name, Is.EqualTo("NodeList"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldKeepLowerNodeButtonsReachableWhenNodeListOverflowsViewport()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            const int nodeCount = 18;
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    CreateOverflowWorldGraph(nodeCount),
+                    CreateOverflowWorldState(nodeCount),
+                    gameState: gameState);
+
+                ForceUiLayout(hostObject);
+
+                ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
+                RectTransform lastNodeRect = FindRectTransform(hostObject, "region_scroll_node_018_Button");
+
+                Assert.That(scrollRect.content.rect.height, Is.GreaterThan(scrollRect.viewport.rect.height));
+                Assert.That(RectanglesOverlap(lastNodeRect, scrollRect.viewport), Is.False);
+
+                scrollRect.verticalNormalizedPosition = 0f;
+                ForceUiLayout(hostObject);
+
+                Assert.That(RectanglesOverlap(lastNodeRect, scrollRect.viewport), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldSwitchSelectedPlayableCharacterWhenCharacterButtonIsPressed()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
@@ -198,6 +263,21 @@ namespace Survivalon.Tests.EditMode.World
             {
                 Object.DestroyImmediate(hostObject);
             }
+        }
+
+        private static ScrollRect FindScrollRect(GameObject rootObject, string objectName)
+        {
+            ScrollRect[] scrollRects = rootObject.GetComponentsInChildren<ScrollRect>(true);
+            foreach (ScrollRect scrollRect in scrollRects)
+            {
+                if (scrollRect.gameObject.name == objectName)
+                {
+                    return scrollRect;
+                }
+            }
+
+            Assert.Fail($"ScrollRect '{objectName}' was not found.");
+            return null;
         }
 
         private static Button FindButton(GameObject rootObject, string buttonObjectName)
@@ -282,6 +362,54 @@ namespace Survivalon.Tests.EditMode.World
                 containerRect.xMax >= childRect.xMax &&
                 containerRect.yMin <= childRect.yMin &&
                 containerRect.yMax >= childRect.yMax;
+        }
+
+        private static WorldGraph CreateOverflowWorldGraph(int nodeCount)
+        {
+            RegionId regionId = new RegionId("region_scroll");
+            List<NodeId> nodeIds = new List<NodeId>(nodeCount);
+            List<WorldNode> nodes = new List<WorldNode>(nodeCount);
+            List<WorldNodeConnection> connections = new List<WorldNodeConnection>(nodeCount - 1);
+
+            for (int index = 1; index <= nodeCount; index++)
+            {
+                NodeId nodeId = new NodeId($"region_scroll_node_{index:D3}");
+                nodeIds.Add(nodeId);
+                nodes.Add(new WorldNode(nodeId, regionId, NodeType.Combat, NodeState.Available));
+
+                if (index > 1)
+                {
+                    connections.Add(new WorldNodeConnection(nodeIds[index - 2], nodeId));
+                }
+            }
+
+            WorldRegion region = new WorldRegion(
+                regionId,
+                progressionOrder: 0,
+                entryNodeId: nodeIds[0],
+                nodeIds: nodeIds,
+                resourceCategory: ResourceCategory.SoftCurrency,
+                difficultyBand: "Test");
+
+            return new WorldGraph(new[] { region }, nodes, connections);
+        }
+
+        private static PersistentWorldState CreateOverflowWorldState(int nodeCount)
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            NodeId currentNodeId = new NodeId("region_scroll_node_001");
+
+            worldState.SetCurrentNode(currentNodeId);
+            worldState.SetLastSafeNode(currentNodeId);
+
+            List<NodeId> reachableNodeIds = new List<NodeId>(nodeCount - 1);
+            for (int index = 2; index <= nodeCount; index++)
+            {
+                reachableNodeIds.Add(new NodeId($"region_scroll_node_{index:D3}"));
+            }
+
+            worldState.ReplaceReachableNodes(reachableNodeIds);
+            return worldState;
         }
     }
 }

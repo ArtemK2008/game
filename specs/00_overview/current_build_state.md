@@ -30,6 +30,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - A runtime world graph exists with regions, nodes, explicit connections, and limited branching.
 - Reachability supports forward movement and backtracking from current world context.
 - The world map shows node identity, node type, node state, current/selectable status, and a small summary of current context.
+- The placeholder world map now keeps its node list inside a simple scrollable viewport so lower node buttons remain reachable as the header/selection area grows.
 - Entering a selected node routes into a placeholder node screen through explicit node-entry flow logic.
 
 ### Run lifecycle and post-run flow

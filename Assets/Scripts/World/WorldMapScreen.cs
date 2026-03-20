@@ -16,13 +16,16 @@ namespace Survivalon.World
         private const float CharacterSelectionButtonPreferredHeight = 44f;
 
         private Canvas canvas;
+        private RectTransform panelRectTransform;
         private Text titleText;
         private Text summaryText;
         private Text characterSelectionText;
         private Button enterSelectedNodeButton;
         private Text enterSelectedNodeButtonText;
         private RectTransform characterSelectionContainer;
+        private RectTransform nodeListViewport;
         private RectTransform nodeListContainer;
+        private ScrollRect nodeListScrollRect;
         private Font uiFont;
         private WorldMapScreenController screenController;
         private Action<NodeId> onNodeEntryRequested;
@@ -76,6 +79,8 @@ namespace Survivalon.World
             {
                 CreateNodeButton(nodeOption);
             }
+
+            RefreshLayout();
         }
 
         private void HandleNodeSelection(NodeId nodeId)
@@ -159,7 +164,7 @@ namespace Survivalon.World
             Image panelImage = panelObject.GetComponent<Image>();
             panelImage.color = new Color(0.08f, 0.10f, 0.14f, 0.94f);
 
-            RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
+            panelRectTransform = panelObject.GetComponent<RectTransform>();
             panelRectTransform.anchorMin = Vector2.zero;
             panelRectTransform.anchorMax = Vector2.one;
             panelRectTransform.offsetMin = new Vector2(24f, 24f);
@@ -240,12 +245,48 @@ namespace Survivalon.World
             RuntimeUiSupport.AddLayoutElement(enterSelectedNodeButton.gameObject, 56f);
             enterSelectedNodeButton.onClick.AddListener(HandleNodeEntryRequest);
 
+            CreateScrollableNodeList(panelObject.transform);
+        }
+
+        private void CreateScrollableNodeList(Transform parent)
+        {
+            GameObject scrollViewObject = new GameObject(
+                "NodeListScrollView",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(ScrollRect),
+                typeof(LayoutElement));
+            scrollViewObject.transform.SetParent(parent, false);
+
+            RectTransform scrollViewRectTransform = scrollViewObject.GetComponent<RectTransform>();
+            scrollViewRectTransform.localScale = Vector3.one;
+
+            Image scrollViewImage = scrollViewObject.GetComponent<Image>();
+            scrollViewImage.color = new Color(0.04f, 0.05f, 0.08f, 0.30f);
+
+            LayoutElement scrollViewLayoutElement = scrollViewObject.GetComponent<LayoutElement>();
+            scrollViewLayoutElement.flexibleHeight = 1f;
+
+            GameObject viewportObject = new GameObject(
+                "NodeListViewport",
+                typeof(RectTransform),
+                typeof(RectMask2D));
+            viewportObject.transform.SetParent(scrollViewObject.transform, false);
+
+            nodeListViewport = viewportObject.GetComponent<RectTransform>();
+            nodeListViewport.anchorMin = Vector2.zero;
+            nodeListViewport.anchorMax = Vector2.one;
+            nodeListViewport.offsetMin = Vector2.zero;
+            nodeListViewport.offsetMax = Vector2.zero;
+            nodeListViewport.pivot = new Vector2(0.5f, 0.5f);
+            nodeListViewport.localScale = Vector3.one;
+
             GameObject nodeListObject = new GameObject(
                 "NodeList",
                 typeof(RectTransform),
                 typeof(VerticalLayoutGroup),
-                typeof(LayoutElement));
-            nodeListObject.transform.SetParent(panelObject.transform, false);
+                typeof(ContentSizeFitter));
+            nodeListObject.transform.SetParent(viewportObject.transform, false);
 
             VerticalLayoutGroup nodeListLayout = nodeListObject.GetComponent<VerticalLayoutGroup>();
             nodeListLayout.spacing = 8f;
@@ -255,14 +296,24 @@ namespace Survivalon.World
             nodeListLayout.childForceExpandWidth = true;
             nodeListLayout.childForceExpandHeight = false;
 
-            LayoutElement nodeListLayoutElement = nodeListObject.GetComponent<LayoutElement>();
-            nodeListLayoutElement.flexibleHeight = 1f;
+            ContentSizeFitter nodeListFitter = nodeListObject.GetComponent<ContentSizeFitter>();
+            nodeListFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            nodeListFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             nodeListContainer = nodeListObject.GetComponent<RectTransform>();
             nodeListContainer.anchorMin = new Vector2(0f, 1f);
             nodeListContainer.anchorMax = new Vector2(1f, 1f);
             nodeListContainer.pivot = new Vector2(0.5f, 1f);
             nodeListContainer.localScale = Vector3.one;
+
+            nodeListScrollRect = scrollViewObject.GetComponent<ScrollRect>();
+            nodeListScrollRect.content = nodeListContainer;
+            nodeListScrollRect.viewport = nodeListViewport;
+            nodeListScrollRect.horizontal = false;
+            nodeListScrollRect.vertical = true;
+            nodeListScrollRect.movementType = ScrollRect.MovementType.Clamped;
+            nodeListScrollRect.scrollSensitivity = 32f;
+            nodeListScrollRect.verticalNormalizedPosition = 1f;
         }
 
         private void ClearNodeButtons()
@@ -473,6 +524,16 @@ namespace Survivalon.World
                 selectedNodeId);
             enterSelectedNodeButton.interactable = buttonState.IsInteractable;
             enterSelectedNodeButtonText.text = buttonState.Label;
+        }
+
+        private void RefreshLayout()
+        {
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(characterSelectionContainer);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListContainer);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListViewport);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
+            Canvas.ForceUpdateCanvases();
         }
     }
 }
