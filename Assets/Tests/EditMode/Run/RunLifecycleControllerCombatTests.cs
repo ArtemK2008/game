@@ -271,6 +271,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills, Is.Empty);
         }
 
         [Test]
@@ -297,6 +298,8 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.35f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(8f));
+            Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills.Count, Is.EqualTo(1));
+            Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills[0].SkillId, Is.EqualTo("combat_passive_relentless_assault"));
         }
 
         [Test]

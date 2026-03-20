@@ -46,9 +46,30 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(encounterState.EnemyEntity.CurrentHealth, Is.EqualTo(0f));
         }
 
+        [Test]
+        public void ShouldIncreaseDirectDamageWhenSourceHasAlwaysOnPassiveSkill()
+        {
+            CombatEncounterState encounterState = CreateEncounterState(
+                new CombatStatBlock(100f, 10f, 1f, 0f),
+                new CombatStatBlock(100f, 1f, 1f, 0f),
+                CombatSkillCatalog.RelentlessAssault);
+            CombatSkillExecutor executor = new CombatSkillExecutor();
+
+            executor.Execute(
+                new CombatSkillExecutionRequest(
+                    encounterState.PlayerEntity.BaselineAttackSkill,
+                    encounterState.PlayerEntity,
+                    encounterState.EnemyEntity),
+                encounterState);
+
+            Assert.That(encounterState.IsResolved, Is.False);
+            Assert.That(encounterState.EnemyEntity.CurrentHealth, Is.EqualTo(88f));
+        }
+
         private static CombatEncounterState CreateEncounterState(
             CombatStatBlock playerStats,
-            CombatStatBlock enemyStats)
+            CombatStatBlock enemyStats,
+            params CombatSkillDefinition[] playerPassiveSkills)
         {
             CombatShellContext combatContext = new CombatShellContext(
                 new NodeId("region_001_node_004"),
@@ -56,7 +77,8 @@ namespace Survivalon.Tests.EditMode.Combat
                     new CombatEntityId("player_main"),
                     "Player Unit",
                     CombatSide.Player,
-                    playerStats),
+                    playerStats,
+                    passiveSkills: playerPassiveSkills),
                 new CombatEntityState(
                     new CombatEntityId("enemy_main"),
                     "Enemy Unit",

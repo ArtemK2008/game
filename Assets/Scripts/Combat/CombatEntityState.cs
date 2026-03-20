@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Survivalon.Combat
 {
@@ -10,6 +11,7 @@ namespace Survivalon.Combat
             CombatSide side,
             CombatStatBlock baseStats,
             CombatSkillDefinition baselineAttackSkill = null,
+            IReadOnlyList<CombatSkillDefinition> passiveSkills = null,
             bool isAlive = true,
             bool isActive = true)
         {
@@ -23,6 +25,7 @@ namespace Survivalon.Combat
             Side = side;
             BaseStats = baseStats;
             BaselineAttackSkill = baselineAttackSkill ?? CombatSkillCatalog.BasicAttack;
+            PassiveSkills = passiveSkills ?? Array.Empty<CombatSkillDefinition>();
             IsAlive = isAlive;
             IsActive = isActive;
         }
@@ -36,6 +39,8 @@ namespace Survivalon.Combat
         public CombatStatBlock BaseStats { get; }
 
         public CombatSkillDefinition BaselineAttackSkill { get; }
+
+        public IReadOnlyList<CombatSkillDefinition> PassiveSkills { get; }
 
         public bool IsAlive { get; }
 

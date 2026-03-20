@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 046**, plus the accepted cleanup/refactor milestones **042b** through **042h**.
+This summary reflects completed work through **Milestone 047**, plus the accepted cleanup/refactor milestones **042b** through **042h**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -53,6 +53,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - combat entities carry a baseline attack definition
   - the automated combat loop triggers that baseline attack on its existing interval timing
   - attack effect application now routes through a dedicated combat-skill executor seam
+- One passive skill layer now exists on top of that baseline attack seam:
+  - current playable-character skill packages can resolve always-on passive combat skills into the player combat entity
+  - the current shipped passive is `Relentless Assault`, which increases direct-damage skill output by `20%`
+  - in the current prototype, that passive affects the automated baseline attack because the baseline attack is the only live direct-damage combat skill
 - Enemy hostility is explicit and can defeat the player.
 - Defeated entities become inactive and stop contributing to combat.
 - Combat auto-advances until one side wins, then the run resolves automatically into post-run.
@@ -131,8 +135,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current shipped character baselines are intentionally small but meaningfully different in the 1v1 autobattle prototype:
   - `Vanguard` is the sturdier default baseline
   - `Striker` trades durability/defense for higher offense and faster attack cadence
+  - `Striker`'s default skill package now also carries the current single passive skill layer, `Relentless Assault`
 - In the current prototype, that differentiation is already visible and testable:
   - selecting `Striker` changes future combat entry stats
+  - selecting `Striker` also adds the current always-on passive direct-damage bonus to future combat entry
   - the current boss/gate placeholder encounter that defeats `Vanguard` can be cleared by `Striker` without needing account-wide offense upgrades
 - There is no dedicated character selection screen yet and no dedicated character-progression UI exists yet.
 
@@ -154,7 +160,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The new account-wide sink is now wired into live player combat baseline stats, but it is not yet exposed through a dedicated service/town UI.
 - Character selection now exists only as a minimal world-map placeholder path; broader roster UI and deeper multi-character systems are still deferred.
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
-- The new baseline attack structure is only the first skill-compatible seam; passive skills, additional active skills, cooldown/UI complexity, and broader skill packages are still deferred.
+- The skill layer is still intentionally small: only one passive skill exists, additional passive variety, active skills, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet

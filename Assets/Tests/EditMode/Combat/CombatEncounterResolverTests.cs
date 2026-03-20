@@ -169,6 +169,21 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldApplyPassiveDirectDamageModifierDuringAutomatedBaselineAttackFlow()
+        {
+            CombatEncounterState encounterState = CreateEncounterState(
+                new CombatStatBlock(100f, 10f, 1f, 0f),
+                new CombatStatBlock(100f, 7f, 0.25f, 0f),
+                CombatSkillCatalog.RelentlessAssault);
+
+            bool advanced = new CombatEncounterResolver().TryAdvance(encounterState, 1f);
+
+            Assert.That(advanced, Is.True);
+            Assert.That(encounterState.PlayerEntity.CurrentHealth, Is.EqualTo(100f));
+            Assert.That(encounterState.EnemyEntity.CurrentHealth, Is.EqualTo(88f));
+        }
+
+        [Test]
         public void ShouldRejectInvalidCombatSetup()
         {
             CombatShellContext invalidContext = new CombatShellContext(
@@ -212,7 +227,8 @@ namespace Survivalon.Tests.EditMode.Combat
 
         private static CombatEncounterState CreateEncounterState(
             CombatStatBlock playerStats,
-            CombatStatBlock enemyStats)
+            CombatStatBlock enemyStats,
+            params CombatSkillDefinition[] playerPassiveSkills)
         {
             CombatShellContext combatContext = new CombatShellContext(
                 new NodeId("region_001_node_004"),
@@ -220,7 +236,8 @@ namespace Survivalon.Tests.EditMode.Combat
                     new CombatEntityId("player_main"),
                     "Player Unit",
                     CombatSide.Player,
-                    playerStats),
+                    playerStats,
+                    passiveSkills: playerPassiveSkills),
                 new CombatEntityState(
                     new CombatEntityId("enemy_main"),
                     "Enemy Unit",
