@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Survivalon.Core;
+using Survivalon.Data.Characters;
 
 namespace Survivalon.Combat
 {
