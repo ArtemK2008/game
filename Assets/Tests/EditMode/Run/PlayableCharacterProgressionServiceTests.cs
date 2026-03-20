@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Core;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
 
@@ -59,7 +60,7 @@ namespace Survivalon.Tests.EditMode.Run
                 isSelectable: true,
                 isActive: true,
                 progressionRank: progressionRank,
-                skillPackageId: "skill_package_vanguard_default");
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault);
         }
     }
 }

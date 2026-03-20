@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
@@ -12,8 +13,8 @@ namespace Survivalon.Tests.EditMode.Data
         {
             PersistentGameState gameState = CreateGameState(
                 vanguardIsActive: true,
-                vanguardSkillPackageId: "skill_package_vanguard_default",
-                strikerSkillPackageId: "skill_package_striker_default");
+                vanguardSkillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                strikerSkillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault);
             PlayableCharacterSkillPackageAssignmentService service =
                 new PlayableCharacterSkillPackageAssignmentService();
 
@@ -22,10 +23,10 @@ namespace Survivalon.Tests.EditMode.Data
 
             Assert.That(skillPackageOptions, Has.Count.EqualTo(2));
             Assert.That(skillPackageOptions[0].CharacterId, Is.EqualTo("character_vanguard"));
-            Assert.That(skillPackageOptions[0].SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+            Assert.That(skillPackageOptions[0].SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
             Assert.That(skillPackageOptions[0].DisplayName, Is.EqualTo("Standard Guard"));
             Assert.That(skillPackageOptions[0].IsAssigned, Is.True);
-            Assert.That(skillPackageOptions[1].SkillPackageId, Is.EqualTo("skill_package_vanguard_burst_drill"));
+            Assert.That(skillPackageOptions[1].SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
             Assert.That(skillPackageOptions[1].DisplayName, Is.EqualTo("Burst Drill"));
             Assert.That(skillPackageOptions[1].IsAssigned, Is.False);
         }
@@ -35,8 +36,8 @@ namespace Survivalon.Tests.EditMode.Data
         {
             PersistentGameState gameState = CreateGameState(
                 vanguardIsActive: false,
-                vanguardSkillPackageId: "skill_package_vanguard_default",
-                strikerSkillPackageId: "skill_package_striker_default");
+                vanguardSkillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                strikerSkillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault);
             PlayableCharacterSkillPackageAssignmentService service =
                 new PlayableCharacterSkillPackageAssignmentService();
 
@@ -45,7 +46,7 @@ namespace Survivalon.Tests.EditMode.Data
 
             Assert.That(skillPackageOptions, Has.Count.EqualTo(1));
             Assert.That(skillPackageOptions[0].CharacterId, Is.EqualTo("character_striker"));
-            Assert.That(skillPackageOptions[0].SkillPackageId, Is.EqualTo("skill_package_striker_default"));
+            Assert.That(skillPackageOptions[0].SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
             Assert.That(skillPackageOptions[0].IsAssigned, Is.True);
         }
 
@@ -54,18 +55,18 @@ namespace Survivalon.Tests.EditMode.Data
         {
             PersistentGameState gameState = CreateGameState(
                 vanguardIsActive: false,
-                vanguardSkillPackageId: "skill_package_vanguard_default",
-                strikerSkillPackageId: "skill_package_striker_default");
+                vanguardSkillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                strikerSkillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault);
             PlayableCharacterSkillPackageAssignmentService service =
                 new PlayableCharacterSkillPackageAssignmentService();
 
             bool didAssign = service.TryAssignSelectedCharacterSkillPackage(
                 gameState,
-                "skill_package_vanguard_burst_drill");
+                PlayableCharacterSkillPackageIds.VanguardBurstDrill);
 
             Assert.That(didAssign, Is.False);
             Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
-            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
         }
 
         [Test]
@@ -73,18 +74,18 @@ namespace Survivalon.Tests.EditMode.Data
         {
             PersistentGameState gameState = CreateGameState(
                 vanguardIsActive: true,
-                vanguardSkillPackageId: "skill_package_vanguard_default",
-                strikerSkillPackageId: "skill_package_striker_default");
+                vanguardSkillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                strikerSkillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault);
             PlayableCharacterSkillPackageAssignmentService service =
                 new PlayableCharacterSkillPackageAssignmentService();
 
             bool didAssign = service.TryAssignSelectedCharacterSkillPackage(
                 gameState,
-                "skill_package_vanguard_burst_drill");
+                PlayableCharacterSkillPackageIds.VanguardBurstDrill);
 
             Assert.That(didAssign, Is.True);
             Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
-            Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_burst_drill"));
+            Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
         }
 
         [Test]
@@ -92,17 +93,17 @@ namespace Survivalon.Tests.EditMode.Data
         {
             PersistentGameState gameState = CreateGameState(
                 vanguardIsActive: true,
-                vanguardSkillPackageId: "skill_package_striker_default",
-                strikerSkillPackageId: "skill_package_vanguard_burst_drill");
+                vanguardSkillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault,
+                strikerSkillPackageId: PlayableCharacterSkillPackageIds.VanguardBurstDrill);
             PlayableCharacterSkillPackageAssignmentService service =
                 new PlayableCharacterSkillPackageAssignmentService();
 
             service.EnsureValidAssignments(gameState);
 
             Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
-            Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_default"));
+            Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
             Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
-            Assert.That(strikerState.SkillPackageId, Is.EqualTo("skill_package_striker_default"));
+            Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
         }
 
         private static PersistentGameState CreateGameState(

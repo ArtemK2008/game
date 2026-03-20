@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Survivalon.Combat;
+using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
@@ -16,7 +17,7 @@ namespace Survivalon.Tests.EditMode.Data
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             PlayableCharacterResolver resolver = new PlayableCharacterResolver();
 
             PlayableCharacterProfile character = resolver.ResolveCurrent(gameState);
@@ -39,13 +40,13 @@ namespace Survivalon.Tests.EditMode.Data
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
             PlayableCharacterResolver resolver = new PlayableCharacterResolver();
 
             PlayableCharacterProfile character = resolver.ResolveCurrent(gameState);
@@ -78,7 +79,7 @@ namespace Survivalon.Tests.EditMode.Data
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             PlayableCharacterResolver resolver = new PlayableCharacterResolver();
 
             PlayableCharacterProfile character = resolver.ResolveCurrent(gameState);

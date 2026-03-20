@@ -188,7 +188,7 @@ namespace Survivalon.Tests.EditMode.Combat
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_vanguard_burst_drill");
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardBurstDrill);
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 PlayableCharacterCatalog.Default,
@@ -266,7 +266,7 @@ namespace Survivalon.Tests.EditMode.Combat
                 isSelectable: true,
                 isActive: true,
                 progressionRank: 2,
-                skillPackageId: "skill_package_vanguard_default");
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault);
             CombatShellContext combatContext = factory.Create(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 PlayableCharacterCatalog.Default,

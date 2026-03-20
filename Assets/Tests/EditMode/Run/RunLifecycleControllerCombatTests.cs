@@ -312,7 +312,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(
                 gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState),
                 Is.True);
-            vanguardState.SetSkillPackageId("skill_package_vanguard_burst_drill");
+            vanguardState.SetSkillPackageId(PlayableCharacterSkillPackageIds.VanguardBurstDrill);
 
             RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
             RunLifecycleController controller = new RunLifecycleController(
@@ -498,7 +498,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(
                 assignedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState assignedVanguardState),
                 Is.True);
-            assignedVanguardState.SetSkillPackageId("skill_package_vanguard_burst_drill");
+            assignedVanguardState.SetSkillPackageId(PlayableCharacterSkillPackageIds.VanguardBurstDrill);
 
             RunLifecycleController baselineController = new RunLifecycleController(
                 RunLifecycleControllerTestData.CreateBossCombatNodeState(),

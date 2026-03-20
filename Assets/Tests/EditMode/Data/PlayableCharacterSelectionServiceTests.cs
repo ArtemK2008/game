@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
@@ -16,13 +17,13 @@ namespace Survivalon.Tests.EditMode.Data
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_unknown",
                 isUnlocked: true,
@@ -55,13 +56,13 @@ namespace Survivalon.Tests.EditMode.Data
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
             PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
 
             service.EnsureValidSelection(gameState);
@@ -88,13 +89,13 @@ namespace Survivalon.Tests.EditMode.Data
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
             PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
 
             bool didSelect = service.TrySelectCharacter(gameState, "character_striker");
@@ -117,13 +118,13 @@ namespace Survivalon.Tests.EditMode.Data
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: true,
-                skillPackageId: "skill_package_vanguard_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
-                skillPackageId: "skill_package_striker_default"));
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
             PlayableCharacterSelectionService service = new PlayableCharacterSelectionService();
 
             bool didSelect = service.TrySelectCharacter(gameState, "character_unknown");

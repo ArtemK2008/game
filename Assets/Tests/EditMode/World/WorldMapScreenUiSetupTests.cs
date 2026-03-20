@@ -102,8 +102,12 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(containsSkillPackageAssignmentSummary, Is.True);
                 Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "character_striker_CharacterButton"), Is.Not.Null);
-                Assert.That(FindButton(hostObject, "skill_package_vanguard_default_SkillPackageButton"), Is.Not.Null);
-                Assert.That(FindButton(hostObject, "skill_package_vanguard_burst_drill_SkillPackageButton"), Is.Not.Null);
+                Assert.That(
+                    FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardDefault}_SkillPackageButton"),
+                    Is.Not.Null);
+                Assert.That(
+                    FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
+                    Is.Not.Null);
             }
             finally
             {
@@ -309,8 +313,12 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Selected: Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Select: Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Relentless Burst"), Is.True);
-                Assert.That(FindButton(hostObject, "skill_package_striker_default_SkillPackageButton"), Is.Not.Null);
-                Assert.That(TryFindButton(hostObject, "skill_package_vanguard_burst_drill_SkillPackageButton"), Is.Null);
+                Assert.That(
+                    FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.StrikerDefault}_SkillPackageButton"),
+                    Is.Not.Null);
+                Assert.That(
+                    TryFindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
+                    Is.Null);
             }
             finally
             {
@@ -332,10 +340,10 @@ namespace Survivalon.Tests.EditMode.World
                     BootstrapWorldTestData.CreateWorldState(),
                     gameState: gameState);
 
-                FindButton(hostObject, "skill_package_vanguard_burst_drill_SkillPackageButton").onClick.Invoke();
+                FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton").onClick.Invoke();
 
                 Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
-                Assert.That(vanguardState.SkillPackageId, Is.EqualTo("skill_package_vanguard_burst_drill"));
+                Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
                 Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
                 Assert.That(ContainsText(hostObject, "Package effect: Adds Burst Strike."), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned: Burst Drill"), Is.True);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Core;
 
 namespace Survivalon.Combat
 {
@@ -22,9 +23,9 @@ namespace Survivalon.Combat
 
             return skillPackageId switch
             {
-                "skill_package_vanguard_default" => EmptyPassiveSkills,
-                "skill_package_vanguard_burst_drill" => EmptyPassiveSkills,
-                "skill_package_striker_default" => StrikerDefaultPassiveSkills,
+                PlayableCharacterSkillPackageIds.VanguardDefault => EmptyPassiveSkills,
+                PlayableCharacterSkillPackageIds.VanguardBurstDrill => EmptyPassiveSkills,
+                PlayableCharacterSkillPackageIds.StrikerDefault => StrikerDefaultPassiveSkills,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(skillPackageId),
                     skillPackageId,
@@ -41,9 +42,9 @@ namespace Survivalon.Combat
 
             return skillPackageId switch
             {
-                "skill_package_vanguard_default" => null,
-                "skill_package_vanguard_burst_drill" => VanguardBurstDrillTriggeredActiveSkill,
-                "skill_package_striker_default" => StrikerDefaultTriggeredActiveSkill,
+                PlayableCharacterSkillPackageIds.VanguardDefault => null,
+                PlayableCharacterSkillPackageIds.VanguardBurstDrill => VanguardBurstDrillTriggeredActiveSkill,
+                PlayableCharacterSkillPackageIds.StrikerDefault => StrikerDefaultTriggeredActiveSkill,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(skillPackageId),
                     skillPackageId,
