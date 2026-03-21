@@ -28,6 +28,26 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldResolveGuardCharmMaxHealthBonusWhenEquipped()
+        {
+            PersistentCharacterState characterState = new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                loadoutState: new PersistentLoadoutState(
+                    equippedGearStates: new[]
+                    {
+                        new EquippedGearState(GearIds.GuardCharm, GearCategory.SecondarySupport),
+                    }));
+            PlayableCharacterGearCombatEffectResolver resolver = new PlayableCharacterGearCombatEffectResolver();
+
+            float maxHealthBonus = resolver.ResolveMaxHealthBonus(characterState);
+
+            Assert.That(maxHealthBonus, Is.EqualTo(40f));
+        }
+
+        [Test]
         public void ShouldReturnZeroAttackPowerBonusWhenNoGearIsEquipped()
         {
             PersistentCharacterState characterState = new PersistentCharacterState(
@@ -40,6 +60,21 @@ namespace Survivalon.Tests.EditMode.Combat
             float attackPowerBonus = resolver.ResolveAttackPowerBonus(characterState);
 
             Assert.That(attackPowerBonus, Is.EqualTo(0f));
+        }
+
+        [Test]
+        public void ShouldReturnZeroMaxHealthBonusWhenNoSupportGearIsEquipped()
+        {
+            PersistentCharacterState characterState = new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true);
+            PlayableCharacterGearCombatEffectResolver resolver = new PlayableCharacterGearCombatEffectResolver();
+
+            float maxHealthBonus = resolver.ResolveMaxHealthBonus(characterState);
+
+            Assert.That(maxHealthBonus, Is.EqualTo(0f));
         }
 
         [Test]

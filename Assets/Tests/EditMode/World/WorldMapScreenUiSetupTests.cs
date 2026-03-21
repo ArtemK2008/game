@@ -68,7 +68,8 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsRecentNodeSummary = false;
                 bool containsCharacterSelectionSummary = false;
                 bool containsAssignedPackageSummary = false;
-                bool containsEquippedPrimaryGearSummary = false;
+                bool containsPrimaryGearSummary = false;
+                bool containsSupportGearSummary = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("State:"))
@@ -96,9 +97,14 @@ namespace Survivalon.Tests.EditMode.World
                         containsAssignedPackageSummary = true;
                     }
 
-                    if (label.text.Contains("Equipped primary gear: none"))
+                    if (label.text.Contains("Primary gear: none"))
                     {
-                        containsEquippedPrimaryGearSummary = true;
+                        containsPrimaryGearSummary = true;
+                    }
+
+                    if (label.text.Contains("Support gear: none"))
+                    {
+                        containsSupportGearSummary = true;
                     }
                 }
 
@@ -107,7 +113,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(containsRecentNodeSummary, Is.True);
                 Assert.That(containsCharacterSelectionSummary, Is.True);
                 Assert.That(containsAssignedPackageSummary, Is.True);
-                Assert.That(containsEquippedPrimaryGearSummary, Is.True);
+                Assert.That(containsPrimaryGearSummary, Is.True);
+                Assert.That(containsSupportGearSummary, Is.True);
                 Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "character_striker_CharacterButton"), Is.Not.Null);
                 Assert.That(
@@ -118,6 +125,9 @@ namespace Survivalon.Tests.EditMode.World
                     Is.Not.Null);
                 Assert.That(
                     FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton"),
+                    Is.Not.Null);
+                Assert.That(
+                    FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton"),
                     Is.Not.Null);
             }
             finally
@@ -293,6 +303,8 @@ namespace Survivalon.Tests.EditMode.World
                 ForceUiLayout(hostObject);
                 FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
                 ForceUiLayout(hostObject);
+                FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton").onClick.Invoke();
+                ForceUiLayout(hostObject);
 
                 ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
                 RectTransform lastNodeRect = FindRectTransform(hostObject, "region_scroll_node_018_Button");
@@ -373,11 +385,12 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Selected: Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Select: Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Relentless Burst"), Is.True);
-                Assert.That(ContainsText(hostObject, "Equipped primary gear: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Primary gear: none | Support gear: none"), Is.True);
                 Assert.That(
                     FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.StrikerDefault}_SkillPackageButton"),
                     Is.Not.Null);
                 Assert.That(FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton"), Is.Not.Null);
+                Assert.That(FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton"), Is.Not.Null);
                 Assert.That(
                     TryFindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
                     Is.Null);
@@ -417,7 +430,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldEquipAndUnequipPrimaryGearForCurrentlySelectedPlayableCharacterWhenGearButtonIsPressed()
+        public void Show_ShouldEquipAndUnequipBothGearCategoriesForCurrentlySelectedPlayableCharacterWhenGearButtonIsPressed()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -431,6 +444,7 @@ namespace Survivalon.Tests.EditMode.World
                     gameState: gameState);
 
                 FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+                FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton").onClick.Invoke();
 
                 Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
                 Assert.That(
@@ -439,18 +453,34 @@ namespace Survivalon.Tests.EditMode.World
                         out EquippedGearState equippedGearState),
                     Is.True);
                 Assert.That(equippedGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
-                Assert.That(ContainsText(hostObject, "Equipped primary gear: Training Blade"), Is.True);
+                Assert.That(
+                    vanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.SecondarySupport,
+                        out EquippedGearState supportGearState),
+                    Is.True);
+                Assert.That(supportGearState.GearId, Is.EqualTo(GearIds.GuardCharm));
+                Assert.That(
+                    ContainsText(hostObject, "Primary gear: Training Blade | Support gear: Guard Charm"),
+                    Is.True);
                 Assert.That(ContainsText(hostObject, "Unequip: Training Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Unequip: Guard Charm"), Is.True);
 
+                FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton").onClick.Invoke();
                 FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
 
                 Assert.That(
                     vanguardState.LoadoutState.TryGetEquippedGearState(
                         GearCategory.PrimaryCombat,
+                    out EquippedGearState _),
+                    Is.False);
+                Assert.That(
+                    vanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.SecondarySupport,
                         out EquippedGearState _),
                     Is.False);
-                Assert.That(ContainsText(hostObject, "Equipped primary gear: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Primary gear: none | Support gear: none"), Is.True);
                 Assert.That(ContainsText(hostObject, "Equip: Training Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Equip: Guard Charm"), Is.True);
             }
             finally
             {

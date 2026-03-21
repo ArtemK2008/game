@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 053**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, and **052a**.
+This summary reflects completed work through **Milestone 054**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, and **052a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -32,7 +32,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Reachability supports forward movement and backtracking from current world context.
 - The world map shows node identity, node type, node state, current/selectable status, and a small summary of current context.
 - The placeholder world map now keeps its node list inside a simple scrollable viewport with stable full-width node-button alignment, so lower node buttons remain reachable and readable as the header, character-selection, and package-assignment area grows.
-- The same placeholder world map now also exposes one minimal primary-gear equip/unequip control for the currently selected character without changing the overall placeholder screen structure.
+- The same placeholder world map now also exposes one minimal two-slot gear equip/unequip area for the currently selected character without changing the overall placeholder screen structure.
 - Entering a selected node routes into a placeholder node screen through explicit node-entry flow logic.
 
 ### Run lifecycle and post-run flow
@@ -163,14 +163,17 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - There is no dedicated character selection screen yet and no dedicated character-progression UI exists yet.
 
 ### Persistent gear baseline
-- The build now has one live persistent gear-data baseline using the `PrimaryCombat` gear category.
-- One shipped starter gear item currently exists in the code-driven gear catalog:
+- The build now has two live persistent gear categories:
+  - `PrimaryCombat`
+  - `SecondarySupport`
+- Two shipped starter gear items currently exist in the code-driven gear catalog:
   - `gear_primary_training_blade` / `Training Blade`
+- `gear_secondary_guard_charm` / `Guard Charm`
 - Persistent game state now carries account-owned gear ids, and startup/bootstrap normalization ensures the starter gear is present in owned gear data.
 - Each persistent playable character already carries a `PersistentLoadoutState` with equipped-gear entries by category.
-- The current world map now exposes one minimal gear equip placeholder for the selected character:
-  - it shows the currently equipped `PrimaryCombat` gear
-  - it allows equipping or unequipping the shipped starter gear before future runs
+- The current world map now exposes one minimal gear equip placeholder area for the selected character:
+  - it shows the currently equipped `PrimaryCombat` and `SecondarySupport` gear
+  - it allows equipping or unequipping the shipped starter items before future runs
   - the change is persistent and follows the currently selected character
 - Current startup/bootstrap normalization now validates persisted equipped-gear entries against:
   - owned gear state
@@ -178,8 +181,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - category match
   - one equipped item per category
 - The current default bootstrap state still starts with no gear equipped on the shipped characters.
-- The selected character's persistent loadout data now flows into run context and now affects future combat through one small live gear effect.
+- The selected character's persistent loadout data now flows into run context and now affects future combat through two small live gear effects.
 - The shipped `Training Blade` currently grants a flat `+2` attack-power bonus when equipped, which improves the selected character's future combat output and shortens ordinary autobattle runs without redesigning the current combat model.
+- The shipped `Guard Charm` currently grants a flat `+40` max-health bonus when equipped, which improves the selected character's future survivability and leaves standard-run outcomes with higher remaining health without redesigning the current combat model.
 
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
@@ -201,7 +205,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - The first run-time skill choice now exists only as a compact placeholder choice for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
-- Gear now exists for one primary category with a minimal pre-run equip/unequip placeholder and one live stat effect; broader gear UI, gear acquisition, additional categories, and richer gear effects are still deferred.
+- Gear now exists for two categories with a minimal pre-run equip/unequip placeholder and two simple live stat effects; broader gear UI, gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet
@@ -209,7 +213,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
 - Additional progression sinks and dedicated sink access through the service/town layer
 - Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
-- Additional gear categories, richer live gear effects, and broader itemization/loot systems
+- Additional gear categories beyond the current two-slot baseline, richer live gear effects, and broader itemization/loot systems
 - Multi-entity combat, broader skill systems, advanced AI, and broader combat content
 
 ## Known temporary placeholders / technical shortcuts

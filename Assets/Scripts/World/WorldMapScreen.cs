@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.State;
 using Survivalon.State.Persistence;
 
@@ -14,7 +15,7 @@ namespace Survivalon.World
         private const float SummaryPreferredHeight = 150f;
         private const float CharacterSelectionSummaryPreferredHeight = 44f;
         private const float CharacterSelectionButtonPreferredHeight = 40f;
-        private const float BuildAssignmentSummaryPreferredHeight = 84f;
+        private const float BuildAssignmentSummaryPreferredHeight = 104f;
         private const float SkillPackageAssignmentButtonPreferredHeight = 36f;
         private const float GearAssignmentButtonPreferredHeight = 36f;
 
@@ -150,14 +151,14 @@ namespace Survivalon.World
             }
 
             bool changed = gearAssignmentOption.IsEquipped
-                ? gearAssignmentService.TryClearSelectedCharacterPrimaryCombatGear(gameState)
-                : gearAssignmentService.TryAssignSelectedCharacterPrimaryCombatGear(gameState, gearAssignmentOption.GearId);
+                ? gearAssignmentService.TryClearSelectedCharacterGear(gameState, gearAssignmentOption.GearCategory)
+                : gearAssignmentService.TryAssignSelectedCharacterGear(gameState, gearAssignmentOption.GearId);
             if (!changed)
             {
                 return;
             }
 
-            Debug.Log($"World map primary gear assignment changed for {gearAssignmentOption.CharacterId}.");
+            Debug.Log($"World map gear assignment changed for {gearAssignmentOption.CharacterId}.");
             Refresh();
         }
 
@@ -466,8 +467,7 @@ namespace Survivalon.World
             buildAssignmentText.text = WorldMapScreenTextBuilder.BuildAssignmentText(
                 BuildSelectedCharacterDisplayName(),
                 skillPackageOptions,
-                ResolveSelectedPrimaryCombatGearDisplayName(),
-                gearAssignmentOptions.Count);
+                gearAssignmentOptions);
 
             ClearSkillPackageButtons();
             foreach (PlayableCharacterSkillPackageOption skillPackageOption in skillPackageOptions)
@@ -509,7 +509,11 @@ namespace Survivalon.World
                 return Array.Empty<PlayableCharacterGearAssignmentOption>();
             }
 
-            return gearAssignmentService.BuildPrimaryCombatOptionsForSelectedCharacter(gameState);
+            List<PlayableCharacterGearAssignmentOption> gearAssignmentOptions =
+                new List<PlayableCharacterGearAssignmentOption>();
+            AppendGearAssignmentOptions(gearAssignmentOptions, GearCategory.PrimaryCombat);
+            AppendGearAssignmentOptions(gearAssignmentOptions, GearCategory.SecondarySupport);
+            return gearAssignmentOptions;
         }
 
         private string BuildSelectedCharacterDisplayName()
@@ -523,14 +527,17 @@ namespace Survivalon.World
                 characterSelectionService.ResolveSelectedState(gameState).CharacterId).DisplayName;
         }
 
-        private string ResolveSelectedPrimaryCombatGearDisplayName()
+        private void AppendGearAssignmentOptions(
+            List<PlayableCharacterGearAssignmentOption> targetOptions,
+            GearCategory gearCategory)
         {
-            if (gearAssignmentService == null || gameState == null)
-            {
-                return "none";
-            }
+            IReadOnlyList<PlayableCharacterGearAssignmentOption> categoryOptions =
+                gearAssignmentService.BuildOptionsForSelectedCharacter(gameState, gearCategory);
 
-            return gearAssignmentService.ResolveSelectedPrimaryCombatGearDisplayName(gameState);
+            for (int index = 0; index < categoryOptions.Count; index++)
+            {
+                targetOptions.Add(categoryOptions[index]);
+            }
         }
 
         private void CreateNodeButton(WorldMapNodeOption nodeOption)

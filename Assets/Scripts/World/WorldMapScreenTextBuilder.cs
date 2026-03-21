@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.State;
 
 namespace Survivalon.World
@@ -90,8 +91,7 @@ namespace Survivalon.World
         public static string BuildAssignmentText(
             string selectedCharacterDisplayName,
             IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions,
-            string primaryCombatGearDisplayName,
-            int availablePrimaryCombatGearCount)
+            IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions)
         {
             if (selectedCharacterDisplayName == null)
             {
@@ -103,9 +103,9 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(skillPackageOptions));
             }
 
-            if (primaryCombatGearDisplayName == null)
+            if (gearAssignmentOptions == null)
             {
-                throw new ArgumentNullException(nameof(primaryCombatGearDisplayName));
+                throw new ArgumentNullException(nameof(gearAssignmentOptions));
             }
 
             string assignedPackageLabel = "none";
@@ -118,11 +118,18 @@ namespace Survivalon.World
                 }
             }
 
+            string primaryGearLabel = ResolveEquippedGearDisplayName(
+                gearAssignmentOptions,
+                GearCategory.PrimaryCombat);
+            string supportGearLabel = ResolveEquippedGearDisplayName(
+                gearAssignmentOptions,
+                GearCategory.SecondarySupport);
+
             return
                 $"Selected character build: {selectedCharacterDisplayName}\n" +
                 $"Assigned package: {assignedPackageLabel}\n" +
-                $"Equipped primary gear: {primaryCombatGearDisplayName}\n" +
-                $"Available packages: {skillPackageOptions.Count} | Owned primary gear: {availablePrimaryCombatGearCount}";
+                $"Primary gear: {primaryGearLabel} | Support gear: {supportGearLabel}\n" +
+                $"Available packages: {skillPackageOptions.Count} | Owned primary gear: {CountOptionsForCategory(gearAssignmentOptions, GearCategory.PrimaryCombat)} | Owned support gear: {CountOptionsForCategory(gearAssignmentOptions, GearCategory.SecondarySupport)}";
         }
 
         public static string BuildCharacterButtonLabel(PlayableCharacterSelectionOption selectionOption)
@@ -196,6 +203,38 @@ namespace Survivalon.World
             }
 
             return "Known";
+        }
+
+        private static int CountOptionsForCategory(
+            IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions,
+            GearCategory gearCategory)
+        {
+            int count = 0;
+            for (int index = 0; index < gearAssignmentOptions.Count; index++)
+            {
+                if (gearAssignmentOptions[index].GearCategory == gearCategory)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private static string ResolveEquippedGearDisplayName(
+            IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions,
+            GearCategory gearCategory)
+        {
+            for (int index = 0; index < gearAssignmentOptions.Count; index++)
+            {
+                PlayableCharacterGearAssignmentOption gearAssignmentOption = gearAssignmentOptions[index];
+                if (gearAssignmentOption.GearCategory == gearCategory && gearAssignmentOption.IsEquipped)
+                {
+                    return gearAssignmentOption.DisplayName;
+                }
+            }
+
+            return "none";
         }
 
         private static string GetSessionNodeLabel(

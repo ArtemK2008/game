@@ -17,13 +17,14 @@ namespace Survivalon.Tests.EditMode.State.Persistence
 
             initializer.EnsureInitialized(gameState);
 
-            Assert.That(gameState.OwnedGearIds, Has.Count.EqualTo(2));
+            Assert.That(gameState.OwnedGearIds, Has.Count.EqualTo(3));
             Assert.That(gameState.OwnedGearIds, Does.Contain("gear_unknown_future"));
             Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.TrainingBlade));
+            Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.GuardCharm));
         }
 
         [Test]
-        public void ShouldNormalizeEquippedGearAgainstOwnershipAndCurrentShippedCategory()
+        public void ShouldNormalizeEquippedGearAgainstOwnershipAndCurrentShippedCategories()
         {
             PersistentGameState gameState = new PersistentGameState();
             PersistentGearStateInitializer initializer = new PersistentGearStateInitializer();
@@ -34,6 +35,8 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                     new EquippedGearState("gear_unknown_future", GearCategory.PrimaryCombat),
                     new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
                     new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
+                    new EquippedGearState(GearIds.GuardCharm, GearCategory.SecondarySupport),
+                    new EquippedGearState(GearIds.GuardCharm, GearCategory.PrimaryCombat),
                 });
 
             gameState.EnsureOwnedGearId("gear_unknown_future");
@@ -46,9 +49,13 @@ namespace Survivalon.Tests.EditMode.State.Persistence
 
             initializer.EnsureInitialized(gameState);
 
-            Assert.That(loadoutState.EquippedGearStates, Has.Count.EqualTo(1));
-            Assert.That(loadoutState.EquippedGearStates[0].GearId, Is.EqualTo(GearIds.TrainingBlade));
-            Assert.That(loadoutState.EquippedGearStates[0].GearCategory, Is.EqualTo(GearCategory.PrimaryCombat));
+            Assert.That(loadoutState.EquippedGearStates, Has.Count.EqualTo(2));
+            Assert.That(loadoutState.EquippedGearStates, Has.Some.Matches<EquippedGearState>(state =>
+                state.GearId == GearIds.TrainingBlade &&
+                state.GearCategory == GearCategory.PrimaryCombat));
+            Assert.That(loadoutState.EquippedGearStates, Has.Some.Matches<EquippedGearState>(state =>
+                state.GearId == GearIds.GuardCharm &&
+                state.GearCategory == GearCategory.SecondarySupport));
         }
     }
 }
