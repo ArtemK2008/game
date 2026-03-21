@@ -332,6 +332,34 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
         }
+
+        [Test]
+        public void ShouldApplyEquippedGuardCharmMaxHealthBonusToPlayerCombatStats()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            PersistentCharacterState characterState = new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                loadoutState: new PersistentLoadoutState(
+                    equippedGearStates: new[]
+                    {
+                        new EquippedGearState(GearIds.GuardCharm, GearCategory.SecondarySupport),
+                    }));
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                PlayableCharacterCatalog.Default,
+                characterState,
+                default);
+
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(160f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
+        }
     }
 }
 

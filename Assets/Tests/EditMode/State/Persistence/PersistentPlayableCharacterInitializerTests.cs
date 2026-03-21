@@ -33,8 +33,9 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(strikerState.IsActive, Is.False);
             Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
             Assert.That(strikerState.LoadoutState.EquippedGearStates, Is.Empty);
-            Assert.That(gameState.OwnedGearIds, Has.Count.EqualTo(1));
-            Assert.That(gameState.OwnedGearIds[0], Is.EqualTo(GearIds.TrainingBlade));
+            Assert.That(gameState.OwnedGearIds, Has.Count.EqualTo(2));
+            Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.TrainingBlade));
+            Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.GuardCharm));
         }
 
         [Test]
@@ -74,6 +75,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
             Assert.That(strikerState.LoadoutState.EquippedGearStates, Is.Empty);
             Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.TrainingBlade));
+            Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.GuardCharm));
         }
 
         [Test]
@@ -101,14 +103,16 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
             Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
             Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.TrainingBlade));
+            Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.GuardCharm));
         }
 
         [Test]
-        public void ShouldPreserveValidEquippedPrimaryCombatGearDuringInitialization()
+        public void ShouldPreserveValidEquippedPrimaryAndSupportGearDuringInitialization()
         {
             PersistentGameState gameState = new PersistentGameState();
             PersistentPlayableCharacterInitializer initializer = new PersistentPlayableCharacterInitializer();
             gameState.EnsureOwnedGearId(GearIds.TrainingBlade);
+            gameState.EnsureOwnedGearId(GearIds.GuardCharm);
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_vanguard",
                 isUnlocked: true,
@@ -119,6 +123,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                     equippedGearStates: new[]
                     {
                         new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
+                        new EquippedGearState(GearIds.GuardCharm, GearCategory.SecondarySupport),
                     })));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
@@ -136,6 +141,12 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                     out EquippedGearState equippedGearState),
                 Is.True);
             Assert.That(equippedGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
+            Assert.That(
+                vanguardState.LoadoutState.TryGetEquippedGearState(
+                    GearCategory.SecondarySupport,
+                    out EquippedGearState supportGearState),
+                Is.True);
+            Assert.That(supportGearState.GearId, Is.EqualTo(GearIds.GuardCharm));
         }
     }
 }

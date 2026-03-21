@@ -99,6 +99,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
             PersistentGameState gameState = CreateGameState("region_002_node_001", "region_001_node_002");
             gameState.EnsureOwnedGearId(GearIds.TrainingBlade);
+            gameState.EnsureOwnedGearId(GearIds.GuardCharm);
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_vanguard",
                 isUnlocked: true,
@@ -110,6 +111,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                     equippedGearStates: new[]
                     {
                         new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
+                        new EquippedGearState(GearIds.GuardCharm, GearCategory.SecondarySupport),
                     })));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
@@ -122,8 +124,9 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             service.SaveResolvedWorldContext(gameState);
 
             Assert.That(storage.SavedGameState.CharacterStates, Has.Count.EqualTo(2));
-            Assert.That(storage.SavedGameState.OwnedGearIds, Has.Count.EqualTo(1));
-            Assert.That(storage.SavedGameState.OwnedGearIds[0], Is.EqualTo(GearIds.TrainingBlade));
+            Assert.That(storage.SavedGameState.OwnedGearIds, Has.Count.EqualTo(2));
+            Assert.That(storage.SavedGameState.OwnedGearIds, Does.Contain(GearIds.TrainingBlade));
+            Assert.That(storage.SavedGameState.OwnedGearIds, Does.Contain(GearIds.GuardCharm));
             Assert.That(
                 storage.SavedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
                 Is.True);
@@ -132,11 +135,13 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(characterState.IsActive, Is.False);
             Assert.That(characterState.ProgressionRank, Is.EqualTo(2));
             Assert.That(characterState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
-            Assert.That(characterState.LoadoutState.EquippedGearStates, Has.Count.EqualTo(1));
-            Assert.That(characterState.LoadoutState.EquippedGearStates[0].GearId, Is.EqualTo(GearIds.TrainingBlade));
-            Assert.That(
-                characterState.LoadoutState.EquippedGearStates[0].GearCategory,
-                Is.EqualTo(GearCategory.PrimaryCombat));
+            Assert.That(characterState.LoadoutState.EquippedGearStates, Has.Count.EqualTo(2));
+            Assert.That(characterState.LoadoutState.EquippedGearStates, Has.Some.Matches<EquippedGearState>(state =>
+                state.GearId == GearIds.TrainingBlade &&
+                state.GearCategory == GearCategory.PrimaryCombat));
+            Assert.That(characterState.LoadoutState.EquippedGearStates, Has.Some.Matches<EquippedGearState>(state =>
+                state.GearId == GearIds.GuardCharm &&
+                state.GearCategory == GearCategory.SecondarySupport));
             Assert.That(
                 storage.SavedGameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
                 Is.True);

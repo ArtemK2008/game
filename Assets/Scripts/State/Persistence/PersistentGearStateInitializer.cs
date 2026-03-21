@@ -37,9 +37,13 @@ namespace Survivalon.State.Persistence
                 }
             }
 
-            if (seenGearIds.Add(GearIds.TrainingBlade))
+            for (int index = 0; index < GearCatalog.All.Count; index++)
             {
-                normalizedOwnedGearIds.Add(GearIds.TrainingBlade);
+                string shippedGearId = GearCatalog.All[index].GearId;
+                if (seenGearIds.Add(shippedGearId))
+                {
+                    normalizedOwnedGearIds.Add(shippedGearId);
+                }
             }
 
             gameState.ReplaceOwnedGearIds(normalizedOwnedGearIds);

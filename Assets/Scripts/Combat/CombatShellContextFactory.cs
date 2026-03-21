@@ -76,6 +76,9 @@ namespace Survivalon.Combat
             float characterProgressionMaxHealthBonus = playableCharacterState == null
                 ? 0f
                 : playableCharacterProgressionEffectResolver.ResolveMaxHealthBonus(playableCharacterState);
+            float gearMaxHealthBonus = playableCharacterState == null
+                ? 0f
+                : playableCharacterGearCombatEffectResolver.ResolveMaxHealthBonus(playableCharacterState);
             float gearAttackPowerBonus = playableCharacterState == null
                 ? 0f
                 : playableCharacterGearCombatEffectResolver.ResolveAttackPowerBonus(playableCharacterState);
@@ -83,6 +86,7 @@ namespace Survivalon.Combat
             return new CombatStatBlock(
                 maxHealth: characterBaseStats.MaxHealth +
                     characterProgressionMaxHealthBonus +
+                    gearMaxHealthBonus +
                     progressionEffects.PlayerMaxHealthBonus,
                 attackPower: characterBaseStats.AttackPower +
                     progressionEffects.PlayerAttackPowerBonus +

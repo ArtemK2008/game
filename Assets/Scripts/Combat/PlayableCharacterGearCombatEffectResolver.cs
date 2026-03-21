@@ -27,5 +27,27 @@ namespace Survivalon.Combat
 
             return attackPowerBonus;
         }
+
+        public float ResolveMaxHealthBonus(PersistentCharacterState characterState)
+        {
+            if (characterState == null)
+            {
+                throw new ArgumentNullException(nameof(characterState));
+            }
+
+            float maxHealthBonus = 0f;
+            for (int index = 0; index < characterState.LoadoutState.EquippedGearStates.Count; index++)
+            {
+                EquippedGearState equippedGearState = characterState.LoadoutState.EquippedGearStates[index];
+                if (equippedGearState == null || !GearCatalog.Contains(equippedGearState.GearId))
+                {
+                    continue;
+                }
+
+                maxHealthBonus += GearCatalog.Get(equippedGearState.GearId).MaxHealthBonus;
+            }
+
+            return maxHealthBonus;
+        }
     }
 }

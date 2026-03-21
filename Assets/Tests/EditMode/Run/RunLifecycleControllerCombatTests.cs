@@ -262,7 +262,7 @@ namespace Survivalon.Tests.EditMode.Run
             PlayableCharacterGearAssignmentService gearAssignmentService =
                 new PlayableCharacterGearAssignmentService();
             Assert.That(
-                gearAssignmentService.TryAssignSelectedCharacterPrimaryCombatGear(
+                gearAssignmentService.TryAssignSelectedCharacterGear(
                     equippedGameState,
                     GearIds.TrainingBlade),
                 Is.True);
@@ -287,6 +287,40 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(
                 equippedController.CombatEncounterState.PlayerEntity.CurrentHealth,
                 Is.GreaterThanOrEqualTo(baselineController.CombatEncounterState.PlayerEntity.CurrentHealth));
+        }
+
+        [Test]
+        public void ShouldIncreasePlayerCombatBaselineAndRemainingHealthWhenGuardCharmIsEquipped()
+        {
+            PersistentGameState baselineGameState = BootstrapWorldTestData.CreateGameState();
+            PersistentGameState equippedGameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterGearAssignmentService gearAssignmentService =
+                new PlayableCharacterGearAssignmentService();
+            Assert.That(
+                gearAssignmentService.TryAssignSelectedCharacterGear(
+                    equippedGameState,
+                    GearIds.GuardCharm),
+                Is.True);
+
+            RunLifecycleController baselineController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(baselineGameState));
+            RunLifecycleController equippedController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(equippedGameState));
+
+            RunLifecycleControllerTestData.RunToPostRun(baselineController);
+            RunLifecycleControllerTestData.RunToPostRun(equippedController);
+
+            Assert.That(baselineController.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
+            Assert.That(equippedController.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(160f));
+            Assert.That(baselineController.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(equippedController.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(baselineController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(equippedController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(
+                equippedController.CombatEncounterState.PlayerEntity.CurrentHealth,
+                Is.GreaterThan(baselineController.CombatEncounterState.PlayerEntity.CurrentHealth));
         }
 
         [Test]

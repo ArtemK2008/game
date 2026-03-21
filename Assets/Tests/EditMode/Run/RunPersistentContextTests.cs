@@ -16,7 +16,10 @@ namespace Survivalon.Tests.EditMode.Run
             PlayableCharacterGearAssignmentService gearAssignmentService =
                 new PlayableCharacterGearAssignmentService();
             Assert.That(
-                gearAssignmentService.TryAssignSelectedCharacterPrimaryCombatGear(gameState, GearIds.TrainingBlade),
+                gearAssignmentService.TryAssignSelectedCharacterGear(gameState, GearIds.TrainingBlade),
+                Is.True);
+            Assert.That(
+                gearAssignmentService.TryAssignSelectedCharacterGear(gameState, GearIds.GuardCharm),
                 Is.True);
 
             RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
@@ -25,11 +28,14 @@ namespace Survivalon.Tests.EditMode.Run
                 persistentContext: persistentContext);
 
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
-            Assert.That(persistentContext.PlayableCharacterState.LoadoutState.EquippedGearStates, Has.Count.EqualTo(1));
-            Assert.That(
-                persistentContext.PlayableCharacterState.LoadoutState.EquippedGearStates[0].GearId,
-                Is.EqualTo(GearIds.TrainingBlade));
-            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
+            Assert.That(persistentContext.PlayableCharacterState.LoadoutState.EquippedGearStates, Has.Count.EqualTo(2));
+            Assert.That(persistentContext.PlayableCharacterState.LoadoutState.EquippedGearStates, Has.Some.Matches<EquippedGearState>(state =>
+                state.GearId == GearIds.TrainingBlade &&
+                state.GearCategory == GearCategory.PrimaryCombat));
+            Assert.That(persistentContext.PlayableCharacterState.LoadoutState.EquippedGearStates, Has.Some.Matches<EquippedGearState>(state =>
+                state.GearId == GearIds.GuardCharm &&
+                state.GearCategory == GearCategory.SecondarySupport));
+            Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(160f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(16f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));

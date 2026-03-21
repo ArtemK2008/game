@@ -123,14 +123,27 @@ namespace Survivalon.Tests.EditMode.World
                         "Adds Burst Strike.",
                         isAssigned: true),
                 },
-                "Training Blade",
-                availablePrimaryCombatGearCount: 1);
+                new[]
+                {
+                    new PlayableCharacterGearAssignmentOption(
+                        "character_vanguard",
+                        GearIds.TrainingBlade,
+                        "Training Blade",
+                        GearCategory.PrimaryCombat,
+                        isEquipped: true),
+                    new PlayableCharacterGearAssignmentOption(
+                        "character_vanguard",
+                        GearIds.GuardCharm,
+                        "Guard Charm",
+                        GearCategory.SecondarySupport,
+                        isEquipped: false),
+                });
 
             Assert.That(assignmentText, Is.EqualTo(
                 "Selected character build: Vanguard\n" +
                 "Assigned package: Burst Drill\n" +
-                "Equipped primary gear: Training Blade\n" +
-                "Available packages: 2 | Owned primary gear: 1"));
+                "Primary gear: Training Blade | Support gear: none\n" +
+                "Available packages: 2 | Owned primary gear: 1 | Owned support gear: 1"));
         }
 
         [Test]
@@ -223,8 +236,16 @@ namespace Survivalon.Tests.EditMode.World
         public void BuildAssignmentText_ShouldRejectMissingSkillPackageOptions()
         {
             Assert.That(
-                () => WorldMapScreenTextBuilder.BuildAssignmentText("Vanguard", null, "none", 0),
+                () => WorldMapScreenTextBuilder.BuildAssignmentText("Vanguard", null, System.Array.Empty<PlayableCharacterGearAssignmentOption>()),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("skillPackageOptions"));
+        }
+
+        [Test]
+        public void BuildAssignmentText_ShouldRejectMissingGearAssignmentOptions()
+        {
+            Assert.That(
+                () => WorldMapScreenTextBuilder.BuildAssignmentText("Vanguard", System.Array.Empty<PlayableCharacterSkillPackageOption>(), null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("gearAssignmentOptions"));
         }
 
         [Test]
