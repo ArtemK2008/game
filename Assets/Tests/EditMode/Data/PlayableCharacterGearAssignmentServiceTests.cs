@@ -86,6 +86,54 @@ namespace Survivalon.Tests.EditMode.Data
                 Is.False);
         }
 
+        [Test]
+        public void ShouldKeepPrimaryCombatGearAssignmentCharacterSpecificAcrossSelectionChanges()
+        {
+            PersistentGameState gameState = CreateGameState(vanguardIsActive: true);
+            PlayableCharacterGearAssignmentService gearAssignmentService = new PlayableCharacterGearAssignmentService();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+
+            bool didAssign = gearAssignmentService.TryAssignSelectedCharacterPrimaryCombatGear(
+                gameState,
+                GearIds.TrainingBlade);
+
+            Assert.That(didAssign, Is.True);
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+            Assert.That(
+                gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
+                Is.True);
+            Assert.That(
+                strikerState.LoadoutState.TryGetEquippedGearState(
+                    GearCategory.PrimaryCombat,
+                    out EquippedGearState _),
+                Is.False);
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_vanguard"), Is.True);
+            Assert.That(
+                gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState),
+                Is.True);
+            Assert.That(
+                vanguardState.LoadoutState.TryGetEquippedGearState(
+                    GearCategory.PrimaryCombat,
+                    out EquippedGearState equippedGearState),
+                Is.True);
+            Assert.That(equippedGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
+        }
+
+        [Test]
+        public void ShouldIgnoreUnknownOwnedGearIdsWhenBuildingPrimaryCombatOptions()
+        {
+            PersistentGameState gameState = CreateGameState(vanguardIsActive: true);
+            gameState.EnsureOwnedGearId("gear_unknown_test");
+            PlayableCharacterGearAssignmentService service = new PlayableCharacterGearAssignmentService();
+
+            IReadOnlyList<PlayableCharacterGearAssignmentOption> gearOptions =
+                service.BuildPrimaryCombatOptionsForSelectedCharacter(gameState);
+
+            Assert.That(gearOptions, Has.Count.EqualTo(1));
+            Assert.That(gearOptions[0].GearId, Is.EqualTo(GearIds.TrainingBlade));
+        }
+
         private static PersistentGameState CreateGameState(bool vanguardIsActive)
         {
             PersistentGameState gameState = new PersistentGameState();

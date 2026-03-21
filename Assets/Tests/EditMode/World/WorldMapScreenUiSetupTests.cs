@@ -271,7 +271,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldKeepOverflowingNodeContentReachableAfterCharacterPackageAndGearRefresh()
+        public void Show_ShouldKeepOverflowingNodeContentReachableAfterCharacterBuildRefresh()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
