@@ -4,7 +4,7 @@ using Survivalon.Combat;
 
 namespace Survivalon.Data.Combat
 {
-    public static class CombatEnemyProfileCatalog
+    public static class CombatStandardEnemyProfileCatalog
     {
         private static readonly CombatEnemyProfile EnemyUnitProfile = new CombatEnemyProfile(
             "combat_enemy_standard_unit",
@@ -14,7 +14,8 @@ namespace Survivalon.Data.Combat
                 maxHealth: 75f,
                 attackPower: 7f,
                 attackRate: 1.25f,
-                defense: 2f));
+                defense: 2f),
+            CombatEnemyBehaviorType.FastPressure);
         private static readonly CombatEnemyProfile BulwarkRaiderProfile = new CombatEnemyProfile(
             "combat_enemy_bulwark_raider",
             "enemy_002",
@@ -23,28 +24,17 @@ namespace Survivalon.Data.Combat
                 maxHealth: 105f,
                 attackPower: 9f,
                 attackRate: 0.85f,
-                defense: 6f));
-        private static readonly CombatEnemyProfile GateEnemyProfile = new CombatEnemyProfile(
-            "combat_enemy_gate",
-            "boss_001",
-            "Gate Enemy",
-            new CombatStatBlock(
-                maxHealth: 180f,
-                attackPower: 16f,
-                attackRate: 0.85f,
-                defense: 18f));
+                defense: 6f),
+            CombatEnemyBehaviorType.BulwarkPressure);
         private static readonly IReadOnlyList<CombatEnemyProfile> AllProfiles = Array.AsReadOnly(new[]
         {
             EnemyUnitProfile,
             BulwarkRaiderProfile,
-            GateEnemyProfile,
         });
 
         public static CombatEnemyProfile EnemyUnit => EnemyUnitProfile;
 
         public static CombatEnemyProfile BulwarkRaider => BulwarkRaiderProfile;
-
-        public static CombatEnemyProfile GateEnemy => GateEnemyProfile;
 
         public static IReadOnlyList<CombatEnemyProfile> All => AllProfiles;
 
@@ -63,7 +53,7 @@ namespace Survivalon.Data.Combat
                 }
             }
 
-            throw new ArgumentOutOfRangeException(nameof(profileId), profileId, "Unknown enemy profile id.");
+            throw new ArgumentOutOfRangeException(nameof(profileId), profileId, "Unknown standard enemy profile id.");
         }
     }
 }

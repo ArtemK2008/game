@@ -1,6 +1,5 @@
 using System;
 using Survivalon.Data.Combat;
-using Survivalon.Core;
 using Survivalon.World;
 
 namespace Survivalon.Combat
@@ -19,17 +18,12 @@ namespace Survivalon.Combat
                 throw new InvalidOperationException("Enemy profile resolver requires a combat-compatible node type.");
             }
 
-            if (nodeContext.NodeType == NodeType.BossOrGate)
+            if (nodeContext.CombatEncounter == null)
             {
-                return CombatEnemyProfileCatalog.GateEnemy;
+                throw new InvalidOperationException("Enemy profile resolver requires combat encounter content.");
             }
 
-            if (nodeContext.NodeId == BootstrapWorldScenario.ForestPushNodeId)
-            {
-                return CombatEnemyProfileCatalog.BulwarkRaider;
-            }
-
-            return CombatEnemyProfileCatalog.EnemyUnit;
+            return nodeContext.CombatEncounter.EnemyProfile;
         }
     }
 }

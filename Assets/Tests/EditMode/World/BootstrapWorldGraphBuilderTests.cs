@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Combat;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
@@ -22,6 +23,24 @@ namespace Survivalon.Tests.EditMode.World
             AssertNode(worldGraph, BootstrapWorldScenario.ForestFarmNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.Available);
             AssertNode(worldGraph, BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.ServiceOrProgression, NodeState.Available);
             AssertNode(worldGraph, BootstrapWorldScenario.CavernGateNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.BossOrGate, NodeState.Locked);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).CombatEncounter,
+                Is.SameAs(CombatEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestPushNodeId).CombatEncounter,
+                Is.SameAs(CombatEncounterCatalog.BulwarkRaiderEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter,
+                Is.SameAs(CombatEncounterCatalog.GatePlaceholderEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).CombatEncounter,
+                Is.SameAs(CombatEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).CombatEncounter,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).CombatEncounter,
+                Is.SameAs(CombatEncounterCatalog.GatePlaceholderEncounter));
 
             WorldRegion forestRegion = worldGraph.Regions.Single(region => region.RegionId == BootstrapWorldScenario.ForestRegionId);
             WorldRegion cavernRegion = worldGraph.Regions.Single(region => region.RegionId == BootstrapWorldScenario.CavernRegionId);

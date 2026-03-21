@@ -9,7 +9,8 @@ namespace Survivalon.Data.Combat
             string profileId,
             string entityIdSuffix,
             string displayName,
-            CombatStatBlock baseStats)
+            CombatStatBlock baseStats,
+            CombatEnemyBehaviorType behaviorType)
         {
             if (string.IsNullOrWhiteSpace(profileId))
             {
@@ -30,6 +31,7 @@ namespace Survivalon.Data.Combat
             EntityIdSuffix = entityIdSuffix;
             DisplayName = displayName;
             BaseStats = baseStats;
+            BehaviorType = behaviorType;
         }
 
         public string ProfileId { get; }
@@ -39,5 +41,7 @@ namespace Survivalon.Data.Combat
         public string DisplayName { get; }
 
         public CombatStatBlock BaseStats { get; }
+
+        public CombatEnemyBehaviorType BehaviorType { get; }
     }
 }
