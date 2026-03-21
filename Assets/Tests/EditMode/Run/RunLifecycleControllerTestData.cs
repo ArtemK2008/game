@@ -34,7 +34,7 @@ namespace Survivalon.Tests.EditMode.Run
                 Assert.That(controller.RunTimeSkillUpgradeOptions, Is.Not.Empty);
                 Assert.That(
                     controller.TrySelectRunTimeSkillUpgrade(
-                        controller.RunTimeSkillUpgradeOptions[0].UpgradedTriggeredActiveSkill.SkillId),
+                        controller.RunTimeSkillUpgradeOptions[0].UpgradeId),
                     Is.True);
             }
 

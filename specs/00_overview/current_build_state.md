@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 050**, plus the accepted cleanup/refactor milestones **042b** through **042h** and **047a**.
+This summary reflects completed work through **Milestone 050**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, and **050a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -64,7 +64,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - only `Striker`'s default skill package currently grants that active skill
 - One run-time skill-upgrade choice layer now exists on top of the current triggered active skill seam:
   - when the selected current package grants `Burst Strike`, run start now pauses for one small run-only choice before combat auto-starts
-  - the current shipped choices are `Burst Tempo` (faster `Burst Strike` cadence for the current run) and `Burst Payload` (harder `Burst Strike` hits for the current run)
+  - the current shipped choices are temporary run-only modifiers on `Burst Strike`: `Burst Tempo` (faster cadence for the current run) and `Burst Payload` (harder hit for the current run)
   - that choice applies only to the current run and is not persisted into later runs or character/package state
 - Enemy hostility is explicit and can defeat the player.
 - Defeated entities become inactive and stop contributing to combat.

@@ -81,19 +81,5 @@ namespace Survivalon.Combat
             category: CombatSkillCategory.TriggeredActive,
             activationType: CombatSkillActivationType.PeriodicAutoTrigger,
             effectType: CombatSkillEffectType.DirectDamage);
-
-        public static CombatSkillDefinition BurstTempo { get; } = new CombatSkillDefinition(
-            skillId: "combat_active_burst_tempo",
-            displayName: "Burst Tempo",
-            category: CombatSkillCategory.TriggeredActive,
-            activationType: CombatSkillActivationType.PeriodicAutoTrigger,
-            effectType: CombatSkillEffectType.DirectDamage);
-
-        public static CombatSkillDefinition BurstPayload { get; } = new CombatSkillDefinition(
-            skillId: "combat_active_burst_payload",
-            displayName: "Burst Payload",
-            category: CombatSkillCategory.TriggeredActive,
-            activationType: CombatSkillActivationType.PeriodicAutoTrigger,
-            effectType: CombatSkillEffectType.DirectDamage);
     }
 }

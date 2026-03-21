@@ -172,7 +172,11 @@ namespace Survivalon.Combat
 
             attacker.ResetTriggeredActiveSkillTimer();
             combatSkillExecutor.Execute(
-                new CombatSkillExecutionRequest(attacker.TriggeredActiveSkill, attacker, defender),
+                new CombatSkillExecutionRequest(
+                    attacker.TriggeredActiveSkill,
+                    attacker,
+                    defender,
+                    attacker.TriggeredActiveSkillUpgrade),
                 encounterState);
         }
     }

@@ -8,15 +8,21 @@ namespace Survivalon.Combat
         private static readonly IReadOnlyList<CombatRunTimeSkillUpgradeOption> EmptyUpgradeOptions =
             Array.Empty<CombatRunTimeSkillUpgradeOption>();
 
+        public static CombatRunTimeSkillUpgradeOption BurstTempo { get; } = new CombatRunTimeSkillUpgradeOption(
+            upgradeId: "combat_run_upgrade_burst_tempo",
+            displayName: "Burst Tempo",
+            description: "Burst Strike triggers faster during this run.");
+
+        public static CombatRunTimeSkillUpgradeOption BurstPayload { get; } = new CombatRunTimeSkillUpgradeOption(
+            upgradeId: "combat_run_upgrade_burst_payload",
+            displayName: "Burst Payload",
+            description: "Burst Strike hits harder during this run.");
+
         private static readonly IReadOnlyList<CombatRunTimeSkillUpgradeOption> BurstStrikeUpgradeOptions =
             new[]
             {
-                new CombatRunTimeSkillUpgradeOption(
-                    CombatSkillCatalog.BurstTempo,
-                    "Burst Strike triggers faster during this run."),
-                new CombatRunTimeSkillUpgradeOption(
-                    CombatSkillCatalog.BurstPayload,
-                    "Burst Strike hits harder during this run."),
+                BurstTempo,
+                BurstPayload,
             };
 
         public static IReadOnlyList<CombatRunTimeSkillUpgradeOption> GetTriggeredActiveSkillUpgradeOptions(

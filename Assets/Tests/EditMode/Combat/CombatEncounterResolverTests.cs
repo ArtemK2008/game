@@ -197,7 +197,8 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatEncounterState encounterState = CreateEncounterState(
                 new CombatStatBlock(100f, 10f, 0.1f, 0f),
                 new CombatStatBlock(100f, 7f, 0.1f, 0f),
-                CombatSkillCatalog.BurstTempo);
+                CombatSkillCatalog.BurstStrike,
+                CombatRunTimeSkillUpgradeCatalog.BurstTempo);
             SpyCombatSkillExecutor skillExecutor = new SpyCombatSkillExecutor();
             CombatEncounterResolver resolver = new CombatEncounterResolver(combatSkillExecutor: skillExecutor);
 
@@ -209,6 +210,9 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(
                 skillExecutor.LastExecutionRequest.SkillDefinition,
                 Is.SameAs(encounterState.PlayerEntity.TriggeredActiveSkill));
+            Assert.That(
+                skillExecutor.LastExecutionRequest.RunTimeSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
             Assert.That(encounterState.PlayerEntity.TimeUntilTriggeredActiveSkillSeconds, Is.EqualTo(1.75f).Within(0.001f));
         }
 
@@ -219,7 +223,7 @@ namespace Survivalon.Tests.EditMode.Combat
                 new CombatStatBlock(100f, 10f, 1f, 0f),
                 new CombatStatBlock(100f, 7f, 0.25f, 0f),
                 null,
-                CombatSkillCatalog.RelentlessAssault);
+                playerPassiveSkills: new[] { CombatSkillCatalog.RelentlessAssault });
 
             bool advanced = new CombatEncounterResolver().TryAdvance(encounterState, 1f);
 
@@ -235,12 +239,12 @@ namespace Survivalon.Tests.EditMode.Combat
                 new CombatStatBlock(110f, 18f, 1.35f, 8f),
                 new CombatStatBlock(75f, 8f, 0.9f, 4f),
                 CombatSkillCatalog.BurstStrike,
-                CombatSkillCatalog.RelentlessAssault);
+                playerPassiveSkills: new[] { CombatSkillCatalog.RelentlessAssault });
             CombatEncounterState controlEncounterState = CreateEncounterState(
                 new CombatStatBlock(110f, 18f, 1.35f, 8f),
                 new CombatStatBlock(75f, 8f, 0.9f, 4f),
                 null,
-                CombatSkillCatalog.RelentlessAssault);
+                playerPassiveSkills: new[] { CombatSkillCatalog.RelentlessAssault });
 
             bool activeAdvanced = new CombatEncounterResolver().TryAdvance(activeEncounterState, 2.5f);
             bool controlAdvanced = new CombatEncounterResolver().TryAdvance(controlEncounterState, 2.5f);
@@ -301,6 +305,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatStatBlock playerStats,
             CombatStatBlock enemyStats,
             CombatSkillDefinition playerTriggeredActiveSkill = null,
+            CombatRunTimeSkillUpgradeOption playerTriggeredActiveSkillUpgrade = null,
             params CombatSkillDefinition[] playerPassiveSkills)
         {
             CombatShellContext combatContext = new CombatShellContext(
@@ -311,6 +316,7 @@ namespace Survivalon.Tests.EditMode.Combat
                     CombatSide.Player,
                     playerStats,
                     triggeredActiveSkill: playerTriggeredActiveSkill,
+                    triggeredActiveSkillUpgrade: playerTriggeredActiveSkillUpgrade,
                     passiveSkills: playerPassiveSkills),
                 new CombatEntityState(
                     new CombatEntityId("enemy_main"),

@@ -74,14 +74,32 @@ namespace Survivalon.Tests.EditMode.World
                     Is.True);
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
                 Assert.That(
-                    TryFindButton(hostObject, $"{CombatSkillCatalog.BurstTempo.SkillId}_RunTimeSkillUpgradeButton"),
+                    TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton"),
                     Is.Not.Null);
                 Assert.That(
-                    TryFindButton(hostObject, $"{CombatSkillCatalog.BurstPayload.SkillId}_RunTimeSkillUpgradeButton"),
+                    TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton"),
                     Is.Not.Null);
                 Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.False);
+                Assert.That(
+                    FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").GetComponent<LayoutElement>(),
+                    Is.Null);
+                ForceUiLayout(hostObject);
+                Assert.That(
+                    RectangleContains(
+                        FindRectTransform(hostObject, "RunTimeSkillUpgradePanel"),
+                        (RectTransform)FindButton(
+                            hostObject,
+                            $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").transform),
+                    Is.True);
+                Assert.That(
+                    RectangleContains(
+                        FindRectTransform(hostObject, "RunTimeSkillUpgradePanel"),
+                        (RectTransform)FindButton(
+                            hostObject,
+                            $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").transform),
+                    Is.True);
 
-                FindButton(hostObject, $"{CombatSkillCatalog.BurstTempo.SkillId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
 
                 Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
@@ -89,6 +107,12 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(
                     FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").gameObject.activeSelf,
                     Is.False);
+                ForceUiLayout(hostObject);
+                Assert.That(
+                    RectangleContains(
+                        FindRectTransform(hostObject, "Panel"),
+                        FindRectTransform(hostObject, "CombatShellView")),
+                    Is.True);
             }
             finally
             {
@@ -219,7 +243,7 @@ namespace Survivalon.Tests.EditMode.World
                     runResult => { },
                     RunPersistentContext.FromGameState(gameState));
 
-                FindButton(hostObject, $"{CombatSkillCatalog.BurstTempo.SkillId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
 
@@ -228,7 +252,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
 
-                FindButton(hostObject, $"{CombatSkillCatalog.BurstPayload.SkillId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);

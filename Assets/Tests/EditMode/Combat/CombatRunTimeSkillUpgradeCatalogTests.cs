@@ -12,8 +12,8 @@ namespace Survivalon.Tests.EditMode.Combat
                 CombatSkillCatalog.BurstStrike);
 
             Assert.That(upgradeOptions.Count, Is.EqualTo(2));
-            Assert.That(upgradeOptions[0].UpgradedTriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstTempo));
-            Assert.That(upgradeOptions[1].UpgradedTriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstPayload));
+            Assert.That(upgradeOptions[0], Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
+            Assert.That(upgradeOptions[1], Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstPayload));
         }
 
         [Test]

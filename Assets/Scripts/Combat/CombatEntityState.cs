@@ -12,6 +12,7 @@ namespace Survivalon.Combat
             CombatStatBlock baseStats,
             CombatSkillDefinition baselineAttackSkill = null,
             CombatSkillDefinition triggeredActiveSkill = null,
+            CombatRunTimeSkillUpgradeOption triggeredActiveSkillUpgrade = null,
             IReadOnlyList<CombatSkillDefinition> passiveSkills = null,
             bool isAlive = true,
             bool isActive = true)
@@ -27,6 +28,9 @@ namespace Survivalon.Combat
             BaseStats = baseStats;
             BaselineAttackSkill = baselineAttackSkill ?? CombatSkillCatalog.BasicAttack;
             TriggeredActiveSkill = triggeredActiveSkill;
+            TriggeredActiveSkillUpgrade = ResolveTriggeredActiveSkillUpgrade(
+                triggeredActiveSkill,
+                triggeredActiveSkillUpgrade);
             PassiveSkills = CreatePassiveSkillSnapshot(passiveSkills);
             IsAlive = isAlive;
             IsActive = isActive;
@@ -44,11 +48,31 @@ namespace Survivalon.Combat
 
         public CombatSkillDefinition TriggeredActiveSkill { get; }
 
+        public CombatRunTimeSkillUpgradeOption TriggeredActiveSkillUpgrade { get; }
+
         public IReadOnlyList<CombatSkillDefinition> PassiveSkills { get; }
 
         public bool IsAlive { get; }
 
         public bool IsActive { get; }
+
+        private static CombatRunTimeSkillUpgradeOption ResolveTriggeredActiveSkillUpgrade(
+            CombatSkillDefinition triggeredActiveSkill,
+            CombatRunTimeSkillUpgradeOption triggeredActiveSkillUpgrade)
+        {
+            if (triggeredActiveSkillUpgrade == null)
+            {
+                return null;
+            }
+
+            if (triggeredActiveSkill == null)
+            {
+                throw new InvalidOperationException(
+                    "Triggered active skill upgrade requires a base triggered active skill.");
+            }
+
+            return triggeredActiveSkillUpgrade;
+        }
 
         private static IReadOnlyList<CombatSkillDefinition> CreatePassiveSkillSnapshot(
             IReadOnlyList<CombatSkillDefinition> passiveSkills)

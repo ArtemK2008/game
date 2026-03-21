@@ -27,7 +27,7 @@ namespace Survivalon.Combat
             PlayableCharacterProfile playableCharacter,
             PersistentCharacterState playableCharacterState,
             AccountWideProgressionEffectState progressionEffects,
-            CombatSkillDefinition triggeredActiveSkillOverride = null)
+            CombatRunTimeSkillUpgradeOption triggeredActiveSkillUpgrade = null)
         {
             if (nodeContext == null)
             {
@@ -54,7 +54,8 @@ namespace Survivalon.Combat
                     triggeredActiveSkill: ResolveTriggeredActiveSkill(
                         resolvedCharacter,
                         playableCharacterState,
-                        triggeredActiveSkillOverride),
+                        triggeredActiveSkillUpgrade),
+                    triggeredActiveSkillUpgrade: triggeredActiveSkillUpgrade,
                     passiveSkills: ResolvePassiveSkills(resolvedCharacter, playableCharacterState)),
                 new CombatEntityState(
                     new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
@@ -93,12 +94,16 @@ namespace Survivalon.Combat
         private CombatSkillDefinition ResolveTriggeredActiveSkill(
             PlayableCharacterProfile playableCharacter,
             PersistentCharacterState playableCharacterState,
-            CombatSkillDefinition triggeredActiveSkillOverride)
+            CombatRunTimeSkillUpgradeOption triggeredActiveSkillUpgrade)
         {
-            return triggeredActiveSkillOverride ??
-                playableCharacterCombatSkillResolver.ResolveTriggeredActiveSkill(
-                    playableCharacter,
-                    playableCharacterState);
+            CombatSkillDefinition triggeredActiveSkill = playableCharacterCombatSkillResolver.ResolveTriggeredActiveSkill(
+                playableCharacter,
+                playableCharacterState);
+
+            return triggeredActiveSkillUpgrade == null
+                ? triggeredActiveSkill
+                : triggeredActiveSkill ?? throw new InvalidOperationException(
+                    "Run-time triggered active skill upgrade requires a base triggered active skill.");
         }
 
         private static CombatStatBlock CreateEnemyBaseStats(NodePlaceholderState nodeContext)

@@ -202,6 +202,29 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldApplyRunTimeTriggeredActiveSkillUpgradeWithoutReplacingBaseSkill()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            PersistentCharacterState characterState = new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardBurstDrill);
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                PlayableCharacterCatalog.Default,
+                characterState,
+                default,
+                CombatRunTimeSkillUpgradeCatalog.BurstPayload);
+
+            Assert.That(combatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(
+                combatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstPayload));
+        }
+
+        [Test]
         public void ShouldApplySecondPlayableCharacterIdentityToCombatContext()
         {
             CombatShellContextFactory factory = new CombatShellContextFactory();

@@ -66,7 +66,8 @@ namespace Survivalon.Combat
             CombatEntityRuntimeState sourceEntity = executionRequest.SourceEntity;
             CombatEntityRuntimeState targetEntity = executionRequest.TargetEntity;
             float skillAttackPowerMultiplier = combatDirectDamageSkillEffectResolver.ResolveAttackPowerMultiplier(
-                executionRequest.SkillDefinition);
+                executionRequest.SkillDefinition,
+                executionRequest.RunTimeSkillUpgrade);
             float directDamageMultiplier = combatPassiveSkillEffectResolver.ResolveOutgoingDirectDamageMultiplier(
                 sourceEntity,
                 executionRequest.SkillDefinition);

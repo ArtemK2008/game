@@ -5,10 +5,10 @@ namespace Survivalon.Combat
     public sealed class CombatDirectDamageSkillEffectResolver
     {
         private const float BasicAttackAttackPowerMultiplier = 1f;
-        private const float BurstStrikeAttackPowerMultiplier = 2f;
-        private const float BurstPayloadAttackPowerMultiplier = 3f;
 
-        public float ResolveAttackPowerMultiplier(CombatSkillDefinition directDamageSkill)
+        public float ResolveAttackPowerMultiplier(
+            CombatSkillDefinition directDamageSkill,
+            CombatRunTimeSkillUpgradeOption runTimeSkillUpgrade = null)
         {
             if (directDamageSkill == null)
             {
@@ -28,17 +28,9 @@ namespace Survivalon.Combat
 
             if (directDamageSkill.SkillId == CombatSkillCatalog.BurstStrike.SkillId)
             {
-                return BurstStrikeAttackPowerMultiplier;
-            }
-
-            if (directDamageSkill.SkillId == CombatSkillCatalog.BurstTempo.SkillId)
-            {
-                return BurstStrikeAttackPowerMultiplier;
-            }
-
-            if (directDamageSkill.SkillId == CombatSkillCatalog.BurstPayload.SkillId)
-            {
-                return BurstPayloadAttackPowerMultiplier;
+                return CombatTriggeredActiveSkillUpgradeResolver.ResolveAttackPowerMultiplier(
+                    directDamageSkill,
+                    runTimeSkillUpgrade);
             }
 
             throw new InvalidOperationException(
