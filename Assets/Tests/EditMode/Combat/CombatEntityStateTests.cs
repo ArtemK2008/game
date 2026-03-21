@@ -114,6 +114,27 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldCreateCombatShellContextUsingExplicitGateBossEncounterModel()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateBossCombatPlaceholderState(),
+                null,
+                null,
+                default);
+
+            Assert.That(combatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_005")));
+            Assert.That(combatContext.EnemyEntity.EntityId, Is.EqualTo(new CombatEntityId("region_001_node_005_boss_001")));
+            Assert.That(combatContext.EnemyEntity.DisplayName, Is.EqualTo("Gate Boss"));
+            Assert.That(combatContext.EnemyEntity.Side, Is.EqualTo(CombatSide.Enemy));
+            Assert.That(combatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(180f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(16f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.85f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(18f));
+            Assert.That(combatContext.EnemyEntity.BaselineAttackSkill, Is.SameAs(CombatSkillCatalog.BasicAttack));
+        }
+
+        [Test]
         public void ShouldApplyPurchasedAccountWideCombatBaselineEffectToPlayerCombatStats()
         {
             CombatShellContextFactory factory = new CombatShellContextFactory();

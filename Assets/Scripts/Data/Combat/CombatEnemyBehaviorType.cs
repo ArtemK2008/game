@@ -4,6 +4,6 @@ namespace Survivalon.Data.Combat
     {
         FastPressure,
         BulwarkPressure,
-        GatePlaceholder,
+        GateBoss,
     }
 }

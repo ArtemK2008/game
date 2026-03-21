@@ -23,7 +23,7 @@ namespace Survivalon.Combat
                 throw new InvalidOperationException("Enemy profile resolver requires combat encounter content.");
             }
 
-            return nodeContext.CombatEncounter.EnemyProfile;
+            return nodeContext.CombatEncounter.PrimaryEnemyProfile;
         }
     }
 }

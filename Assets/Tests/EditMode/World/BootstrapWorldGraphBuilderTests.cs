@@ -25,22 +25,28 @@ namespace Survivalon.Tests.EditMode.World
             AssertNode(worldGraph, BootstrapWorldScenario.CavernGateNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.BossOrGate, NodeState.Locked);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).CombatEncounter,
-                Is.SameAs(CombatEncounterCatalog.EnemyUnitEncounter));
+                Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestPushNodeId).CombatEncounter,
-                Is.SameAs(CombatEncounterCatalog.BulwarkRaiderEncounter));
+                Is.SameAs(CombatStandardEncounterCatalog.BulwarkRaiderEncounter));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter,
-                Is.SameAs(CombatEncounterCatalog.GatePlaceholderEncounter));
+                Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).CombatEncounter,
-                Is.SameAs(CombatEncounterCatalog.EnemyUnitEncounter));
+                Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).CombatEncounter,
                 Is.Null);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).CombatEncounter,
-                Is.SameAs(CombatEncounterCatalog.GatePlaceholderEncounter));
+                Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter.EncounterType,
+                Is.EqualTo(CombatEncounterType.Boss));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter.PrimaryEnemyProfile.HostileEntityType,
+                Is.EqualTo(CombatHostileEntityType.Boss));
 
             WorldRegion forestRegion = worldGraph.Regions.Single(region => region.RegionId == BootstrapWorldScenario.ForestRegionId);
             WorldRegion cavernRegion = worldGraph.Regions.Single(region => region.RegionId == BootstrapWorldScenario.CavernRegionId);

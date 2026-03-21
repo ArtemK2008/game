@@ -195,6 +195,9 @@ namespace Survivalon.Tests.EditMode.Run
             RunLifecycleController controller = new RunLifecycleController(RunLifecycleControllerTestData.CreateBossCombatNodeState());
 
             Assert.That(controller.TryEnterActiveState(), Is.True);
+            Assert.That(controller.CombatContext.EnemyEntity.DisplayName, Is.EqualTo("Gate Boss"));
+            Assert.That(controller.CombatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(180f));
+            Assert.That(controller.CombatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(16f));
 
             for (int index = 0; index < 12 && controller.CurrentState == RunLifecycleState.RunActive; index++)
             {
