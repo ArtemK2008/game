@@ -50,7 +50,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Combat Shell: region_001_node_002"), Is.True);
                 Assert.That(ContainsText(hostObject, "Bulwark Raider"), Is.True);
-                Assert.That(ContainsText(hostObject, "HP: 105 / 105 | ATK: 8"), Is.True);
+                Assert.That(ContainsText(hostObject, "HP: 105 / 105 | ATK: 9"), Is.True);
                 Assert.That(FindButton(hostObject, "AdvanceRunLifecycleButton").interactable, Is.False);
             }
             finally

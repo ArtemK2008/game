@@ -35,9 +35,9 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.EnemyEntity.DisplayName, Is.EqualTo("Enemy Unit"));
             Assert.That(controller.CombatContext.EnemyEntity.Side, Is.EqualTo(CombatSide.Enemy));
             Assert.That(controller.CombatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(75f));
-            Assert.That(controller.CombatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(8f));
-            Assert.That(controller.CombatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.9f));
-            Assert.That(controller.CombatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(4f));
+            Assert.That(controller.CombatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(7f));
+            Assert.That(controller.CombatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(1.25f));
+            Assert.That(controller.CombatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(2f));
             Assert.That(controller.CombatContext.EnemyEntity.IsAlive, Is.True);
             Assert.That(controller.CombatContext.EnemyEntity.IsActive, Is.True);
             Assert.That(controller.CombatEncounterState.PlayerEntity.CurrentHealth, Is.EqualTo(120f));
@@ -82,8 +82,12 @@ namespace Survivalon.Tests.EditMode.Run
 
             Assert.That(farmController.CombatContext.EnemyEntity.DisplayName, Is.EqualTo("Enemy Unit"));
             Assert.That(farmController.CombatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(75f));
+            Assert.That(farmController.CombatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(7f));
+            Assert.That(farmController.CombatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(1.25f));
             Assert.That(pushController.CombatContext.EnemyEntity.DisplayName, Is.EqualTo("Bulwark Raider"));
             Assert.That(pushController.CombatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(105f));
+            Assert.That(pushController.CombatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(9f));
+            Assert.That(pushController.CombatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.85f));
             Assert.That(farmController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(pushController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(
@@ -92,6 +96,32 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(
                 pushController.CombatEncounterState.PlayerEntity.CurrentHealth,
                 Is.LessThan(farmController.CombatEncounterState.PlayerEntity.CurrentHealth));
+        }
+
+        [Test]
+        public void ShouldCreateSharperEarlyPressureForEnemyUnitAndStrongerAttritionForBulwarkRaider()
+        {
+            RunLifecycleController farmController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState());
+            RunLifecycleController pushController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreatePushCombatNodeState());
+
+            Assert.That(farmController.TryStartAutomaticFlow(), Is.True);
+            Assert.That(pushController.TryStartAutomaticFlow(), Is.True);
+            Assert.That(farmController.TryAdvanceAutomaticTime(2.5f), Is.True);
+            Assert.That(pushController.TryAdvanceAutomaticTime(2.5f), Is.True);
+
+            Assert.That(farmController.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
+            Assert.That(pushController.CurrentState, Is.EqualTo(RunLifecycleState.RunActive));
+            Assert.That(
+                farmController.CombatEncounterState.PlayerEntity.CurrentHealth,
+                Is.LessThan(pushController.CombatEncounterState.PlayerEntity.CurrentHealth));
+            Assert.That(
+                farmController.CombatEncounterState.EnemyEntity.CurrentHealth,
+                Is.LessThan(pushController.CombatEncounterState.EnemyEntity.CurrentHealth));
+            Assert.That(
+                pushController.CombatEncounterState.ElapsedCombatSeconds,
+                Is.EqualTo(farmController.CombatEncounterState.ElapsedCombatSeconds).Within(0.001f));
         }
 
         [Test]
