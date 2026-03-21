@@ -2,6 +2,7 @@ using NUnit.Framework;
 using Survivalon.Combat;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
@@ -251,6 +252,41 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(
                 upgradedController.CombatEncounterState.PlayerEntity.CurrentHealth,
                 Is.GreaterThan(baselineController.CombatEncounterState.PlayerEntity.CurrentHealth));
+        }
+
+        [Test]
+        public void ShouldResolveStandardCombatFasterWhenTrainingBladeIsEquipped()
+        {
+            PersistentGameState baselineGameState = BootstrapWorldTestData.CreateGameState();
+            PersistentGameState equippedGameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterGearAssignmentService gearAssignmentService =
+                new PlayableCharacterGearAssignmentService();
+            Assert.That(
+                gearAssignmentService.TryAssignSelectedCharacterPrimaryCombatGear(
+                    equippedGameState,
+                    GearIds.TrainingBlade),
+                Is.True);
+
+            RunLifecycleController baselineController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(baselineGameState));
+            RunLifecycleController equippedController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(equippedGameState));
+
+            RunLifecycleControllerTestData.RunToPostRun(baselineController);
+            RunLifecycleControllerTestData.RunToPostRun(equippedController);
+
+            Assert.That(baselineController.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(14f));
+            Assert.That(equippedController.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(16f));
+            Assert.That(baselineController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(equippedController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(
+                equippedController.CombatEncounterState.ElapsedCombatSeconds,
+                Is.LessThan(baselineController.CombatEncounterState.ElapsedCombatSeconds));
+            Assert.That(
+                equippedController.CombatEncounterState.PlayerEntity.CurrentHealth,
+                Is.GreaterThanOrEqualTo(baselineController.CombatEncounterState.PlayerEntity.CurrentHealth));
         }
 
         [Test]

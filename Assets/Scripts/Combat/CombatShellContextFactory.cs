@@ -10,14 +10,18 @@ namespace Survivalon.Combat
     public sealed class CombatShellContextFactory
     {
         private readonly PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver;
+        private readonly PlayableCharacterGearCombatEffectResolver playableCharacterGearCombatEffectResolver;
         private readonly PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver;
 
         public CombatShellContextFactory(
             PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver = null,
+            PlayableCharacterGearCombatEffectResolver playableCharacterGearCombatEffectResolver = null,
             PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver = null)
         {
             this.playableCharacterProgressionEffectResolver =
                 playableCharacterProgressionEffectResolver ?? new PlayableCharacterProgressionEffectResolver();
+            this.playableCharacterGearCombatEffectResolver =
+                playableCharacterGearCombatEffectResolver ?? new PlayableCharacterGearCombatEffectResolver();
             this.playableCharacterCombatSkillResolver =
                 playableCharacterCombatSkillResolver ?? new PlayableCharacterCombatSkillResolver();
         }
@@ -72,12 +76,17 @@ namespace Survivalon.Combat
             float characterProgressionMaxHealthBonus = playableCharacterState == null
                 ? 0f
                 : playableCharacterProgressionEffectResolver.ResolveMaxHealthBonus(playableCharacterState);
+            float gearAttackPowerBonus = playableCharacterState == null
+                ? 0f
+                : playableCharacterGearCombatEffectResolver.ResolveAttackPowerBonus(playableCharacterState);
 
             return new CombatStatBlock(
                 maxHealth: characterBaseStats.MaxHealth +
                     characterProgressionMaxHealthBonus +
                     progressionEffects.PlayerMaxHealthBonus,
-                attackPower: characterBaseStats.AttackPower + progressionEffects.PlayerAttackPowerBonus,
+                attackPower: characterBaseStats.AttackPower +
+                    progressionEffects.PlayerAttackPowerBonus +
+                    gearAttackPowerBonus,
                 attackRate: characterBaseStats.AttackRate,
                 defense: characterBaseStats.Defense);
         }

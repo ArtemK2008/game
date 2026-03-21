@@ -16,6 +16,7 @@ namespace Survivalon.Tests.EditMode.Data
             Assert.That(gearProfile.GearId, Is.EqualTo(GearIds.TrainingBlade));
             Assert.That(gearProfile.DisplayName, Is.EqualTo("Training Blade"));
             Assert.That(gearProfile.GearCategory, Is.EqualTo(GearCategory.PrimaryCombat));
+            Assert.That(gearProfile.AttackPowerBonus, Is.EqualTo(2f));
         }
     }
 }
