@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 056**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, and **056a**.
+This summary reflects completed work through **Milestone 057**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, and **056a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -51,6 +51,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Enemy Unit` is the faster lighter-pressure baseline standard enemy
   - `Bulwark Raider` is the slower sturdier push-oriented standard enemy currently used by the forest push combat node
 - Current shipped combat-node enemy selection now comes from small bootstrap encounter-content data attached at node entry rather than hardcoded node-id branching inside the combat resolver.
+- The initial shipped node/location mapping remains intentionally small and bootstrap-seeded:
+  - forest entry and forest farm use `Enemy Unit`
+  - forest push uses `Bulwark Raider`
+  - current gate/boss placeholder nodes use `Gate Enemy`
 
 ### Auto-battle / hostility / no-manual-combat loop
 - Combat uses deterministic auto-targeting.
