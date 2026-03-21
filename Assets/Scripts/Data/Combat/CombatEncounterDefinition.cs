@@ -2,21 +2,23 @@ using System;
 
 namespace Survivalon.Data.Combat
 {
-    public sealed class CombatEncounterDefinition
+    public abstract class CombatEncounterDefinition
     {
-        public CombatEncounterDefinition(string encounterId, CombatEnemyProfile enemyProfile)
+        protected CombatEncounterDefinition(string encounterId, CombatEncounterType encounterType)
         {
             if (string.IsNullOrWhiteSpace(encounterId))
             {
                 throw new ArgumentException("Combat encounter id cannot be null or whitespace.", nameof(encounterId));
             }
 
-            EnemyProfile = enemyProfile ?? throw new ArgumentNullException(nameof(enemyProfile));
             EncounterId = encounterId;
+            EncounterType = encounterType;
         }
 
         public string EncounterId { get; }
 
-        public CombatEnemyProfile EnemyProfile { get; }
+        public CombatEncounterType EncounterType { get; }
+
+        public abstract CombatEnemyProfile PrimaryEnemyProfile { get; }
     }
 }

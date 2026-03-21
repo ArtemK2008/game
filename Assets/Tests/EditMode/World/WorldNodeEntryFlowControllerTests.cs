@@ -56,10 +56,44 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(entered, Is.True);
             Assert.That(placeholderState, Is.Not.Null);
-            Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(
-                placeholderState.CombatEncounter.EnemyProfile,
+                placeholderState.CombatEncounter.PrimaryEnemyProfile,
                 Is.SameAs(CombatStandardEnemyProfileCatalog.EnemyUnit));
+        }
+
+        [Test]
+        public void ShouldCarryBootstrapBossEncounterContentIntoPlaceholderState()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+
+            worldState.SetCurrentNode(BootstrapWorldScenario.CavernServiceNodeId);
+            worldState.SetLastSafeNode(BootstrapWorldScenario.ForestPushNodeId);
+            worldState.ReplaceReachableNodes(new[]
+            {
+                BootstrapWorldScenario.CavernServiceNodeId,
+                BootstrapWorldScenario.CavernGateNodeId,
+            });
+            worldState.ReplaceNodeStates(new[]
+            {
+                PersistentStateTestData.CreateNodeState(
+                    BootstrapWorldScenario.CavernGateNodeId,
+                    unlockThreshold: 3,
+                    nodeState: NodeState.Available,
+                    unlockProgress: 0),
+            });
+
+            bool entered = controller.TryEnterNode(BootstrapWorldScenario.CavernGateNodeId, out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
+            Assert.That(placeholderState.CombatEncounter.EncounterType, Is.EqualTo(CombatEncounterType.Boss));
+            Assert.That(
+                placeholderState.CombatEncounter.PrimaryEnemyProfile,
+                Is.SameAs(CombatBossProfileCatalog.GateBoss));
         }
 
         [Test]

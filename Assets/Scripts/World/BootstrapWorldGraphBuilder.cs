@@ -15,32 +15,32 @@ namespace Survivalon.World
                     BootstrapWorldScenario.ForestRegionId,
                     NodeType.Combat,
                     NodeState.Cleared,
-                    CombatEncounterCatalog.EnemyUnitEncounter),
+                    CombatStandardEncounterCatalog.EnemyUnitEncounter),
                 new WorldNode(
                     BootstrapWorldScenario.ForestPushNodeId,
                     BootstrapWorldScenario.ForestRegionId,
                     NodeType.Combat,
                     NodeState.InProgress,
-                    CombatEncounterCatalog.BulwarkRaiderEncounter),
+                    CombatStandardEncounterCatalog.BulwarkRaiderEncounter),
                 new WorldNode(
                     BootstrapWorldScenario.ForestGateNodeId,
                     BootstrapWorldScenario.ForestRegionId,
                     NodeType.BossOrGate,
                     NodeState.Locked,
-                    CombatEncounterCatalog.GatePlaceholderEncounter),
+                    CombatBossEncounterCatalog.GateBossEncounter),
                 new WorldNode(
                     BootstrapWorldScenario.ForestFarmNodeId,
                     BootstrapWorldScenario.ForestRegionId,
                     NodeType.Combat,
                     NodeState.Available,
-                    CombatEncounterCatalog.EnemyUnitEncounter),
+                    CombatStandardEncounterCatalog.EnemyUnitEncounter),
                 new WorldNode(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.ServiceOrProgression, NodeState.Available),
                 new WorldNode(
                     BootstrapWorldScenario.CavernGateNodeId,
                     BootstrapWorldScenario.CavernRegionId,
                     NodeType.BossOrGate,
                     NodeState.Locked,
-                    CombatEncounterCatalog.GatePlaceholderEncounter),
+                    CombatBossEncounterCatalog.GateBossEncounter),
             };
 
             List<WorldRegion> regions = new List<WorldRegion>

@@ -64,10 +64,11 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatEnemyProfile resolvedProfile = resolver.Resolve(
                 NodePlaceholderTestData.CreateBossCombatPlaceholderState());
 
-            Assert.That(resolvedProfile, Is.SameAs(CombatBossPlaceholderProfileCatalog.GateEnemy));
-            Assert.That(resolvedProfile.DisplayName, Is.EqualTo("Gate Enemy"));
+            Assert.That(resolvedProfile, Is.SameAs(CombatBossProfileCatalog.GateBoss));
+            Assert.That(resolvedProfile.DisplayName, Is.EqualTo("Gate Boss"));
             Assert.That(resolvedProfile.EntityIdSuffix, Is.EqualTo("boss_001"));
-            Assert.That(resolvedProfile.BehaviorType, Is.EqualTo(CombatEnemyBehaviorType.GatePlaceholder));
+            Assert.That(resolvedProfile.BehaviorType, Is.EqualTo(CombatEnemyBehaviorType.GateBoss));
+            Assert.That(resolvedProfile.HostileEntityType, Is.EqualTo(CombatHostileEntityType.Boss));
         }
 
         [Test]

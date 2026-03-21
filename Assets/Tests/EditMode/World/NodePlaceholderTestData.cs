@@ -24,7 +24,7 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.Combat,
                 NodeState.Available,
                 new NodeId("region_001_node_002"),
-                CombatEncounterCatalog.EnemyUnitEncounter);
+                CombatStandardEncounterCatalog.EnemyUnitEncounter);
         }
 
         public static NodePlaceholderState CreateBossCombatPlaceholderState()
@@ -35,7 +35,7 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.BossOrGate,
                 NodeState.Available,
                 new NodeId("region_001_node_004"),
-                CombatEncounterCatalog.GatePlaceholderEncounter);
+                CombatBossEncounterCatalog.GateBossEncounter);
         }
 
         public static NodePlaceholderState CreatePushCombatPlaceholderState()
@@ -46,7 +46,7 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.Combat,
                 NodeState.InProgress,
                 new NodeId("region_001_node_001"),
-                CombatEncounterCatalog.BulwarkRaiderEncounter);
+                CombatStandardEncounterCatalog.BulwarkRaiderEncounter);
         }
     }
 }

@@ -15,7 +15,8 @@ namespace Survivalon.Data.Combat
                 attackPower: 7f,
                 attackRate: 1.25f,
                 defense: 2f),
-            CombatEnemyBehaviorType.FastPressure);
+            CombatEnemyBehaviorType.FastPressure,
+            CombatHostileEntityType.StandardEnemy);
         private static readonly CombatEnemyProfile BulwarkRaiderProfile = new CombatEnemyProfile(
             "combat_enemy_bulwark_raider",
             "enemy_002",
@@ -25,7 +26,8 @@ namespace Survivalon.Data.Combat
                 attackPower: 9f,
                 attackRate: 0.85f,
                 defense: 6f),
-            CombatEnemyBehaviorType.BulwarkPressure);
+            CombatEnemyBehaviorType.BulwarkPressure,
+            CombatHostileEntityType.StandardEnemy);
         private static readonly IReadOnlyList<CombatEnemyProfile> AllProfiles = Array.AsReadOnly(new[]
         {
             EnemyUnitProfile,
