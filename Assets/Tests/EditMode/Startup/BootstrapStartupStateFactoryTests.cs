@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.Startup;
 using Survivalon.State.Persistence;
 using Survivalon.World;
@@ -38,6 +39,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 "character_striker",
                 false,
                 PlayableCharacterSkillPackageIds.StrikerDefault);
+            Assert.That(startupState.GameState.OwnedGearIds, Has.Count.EqualTo(1));
+            Assert.That(startupState.GameState.OwnedGearIds[0], Is.EqualTo(GearIds.TrainingBlade));
         }
 
         [Test]
@@ -76,6 +79,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 "character_striker",
                 true,
                 PlayableCharacterSkillPackageIds.StrikerDefault);
+            Assert.That(startupState.GameState.OwnedGearIds, Does.Contain(GearIds.TrainingBlade));
         }
 
         [Test]

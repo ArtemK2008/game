@@ -79,7 +79,7 @@ namespace Survivalon.State.Persistence
 
         public string SkillPackageId => skillPackageId;
 
-        public PersistentLoadoutState LoadoutState => loadoutState;
+        public PersistentLoadoutState LoadoutState => loadoutState ??= new PersistentLoadoutState();
 
         public void Unlock()
         {
