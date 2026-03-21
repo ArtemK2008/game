@@ -91,6 +91,29 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldCreateCombatShellContextUsingDurableStandardEnemyProfileForPushNode()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreatePushCombatPlaceholderState(),
+                null,
+                null,
+                default);
+
+            Assert.That(combatContext.NodeId, Is.EqualTo(new NodeId("region_001_node_002")));
+            Assert.That(combatContext.EnemyEntity.EntityId, Is.EqualTo(new CombatEntityId("region_001_node_002_enemy_002")));
+            Assert.That(combatContext.EnemyEntity.DisplayName, Is.EqualTo("Bulwark Raider"));
+            Assert.That(combatContext.EnemyEntity.Side, Is.EqualTo(CombatSide.Enemy));
+            Assert.That(combatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(105f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.AttackPower, Is.EqualTo(8f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.AttackRate, Is.EqualTo(0.9f));
+            Assert.That(combatContext.EnemyEntity.BaseStats.Defense, Is.EqualTo(4f));
+            Assert.That(combatContext.EnemyEntity.BaselineAttackSkill, Is.SameAs(CombatSkillCatalog.BasicAttack));
+            Assert.That(combatContext.EnemyEntity.TriggeredActiveSkill, Is.Null);
+            Assert.That(combatContext.EnemyEntity.PassiveSkills, Is.Empty);
+        }
+
+        [Test]
         public void ShouldApplyPurchasedAccountWideCombatBaselineEffectToPlayerCombatStats()
         {
             CombatShellContextFactory factory = new CombatShellContextFactory();

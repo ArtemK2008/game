@@ -35,6 +35,31 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldEnterBulwarkRaiderCombatShellFromWorldMapPushNodeFlow()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(hostObject);
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+
+                Assert.That(ContainsText(hostObject, "Combat Shell: region_001_node_002"), Is.True);
+                Assert.That(ContainsText(hostObject, "Bulwark Raider"), Is.True);
+                Assert.That(ContainsText(hostObject, "HP: 105 / 105 | ATK: 8"), Is.True);
+                Assert.That(FindButton(hostObject, "AdvanceRunLifecycleButton").interactable, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldShowSelectedCharacterOnWorldMapAndUseSelectedCharacterForRunEntry()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
