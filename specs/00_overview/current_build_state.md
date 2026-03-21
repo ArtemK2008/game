@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 049c**, plus the accepted cleanup/refactor milestones **042b** through **042h** and **047a**.
+This summary reflects completed work through **Milestone 050**, plus the accepted cleanup/refactor milestones **042b** through **042h** and **047a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -14,6 +14,7 @@ From the world map, the player manually selects an enterable node and confirms e
 Manual actions currently required:
 - select a node on the world map
 - confirm node entry
+- choose one run-only skill upgrade before combat auto-starts when the selected current package exposes that choice
 - choose a post-run action after resolution
 
 Manual movement, manual attacks, and manual combat stepping are not required in the current combat loop.
@@ -61,6 +62,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current playable-character skill packages can resolve one periodic triggered active skill into the player combat entity
   - the current shipped active skill is `Burst Strike`, which auto-triggers every `2.5` seconds and deals boosted direct damage through the existing combat-skill executor seam
   - only `Striker`'s default skill package currently grants that active skill
+- One run-time skill-upgrade choice layer now exists on top of the current triggered active skill seam:
+  - when the selected current package grants `Burst Strike`, run start now pauses for one small run-only choice before combat auto-starts
+  - the current shipped choices are `Burst Tempo` (faster `Burst Strike` cadence for the current run) and `Burst Payload` (harder `Burst Strike` hits for the current run)
+  - that choice applies only to the current run and is not persisted into later runs or character/package state
 - Enemy hostility is explicit and can defeat the player.
 - Defeated entities become inactive and stop contributing to combat.
 - Combat auto-advances until one side wins, then the run resolves automatically into post-run.
@@ -175,6 +180,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Character selection now exists only as a minimal world-map placeholder path; broader roster UI and deeper multi-character systems are still deferred.
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
+- The first run-time skill choice now exists only as a compact placeholder choice for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet

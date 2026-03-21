@@ -92,6 +92,31 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void BuildStatusText_ShouldShowRunTimeSkillChoicePromptWhenChoiceIsPending()
+        {
+            string statusText = NodePlaceholderScreenTextBuilder.BuildStatusText(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                RunLifecycleState.RunStart,
+                combatEncounterState: null,
+                requiresRunTimeSkillUpgradeChoice: true);
+
+            Assert.That(
+                statusText,
+                Is.EqualTo("Combat shell initialized. Choose a run-only skill upgrade to start automatic combat."));
+        }
+
+        [Test]
+        public void BuildRunTimeSkillUpgradeText_ShouldMatchExistingChoiceFormatting()
+        {
+            string choiceText = NodePlaceholderScreenTextBuilder.BuildRunTimeSkillUpgradeText(
+                CombatRunTimeSkillUpgradeCatalog.GetTriggeredActiveSkillUpgradeOptions(CombatSkillCatalog.BurstStrike));
+
+            Assert.That(choiceText, Is.EqualTo(
+                "Run-only skill choice\n" +
+                "Choose 1 upgrade before combat auto-starts. Options: 2"));
+        }
+
+        [Test]
         public void BuildStatusText_ShouldFallbackToGenericResolvedTextWhenCombatEncounterIsMissing()
         {
             string statusText = NodePlaceholderScreenTextBuilder.BuildStatusText(
@@ -109,32 +134,68 @@ namespace Survivalon.Tests.EditMode.World
             NodePlaceholderState combatState = NodePlaceholderTestData.CreateCombatPlaceholderState();
 
             AssertButtonState(
-                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(serviceState, RunLifecycleState.RunStart, false),
+                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    serviceState,
+                    RunLifecycleState.RunStart,
+                    hasPendingRunTimeSkillUpgradeChoice: false,
+                    hasCombatEncounterState: false),
                 "Start Placeholder Run",
                 true);
             AssertButtonState(
-                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(combatState, RunLifecycleState.RunStart, false),
+                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    combatState,
+                    RunLifecycleState.RunStart,
+                    hasPendingRunTimeSkillUpgradeChoice: false,
+                    hasCombatEncounterState: false),
                 "Combat Auto-Starting",
                 false);
             AssertButtonState(
-                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(serviceState, RunLifecycleState.RunActive, false),
+                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    serviceState,
+                    RunLifecycleState.RunActive,
+                    hasPendingRunTimeSkillUpgradeChoice: false,
+                    hasCombatEncounterState: false),
                 "Resolve Placeholder Run",
                 true);
             AssertButtonState(
-                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(combatState, RunLifecycleState.RunActive, true),
+                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    combatState,
+                    RunLifecycleState.RunActive,
+                    hasPendingRunTimeSkillUpgradeChoice: false,
+                    hasCombatEncounterState: true),
                 "Combat Auto-Running",
                 false);
             AssertButtonState(
-                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(serviceState, RunLifecycleState.RunResolved, false),
+                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    serviceState,
+                    RunLifecycleState.RunResolved,
+                    hasPendingRunTimeSkillUpgradeChoice: false,
+                    hasCombatEncounterState: false),
                 "Enter Post-Run State",
                 true);
             AssertButtonState(
-                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(combatState, RunLifecycleState.RunResolved, true),
+                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    combatState,
+                    RunLifecycleState.RunResolved,
+                    hasPendingRunTimeSkillUpgradeChoice: false,
+                    hasCombatEncounterState: true),
                 "Preparing Post-Run",
                 false);
             AssertButtonState(
-                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(combatState, RunLifecycleState.PostRun, true),
+                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    combatState,
+                    RunLifecycleState.PostRun,
+                    hasPendingRunTimeSkillUpgradeChoice: false,
+                    hasCombatEncounterState: true),
                 "Run Lifecycle Complete",
+                false);
+            AssertButtonState(
+                NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    combatState,
+                    RunLifecycleState.RunStart,
+                    hasPendingRunTimeSkillUpgradeChoice: true,
+                    hasCombatEncounterState: false),
+                "Choose Run Upgrade",
                 false);
         }
 
@@ -280,7 +341,11 @@ namespace Survivalon.Tests.EditMode.World
         public void ResolveAdvanceButtonState_ShouldRejectMissingPlaceholderState()
         {
             Assert.That(
-                () => NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(null, RunLifecycleState.RunStart, false),
+                () => NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
+                    null,
+                    RunLifecycleState.RunStart,
+                    hasPendingRunTimeSkillUpgradeChoice: false,
+                    hasCombatEncounterState: false),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("placeholderState"));
         }
 

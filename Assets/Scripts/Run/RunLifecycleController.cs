@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Survivalon.Combat;
 using Survivalon.State.Persistence;
 using Survivalon.World;
@@ -11,6 +12,7 @@ namespace Survivalon.Run
         private readonly WorldGraph worldGraph;
         private readonly RunPersistentContext persistentContext;
         private readonly CombatShellContextFactory combatShellContextFactory;
+        private readonly PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver;
         private readonly AccountWideProgressionEffectResolver accountWideProgressionEffectResolver;
         private readonly CombatEncounterResolver combatEncounterResolver;
         private readonly CombatAutoAdvanceLoop combatAutoAdvanceLoop;
@@ -18,7 +20,9 @@ namespace Survivalon.Run
         private readonly RunRewardResolutionService runRewardResolutionService;
         private readonly RunRewardGrantService runRewardGrantService;
         private readonly PlayableCharacterProgressionService playableCharacterProgressionService;
+        private readonly IReadOnlyList<CombatRunTimeSkillUpgradeOption> runTimeSkillUpgradeOptions;
         private RunLifecycleState currentState;
+        private CombatRunTimeSkillUpgradeOption selectedRunTimeSkillUpgradeOption;
         private CombatShellContext combatShellContext;
         private CombatEncounterState combatEncounterState;
         private RunResult runResult;
@@ -35,11 +39,14 @@ namespace Survivalon.Run
             RunRewardResolutionService runRewardResolutionService = null,
             RunRewardGrantService runRewardGrantService = null,
             AccountWideProgressionEffectResolver accountWideProgressionEffectResolver = null,
-            PlayableCharacterProgressionService playableCharacterProgressionService = null)
+            PlayableCharacterProgressionService playableCharacterProgressionService = null,
+            PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
             this.worldGraph = worldGraph;
             this.combatShellContextFactory = combatShellContextFactory ?? new CombatShellContextFactory();
+            this.playableCharacterCombatSkillResolver =
+                playableCharacterCombatSkillResolver ?? new PlayableCharacterCombatSkillResolver();
             this.combatEncounterResolver = combatEncounterResolver ?? new CombatEncounterResolver();
             this.combatAutoAdvanceLoop = combatAutoAdvanceLoop ?? new CombatAutoAdvanceLoop();
             this.persistentContext = persistentContext;
@@ -53,6 +60,7 @@ namespace Survivalon.Run
             this.playableCharacterProgressionService =
                 playableCharacterProgressionService ?? new PlayableCharacterProgressionService();
             currentState = RunLifecycleState.RunStart;
+            runTimeSkillUpgradeOptions = ResolveRunTimeSkillUpgradeOptions();
         }
 
         public NodePlaceholderState NodeContext => nodeContext;
@@ -65,6 +73,13 @@ namespace Survivalon.Run
 
         public bool UsesCombatShell => nodeContext.UsesCombatShell;
 
+        public IReadOnlyList<CombatRunTimeSkillUpgradeOption> RunTimeSkillUpgradeOptions => runTimeSkillUpgradeOptions;
+
+        public bool RequiresRunTimeSkillUpgradeChoice =>
+            currentState == RunLifecycleState.RunStart &&
+            runTimeSkillUpgradeOptions.Count > 0 &&
+            selectedRunTimeSkillUpgradeOption == null;
+
         public CombatShellContext CombatContext => combatShellContext ??
             throw new InvalidOperationException("Combat context is not available until a combat-compatible run enters the active state.");
 
@@ -76,7 +91,7 @@ namespace Survivalon.Run
 
         public bool TryEnterActiveState()
         {
-            if (currentState != RunLifecycleState.RunStart)
+            if (currentState != RunLifecycleState.RunStart || RequiresRunTimeSkillUpgradeChoice)
             {
                 return false;
             }
@@ -90,6 +105,28 @@ namespace Survivalon.Run
                 : new CombatEncounterState(combatShellContext);
             currentState = RunLifecycleState.RunActive;
             return true;
+        }
+
+        public bool TrySelectRunTimeSkillUpgrade(string upgradedTriggeredActiveSkillId)
+        {
+            if (!RequiresRunTimeSkillUpgradeChoice || string.IsNullOrWhiteSpace(upgradedTriggeredActiveSkillId))
+            {
+                return false;
+            }
+
+            for (int index = 0; index < runTimeSkillUpgradeOptions.Count; index++)
+            {
+                CombatRunTimeSkillUpgradeOption upgradeOption = runTimeSkillUpgradeOptions[index];
+                if (upgradeOption.UpgradedTriggeredActiveSkill.SkillId != upgradedTriggeredActiveSkillId)
+                {
+                    continue;
+                }
+
+                selectedRunTimeSkillUpgradeOption = upgradeOption;
+                return true;
+            }
+
+            return false;
         }
 
         public bool TryAdvanceTime(float elapsedSeconds)
@@ -206,7 +243,8 @@ namespace Survivalon.Run
                 nodeContext,
                 persistentContext?.PlayableCharacter,
                 persistentContext?.PlayableCharacterState,
-                ResolveAccountWideProgressionEffects());
+                ResolveAccountWideProgressionEffects(),
+                selectedRunTimeSkillUpgradeOption?.UpgradedTriggeredActiveSkill);
         }
 
         private void ApplyPlayableCharacterProgression(RunResolutionState resolutionState)
@@ -227,6 +265,21 @@ namespace Survivalon.Run
             return persistentContext?.PersistentProgressionState == null
                 ? default
                 : accountWideProgressionEffectResolver.Resolve(persistentContext.PersistentProgressionState);
+        }
+
+        private IReadOnlyList<CombatRunTimeSkillUpgradeOption> ResolveRunTimeSkillUpgradeOptions()
+        {
+            if (!UsesCombatShell)
+            {
+                return Array.Empty<CombatRunTimeSkillUpgradeOption>();
+            }
+
+            CombatSkillDefinition triggeredActiveSkill =
+                playableCharacterCombatSkillResolver.ResolveTriggeredActiveSkill(
+                    persistentContext?.PlayableCharacter,
+                    persistentContext?.PlayableCharacterState);
+
+            return CombatRunTimeSkillUpgradeCatalog.GetTriggeredActiveSkillUpgradeOptions(triggeredActiveSkill);
         }
     }
 }

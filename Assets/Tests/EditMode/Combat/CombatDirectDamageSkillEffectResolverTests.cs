@@ -24,5 +24,25 @@ namespace Survivalon.Tests.EditMode.Combat
 
             Assert.That(attackPowerMultiplier, Is.EqualTo(2f));
         }
+
+        [Test]
+        public void ShouldResolveBurstTempoDamageMultiplier()
+        {
+            CombatDirectDamageSkillEffectResolver resolver = new CombatDirectDamageSkillEffectResolver();
+
+            float attackPowerMultiplier = resolver.ResolveAttackPowerMultiplier(CombatSkillCatalog.BurstTempo);
+
+            Assert.That(attackPowerMultiplier, Is.EqualTo(2f));
+        }
+
+        [Test]
+        public void ShouldResolveBurstPayloadDamageMultiplier()
+        {
+            CombatDirectDamageSkillEffectResolver resolver = new CombatDirectDamageSkillEffectResolver();
+
+            float attackPowerMultiplier = resolver.ResolveAttackPowerMultiplier(CombatSkillCatalog.BurstPayload);
+
+            Assert.That(attackPowerMultiplier, Is.EqualTo(3f));
+        }
     }
 }

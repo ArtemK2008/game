@@ -11,6 +11,7 @@ namespace Survivalon.Tests.EditMode.Combat
         {
             CombatSkillDefinition passiveSkill = CombatSkillCatalog.RelentlessAssault;
             CombatSkillDefinition activeSkill = CombatSkillCatalog.BurstStrike;
+            CombatSkillDefinition runTimeActiveSkill = CombatSkillCatalog.BurstTempo;
 
             Assert.That(passiveSkill.SkillId, Is.EqualTo("combat_passive_relentless_assault"));
             Assert.That(passiveSkill.DisplayName, Is.EqualTo("Relentless Assault"));
@@ -22,6 +23,11 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(activeSkill.Category, Is.EqualTo(CombatSkillCategory.TriggeredActive));
             Assert.That(activeSkill.ActivationType, Is.EqualTo(CombatSkillActivationType.PeriodicAutoTrigger));
             Assert.That(activeSkill.EffectType, Is.EqualTo(CombatSkillEffectType.DirectDamage));
+            Assert.That(runTimeActiveSkill.SkillId, Is.EqualTo("combat_active_burst_tempo"));
+            Assert.That(runTimeActiveSkill.DisplayName, Is.EqualTo("Burst Tempo"));
+            Assert.That(runTimeActiveSkill.Category, Is.EqualTo(CombatSkillCategory.TriggeredActive));
+            Assert.That(runTimeActiveSkill.ActivationType, Is.EqualTo(CombatSkillActivationType.PeriodicAutoTrigger));
+            Assert.That(runTimeActiveSkill.EffectType, Is.EqualTo(CombatSkillEffectType.DirectDamage));
             Assert.That(
                 typeof(CombatSkillDefinition).GetProperty("DirectDamageMultiplier", BindingFlags.Public | BindingFlags.Instance),
                 Is.Null);
