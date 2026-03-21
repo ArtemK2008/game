@@ -102,6 +102,41 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
             Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.TrainingBlade));
         }
+
+        [Test]
+        public void ShouldPreserveValidEquippedPrimaryCombatGearDuringInitialization()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            PersistentPlayableCharacterInitializer initializer = new PersistentPlayableCharacterInitializer();
+            gameState.EnsureOwnedGearId(GearIds.TrainingBlade);
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                loadoutState: new PersistentLoadoutState(
+                    equippedGearStates: new[]
+                    {
+                        new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
+                    })));
+            gameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
+
+            initializer.EnsureInitialized(gameState);
+
+            Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+            Assert.That(
+                vanguardState.LoadoutState.TryGetEquippedGearState(
+                    GearCategory.PrimaryCombat,
+                    out EquippedGearState equippedGearState),
+                Is.True);
+            Assert.That(equippedGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
+        }
     }
 }
 
