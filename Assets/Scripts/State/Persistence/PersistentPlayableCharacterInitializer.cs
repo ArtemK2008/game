@@ -7,14 +7,17 @@ namespace Survivalon.State.Persistence
     {
         private readonly PlayableCharacterSelectionService selectionService;
         private readonly PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService;
+        private readonly PersistentGearStateInitializer gearStateInitializer;
 
         public PersistentPlayableCharacterInitializer(
             PlayableCharacterSelectionService selectionService = null,
-            PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService = null)
+            PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService = null,
+            PersistentGearStateInitializer gearStateInitializer = null)
         {
             this.selectionService = selectionService ?? new PlayableCharacterSelectionService();
             this.skillPackageAssignmentService =
                 skillPackageAssignmentService ?? new PlayableCharacterSkillPackageAssignmentService(this.selectionService);
+            this.gearStateInitializer = gearStateInitializer ?? new PersistentGearStateInitializer();
         }
 
         public void EnsureInitialized(PersistentGameState gameState)
@@ -31,6 +34,7 @@ namespace Survivalon.State.Persistence
 
             skillPackageAssignmentService.EnsureValidAssignments(gameState);
             selectionService.EnsureValidSelection(gameState);
+            gearStateInitializer.EnsureInitialized(gameState);
         }
 
         private static void EnsureCharacterState(PersistentGameState gameState, PlayableCharacterProfile characterProfile)

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
@@ -97,13 +98,19 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
             SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
             PersistentGameState gameState = CreateGameState("region_002_node_001", "region_001_node_002");
+            gameState.EnsureOwnedGearId(GearIds.TrainingBlade);
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_vanguard",
                 isUnlocked: true,
                 isSelectable: true,
                 isActive: false,
                 progressionRank: 2,
-                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault));
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                loadoutState: new PersistentLoadoutState(
+                    equippedGearStates: new[]
+                    {
+                        new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
+                    })));
             gameState.AddCharacterState(new PersistentCharacterState(
                 "character_striker",
                 isUnlocked: true,
@@ -115,6 +122,8 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             service.SaveResolvedWorldContext(gameState);
 
             Assert.That(storage.SavedGameState.CharacterStates, Has.Count.EqualTo(2));
+            Assert.That(storage.SavedGameState.OwnedGearIds, Has.Count.EqualTo(1));
+            Assert.That(storage.SavedGameState.OwnedGearIds[0], Is.EqualTo(GearIds.TrainingBlade));
             Assert.That(
                 storage.SavedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
                 Is.True);
@@ -123,6 +132,11 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(characterState.IsActive, Is.False);
             Assert.That(characterState.ProgressionRank, Is.EqualTo(2));
             Assert.That(characterState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
+            Assert.That(characterState.LoadoutState.EquippedGearStates, Has.Count.EqualTo(1));
+            Assert.That(characterState.LoadoutState.EquippedGearStates[0].GearId, Is.EqualTo(GearIds.TrainingBlade));
+            Assert.That(
+                characterState.LoadoutState.EquippedGearStates[0].GearCategory,
+                Is.EqualTo(GearCategory.PrimaryCombat));
             Assert.That(
                 storage.SavedGameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
                 Is.True);

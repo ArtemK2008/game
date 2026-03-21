@@ -25,6 +25,8 @@ namespace Survivalon.State.Persistence
         [SerializeField]
         private PersistentSafeResumeState safeResumeState = new PersistentSafeResumeState();
 
+        private List<string> OwnedGearIdsInternal => ownedGearIds ??= new List<string>();
+
         public PersistentWorldState WorldState => worldState;
 
         public PersistentProgressionState ProgressionState => progressionState;
@@ -33,7 +35,7 @@ namespace Survivalon.State.Persistence
 
         public IReadOnlyList<PersistentCharacterState> CharacterStates => characterStates;
 
-        public IReadOnlyList<string> OwnedGearIds => ownedGearIds;
+        public IReadOnlyList<string> OwnedGearIds => OwnedGearIdsInternal;
 
         public PersistentSafeResumeState SafeResumeState => safeResumeState;
 
@@ -70,6 +72,47 @@ namespace Survivalon.State.Persistence
 
             characterState = null;
             return false;
+        }
+
+        public void EnsureOwnedGearId(string gearId)
+        {
+            if (string.IsNullOrWhiteSpace(gearId))
+            {
+                throw new ArgumentException("Gear id cannot be null or whitespace.", nameof(gearId));
+            }
+
+            for (int index = 0; index < OwnedGearIdsInternal.Count; index++)
+            {
+                if (OwnedGearIdsInternal[index] == gearId)
+                {
+                    return;
+                }
+            }
+
+            OwnedGearIdsInternal.Add(gearId);
+        }
+
+        public void ReplaceOwnedGearIds(IEnumerable<string> replacementGearIds)
+        {
+            if (replacementGearIds == null)
+            {
+                throw new ArgumentNullException(nameof(replacementGearIds));
+            }
+
+            List<string> normalizedGearIds = new List<string>();
+            foreach (string replacementGearId in replacementGearIds)
+            {
+                if (string.IsNullOrWhiteSpace(replacementGearId))
+                {
+                    throw new ArgumentException(
+                        "Replacement gear ids cannot contain null or whitespace entries.",
+                        nameof(replacementGearIds));
+                }
+
+                normalizedGearIds.Add(replacementGearId);
+            }
+
+            ownedGearIds = normalizedGearIds;
         }
     }
 }
