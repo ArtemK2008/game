@@ -30,7 +30,9 @@ namespace Survivalon.Tests.EditMode.Combat
         {
             CombatDirectDamageSkillEffectResolver resolver = new CombatDirectDamageSkillEffectResolver();
 
-            float attackPowerMultiplier = resolver.ResolveAttackPowerMultiplier(CombatSkillCatalog.BurstTempo);
+            float attackPowerMultiplier = resolver.ResolveAttackPowerMultiplier(
+                CombatSkillCatalog.BurstStrike,
+                CombatRunTimeSkillUpgradeCatalog.BurstTempo);
 
             Assert.That(attackPowerMultiplier, Is.EqualTo(2f));
         }
@@ -40,7 +42,9 @@ namespace Survivalon.Tests.EditMode.Combat
         {
             CombatDirectDamageSkillEffectResolver resolver = new CombatDirectDamageSkillEffectResolver();
 
-            float attackPowerMultiplier = resolver.ResolveAttackPowerMultiplier(CombatSkillCatalog.BurstPayload);
+            float attackPowerMultiplier = resolver.ResolveAttackPowerMultiplier(
+                CombatSkillCatalog.BurstStrike,
+                CombatRunTimeSkillUpgradeCatalog.BurstPayload);
 
             Assert.That(attackPowerMultiplier, Is.EqualTo(3f));
         }

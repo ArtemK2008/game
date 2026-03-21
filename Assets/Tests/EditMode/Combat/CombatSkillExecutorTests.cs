@@ -115,9 +115,10 @@ namespace Survivalon.Tests.EditMode.Combat
 
             executor.Execute(
                 new CombatSkillExecutionRequest(
-                    CombatSkillCatalog.BurstPayload,
+                    CombatSkillCatalog.BurstStrike,
                     encounterState.PlayerEntity,
-                    encounterState.EnemyEntity),
+                    encounterState.EnemyEntity,
+                    CombatRunTimeSkillUpgradeCatalog.BurstPayload),
                 encounterState);
 
             Assert.That(encounterState.IsResolved, Is.False);

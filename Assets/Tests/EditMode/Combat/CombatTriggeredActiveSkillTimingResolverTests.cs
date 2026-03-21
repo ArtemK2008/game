@@ -18,7 +18,8 @@ namespace Survivalon.Tests.EditMode.Combat
         public void ShouldResolveBurstTempoPeriodicTriggerInterval()
         {
             float intervalSeconds = CombatTriggeredActiveSkillTimingResolver.ResolveIntervalSeconds(
-                CombatSkillCatalog.BurstTempo);
+                CombatSkillCatalog.BurstStrike,
+                CombatRunTimeSkillUpgradeCatalog.BurstTempo);
 
             Assert.That(intervalSeconds, Is.EqualTo(1.75f).Within(0.001f));
         }
@@ -27,7 +28,8 @@ namespace Survivalon.Tests.EditMode.Combat
         public void ShouldResolveBurstPayloadPeriodicTriggerInterval()
         {
             float intervalSeconds = CombatTriggeredActiveSkillTimingResolver.ResolveIntervalSeconds(
-                CombatSkillCatalog.BurstPayload);
+                CombatSkillCatalog.BurstStrike,
+                CombatRunTimeSkillUpgradeCatalog.BurstPayload);
 
             Assert.That(intervalSeconds, Is.EqualTo(2.5f).Within(0.001f));
         }

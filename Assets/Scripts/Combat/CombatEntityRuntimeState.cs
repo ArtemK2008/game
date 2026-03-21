@@ -24,7 +24,9 @@ namespace Survivalon.Combat
             IsActive = true;
             TimeUntilNextBaselineAttackSeconds = CombatStatCalculator.CalculateAttackIntervalSeconds(combatEntity.BaseStats);
             TimeUntilTriggeredActiveSkillSeconds =
-                CombatTriggeredActiveSkillTimingResolver.ResolveIntervalSeconds(combatEntity.TriggeredActiveSkill);
+                CombatTriggeredActiveSkillTimingResolver.ResolveIntervalSeconds(
+                    combatEntity.TriggeredActiveSkill,
+                    combatEntity.TriggeredActiveSkillUpgrade);
         }
 
         public CombatEntityState CombatEntity { get; }
@@ -40,6 +42,8 @@ namespace Survivalon.Combat
         public CombatSkillDefinition BaselineAttackSkill => CombatEntity.BaselineAttackSkill;
 
         public CombatSkillDefinition TriggeredActiveSkill => CombatEntity.TriggeredActiveSkill;
+
+        public CombatRunTimeSkillUpgradeOption TriggeredActiveSkillUpgrade => CombatEntity.TriggeredActiveSkillUpgrade;
 
         public IReadOnlyList<CombatSkillDefinition> PassiveSkills => CombatEntity.PassiveSkills;
 
@@ -93,7 +97,9 @@ namespace Survivalon.Combat
         public void ResetTriggeredActiveSkillTimer()
         {
             TimeUntilTriggeredActiveSkillSeconds =
-                CombatTriggeredActiveSkillTimingResolver.ResolveIntervalSeconds(TriggeredActiveSkill);
+                CombatTriggeredActiveSkillTimingResolver.ResolveIntervalSeconds(
+                    TriggeredActiveSkill,
+                    TriggeredActiveSkillUpgrade);
         }
 
         public void ApplyDamage(float damage)

@@ -291,7 +291,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.RunTimeSkillUpgradeOptions.Count, Is.EqualTo(2));
             Assert.That(controller.TryStartAutomaticFlow(), Is.False);
             Assert.That(
-                controller.TrySelectRunTimeSkillUpgrade(CombatSkillCatalog.BurstTempo.SkillId),
+                controller.TrySelectRunTimeSkillUpgrade(CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId),
                 Is.True);
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
 
@@ -305,8 +305,10 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.35f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(8f));
-            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstTempo));
-            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill.SkillId, Is.EqualTo("combat_active_burst_tempo"));
+            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(
+                controller.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
             Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills.Count, Is.EqualTo(1));
             Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills[0].SkillId, Is.EqualTo("combat_passive_relentless_assault"));
         }
@@ -327,13 +329,16 @@ namespace Survivalon.Tests.EditMode.Run
 
             Assert.That(controller.RequiresRunTimeSkillUpgradeChoice, Is.True);
             Assert.That(
-                controller.TrySelectRunTimeSkillUpgrade(CombatSkillCatalog.BurstPayload.SkillId),
+                controller.TrySelectRunTimeSkillUpgrade(CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId),
                 Is.True);
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
 
             Assert.That(persistentContext.PlayableCharacter.CharacterId, Is.EqualTo("character_vanguard"));
             Assert.That(controller.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
-            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstPayload));
+            Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(
+                controller.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstPayload));
             Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills, Is.Empty);
         }
 
@@ -349,10 +354,13 @@ namespace Survivalon.Tests.EditMode.Run
                 persistentContext: firstPersistentContext);
 
             Assert.That(
-                firstController.TrySelectRunTimeSkillUpgrade(CombatSkillCatalog.BurstPayload.SkillId),
+                firstController.TrySelectRunTimeSkillUpgrade(CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId),
                 Is.True);
             Assert.That(firstController.TryStartAutomaticFlow(), Is.True);
-            Assert.That(firstController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstPayload));
+            Assert.That(firstController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(
+                firstController.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstPayload));
 
             RunPersistentContext secondPersistentContext = RunPersistentContext.FromGameState(gameState);
             RunLifecycleController secondController = new RunLifecycleController(
@@ -490,7 +498,10 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(vanguardController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
             Assert.That(strikerController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Striker"));
             Assert.That(strikerController.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(18f));
-            Assert.That(strikerController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstTempo));
+            Assert.That(strikerController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(
+                strikerController.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
             Assert.That(strikerController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(strikerController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
             Assert.That(
@@ -521,7 +532,10 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(vanguardController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
             Assert.That(vanguardController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.Null);
             Assert.That(strikerController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Striker"));
-            Assert.That(strikerController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstTempo));
+            Assert.That(strikerController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(
+                strikerController.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
             Assert.That(
                 strikerController.CombatEncounterState.ElapsedCombatSeconds,
                 Is.LessThan(vanguardController.CombatEncounterState.ElapsedCombatSeconds));
@@ -552,7 +566,10 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(baselineController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Failed));
             Assert.That(baselineController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.EnemyVictory));
             Assert.That(assignedController.CombatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
-            Assert.That(assignedController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstTempo));
+            Assert.That(assignedController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(
+                assignedController.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
             Assert.That(assignedController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
             Assert.That(assignedController.CombatEncounterState.Outcome, Is.EqualTo(CombatEncounterOutcome.PlayerVictory));
             Assert.That(

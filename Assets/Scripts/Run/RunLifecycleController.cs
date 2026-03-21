@@ -107,9 +107,9 @@ namespace Survivalon.Run
             return true;
         }
 
-        public bool TrySelectRunTimeSkillUpgrade(string upgradedTriggeredActiveSkillId)
+        public bool TrySelectRunTimeSkillUpgrade(string runTimeSkillUpgradeId)
         {
-            if (!RequiresRunTimeSkillUpgradeChoice || string.IsNullOrWhiteSpace(upgradedTriggeredActiveSkillId))
+            if (!RequiresRunTimeSkillUpgradeChoice || string.IsNullOrWhiteSpace(runTimeSkillUpgradeId))
             {
                 return false;
             }
@@ -117,7 +117,7 @@ namespace Survivalon.Run
             for (int index = 0; index < runTimeSkillUpgradeOptions.Count; index++)
             {
                 CombatRunTimeSkillUpgradeOption upgradeOption = runTimeSkillUpgradeOptions[index];
-                if (upgradeOption.UpgradedTriggeredActiveSkill.SkillId != upgradedTriggeredActiveSkillId)
+                if (upgradeOption.UpgradeId != runTimeSkillUpgradeId)
                 {
                     continue;
                 }
@@ -244,7 +244,7 @@ namespace Survivalon.Run
                 persistentContext?.PlayableCharacter,
                 persistentContext?.PlayableCharacterState,
                 ResolveAccountWideProgressionEffects(),
-                selectedRunTimeSkillUpgradeOption?.UpgradedTriggeredActiveSkill);
+                selectedRunTimeSkillUpgradeOption);
         }
 
         private void ApplyPlayableCharacterProgression(RunResolutionState resolutionState)

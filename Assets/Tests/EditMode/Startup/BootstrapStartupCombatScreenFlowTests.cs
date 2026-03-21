@@ -49,7 +49,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
-                FindButton(hostObject, $"{CombatSkillCatalog.BurstTempo.SkillId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 110 / 110 | ATK: 18"), Is.True);
