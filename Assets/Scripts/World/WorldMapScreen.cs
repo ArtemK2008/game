@@ -13,9 +13,9 @@ namespace Survivalon.World
     {
         private const float SummaryPreferredHeight = 176f;
         private const float CharacterSelectionSummaryPreferredHeight = 54f;
-        private const float CharacterSelectionButtonPreferredHeight = 44f;
+        private const float CharacterSelectionButtonPreferredHeight = 40f;
         private const float SkillPackageAssignmentSummaryPreferredHeight = 88f;
-        private const float SkillPackageAssignmentButtonPreferredHeight = 40f;
+        private const float SkillPackageAssignmentButtonPreferredHeight = 36f;
 
         private Canvas canvas;
         private RectTransform panelRectTransform;
@@ -27,6 +27,7 @@ namespace Survivalon.World
         private Text enterSelectedNodeButtonText;
         private RectTransform characterSelectionContainer;
         private RectTransform skillPackageAssignmentContainer;
+        private RectTransform nodeListScrollViewRectTransform;
         private RectTransform nodeListViewport;
         private RectTransform nodeListContainer;
         private ScrollRect nodeListScrollRect;
@@ -197,8 +198,8 @@ namespace Survivalon.World
             panelRectTransform.localScale = Vector3.one;
 
             VerticalLayoutGroup panelLayout = panelObject.GetComponent<VerticalLayoutGroup>();
-            panelLayout.padding = new RectOffset(20, 20, 20, 20);
-            panelLayout.spacing = 12f;
+            panelLayout.padding = new RectOffset(16, 16, 16, 16);
+            panelLayout.spacing = 8f;
             panelLayout.childAlignment = TextAnchor.UpperLeft;
             panelLayout.childControlWidth = true;
             panelLayout.childControlHeight = true;
@@ -237,30 +238,9 @@ namespace Survivalon.World
                 characterSelectionText.gameObject,
                 CharacterSelectionSummaryPreferredHeight);
 
-            GameObject characterSelectionObject = new GameObject(
-                "CharacterSelectionList",
-                typeof(RectTransform),
-                typeof(VerticalLayoutGroup),
-                typeof(ContentSizeFitter));
-            characterSelectionObject.transform.SetParent(panelObject.transform, false);
-
-            VerticalLayoutGroup characterSelectionLayout = characterSelectionObject.GetComponent<VerticalLayoutGroup>();
-            characterSelectionLayout.spacing = 8f;
-            characterSelectionLayout.childAlignment = TextAnchor.UpperLeft;
-            characterSelectionLayout.childControlWidth = true;
-            characterSelectionLayout.childControlHeight = true;
-            characterSelectionLayout.childForceExpandWidth = true;
-            characterSelectionLayout.childForceExpandHeight = false;
-
-            ContentSizeFitter characterSelectionFitter = characterSelectionObject.GetComponent<ContentSizeFitter>();
-            characterSelectionFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            characterSelectionFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            characterSelectionContainer = characterSelectionObject.GetComponent<RectTransform>();
-            characterSelectionContainer.anchorMin = new Vector2(0f, 1f);
-            characterSelectionContainer.anchorMax = new Vector2(1f, 1f);
-            characterSelectionContainer.pivot = new Vector2(0.5f, 1f);
-            characterSelectionContainer.localScale = Vector3.one;
+            characterSelectionContainer = CreateChoiceRowContainer(
+                panelObject.transform,
+                "CharacterSelectionList");
 
             skillPackageAssignmentText = RuntimeUiSupport.CreateText(
                 panelObject.transform,
@@ -274,30 +254,9 @@ namespace Survivalon.World
                 skillPackageAssignmentText.gameObject,
                 SkillPackageAssignmentSummaryPreferredHeight);
 
-            GameObject skillPackageAssignmentObject = new GameObject(
-                "SkillPackageAssignmentList",
-                typeof(RectTransform),
-                typeof(VerticalLayoutGroup),
-                typeof(ContentSizeFitter));
-            skillPackageAssignmentObject.transform.SetParent(panelObject.transform, false);
-
-            VerticalLayoutGroup skillPackageAssignmentLayout = skillPackageAssignmentObject.GetComponent<VerticalLayoutGroup>();
-            skillPackageAssignmentLayout.spacing = 8f;
-            skillPackageAssignmentLayout.childAlignment = TextAnchor.UpperLeft;
-            skillPackageAssignmentLayout.childControlWidth = true;
-            skillPackageAssignmentLayout.childControlHeight = true;
-            skillPackageAssignmentLayout.childForceExpandWidth = true;
-            skillPackageAssignmentLayout.childForceExpandHeight = false;
-
-            ContentSizeFitter skillPackageAssignmentFitter = skillPackageAssignmentObject.GetComponent<ContentSizeFitter>();
-            skillPackageAssignmentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            skillPackageAssignmentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            skillPackageAssignmentContainer = skillPackageAssignmentObject.GetComponent<RectTransform>();
-            skillPackageAssignmentContainer.anchorMin = new Vector2(0f, 1f);
-            skillPackageAssignmentContainer.anchorMax = new Vector2(1f, 1f);
-            skillPackageAssignmentContainer.pivot = new Vector2(0.5f, 1f);
-            skillPackageAssignmentContainer.localScale = Vector3.one;
+            skillPackageAssignmentContainer = CreateChoiceRowContainer(
+                panelObject.transform,
+                "SkillPackageAssignmentList");
 
             enterSelectedNodeButton = CreateActionButton(
                 panelObject.transform,
@@ -320,8 +279,8 @@ namespace Survivalon.World
                 typeof(LayoutElement));
             scrollViewObject.transform.SetParent(parent, false);
 
-            RectTransform scrollViewRectTransform = scrollViewObject.GetComponent<RectTransform>();
-            scrollViewRectTransform.localScale = Vector3.one;
+            nodeListScrollViewRectTransform = scrollViewObject.GetComponent<RectTransform>();
+            nodeListScrollViewRectTransform.localScale = Vector3.one;
 
             Image scrollViewImage = scrollViewObject.GetComponent<Image>();
             scrollViewImage.color = new Color(0.04f, 0.05f, 0.08f, 0.30f);
@@ -373,6 +332,35 @@ namespace Survivalon.World
             nodeListScrollRect.movementType = ScrollRect.MovementType.Clamped;
             nodeListScrollRect.scrollSensitivity = 32f;
             nodeListScrollRect.verticalNormalizedPosition = 1f;
+        }
+
+        private RectTransform CreateChoiceRowContainer(Transform parent, string objectName)
+        {
+            GameObject rowObject = new GameObject(
+                objectName,
+                typeof(RectTransform),
+                typeof(HorizontalLayoutGroup),
+                typeof(ContentSizeFitter));
+            rowObject.transform.SetParent(parent, false);
+
+            HorizontalLayoutGroup rowLayout = rowObject.GetComponent<HorizontalLayoutGroup>();
+            rowLayout.spacing = 8f;
+            rowLayout.childAlignment = TextAnchor.UpperLeft;
+            rowLayout.childControlWidth = true;
+            rowLayout.childControlHeight = true;
+            rowLayout.childForceExpandWidth = true;
+            rowLayout.childForceExpandHeight = false;
+
+            ContentSizeFitter rowFitter = rowObject.GetComponent<ContentSizeFitter>();
+            rowFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            rowFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            RectTransform rowRectTransform = rowObject.GetComponent<RectTransform>();
+            rowRectTransform.anchorMin = new Vector2(0f, 1f);
+            rowRectTransform.anchorMax = new Vector2(1f, 1f);
+            rowRectTransform.pivot = new Vector2(0.5f, 1f);
+            rowRectTransform.localScale = Vector3.one;
+            return rowRectTransform;
         }
 
         private void ClearNodeButtons()
@@ -694,10 +682,12 @@ namespace Survivalon.World
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(characterSelectionContainer);
             LayoutRebuilder.ForceRebuildLayoutImmediate(skillPackageAssignmentContainer);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
             ConfigureNodeListContentRect();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListScrollViewRectTransform);
             LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListContainer);
             LayoutRebuilder.ForceRebuildLayoutImmediate(nodeListViewport);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
+            ConfigureNodeListContentRect();
             Canvas.ForceUpdateCanvases();
         }
 
