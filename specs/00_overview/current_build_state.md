@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 049b**, plus the accepted cleanup/refactor milestones **042b** through **042h** and **047a**.
+This summary reflects completed work through **Milestone 049c**, plus the accepted cleanup/refactor milestones **042b** through **042h** and **047a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -30,7 +30,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - A runtime world graph exists with regions, nodes, explicit connections, and limited branching.
 - Reachability supports forward movement and backtracking from current world context.
 - The world map shows node identity, node type, node state, current/selectable status, and a small summary of current context.
-- The placeholder world map now keeps its node list inside a simple scrollable viewport with stable full-width node-button alignment, so lower node buttons remain reachable and readable as the header/selection area grows.
+- The placeholder world map now keeps its node list inside a simple scrollable viewport with stable full-width node-button alignment, so lower node buttons remain reachable and readable as the header, character-selection, and package-assignment area grows.
 - Entering a selected node routes into a placeholder node screen through explicit node-entry flow logic.
 
 ### Run lifecycle and post-run flow

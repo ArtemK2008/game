@@ -202,12 +202,17 @@ namespace Survivalon.Tests.EditMode.World
                 ForceUiLayout(hostObject);
 
                 ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
+                RectTransform firstNodeRect = FindRectTransform(hostObject, "region_001_node_002_Button");
+                RectTransform panelRect = FindRectTransform(hostObject, "Panel");
                 Assert.That(scrollRect.horizontal, Is.False);
                 Assert.That(scrollRect.vertical, Is.True);
                 Assert.That(scrollRect.viewport, Is.Not.Null);
                 Assert.That(scrollRect.viewport.gameObject.name, Is.EqualTo("NodeListViewport"));
                 Assert.That(scrollRect.content, Is.Not.Null);
                 Assert.That(scrollRect.content.gameObject.name, Is.EqualTo("NodeList"));
+                Assert.That(scrollRect.viewport.rect.height, Is.GreaterThanOrEqualTo(firstNodeRect.rect.height - 1f));
+                Assert.That(RectanglesOverlap(FindRectTransform(hostObject, "EnterSelectedNodeButton"), scrollRect.viewport), Is.False);
+                Assert.That(RectangleContains(panelRect, scrollRect.viewport), Is.True);
                 Assert.That(GetWorldRect(scrollRect.content).xMin, Is.EqualTo(GetWorldRect(scrollRect.viewport).xMin).Within(1f));
                 Assert.That(GetWorldRect(scrollRect.content).xMax, Is.EqualTo(GetWorldRect(scrollRect.viewport).xMax).Within(1f));
             }
@@ -246,6 +251,48 @@ namespace Survivalon.Tests.EditMode.World
 
                 Assert.That(RectanglesOverlap(lastNodeRect, scrollRect.viewport), Is.True);
                 AssertHorizontallyContained(scrollRect.viewport, lastNodeRect);
+                AssertHorizontallyContained(scrollRect.viewport, lastNodeLabelRect);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldKeepOverflowingNodeContentReachableAfterCharacterAndPackageRefresh()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            const int nodeCount = 18;
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    CreateOverflowWorldGraph(nodeCount),
+                    CreateOverflowWorldState(nodeCount),
+                    gameState: gameState);
+
+                FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
+                ForceUiLayout(hostObject);
+                FindButton(hostObject, "character_vanguard_CharacterButton").onClick.Invoke();
+                ForceUiLayout(hostObject);
+                FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton").onClick.Invoke();
+                ForceUiLayout(hostObject);
+
+                ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
+                RectTransform lastNodeRect = FindRectTransform(hostObject, "region_scroll_node_018_Button");
+                RectTransform lastNodeLabelRect = GetButtonLabelRectTransform(FindButton(hostObject, "region_scroll_node_018_Button"));
+
+                Assert.That(scrollRect.content.rect.height, Is.GreaterThan(scrollRect.viewport.rect.height));
+                Assert.That(scrollRect.viewport.rect.height, Is.GreaterThanOrEqualTo(lastNodeRect.rect.height - 1f));
+
+                scrollRect.verticalNormalizedPosition = 0f;
+                ForceUiLayout(hostObject);
+
+                Assert.That(RectanglesOverlap(lastNodeRect, scrollRect.viewport), Is.True);
+                AssertNodeButtonReadableWithinViewport(scrollRect.viewport, FindButton(hostObject, "region_scroll_node_018_Button"));
                 AssertHorizontallyContained(scrollRect.viewport, lastNodeLabelRect);
             }
             finally
