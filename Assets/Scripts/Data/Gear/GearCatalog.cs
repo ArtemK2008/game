@@ -8,7 +8,8 @@ namespace Survivalon.Data.Gear
         private static readonly GearProfile TrainingBladeProfile = new GearProfile(
             GearIds.TrainingBlade,
             "Training Blade",
-            GearCategory.PrimaryCombat);
+            GearCategory.PrimaryCombat,
+            attackPowerBonus: 2f);
         private static readonly IReadOnlyList<GearProfile> AllProfiles = Array.AsReadOnly(new[]
         {
             TrainingBladeProfile,

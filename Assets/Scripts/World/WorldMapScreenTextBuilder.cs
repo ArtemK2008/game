@@ -87,7 +87,7 @@ namespace Survivalon.World
                 $"Available characters: {selectionOptions.Count}";
         }
 
-        public static string BuildBuildAssignmentText(
+        public static string BuildAssignmentText(
             string selectedCharacterDisplayName,
             IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions,
             string primaryCombatGearDisplayName,

@@ -463,7 +463,7 @@ namespace Survivalon.World
         {
             IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions = BuildSkillPackageOptions();
             IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions = BuildGearAssignmentOptions();
-            buildAssignmentText.text = WorldMapScreenTextBuilder.BuildBuildAssignmentText(
+            buildAssignmentText.text = WorldMapScreenTextBuilder.BuildAssignmentText(
                 BuildSelectedCharacterDisplayName(),
                 skillPackageOptions,
                 ResolveSelectedPrimaryCombatGearDisplayName(),

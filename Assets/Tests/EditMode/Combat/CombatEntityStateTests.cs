@@ -2,6 +2,7 @@ using NUnit.Framework;
 using Survivalon.Combat;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
 
@@ -302,6 +303,34 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
             Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
             Assert.That(combatContext.PlayerEntity.TriggeredActiveSkill, Is.Null);
+        }
+
+        [Test]
+        public void ShouldApplyEquippedTrainingBladeAttackPowerBonusToPlayerCombatStats()
+        {
+            CombatShellContextFactory factory = new CombatShellContextFactory();
+            PersistentCharacterState characterState = new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                loadoutState: new PersistentLoadoutState(
+                    equippedGearStates: new[]
+                    {
+                        new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
+                    }));
+            CombatShellContext combatContext = factory.Create(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                PlayableCharacterCatalog.Default,
+                characterState,
+                default);
+
+            Assert.That(combatContext.PlayerEntity.DisplayName, Is.EqualTo("Vanguard"));
+            Assert.That(combatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(120f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(16f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.AttackRate, Is.EqualTo(1.2f));
+            Assert.That(combatContext.PlayerEntity.BaseStats.Defense, Is.EqualTo(12f));
         }
     }
 }

@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 052a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, and **050a**.
+This summary reflects completed work through **Milestone 053**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, and **052a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -178,7 +178,8 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - category match
   - one equipped item per category
 - The current default bootstrap state still starts with no gear equipped on the shipped characters.
-- The selected character's persistent loadout data now flows into run context as data, but gear does not change combat outcomes yet.
+- The selected character's persistent loadout data now flows into run context and now affects future combat through one small live gear effect.
+- The shipped `Training Blade` currently grants a flat `+2` attack-power bonus when equipped, which improves the selected character's future combat output and shortens ordinary autobattle runs without redesigning the current combat model.
 
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
@@ -200,7 +201,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - The first run-time skill choice now exists only as a compact placeholder choice for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
-- Gear now exists for one primary category with a minimal pre-run equip/unequip placeholder; broader gear UI, gear acquisition, and live gear combat effects are still deferred.
+- Gear now exists for one primary category with a minimal pre-run equip/unequip placeholder and one live stat effect; broader gear UI, gear acquisition, additional categories, and richer gear effects are still deferred.
 - Non-combat nodes still use placeholder run behavior.
 
 ## Not implemented yet
@@ -208,7 +209,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
 - Additional progression sinks and dedicated sink access through the service/town layer
 - Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
-- Gear equip/assignment flow, live gear effects, and broader itemization/loot systems
+- Additional gear categories, richer live gear effects, and broader itemization/loot systems
 - Multi-entity combat, broader skill systems, advanced AI, and broader combat content
 
 ## Known temporary placeholders / technical shortcuts
