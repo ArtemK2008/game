@@ -6,6 +6,7 @@ namespace Survivalon.Combat
     {
         private const float BasicAttackAttackPowerMultiplier = 1f;
         private const float BurstStrikeAttackPowerMultiplier = 2f;
+        private const float BurstPayloadAttackPowerMultiplier = 3f;
 
         public float ResolveAttackPowerMultiplier(CombatSkillDefinition directDamageSkill)
         {
@@ -28,6 +29,16 @@ namespace Survivalon.Combat
             if (directDamageSkill.SkillId == CombatSkillCatalog.BurstStrike.SkillId)
             {
                 return BurstStrikeAttackPowerMultiplier;
+            }
+
+            if (directDamageSkill.SkillId == CombatSkillCatalog.BurstTempo.SkillId)
+            {
+                return BurstStrikeAttackPowerMultiplier;
+            }
+
+            if (directDamageSkill.SkillId == CombatSkillCatalog.BurstPayload.SkillId)
+            {
+                return BurstPayloadAttackPowerMultiplier;
             }
 
             throw new InvalidOperationException(

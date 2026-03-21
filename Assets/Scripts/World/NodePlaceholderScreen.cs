@@ -13,6 +13,9 @@ namespace Survivalon.World
         private Text titleText;
         private Text summaryText;
         private Text statusText;
+        private GameObject runTimeSkillUpgradePanelObject;
+        private Text runTimeSkillUpgradeText;
+        private RectTransform runTimeSkillUpgradeContainer;
         private CombatShellView combatShellView;
         private GameObject postRunSummaryPanelObject;
         private Text postRunSummaryText;
@@ -75,7 +78,9 @@ namespace Survivalon.World
             statusText.text = NodePlaceholderScreenTextBuilder.BuildStatusText(
                 placeholderState,
                 runLifecycleController.CurrentState,
-                runLifecycleController.HasCombatEncounterState ? runLifecycleController.CombatEncounterState : null);
+                runLifecycleController.HasCombatEncounterState ? runLifecycleController.CombatEncounterState : null,
+                runLifecycleController.RequiresRunTimeSkillUpgradeChoice);
+            RefreshRunTimeSkillUpgradePanel();
             RefreshCombatShellView();
             RefreshAdvanceButton();
             RefreshPostRunSummaryPanel();
@@ -107,6 +112,17 @@ namespace Survivalon.World
                     throw new InvalidOperationException($"Unknown run lifecycle state '{runLifecycleController.CurrentState}'.");
             }
 
+            Refresh();
+        }
+
+        private void HandleRunTimeSkillUpgradeSelection(string upgradedTriggeredActiveSkillId)
+        {
+            if (!runLifecycleController.TrySelectRunTimeSkillUpgrade(upgradedTriggeredActiveSkillId))
+            {
+                return;
+            }
+
+            runLifecycleController.TryStartAutomaticFlow();
             Refresh();
         }
 
@@ -230,6 +246,64 @@ namespace Survivalon.World
                 TextAnchor.UpperLeft,
                 new Color(0.78f, 0.82f, 0.90f, 1f));
             RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 80f);
+
+            runTimeSkillUpgradePanelObject = new GameObject(
+                "RunTimeSkillUpgradePanel",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(VerticalLayoutGroup));
+            runTimeSkillUpgradePanelObject.transform.SetParent(panelObject.transform, false);
+            RuntimeUiSupport.AddLayoutElement(runTimeSkillUpgradePanelObject, 132f);
+
+            Image runTimeSkillUpgradePanelImage = runTimeSkillUpgradePanelObject.GetComponent<Image>();
+            runTimeSkillUpgradePanelImage.color = new Color(0.13f, 0.14f, 0.19f, 0.96f);
+
+            VerticalLayoutGroup runTimeSkillUpgradePanelLayout =
+                runTimeSkillUpgradePanelObject.GetComponent<VerticalLayoutGroup>();
+            runTimeSkillUpgradePanelLayout.padding = new RectOffset(14, 14, 12, 12);
+            runTimeSkillUpgradePanelLayout.spacing = 8f;
+            runTimeSkillUpgradePanelLayout.childAlignment = TextAnchor.UpperLeft;
+            runTimeSkillUpgradePanelLayout.childControlWidth = true;
+            runTimeSkillUpgradePanelLayout.childControlHeight = true;
+            runTimeSkillUpgradePanelLayout.childForceExpandWidth = true;
+            runTimeSkillUpgradePanelLayout.childForceExpandHeight = false;
+
+            runTimeSkillUpgradeText = RuntimeUiSupport.CreateText(
+                runTimeSkillUpgradePanelObject.transform,
+                uiFont,
+                "RunTimeSkillUpgradeSummary",
+                16,
+                FontStyle.Bold,
+                TextAnchor.UpperLeft,
+                new Color(0.90f, 0.92f, 0.97f, 1f));
+            RuntimeUiSupport.AddLayoutElement(runTimeSkillUpgradeText.gameObject, 40f);
+
+            GameObject runTimeSkillUpgradeListObject = new GameObject(
+                "RunTimeSkillUpgradeList",
+                typeof(RectTransform),
+                typeof(HorizontalLayoutGroup),
+                typeof(ContentSizeFitter));
+            runTimeSkillUpgradeListObject.transform.SetParent(runTimeSkillUpgradePanelObject.transform, false);
+
+            HorizontalLayoutGroup runTimeSkillUpgradeListLayout =
+                runTimeSkillUpgradeListObject.GetComponent<HorizontalLayoutGroup>();
+            runTimeSkillUpgradeListLayout.spacing = 8f;
+            runTimeSkillUpgradeListLayout.childAlignment = TextAnchor.UpperLeft;
+            runTimeSkillUpgradeListLayout.childControlWidth = true;
+            runTimeSkillUpgradeListLayout.childControlHeight = true;
+            runTimeSkillUpgradeListLayout.childForceExpandWidth = true;
+            runTimeSkillUpgradeListLayout.childForceExpandHeight = false;
+
+            ContentSizeFitter runTimeSkillUpgradeListFitter =
+                runTimeSkillUpgradeListObject.GetComponent<ContentSizeFitter>();
+            runTimeSkillUpgradeListFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            runTimeSkillUpgradeListFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            runTimeSkillUpgradeContainer = runTimeSkillUpgradeListObject.GetComponent<RectTransform>();
+            runTimeSkillUpgradeContainer.anchorMin = new Vector2(0f, 1f);
+            runTimeSkillUpgradeContainer.anchorMax = new Vector2(1f, 1f);
+            runTimeSkillUpgradeContainer.pivot = new Vector2(0.5f, 1f);
+            runTimeSkillUpgradeContainer.localScale = Vector3.one;
 
             GameObject combatShellViewObject = new GameObject("CombatShellView");
             combatShellViewObject.transform.SetParent(panelObject.transform, false);
@@ -370,6 +444,94 @@ namespace Survivalon.World
             return button;
         }
 
+        private void ClearRunTimeSkillUpgradeButtons()
+        {
+            for (int index = runTimeSkillUpgradeContainer.childCount - 1; index >= 0; index--)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(runTimeSkillUpgradeContainer.GetChild(index).gameObject);
+                    continue;
+                }
+
+                DestroyImmediate(runTimeSkillUpgradeContainer.GetChild(index).gameObject);
+            }
+        }
+
+        private void RefreshRunTimeSkillUpgradePanel()
+        {
+            bool shouldShow = runLifecycleController.CurrentState == RunLifecycleState.RunStart &&
+                runLifecycleController.RequiresRunTimeSkillUpgradeChoice;
+            runTimeSkillUpgradePanelObject.SetActive(shouldShow);
+
+            ClearRunTimeSkillUpgradeButtons();
+            if (!shouldShow)
+            {
+                return;
+            }
+
+            runTimeSkillUpgradeText.text = NodePlaceholderScreenTextBuilder.BuildRunTimeSkillUpgradeText(
+                runLifecycleController.RunTimeSkillUpgradeOptions);
+
+            foreach (CombatRunTimeSkillUpgradeOption upgradeOption in runLifecycleController.RunTimeSkillUpgradeOptions)
+            {
+                CreateRunTimeSkillUpgradeButton(upgradeOption);
+            }
+        }
+
+        private void CreateRunTimeSkillUpgradeButton(CombatRunTimeSkillUpgradeOption upgradeOption)
+        {
+            GameObject buttonObject = new GameObject(
+                $"{upgradeOption.UpgradedTriggeredActiveSkill.SkillId}_RunTimeSkillUpgradeButton",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button),
+                typeof(LayoutElement));
+            buttonObject.transform.SetParent(runTimeSkillUpgradeContainer, false);
+
+            RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
+            buttonRectTransform.localScale = Vector3.one;
+
+            LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
+            layoutElement.minHeight = 60f;
+            layoutElement.preferredHeight = 60f;
+            layoutElement.flexibleWidth = 1f;
+
+            Image buttonImage = buttonObject.GetComponent<Image>();
+            buttonImage.color = new Color(0.28f, 0.34f, 0.56f, 1f);
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.targetGraphic = buttonImage;
+            button.onClick.AddListener(() =>
+                HandleRunTimeSkillUpgradeSelection(upgradeOption.UpgradedTriggeredActiveSkill.SkillId));
+
+            ColorBlock colors = button.colors;
+            colors.normalColor = buttonImage.color;
+            colors.selectedColor = buttonImage.color;
+            colors.highlightedColor = Color.Lerp(buttonImage.color, Color.white, 0.15f);
+            colors.pressedColor = Color.Lerp(buttonImage.color, Color.black, 0.15f);
+            colors.disabledColor = buttonImage.color * 0.7f;
+            button.colors = colors;
+
+            Text buttonText = RuntimeUiSupport.CreateText(
+                buttonObject.transform,
+                uiFont,
+                "Label",
+                15,
+                FontStyle.Bold,
+                TextAnchor.MiddleCenter,
+                Color.white);
+            buttonText.text =
+                $"{upgradeOption.UpgradedTriggeredActiveSkill.DisplayName}\n{upgradeOption.Description}";
+
+            RectTransform textRectTransform = buttonText.rectTransform;
+            textRectTransform.anchorMin = Vector2.zero;
+            textRectTransform.anchorMax = Vector2.one;
+            textRectTransform.offsetMin = new Vector2(12f, 8f);
+            textRectTransform.offsetMax = new Vector2(-12f, -8f);
+            textRectTransform.localScale = Vector3.one;
+        }
+
         private void RefreshCombatShellView()
         {
             if (!NodePlaceholderScreenStateResolver.ShouldShowCombatShell(
@@ -388,6 +550,7 @@ namespace Survivalon.World
             NodePlaceholderScreenButtonState buttonState = NodePlaceholderScreenStateResolver.ResolveAdvanceButtonState(
                 runLifecycleController.NodeContext,
                 runLifecycleController.CurrentState,
+                runLifecycleController.RequiresRunTimeSkillUpgradeChoice,
                 runLifecycleController.HasCombatEncounterState);
             advanceRunLifecycleButton.interactable = buttonState.IsInteractable;
             advanceRunLifecycleButtonText.text = buttonState.Label;

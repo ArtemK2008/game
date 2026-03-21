@@ -29,6 +29,15 @@ namespace Survivalon.Tests.EditMode.Run
 
         public static void RunToPostRun(RunLifecycleController controller, int maxStepCount = 128)
         {
+            if (controller.RequiresRunTimeSkillUpgradeChoice)
+            {
+                Assert.That(controller.RunTimeSkillUpgradeOptions, Is.Not.Empty);
+                Assert.That(
+                    controller.TrySelectRunTimeSkillUpgrade(
+                        controller.RunTimeSkillUpgradeOptions[0].UpgradedTriggeredActiveSkill.SkillId),
+                    Is.True);
+            }
+
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
 
             for (int index = 0; index < maxStepCount && controller.CurrentState != RunLifecycleState.PostRun; index++)

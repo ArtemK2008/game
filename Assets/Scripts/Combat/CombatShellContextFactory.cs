@@ -10,18 +10,24 @@ namespace Survivalon.Combat
     public sealed class CombatShellContextFactory
     {
         private readonly PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver;
+        private readonly PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver;
 
-        public CombatShellContextFactory(PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver = null)
+        public CombatShellContextFactory(
+            PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver = null,
+            PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver = null)
         {
             this.playableCharacterProgressionEffectResolver =
                 playableCharacterProgressionEffectResolver ?? new PlayableCharacterProgressionEffectResolver();
+            this.playableCharacterCombatSkillResolver =
+                playableCharacterCombatSkillResolver ?? new PlayableCharacterCombatSkillResolver();
         }
 
         public CombatShellContext Create(
             NodePlaceholderState nodeContext,
             PlayableCharacterProfile playableCharacter,
             PersistentCharacterState playableCharacterState,
-            AccountWideProgressionEffectState progressionEffects)
+            AccountWideProgressionEffectState progressionEffects,
+            CombatSkillDefinition triggeredActiveSkillOverride = null)
         {
             if (nodeContext == null)
             {
@@ -45,7 +51,10 @@ namespace Survivalon.Combat
                         resolvedCharacter.BaseStats,
                         playableCharacterState,
                         progressionEffects),
-                    triggeredActiveSkill: ResolveTriggeredActiveSkill(resolvedCharacter, playableCharacterState),
+                    triggeredActiveSkill: ResolveTriggeredActiveSkill(
+                        resolvedCharacter,
+                        playableCharacterState,
+                        triggeredActiveSkillOverride),
                     passiveSkills: ResolvePassiveSkills(resolvedCharacter, playableCharacterState)),
                 new CombatEntityState(
                     new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
@@ -72,29 +81,24 @@ namespace Survivalon.Combat
                 defense: characterBaseStats.Defense);
         }
 
-        private static IReadOnlyList<CombatSkillDefinition> ResolvePassiveSkills(
+        private IReadOnlyList<CombatSkillDefinition> ResolvePassiveSkills(
             PlayableCharacterProfile playableCharacter,
             PersistentCharacterState playableCharacterState)
         {
-            return CombatSkillPackageCatalog.GetPassiveSkills(
-                ResolveSkillPackageId(playableCharacter, playableCharacterState));
+            return playableCharacterCombatSkillResolver.ResolvePassiveSkills(
+                playableCharacter,
+                playableCharacterState);
         }
 
-        private static CombatSkillDefinition ResolveTriggeredActiveSkill(
+        private CombatSkillDefinition ResolveTriggeredActiveSkill(
             PlayableCharacterProfile playableCharacter,
-            PersistentCharacterState playableCharacterState)
+            PersistentCharacterState playableCharacterState,
+            CombatSkillDefinition triggeredActiveSkillOverride)
         {
-            return CombatSkillPackageCatalog.GetTriggeredActiveSkill(
-                ResolveSkillPackageId(playableCharacter, playableCharacterState));
-        }
-
-        private static string ResolveSkillPackageId(
-            PlayableCharacterProfile playableCharacter,
-            PersistentCharacterState playableCharacterState)
-        {
-            return !string.IsNullOrWhiteSpace(playableCharacterState?.SkillPackageId)
-                ? playableCharacterState.SkillPackageId
-                : playableCharacter.DefaultSkillPackageId;
+            return triggeredActiveSkillOverride ??
+                playableCharacterCombatSkillResolver.ResolveTriggeredActiveSkill(
+                    playableCharacter,
+                    playableCharacterState);
         }
 
         private static CombatStatBlock CreateEnemyBaseStats(NodePlaceholderState nodeContext)

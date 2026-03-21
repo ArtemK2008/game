@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Survivalon.Combat;
 using Survivalon.Core;
 using Survivalon.Run;
@@ -37,7 +38,8 @@ namespace Survivalon.World
         public static string BuildStatusText(
             NodePlaceholderState placeholderState,
             RunLifecycleState lifecycleState,
-            CombatEncounterState combatEncounterState = null)
+            CombatEncounterState combatEncounterState = null,
+            bool requiresRunTimeSkillUpgradeChoice = false)
         {
             if (placeholderState == null)
             {
@@ -50,7 +52,9 @@ namespace Survivalon.World
             {
                 case RunLifecycleState.RunStart:
                     return usesCombatShell
-                        ? "Combat shell initialized. Preparing automatic combat startup."
+                        ? requiresRunTimeSkillUpgradeChoice
+                            ? "Combat shell initialized. Choose a run-only skill upgrade to start automatic combat."
+                            : "Combat shell initialized. Preparing automatic combat startup."
                         : "Run shell initialized. Start the placeholder run when ready.";
                 case RunLifecycleState.RunActive:
                     return combatEncounterState != null
@@ -69,6 +73,19 @@ namespace Survivalon.World
                 default:
                     throw new InvalidOperationException($"Unknown run lifecycle state '{lifecycleState}'.");
             }
+        }
+
+        public static string BuildRunTimeSkillUpgradeText(
+            IReadOnlyList<CombatRunTimeSkillUpgradeOption> upgradeOptions)
+        {
+            if (upgradeOptions == null)
+            {
+                throw new ArgumentNullException(nameof(upgradeOptions));
+            }
+
+            return
+                "Run-only skill choice\n" +
+                $"Choose 1 upgrade before combat auto-starts. Options: {upgradeOptions.Count}";
         }
     }
 }

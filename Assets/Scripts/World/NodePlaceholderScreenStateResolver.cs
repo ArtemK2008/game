@@ -8,6 +8,7 @@ namespace Survivalon.World
         public static NodePlaceholderScreenButtonState ResolveAdvanceButtonState(
             NodePlaceholderState placeholderState,
             RunLifecycleState lifecycleState,
+            bool hasPendingRunTimeSkillUpgradeChoice,
             bool hasCombatEncounterState)
         {
             if (placeholderState == null)
@@ -21,7 +22,9 @@ namespace Survivalon.World
             {
                 case RunLifecycleState.RunStart:
                     return usesCombatShell
-                        ? new NodePlaceholderScreenButtonState("Combat Auto-Starting", false)
+                        ? hasPendingRunTimeSkillUpgradeChoice
+                            ? new NodePlaceholderScreenButtonState("Choose Run Upgrade", false)
+                            : new NodePlaceholderScreenButtonState("Combat Auto-Starting", false)
                         : new NodePlaceholderScreenButtonState("Start Placeholder Run", true);
                 case RunLifecycleState.RunActive:
                     return hasCombatEncounterState

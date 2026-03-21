@@ -192,6 +192,27 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldExecuteRunTimeUpgradedTriggeredActiveSkillThroughSkillExecutor()
+        {
+            CombatEncounterState encounterState = CreateEncounterState(
+                new CombatStatBlock(100f, 10f, 0.1f, 0f),
+                new CombatStatBlock(100f, 7f, 0.1f, 0f),
+                CombatSkillCatalog.BurstTempo);
+            SpyCombatSkillExecutor skillExecutor = new SpyCombatSkillExecutor();
+            CombatEncounterResolver resolver = new CombatEncounterResolver(combatSkillExecutor: skillExecutor);
+
+            bool advanced = resolver.TryAdvance(encounterState, 1.75f);
+
+            Assert.That(advanced, Is.True);
+            Assert.That(skillExecutor.CallCount, Is.EqualTo(1));
+            Assert.That(skillExecutor.LastExecutionRequest, Is.Not.Null);
+            Assert.That(
+                skillExecutor.LastExecutionRequest.SkillDefinition,
+                Is.SameAs(encounterState.PlayerEntity.TriggeredActiveSkill));
+            Assert.That(encounterState.PlayerEntity.TimeUntilTriggeredActiveSkillSeconds, Is.EqualTo(1.75f).Within(0.001f));
+        }
+
+        [Test]
         public void ShouldApplyPassiveDirectDamageModifierDuringAutomatedBaselineAttackFlow()
         {
             CombatEncounterState encounterState = CreateEncounterState(

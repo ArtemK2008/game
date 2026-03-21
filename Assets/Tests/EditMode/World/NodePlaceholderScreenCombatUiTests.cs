@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 using Survivalon.Combat;
+using Survivalon.Data.Characters;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
 using Survivalon.World;
@@ -38,6 +39,56 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Enemy | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(advanceButtonText.text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldRequireRunTimeSkillChoiceBeforeAutoStartingCombatWhenTriggeredActiveSkillIsPresent()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { },
+                    RunPersistentContext.FromGameState(gameState));
+
+                Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
+                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Choose Run Upgrade"));
+                Assert.That(advanceRunLifecycleButton.interactable, Is.False);
+                Assert.That(
+                    ContainsText(hostObject, "Combat shell initialized. Choose a run-only skill upgrade to start automatic combat."),
+                    Is.True);
+                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
+                Assert.That(
+                    TryFindButton(hostObject, $"{CombatSkillCatalog.BurstTempo.SkillId}_RunTimeSkillUpgradeButton"),
+                    Is.Not.Null);
+                Assert.That(
+                    TryFindButton(hostObject, $"{CombatSkillCatalog.BurstPayload.SkillId}_RunTimeSkillUpgradeButton"),
+                    Is.Not.Null);
+                Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.False);
+
+                FindButton(hostObject, $"{CombatSkillCatalog.BurstTempo.SkillId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+
+                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
+                Assert.That(ContainsText(hostObject, "Striker"), Is.True);
+                Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.True);
+                Assert.That(
+                    FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").gameObject.activeSelf,
+                    Is.False);
             }
             finally
             {
@@ -152,7 +203,10 @@ namespace Survivalon.Tests.EditMode.World
         public void Show_ShouldAutoReplayCombatNodeWithoutManualCombatRestart()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
-            PersistentWorldState worldState = new PersistentWorldState();
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
 
             try
             {
@@ -163,15 +217,18 @@ namespace Survivalon.Tests.EditMode.World
                     CreateCombatPlaceholderState(),
                     runResult => { },
                     runResult => { },
-                    new RunPersistentContext(persistentWorldState: worldState));
+                    RunPersistentContext.FromGameState(gameState));
 
+                FindButton(hostObject, $"{CombatSkillCatalog.BurstTempo.SkillId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
 
                 Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
-                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
+                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Choose Run Upgrade"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
+                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
 
+                FindButton(hostObject, $"{CombatSkillCatalog.BurstPayload.SkillId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);

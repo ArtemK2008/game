@@ -57,6 +57,11 @@ namespace Survivalon.Tests.EditMode.Startup
                     return;
                 }
 
+                if (TryChooseFirstRunTimeSkillUpgrade(rootObject))
+                {
+                    continue;
+                }
+
                 if (!advanceRunLifecycleButton.interactable)
                 {
                     InvokeRuntimeAdvance(rootObject, 0.25f);
@@ -154,6 +159,24 @@ namespace Survivalon.Tests.EditMode.Startup
             {
                 Object.DestroyImmediate(EventSystem.current.gameObject);
             }
+        }
+
+        private static bool TryChooseFirstRunTimeSkillUpgrade(GameObject rootObject)
+        {
+            Button[] buttons = rootObject.GetComponentsInChildren<Button>(true);
+            foreach (Button button in buttons)
+            {
+                if (!button.gameObject.activeInHierarchy ||
+                    !button.gameObject.name.EndsWith("_RunTimeSkillUpgradeButton"))
+                {
+                    continue;
+                }
+
+                button.onClick.Invoke();
+                return true;
+            }
+
+            return false;
         }
 
         private static void InvokeRuntimeAdvance(GameObject rootObject, float elapsedSeconds)

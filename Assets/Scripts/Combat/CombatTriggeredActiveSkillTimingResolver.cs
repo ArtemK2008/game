@@ -5,6 +5,7 @@ namespace Survivalon.Combat
     public static class CombatTriggeredActiveSkillTimingResolver
     {
         private const float BurstStrikeIntervalSeconds = 2.5f;
+        private const float BurstTempoIntervalSeconds = 1.75f;
 
         public static float ResolveIntervalSeconds(CombatSkillDefinition triggeredActiveSkill)
         {
@@ -21,6 +22,16 @@ namespace Survivalon.Combat
             }
 
             if (triggeredActiveSkill.SkillId == CombatSkillCatalog.BurstStrike.SkillId)
+            {
+                return BurstStrikeIntervalSeconds;
+            }
+
+            if (triggeredActiveSkill.SkillId == CombatSkillCatalog.BurstTempo.SkillId)
+            {
+                return BurstTempoIntervalSeconds;
+            }
+
+            if (triggeredActiveSkill.SkillId == CombatSkillCatalog.BurstPayload.SkillId)
             {
                 return BurstStrikeIntervalSeconds;
             }
