@@ -12,18 +12,18 @@ namespace Survivalon.Data.Combat
             "Enemy Unit",
             new CombatStatBlock(
                 maxHealth: 75f,
-                attackPower: 8f,
-                attackRate: 0.9f,
-                defense: 4f));
+                attackPower: 7f,
+                attackRate: 1.25f,
+                defense: 2f));
         private static readonly CombatEnemyProfile BulwarkRaiderProfile = new CombatEnemyProfile(
             "combat_enemy_bulwark_raider",
             "enemy_002",
             "Bulwark Raider",
             new CombatStatBlock(
                 maxHealth: 105f,
-                attackPower: 8f,
-                attackRate: 0.9f,
-                defense: 4f));
+                attackPower: 9f,
+                attackRate: 0.85f,
+                defense: 6f));
         private static readonly CombatEnemyProfile GateEnemyProfile = new CombatEnemyProfile(
             "combat_enemy_gate",
             "boss_001",

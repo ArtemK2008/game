@@ -66,8 +66,8 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(enemyCardText, Is.EqualTo(
                 "Enemy Unit\n" +
                 "Enemy | Alive: No | Act: No\n" +
-                "HP: 0 / 75 | ATK: 8\n" +
-                $"Rate: {0.9f.ToString("0.##")}/s | DEF: 4"));
+                "HP: 0 / 75 | ATK: 7\n" +
+                $"Rate: {1.25f.ToString("0.##")}/s | DEF: 2"));
         }
 
         [Test]

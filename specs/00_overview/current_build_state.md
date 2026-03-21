@@ -48,8 +48,8 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Combat entities have explicit allegiance, alive/active state, runtime health, and a small shared base stat model.
 - Base stats currently include max health, attack power, attack rate, and defense-based survivability.
 - Standard enemies now have two shipped combat profiles instead of one:
-  - `Enemy Unit` remains the baseline standard enemy
-  - `Bulwark Raider` is a more durable standard enemy currently used by the forest push combat node
+  - `Enemy Unit` is the faster lighter-pressure baseline standard enemy
+  - `Bulwark Raider` is the slower sturdier push-oriented standard enemy currently used by the forest push combat node
 
 ### Auto-battle / hostility / no-manual-combat loop
 - Combat uses deterministic auto-targeting.
@@ -226,7 +226,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.
 - The current passive skill layer is still interpreted through a small hardcoded resolver path for the single shipped passive, `Relentless Assault`.
 - The current auto-triggered active skill layer is still interpreted through small hardcoded resolver paths for the single shipped active skill, `Burst Strike`.
-- Standard enemy variety is still intentionally small: one baseline standard enemy, one more durable standard enemy variant, and one boss/gate placeholder profile currently exist, while broader enemy rosters and faction/content variety are still deferred.
+- Standard enemy variety is still intentionally small: one faster baseline standard enemy, one slower sturdier push-oriented standard enemy variant, and one boss/gate placeholder profile currently exist, while broader enemy rosters and faction/content variety are still deferred.
 - Boss/gate node progress behavior is intentionally temporary and should be revisited in the later progression/boss milestones.
 
 ## Source note

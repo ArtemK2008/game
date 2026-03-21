@@ -19,9 +19,9 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(resolvedProfile, Is.SameAs(CombatEnemyProfileCatalog.BulwarkRaider));
             Assert.That(resolvedProfile.DisplayName, Is.EqualTo("Bulwark Raider"));
             Assert.That(resolvedProfile.BaseStats.MaxHealth, Is.EqualTo(105f));
-            Assert.That(resolvedProfile.BaseStats.AttackPower, Is.EqualTo(8f));
-            Assert.That(resolvedProfile.BaseStats.AttackRate, Is.EqualTo(0.9f));
-            Assert.That(resolvedProfile.BaseStats.Defense, Is.EqualTo(4f));
+            Assert.That(resolvedProfile.BaseStats.AttackPower, Is.EqualTo(9f));
+            Assert.That(resolvedProfile.BaseStats.AttackRate, Is.EqualTo(0.85f));
+            Assert.That(resolvedProfile.BaseStats.Defense, Is.EqualTo(6f));
         }
 
         [Test]
@@ -34,6 +34,22 @@ namespace Survivalon.Tests.EditMode.Combat
 
             Assert.That(resolvedProfile, Is.SameAs(CombatEnemyProfileCatalog.EnemyUnit));
             Assert.That(resolvedProfile.DisplayName, Is.EqualTo("Enemy Unit"));
+            Assert.That(resolvedProfile.BaseStats.MaxHealth, Is.EqualTo(75f));
+            Assert.That(resolvedProfile.BaseStats.AttackPower, Is.EqualTo(7f));
+            Assert.That(resolvedProfile.BaseStats.AttackRate, Is.EqualTo(1.25f));
+            Assert.That(resolvedProfile.BaseStats.Defense, Is.EqualTo(2f));
+        }
+
+        [Test]
+        public void ShouldExposeDifferentPressureStatsAcrossShippedStandardEnemyProfiles()
+        {
+            CombatEnemyProfile enemyUnitProfile = CombatEnemyProfileCatalog.EnemyUnit;
+            CombatEnemyProfile bulwarkRaiderProfile = CombatEnemyProfileCatalog.BulwarkRaider;
+
+            Assert.That(enemyUnitProfile.BaseStats.AttackRate, Is.GreaterThan(bulwarkRaiderProfile.BaseStats.AttackRate));
+            Assert.That(enemyUnitProfile.BaseStats.MaxHealth, Is.LessThan(bulwarkRaiderProfile.BaseStats.MaxHealth));
+            Assert.That(enemyUnitProfile.BaseStats.Defense, Is.LessThan(bulwarkRaiderProfile.BaseStats.Defense));
+            Assert.That(enemyUnitProfile.BaseStats.AttackPower, Is.LessThan(bulwarkRaiderProfile.BaseStats.AttackPower));
         }
 
         [Test]
