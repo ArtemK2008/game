@@ -70,6 +70,31 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldResolveForestPushCombatAgainstDurableEnemyMoreSlowlyThanFarmCombat()
+        {
+            RunLifecycleController farmController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState());
+            RunLifecycleController pushController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreatePushCombatNodeState());
+
+            RunLifecycleControllerTestData.RunToPostRun(farmController);
+            RunLifecycleControllerTestData.RunToPostRun(pushController);
+
+            Assert.That(farmController.CombatContext.EnemyEntity.DisplayName, Is.EqualTo("Enemy Unit"));
+            Assert.That(farmController.CombatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(75f));
+            Assert.That(pushController.CombatContext.EnemyEntity.DisplayName, Is.EqualTo("Bulwark Raider"));
+            Assert.That(pushController.CombatContext.EnemyEntity.BaseStats.MaxHealth, Is.EqualTo(105f));
+            Assert.That(farmController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(pushController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(
+                pushController.CombatEncounterState.ElapsedCombatSeconds,
+                Is.GreaterThan(farmController.CombatEncounterState.ElapsedCombatSeconds));
+            Assert.That(
+                pushController.CombatEncounterState.PlayerEntity.CurrentHealth,
+                Is.LessThan(farmController.CombatEncounterState.PlayerEntity.CurrentHealth));
+        }
+
+        [Test]
         public void ShouldStartAutomaticCombatFlowWithoutAdvancingTime()
         {
             RunLifecycleController controller = new RunLifecycleController(RunLifecycleControllerTestData.CreateCombatNodeState());

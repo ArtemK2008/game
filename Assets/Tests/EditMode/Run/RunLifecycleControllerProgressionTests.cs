@@ -52,12 +52,7 @@ namespace Survivalon.Tests.EditMode.Run
             pushNodeState.ApplyUnlockProgress(1);
             Assert.That(pushNodeState.State, Is.EqualTo(NodeState.InProgress));
             Assert.That(pushNodeState.UnlockProgress, Is.EqualTo(2));
-            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
-
-            for (int index = 0; index < 24 && controller.CurrentState != RunLifecycleState.PostRun; index++)
-            {
-                controller.TryAdvanceAutomaticTime(0.25f);
-            }
+            RunLifecycleControllerTestData.RunToPostRun(controller);
 
             Assert.That(controller.CurrentState, Is.EqualTo(RunLifecycleState.PostRun));
             Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));

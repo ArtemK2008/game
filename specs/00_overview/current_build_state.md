@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 054**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, and **052a**.
+This summary reflects completed work through **Milestone 055**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, and **052a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -47,6 +47,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The combat prototype is currently one player-side entity versus one enemy-side entity.
 - Combat entities have explicit allegiance, alive/active state, runtime health, and a small shared base stat model.
 - Base stats currently include max health, attack power, attack rate, and defense-based survivability.
+- Standard enemies now have two shipped combat profiles instead of one:
+  - `Enemy Unit` remains the baseline standard enemy
+  - `Bulwark Raider` is a more durable standard enemy currently used by the forest push combat node
 
 ### Auto-battle / hostility / no-manual-combat loop
 - Combat uses deterministic auto-targeting.
@@ -223,6 +226,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.
 - The current passive skill layer is still interpreted through a small hardcoded resolver path for the single shipped passive, `Relentless Assault`.
 - The current auto-triggered active skill layer is still interpreted through small hardcoded resolver paths for the single shipped active skill, `Burst Strike`.
+- Standard enemy variety is still intentionally small: one baseline standard enemy, one more durable standard enemy variant, and one boss/gate placeholder profile currently exist, while broader enemy rosters and faction/content variety are still deferred.
 - Boss/gate node progress behavior is intentionally temporary and should be revisited in the later progression/boss milestones.
 
 ## Source note

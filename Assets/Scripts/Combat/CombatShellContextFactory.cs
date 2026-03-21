@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Combat;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 
@@ -12,11 +13,13 @@ namespace Survivalon.Combat
         private readonly PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver;
         private readonly PlayableCharacterGearCombatEffectResolver playableCharacterGearCombatEffectResolver;
         private readonly PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver;
+        private readonly CombatEnemyProfileResolver combatEnemyProfileResolver;
 
         public CombatShellContextFactory(
             PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver = null,
             PlayableCharacterGearCombatEffectResolver playableCharacterGearCombatEffectResolver = null,
-            PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver = null)
+            PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver = null,
+            CombatEnemyProfileResolver combatEnemyProfileResolver = null)
         {
             this.playableCharacterProgressionEffectResolver =
                 playableCharacterProgressionEffectResolver ?? new PlayableCharacterProgressionEffectResolver();
@@ -24,6 +27,8 @@ namespace Survivalon.Combat
                 playableCharacterGearCombatEffectResolver ?? new PlayableCharacterGearCombatEffectResolver();
             this.playableCharacterCombatSkillResolver =
                 playableCharacterCombatSkillResolver ?? new PlayableCharacterCombatSkillResolver();
+            this.combatEnemyProfileResolver =
+                combatEnemyProfileResolver ?? new CombatEnemyProfileResolver();
         }
 
         public CombatShellContext Create(
@@ -61,11 +66,7 @@ namespace Survivalon.Combat
                         triggeredActiveSkillUpgrade),
                     triggeredActiveSkillUpgrade: triggeredActiveSkillUpgrade,
                     passiveSkills: ResolvePassiveSkills(resolvedCharacter, playableCharacterState)),
-                new CombatEntityState(
-                    new CombatEntityId(GetEnemyEntityIdValue(nodeContext)),
-                    GetEnemyDisplayName(nodeContext),
-                    CombatSide.Enemy,
-                    CreateEnemyBaseStats(nodeContext)));
+                CreateEnemyEntityState(nodeContext));
         }
 
         private CombatStatBlock CreatePlayerBaseStats(
@@ -119,33 +120,15 @@ namespace Survivalon.Combat
                     "Run-time triggered active skill upgrade requires a base triggered active skill.");
         }
 
-        private static CombatStatBlock CreateEnemyBaseStats(NodePlaceholderState nodeContext)
+        private CombatEntityState CreateEnemyEntityState(NodePlaceholderState nodeContext)
         {
-            return nodeContext.NodeType == NodeType.BossOrGate
-                ? new CombatStatBlock(
-                    maxHealth: 180f,
-                    attackPower: 16f,
-                    attackRate: 0.85f,
-                    defense: 18f)
-                : new CombatStatBlock(
-                    maxHealth: 75f,
-                    attackPower: 8f,
-                    attackRate: 0.9f,
-                    defense: 4f);
-        }
+            CombatEnemyProfile resolvedEnemyProfile = combatEnemyProfileResolver.Resolve(nodeContext);
 
-        private static string GetEnemyEntityIdValue(NodePlaceholderState nodeContext)
-        {
-            return nodeContext.NodeType == NodeType.BossOrGate
-                ? $"{nodeContext.NodeId.Value}_boss_001"
-                : $"{nodeContext.NodeId.Value}_enemy_001";
-        }
-
-        private static string GetEnemyDisplayName(NodePlaceholderState nodeContext)
-        {
-            return nodeContext.NodeType == NodeType.BossOrGate
-                ? "Gate Enemy"
-                : "Enemy Unit";
+            return new CombatEntityState(
+                new CombatEntityId($"{nodeContext.NodeId.Value}_{resolvedEnemyProfile.EntityIdSuffix}"),
+                resolvedEnemyProfile.DisplayName,
+                CombatSide.Enemy,
+                resolvedEnemyProfile.BaseStats);
         }
     }
 }
