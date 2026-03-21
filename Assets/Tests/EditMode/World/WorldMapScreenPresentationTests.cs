@@ -104,9 +104,9 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void BuildSkillPackageAssignmentText_ShouldShowAssignedPackageAndSummary()
+        public void BuildBuildAssignmentText_ShouldShowAssignedPackageAndSummary()
         {
-            string assignmentText = WorldMapScreenTextBuilder.BuildSkillPackageAssignmentText(
+            string assignmentText = WorldMapScreenTextBuilder.BuildBuildAssignmentText(
                 "Vanguard",
                 new[]
                 {
@@ -220,10 +220,10 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void BuildSkillPackageAssignmentText_ShouldRejectMissingSkillPackageOptions()
+        public void BuildBuildAssignmentText_ShouldRejectMissingSkillPackageOptions()
         {
             Assert.That(
-                () => WorldMapScreenTextBuilder.BuildSkillPackageAssignmentText("Vanguard", null, "none", 0),
+                () => WorldMapScreenTextBuilder.BuildBuildAssignmentText("Vanguard", null, "none", 0),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("skillPackageOptions"));
         }
 

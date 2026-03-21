@@ -23,26 +23,10 @@ namespace Survivalon.Data.Characters
             }
 
             PersistentCharacterState selectedCharacterState = selectionService.ResolveSelectedState(gameState);
-            List<PlayableCharacterGearAssignmentOption> gearOptions =
-                new List<PlayableCharacterGearAssignmentOption>();
-
-            if (!OwnsGearId(gameState, GearIds.TrainingBlade))
-            {
-                return gearOptions;
-            }
-
-            bool isEquipped = selectedCharacterState.LoadoutState.TryGetEquippedGearState(
-                GearCategory.PrimaryCombat,
-                out EquippedGearState equippedGearState) &&
-                equippedGearState.GearId == GearIds.TrainingBlade;
-            GearProfile gearProfile = GearCatalog.TrainingBlade;
-            gearOptions.Add(new PlayableCharacterGearAssignmentOption(
-                selectedCharacterState.CharacterId,
-                gearProfile.GearId,
-                gearProfile.DisplayName,
-                gearProfile.GearCategory,
-                isEquipped));
-            return gearOptions;
+            return BuildOwnedOptionsForCharacterAndCategory(
+                gameState,
+                selectedCharacterState,
+                GearCategory.PrimaryCombat);
         }
 
         public bool TryAssignSelectedCharacterPrimaryCombatGear(PersistentGameState gameState, string gearId)
@@ -116,6 +100,48 @@ namespace Survivalon.Data.Characters
             }
 
             return false;
+        }
+
+        private static IReadOnlyList<PlayableCharacterGearAssignmentOption> BuildOwnedOptionsForCharacterAndCategory(
+            PersistentGameState gameState,
+            PersistentCharacterState characterState,
+            GearCategory gearCategory)
+        {
+            List<PlayableCharacterGearAssignmentOption> gearOptions =
+                new List<PlayableCharacterGearAssignmentOption>();
+            string equippedGearId = ResolveEquippedGearId(characterState, gearCategory);
+
+            for (int index = 0; index < GearCatalog.All.Count; index++)
+            {
+                GearProfile gearProfile = GearCatalog.All[index];
+                if (gearProfile.GearCategory != gearCategory || !OwnsGearId(gameState, gearProfile.GearId))
+                {
+                    continue;
+                }
+
+                gearOptions.Add(new PlayableCharacterGearAssignmentOption(
+                    characterState.CharacterId,
+                    gearProfile.GearId,
+                    gearProfile.DisplayName,
+                    gearProfile.GearCategory,
+                    gearProfile.GearId == equippedGearId));
+            }
+
+            return gearOptions;
+        }
+
+        private static string ResolveEquippedGearId(
+            PersistentCharacterState characterState,
+            GearCategory gearCategory)
+        {
+            if (!characterState.LoadoutState.TryGetEquippedGearState(
+                gearCategory,
+                out EquippedGearState equippedGearState))
+            {
+                return null;
+            }
+
+            return equippedGearState.GearId;
         }
     }
 }
