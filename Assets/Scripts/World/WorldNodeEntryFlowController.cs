@@ -44,7 +44,8 @@ namespace Survivalon.World
                 enterableNode.RegionId,
                 enterableNode.NodeType,
                 worldNodeStateResolver.ResolveNodeState(worldGraph, worldState, enterableNode.NodeId),
-                originNodeId);
+                originNodeId,
+                enterableNode.CombatEncounter);
             return true;
         }
 

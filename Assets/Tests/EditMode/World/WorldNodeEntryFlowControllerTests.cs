@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Combat;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 using Survivalon.Tests.EditMode.State.Persistence;
@@ -42,6 +43,23 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(worldState.LastSafeNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
             Assert.That(worldState.ReachableNodeIdValues, Does.Contain("region_001_node_001"));
             Assert.That(worldState.ReachableNodeIdValues, Does.Contain("region_001_node_002"));
+        }
+
+        [Test]
+        public void ShouldCarryBootstrapCombatEncounterContentIntoPlaceholderState()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+
+            bool entered = controller.TryEnterNode(BootstrapWorldScenario.ForestFarmNodeId, out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(
+                placeholderState.CombatEncounter.EnemyProfile,
+                Is.SameAs(CombatStandardEnemyProfileCatalog.EnemyUnit));
         }
 
         [Test]

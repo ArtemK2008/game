@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Survivalon.Core;
+using Survivalon.Data.Combat;
 
 namespace Survivalon.World
 {
@@ -9,12 +10,37 @@ namespace Survivalon.World
         {
             List<WorldNode> nodes = new List<WorldNode>
             {
-                new WorldNode(BootstrapWorldScenario.ForestEntryNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.Cleared),
-                new WorldNode(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.InProgress),
-                new WorldNode(BootstrapWorldScenario.ForestGateNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.BossOrGate, NodeState.Locked),
-                new WorldNode(BootstrapWorldScenario.ForestFarmNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.Available),
+                new WorldNode(
+                    BootstrapWorldScenario.ForestEntryNodeId,
+                    BootstrapWorldScenario.ForestRegionId,
+                    NodeType.Combat,
+                    NodeState.Cleared,
+                    CombatEncounterCatalog.EnemyUnitEncounter),
+                new WorldNode(
+                    BootstrapWorldScenario.ForestPushNodeId,
+                    BootstrapWorldScenario.ForestRegionId,
+                    NodeType.Combat,
+                    NodeState.InProgress,
+                    CombatEncounterCatalog.BulwarkRaiderEncounter),
+                new WorldNode(
+                    BootstrapWorldScenario.ForestGateNodeId,
+                    BootstrapWorldScenario.ForestRegionId,
+                    NodeType.BossOrGate,
+                    NodeState.Locked,
+                    CombatEncounterCatalog.GatePlaceholderEncounter),
+                new WorldNode(
+                    BootstrapWorldScenario.ForestFarmNodeId,
+                    BootstrapWorldScenario.ForestRegionId,
+                    NodeType.Combat,
+                    NodeState.Available,
+                    CombatEncounterCatalog.EnemyUnitEncounter),
                 new WorldNode(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.ServiceOrProgression, NodeState.Available),
-                new WorldNode(BootstrapWorldScenario.CavernGateNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.BossOrGate, NodeState.Locked),
+                new WorldNode(
+                    BootstrapWorldScenario.CavernGateNodeId,
+                    BootstrapWorldScenario.CavernRegionId,
+                    NodeType.BossOrGate,
+                    NodeState.Locked,
+                    CombatEncounterCatalog.GatePlaceholderEncounter),
             };
 
             List<WorldRegion> regions = new List<WorldRegion>
