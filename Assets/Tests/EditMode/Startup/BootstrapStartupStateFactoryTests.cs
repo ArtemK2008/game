@@ -123,6 +123,48 @@ namespace Survivalon.Tests.EditMode.Startup
                 PlayableCharacterSkillPackageIds.StrikerDefault);
         }
 
+        [Test]
+        public void ShouldPreserveValidEquippedPrimaryCombatGearWhenPersistedStateLoads()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState persistedGameState = new PersistentGameState();
+            persistedGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            persistedGameState.WorldState.SetLastSafeNode(new NodeId("region_001_node_001"));
+            persistedGameState.SafeResumeState.MarkWorldMap(new NodeId("region_002_node_001"));
+            persistedGameState.EnsureOwnedGearId(GearIds.TrainingBlade);
+            persistedGameState.AddCharacterState(new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                skillPackageId: PlayableCharacterSkillPackageIds.VanguardDefault,
+                loadoutState: new PersistentLoadoutState(
+                    equippedGearStates: new[]
+                    {
+                        new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
+                    })));
+            persistedGameState.AddCharacterState(new PersistentCharacterState(
+                "character_striker",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: false,
+                skillPackageId: PlayableCharacterSkillPackageIds.StrikerDefault));
+            storage.Seed(persistedGameState);
+
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            BootstrapStartupState startupState = stateFactory.Create(new BootstrapWorldMapFactory());
+
+            Assert.That(startupState.GameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+            Assert.That(
+                vanguardState.LoadoutState.TryGetEquippedGearState(
+                    GearCategory.PrimaryCombat,
+                    out EquippedGearState equippedGearState),
+                Is.True);
+            Assert.That(equippedGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
+        }
+
         private static void AssertCharacterState(
             PersistentGameState gameState,
             string characterId,

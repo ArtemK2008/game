@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.State;
 using Survivalon.World;
 
@@ -121,13 +122,15 @@ namespace Survivalon.Tests.EditMode.World
                         "Burst Drill",
                         "Adds Burst Strike.",
                         isAssigned: true),
-                });
+                },
+                "Training Blade",
+                availablePrimaryCombatGearCount: 1);
 
             Assert.That(assignmentText, Is.EqualTo(
-                "Selected character package: Vanguard\n" +
+                "Selected character build: Vanguard\n" +
                 "Assigned package: Burst Drill\n" +
-                "Package effect: Adds Burst Strike.\n" +
-                "Available packages: 2"));
+                "Equipped primary gear: Training Blade\n" +
+                "Available packages: 2 | Owned primary gear: 1"));
         }
 
         [Test]
@@ -150,6 +153,28 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(assignedLabel, Is.EqualTo("Assigned: Standard Guard"));
             Assert.That(unassignedLabel, Is.EqualTo("Assign: Burst Drill"));
+        }
+
+        [Test]
+        public void BuildGearAssignmentButtonLabel_ShouldShowEquipAndUnequipFormatting()
+        {
+            string equippedLabel = WorldMapScreenTextBuilder.BuildGearAssignmentButtonLabel(
+                new PlayableCharacterGearAssignmentOption(
+                    "character_vanguard",
+                    GearIds.TrainingBlade,
+                    "Training Blade",
+                    GearCategory.PrimaryCombat,
+                    isEquipped: true));
+            string unequippedLabel = WorldMapScreenTextBuilder.BuildGearAssignmentButtonLabel(
+                new PlayableCharacterGearAssignmentOption(
+                    "character_vanguard",
+                    GearIds.TrainingBlade,
+                    "Training Blade",
+                    GearCategory.PrimaryCombat,
+                    isEquipped: false));
+
+            Assert.That(equippedLabel, Is.EqualTo("Unequip: Training Blade"));
+            Assert.That(unequippedLabel, Is.EqualTo("Equip: Training Blade"));
         }
 
         [Test]
@@ -198,7 +223,7 @@ namespace Survivalon.Tests.EditMode.World
         public void BuildSkillPackageAssignmentText_ShouldRejectMissingSkillPackageOptions()
         {
             Assert.That(
-                () => WorldMapScreenTextBuilder.BuildSkillPackageAssignmentText("Vanguard", null),
+                () => WorldMapScreenTextBuilder.BuildSkillPackageAssignmentText("Vanguard", null, "none", 0),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("skillPackageOptions"));
         }
 
@@ -208,6 +233,14 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 () => WorldMapScreenTextBuilder.BuildSkillPackageButtonLabel(null),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("skillPackageOption"));
+        }
+
+        [Test]
+        public void BuildGearAssignmentButtonLabel_ShouldRejectMissingGearAssignmentOption()
+        {
+            Assert.That(
+                () => WorldMapScreenTextBuilder.BuildGearAssignmentButtonLabel(null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("gearAssignmentOption"));
         }
 
         [Test]

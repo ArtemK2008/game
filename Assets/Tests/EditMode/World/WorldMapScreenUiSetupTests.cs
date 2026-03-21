@@ -6,6 +6,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.State;
 using Survivalon.State.Persistence;
 using Survivalon.World;
@@ -66,7 +67,8 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsForwardRouteSummary = false;
                 bool containsRecentNodeSummary = false;
                 bool containsCharacterSelectionSummary = false;
-                bool containsSkillPackageAssignmentSummary = false;
+                bool containsAssignedPackageSummary = false;
+                bool containsEquippedPrimaryGearSummary = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("State:"))
@@ -91,7 +93,12 @@ namespace Survivalon.Tests.EditMode.World
 
                     if (label.text.Contains("Assigned package: Standard Guard"))
                     {
-                        containsSkillPackageAssignmentSummary = true;
+                        containsAssignedPackageSummary = true;
+                    }
+
+                    if (label.text.Contains("Equipped primary gear: none"))
+                    {
+                        containsEquippedPrimaryGearSummary = true;
                     }
                 }
 
@@ -99,7 +106,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(containsForwardRouteSummary, Is.True);
                 Assert.That(containsRecentNodeSummary, Is.True);
                 Assert.That(containsCharacterSelectionSummary, Is.True);
-                Assert.That(containsSkillPackageAssignmentSummary, Is.True);
+                Assert.That(containsAssignedPackageSummary, Is.True);
+                Assert.That(containsEquippedPrimaryGearSummary, Is.True);
                 Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "character_striker_CharacterButton"), Is.Not.Null);
                 Assert.That(
@@ -107,6 +115,9 @@ namespace Survivalon.Tests.EditMode.World
                     Is.Not.Null);
                 Assert.That(
                     FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
+                    Is.Not.Null);
+                Assert.That(
+                    FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton"),
                     Is.Not.Null);
             }
             finally
@@ -260,7 +271,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldKeepOverflowingNodeContentReachableAfterCharacterAndPackageRefresh()
+        public void Show_ShouldKeepOverflowingNodeContentReachableAfterCharacterPackageAndGearRefresh()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -279,6 +290,8 @@ namespace Survivalon.Tests.EditMode.World
                 FindButton(hostObject, "character_vanguard_CharacterButton").onClick.Invoke();
                 ForceUiLayout(hostObject);
                 FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton").onClick.Invoke();
+                ForceUiLayout(hostObject);
+                FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
                 ForceUiLayout(hostObject);
 
                 ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
@@ -360,9 +373,11 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Selected: Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Select: Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Relentless Burst"), Is.True);
+                Assert.That(ContainsText(hostObject, "Equipped primary gear: none"), Is.True);
                 Assert.That(
                     FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.StrikerDefault}_SkillPackageButton"),
                     Is.Not.Null);
+                Assert.That(FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton"), Is.Not.Null);
                 Assert.That(
                     TryFindButton(hostObject, $"{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
                     Is.Null);
@@ -392,9 +407,50 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
                 Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
                 Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
-                Assert.That(ContainsText(hostObject, "Package effect: Adds Burst Strike."), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned: Burst Drill"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assign: Standard Guard"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldEquipAndUnequipPrimaryGearForCurrentlySelectedPlayableCharacterWhenGearButtonIsPressed()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+
+                Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
+                Assert.That(
+                    vanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.PrimaryCombat,
+                        out EquippedGearState equippedGearState),
+                    Is.True);
+                Assert.That(equippedGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
+                Assert.That(ContainsText(hostObject, "Equipped primary gear: Training Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Unequip: Training Blade"), Is.True);
+
+                FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+
+                Assert.That(
+                    vanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.PrimaryCombat,
+                        out EquippedGearState _),
+                    Is.False);
+                Assert.That(ContainsText(hostObject, "Equipped primary gear: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Equip: Training Blade"), Is.True);
             }
             finally
             {

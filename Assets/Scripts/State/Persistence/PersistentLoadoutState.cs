@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Survivalon.Data.Gear;
 
 namespace Survivalon.State.Persistence
 {
@@ -28,6 +29,54 @@ namespace Survivalon.State.Persistence
         public string LoadoutId => loadoutId ?? string.Empty;
 
         public IReadOnlyList<EquippedGearState> EquippedGearStates => EquippedGearStatesInternal;
+
+        public bool TryGetEquippedGearState(GearCategory gearCategory, out EquippedGearState equippedGearState)
+        {
+            for (int index = 0; index < EquippedGearStatesInternal.Count; index++)
+            {
+                EquippedGearState candidate = EquippedGearStatesInternal[index];
+                if (candidate.GearCategory == gearCategory)
+                {
+                    equippedGearState = candidate;
+                    return true;
+                }
+            }
+
+            equippedGearState = null;
+            return false;
+        }
+
+        public void SetEquippedGearState(EquippedGearState equippedGearState)
+        {
+            if (equippedGearState == null)
+            {
+                throw new ArgumentNullException(nameof(equippedGearState));
+            }
+
+            for (int index = EquippedGearStatesInternal.Count - 1; index >= 0; index--)
+            {
+                if (EquippedGearStatesInternal[index].GearCategory == equippedGearState.GearCategory)
+                {
+                    EquippedGearStatesInternal.RemoveAt(index);
+                }
+            }
+
+            EquippedGearStatesInternal.Add(equippedGearState);
+        }
+
+        public bool ClearEquippedGearState(GearCategory gearCategory)
+        {
+            for (int index = EquippedGearStatesInternal.Count - 1; index >= 0; index--)
+            {
+                if (EquippedGearStatesInternal[index].GearCategory == gearCategory)
+                {
+                    EquippedGearStatesInternal.RemoveAt(index);
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public void ReplaceEquippedGearStates(IEnumerable<EquippedGearState> replacementEquippedGearStates)
         {

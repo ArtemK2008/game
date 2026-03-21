@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
@@ -12,13 +13,11 @@ namespace Survivalon.Tests.EditMode.Run
         public void ShouldCarrySelectedCharacterPersistentGearDataWithoutChangingCombatBaselineYet()
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterGearAssignmentService gearAssignmentService =
+                new PlayableCharacterGearAssignmentService();
             Assert.That(
-                gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState),
+                gearAssignmentService.TryAssignSelectedCharacterPrimaryCombatGear(gameState, GearIds.TrainingBlade),
                 Is.True);
-            vanguardState.LoadoutState.ReplaceEquippedGearStates(new[]
-            {
-                new EquippedGearState(GearIds.TrainingBlade, GearCategory.PrimaryCombat),
-            });
 
             RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
             RunLifecycleController controller = new RunLifecycleController(

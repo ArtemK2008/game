@@ -89,7 +89,9 @@ namespace Survivalon.World
 
         public static string BuildSkillPackageAssignmentText(
             string selectedCharacterDisplayName,
-            IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions)
+            IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions,
+            string primaryCombatGearDisplayName,
+            int availablePrimaryCombatGearCount)
         {
             if (selectedCharacterDisplayName == null)
             {
@@ -101,23 +103,26 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(skillPackageOptions));
             }
 
+            if (primaryCombatGearDisplayName == null)
+            {
+                throw new ArgumentNullException(nameof(primaryCombatGearDisplayName));
+            }
+
             string assignedPackageLabel = "none";
-            string assignedPackageSummary = "No valid package assigned.";
             for (int index = 0; index < skillPackageOptions.Count; index++)
             {
                 if (skillPackageOptions[index].IsAssigned)
                 {
                     assignedPackageLabel = skillPackageOptions[index].DisplayName;
-                    assignedPackageSummary = skillPackageOptions[index].Summary;
                     break;
                 }
             }
 
             return
-                $"Selected character package: {selectedCharacterDisplayName}\n" +
+                $"Selected character build: {selectedCharacterDisplayName}\n" +
                 $"Assigned package: {assignedPackageLabel}\n" +
-                $"Package effect: {assignedPackageSummary}\n" +
-                $"Available packages: {skillPackageOptions.Count}";
+                $"Equipped primary gear: {primaryCombatGearDisplayName}\n" +
+                $"Available packages: {skillPackageOptions.Count} | Owned primary gear: {availablePrimaryCombatGearCount}";
         }
 
         public static string BuildCharacterButtonLabel(PlayableCharacterSelectionOption selectionOption)
@@ -142,6 +147,18 @@ namespace Survivalon.World
             return skillPackageOption.IsAssigned
                 ? $"Assigned: {skillPackageOption.DisplayName}"
                 : $"Assign: {skillPackageOption.DisplayName}";
+        }
+
+        public static string BuildGearAssignmentButtonLabel(PlayableCharacterGearAssignmentOption gearAssignmentOption)
+        {
+            if (gearAssignmentOption == null)
+            {
+                throw new ArgumentNullException(nameof(gearAssignmentOption));
+            }
+
+            return gearAssignmentOption.IsEquipped
+                ? $"Unequip: {gearAssignmentOption.DisplayName}"
+                : $"Equip: {gearAssignmentOption.DisplayName}";
         }
 
         public static string BuildNodeLabel(WorldMapNodeOption nodeOption)
