@@ -19,6 +19,13 @@ namespace Survivalon.Run
         FarmRewards = 4,
     }
 
+    public enum PostRunForwardOpportunityKind
+    {
+        None = 0,
+        NewlyUnlockedPushTarget = 1,
+        AvailablePushTarget = 2,
+    }
+
     public enum PostRunServiceOpportunityKind
     {
         None = 0,
@@ -38,7 +45,8 @@ namespace Survivalon.Run
             PostRunReplayReasonKind replayReasonKind,
             string forwardTargetDisplayName = null,
             string serviceHubDisplayName = null,
-            PostRunServiceOpportunityKind serviceOpportunityKind = PostRunServiceOpportunityKind.None)
+            PostRunServiceOpportunityKind serviceOpportunityKind = PostRunServiceOpportunityKind.None,
+            PostRunForwardOpportunityKind forwardOpportunityKind = PostRunForwardOpportunityKind.None)
         {
             if (string.IsNullOrWhiteSpace(nodeDisplayName))
             {
@@ -54,6 +62,7 @@ namespace Survivalon.Run
             ForwardTargetDisplayName = forwardTargetDisplayName;
             ServiceHubDisplayName = serviceHubDisplayName;
             ServiceOpportunityKind = serviceOpportunityKind;
+            ForwardOpportunityKind = forwardOpportunityKind;
         }
 
         public string NodeDisplayName { get; }
@@ -74,7 +83,11 @@ namespace Survivalon.Run
 
         public PostRunServiceOpportunityKind ServiceOpportunityKind { get; }
 
-        public bool HasForwardPushOpportunity => !string.IsNullOrWhiteSpace(ForwardTargetDisplayName);
+        public PostRunForwardOpportunityKind ForwardOpportunityKind { get; }
+
+        public bool HasForwardPushOpportunity =>
+            ForwardOpportunityKind != PostRunForwardOpportunityKind.None &&
+            !string.IsNullOrWhiteSpace(ForwardTargetDisplayName);
 
         public bool HasServiceOpportunity =>
             !string.IsNullOrWhiteSpace(ServiceHubDisplayName) &&

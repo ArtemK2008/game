@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 073**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, and **072a**.
+This summary reflects completed work through **Milestone 073**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, and **073a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -78,6 +78,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - return to world, then visit `Cavern Service Hub` for current upgrade/refinement opportunities
   - stop safely after the resolved run
 - That next-action guidance uses friendly node/service names and refreshes from current world/progression/resource state, so the recommendation changes when forward paths or service opportunities change.
+- The post-run recommendation logic now also keeps push-target resolution and service-hub opportunity resolution separate, so utility/service nodes are not treated as forward push targets.
 - Ordinary route unlock state and boss-gate unlock state are now tracked separately in run results, so the summary no longer relies on one overloaded unlock flag.
 - Replay re-enters the same node cleanly.
 - Return/stop save a world-level safe resume context.

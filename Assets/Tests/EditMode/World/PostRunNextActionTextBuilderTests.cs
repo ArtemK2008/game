@@ -37,7 +37,8 @@ namespace Survivalon.Tests.EditMode.World
                 PostRunReplayReasonKind.FarmRewards,
                 forwardTargetDisplayName: "Cavern Gate",
                 serviceHubDisplayName: "Cavern Service Hub",
-                serviceOpportunityKind: PostRunServiceOpportunityKind.AffordableProject);
+                serviceOpportunityKind: PostRunServiceOpportunityKind.AffordableProject,
+                forwardOpportunityKind: PostRunForwardOpportunityKind.NewlyUnlockedPushTarget);
 
             string text = PostRunNextActionTextBuilder.Build(nextActionState);
 
