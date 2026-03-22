@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 namespace Survivalon.Towns
 {
+    /// <summary>
+    /// Показывает текущий town/service shell и связывает его с сервисами действий и refresh.
+    /// </summary>
     public sealed class TownServiceScreen : MonoBehaviour
     {
         private Canvas canvas;

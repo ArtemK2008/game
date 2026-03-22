@@ -1,9 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Survivalon.World;
+using Survivalon.Core;
 
 namespace Survivalon.Startup
 {
+    /// <summary>
+    /// Показывает простой startup placeholder для безопасных точек входа вне мира.
+    /// </summary>
     public sealed class StartupPlaceholderView : MonoBehaviour
     {
         private StartupEntryTarget activeTarget;
