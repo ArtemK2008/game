@@ -5,6 +5,9 @@ using Survivalon.Run;
 
 namespace Survivalon.World
 {
+    /// <summary>
+    /// Форматирует placeholder-текст экрана узла и локальные статусы run/combat flow.
+    /// </summary>
     public static class NodePlaceholderScreenTextBuilder
     {
         public static string BuildTitleText(NodePlaceholderState placeholderState)
@@ -26,7 +29,7 @@ namespace Survivalon.World
 
             return
                 $"Location: {placeholderState.LocationIdentity.DisplayName}\n" +
-                $"Encounter: {BuildNodeTypeDisplayName(placeholderState.NodeType)}";
+                $"Encounter: {PlayerFacingCoreLabelFormatter.FormatNodeType(placeholderState.NodeType)}";
         }
 
         public static string BuildSummaryText(
@@ -110,21 +113,6 @@ namespace Survivalon.World
             }
 
             return $"Revisit value: Region material yield +{placeholderState.RegionMaterialYieldContent.RegionMaterialBonus}\n";
-        }
-
-        private static string BuildNodeTypeDisplayName(NodeType nodeType)
-        {
-            switch (nodeType)
-            {
-                case NodeType.Combat:
-                    return "Combat";
-                case NodeType.BossOrGate:
-                    return "Boss gate";
-                case NodeType.ServiceOrProgression:
-                    return "Service hub";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(nodeType), nodeType, "Unknown node type.");
-            }
         }
     }
 }

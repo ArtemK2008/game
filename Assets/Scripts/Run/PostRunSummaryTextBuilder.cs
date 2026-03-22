@@ -5,6 +5,9 @@ using Survivalon.World;
 
 namespace Survivalon.Run
 {
+    /// <summary>
+    /// Форматирует компактную post-run summary без логики выдачи наград и прогресса.
+    /// </summary>
     public static class PostRunSummaryTextBuilder
     {
         public static string Build(PostRunStateController postRunStateController, RunResult runResult)
@@ -107,12 +110,12 @@ namespace Survivalon.Run
 
             foreach (RunCurrencyReward currencyReward in currencyRewards)
             {
-                rewardSummaries.Add($"{FormatResourceCategory(currencyReward.ResourceCategory)} x{currencyReward.Amount}");
+                rewardSummaries.Add($"{PlayerFacingCoreLabelFormatter.FormatResourceCategory(currencyReward.ResourceCategory)} x{currencyReward.Amount}");
             }
 
             foreach (RunMaterialReward materialReward in materialRewards)
             {
-                rewardSummaries.Add($"{FormatResourceCategory(materialReward.ResourceCategory)} x{materialReward.Amount}");
+                rewardSummaries.Add($"{PlayerFacingCoreLabelFormatter.FormatResourceCategory(materialReward.ResourceCategory)} x{materialReward.Amount}");
             }
 
             return string.Join(", ", rewardSummaries);
@@ -164,21 +167,6 @@ namespace Survivalon.Run
         private static string FormatYesNo(bool value)
         {
             return value ? "Yes" : "No";
-        }
-
-        private static string FormatResourceCategory(ResourceCategory resourceCategory)
-        {
-            switch (resourceCategory)
-            {
-                case ResourceCategory.SoftCurrency:
-                    return "Soft currency";
-                case ResourceCategory.RegionMaterial:
-                    return "Region material";
-                case ResourceCategory.PersistentProgressionMaterial:
-                    return "Persistent progression material";
-                default:
-                    return resourceCategory.ToString();
-            }
         }
     }
 }

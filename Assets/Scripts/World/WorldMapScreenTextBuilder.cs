@@ -26,7 +26,7 @@ namespace Survivalon.World
 
             return
                 $"Location: {worldStateSummary.CurrentLocationDisplayName}\n" +
-                $"Current: {worldStateSummary.CurrentNode.DisplayName} ({BuildNodeStateDisplayName(worldStateSummary.CurrentNodeState)}) | Selected: {selectedNodeLabel}\n" +
+                $"Current: {worldStateSummary.CurrentNode.DisplayName} ({PlayerFacingCoreLabelFormatter.FormatNodeState(worldStateSummary.CurrentNodeState)}) | Selected: {selectedNodeLabel}\n" +
                 $"Paths now: {worldStateSummary.SelectableDestinationCount} enterable | {worldStateSummary.ForwardRouteNodes.Count} forward | {worldStateSummary.BacktrackRouteNodes.Count} backtrack | {worldStateSummary.ReplayableFarmNodes.Count} replayable | {worldStateSummary.BlockedLinkedNodes.Count} blocked\n" +
                 $"Forward: {BuildNodeListLabel(worldStateSummary.ForwardRouteNodes)}\n" +
                 $"Backtrack: {BuildNodeListLabel(worldStateSummary.BacktrackRouteNodes)} | Replayable: {BuildNodeListLabel(worldStateSummary.ReplayableFarmNodes)}\n" +
@@ -146,7 +146,7 @@ namespace Survivalon.World
             return
                 $"{nodeOption.NodeDisplayName}\n" +
                 $"{nodeOption.LocationDisplayName}\n" +
-                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {BuildNodeTypeDisplayName(nodeOption.NodeType)} | State: {BuildNodeStateDisplayName(nodeOption.NodeState)}\n" +
+                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {PlayerFacingCoreLabelFormatter.FormatNodeType(nodeOption.NodeType)} | State: {PlayerFacingCoreLabelFormatter.FormatNodeState(nodeOption.NodeState)}\n" +
                 $"Status: {BuildAvailabilityLabel(nodeOption)}";
         }
 
@@ -192,38 +192,6 @@ namespace Survivalon.World
             }
 
             return "Known";
-        }
-
-        private static string BuildNodeTypeDisplayName(NodeType nodeType)
-        {
-            switch (nodeType)
-            {
-                case NodeType.Combat:
-                    return "Combat";
-                case NodeType.BossOrGate:
-                    return "Boss gate";
-                case NodeType.ServiceOrProgression:
-                    return "Service hub";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(nodeType), nodeType, "Unknown node type.");
-            }
-        }
-
-        private static string BuildNodeStateDisplayName(NodeState nodeState)
-        {
-            switch (nodeState)
-            {
-                case NodeState.Available:
-                    return "Available";
-                case NodeState.InProgress:
-                    return "In progress";
-                case NodeState.Cleared:
-                    return "Cleared";
-                case NodeState.Locked:
-                    return "Locked";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(nodeState), nodeState, "Unknown node state.");
-            }
         }
 
         private static int CountOptionsForCategory(
