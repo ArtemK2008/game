@@ -50,6 +50,19 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(screenState.ServiceContext.DisplayName, Is.EqualTo("Cavern Service Hub"));
             Assert.That(screenState.PersistentProgressionMaterialAmount, Is.EqualTo(1));
             Assert.That(screenState.RegionMaterialAmount, Is.EqualTo(4));
+            Assert.That(screenState.MaterialPowerPath, Is.Not.Null);
+            Assert.That(screenState.MaterialPowerPath.ReadyRefinementCount, Is.EqualTo(1));
+            Assert.That(screenState.MaterialPowerPath.RegionMaterialTowardsNextRefinementAmount, Is.EqualTo(1));
+            Assert.That(screenState.MaterialPowerPath.RefinementInputRequirement, Is.EqualTo(3));
+            Assert.That(
+                screenState.MaterialPowerPath.PersistentProgressionMaterialAmountAfterRefinementPath,
+                Is.EqualTo(2));
+            Assert.That(
+                screenState.MaterialPowerPath.AlreadyAffordableProjectDisplayNames,
+                Is.EqualTo(new[] { "Farm Yield Project" }));
+            Assert.That(
+                screenState.MaterialPowerPath.NewProjectTargetDisplayNames,
+                Is.EqualTo(new[] { "Push Offense Project", "Boss Salvage Project" }));
             Assert.That(screenState.SelectedCharacterDisplayName, Is.EqualTo("Vanguard"));
             Assert.That(screenState.AssignedSkillPackageDisplayName, Is.EqualTo("Burst Drill"));
             Assert.That(screenState.PrimaryGearDisplayName, Is.EqualTo("Training Blade"));

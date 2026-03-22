@@ -36,6 +36,17 @@ namespace Survivalon.Tests.EditMode.Towns
                 progressionText,
                 Does.Contain(
                     "- Region Material Refinement | Region material x3 -> Persistent progression material x1 | Need 1 more"));
+            Assert.That(progressionText, Does.Contain("Material power path:"));
+            Assert.That(progressionText, Does.Contain("Refinement progress: 2 / 3 region material"));
+            Assert.That(
+                progressionText,
+                Does.Contain("Persistent progression material after next refinement: 2"));
+            Assert.That(
+                progressionText,
+                Does.Contain("Already affordable projects: Combat Baseline Project, Farm Yield Project"));
+            Assert.That(
+                progressionText,
+                Does.Contain("New project targets after refinement: Push Offense Project, Boss Salvage Project"));
             Assert.That(buildText, Is.EqualTo(
                 "Build preparation\n" +
                 "Selected character: Vanguard\n" +
@@ -68,6 +79,21 @@ namespace Survivalon.Tests.EditMode.Towns
                 new NodeId("region_001_node_002"),
                 persistentProgressionMaterialAmount: 1,
                 regionMaterialAmount: 2,
+                materialPowerPathState: new TownServiceMaterialPowerPathState(
+                    readyRefinementCount: 0,
+                    regionMaterialTowardsNextRefinementAmount: 2,
+                    refinementInputRequirement: 3,
+                    persistentProgressionMaterialAfterRefinementPath: 2,
+                    alreadyAffordableProjectDisplayNames: new[]
+                    {
+                        "Combat Baseline Project",
+                        "Farm Yield Project",
+                    },
+                    newProjectTargetDisplayNames: new[]
+                    {
+                        "Push Offense Project",
+                        "Boss Salvage Project",
+                    }),
                 progressionOptions: new[]
                 {
                     new TownServiceProgressionOptionState(
@@ -135,10 +161,10 @@ namespace Survivalon.Tests.EditMode.Towns
                         GearCategory.SecondarySupport,
                         isEquipped: true),
                 },
-                "Vanguard",
-                "Burst Drill",
-                "Training Blade",
-                "Guard Charm");
+                selectedCharacterDisplayName: "Vanguard",
+                assignedSkillPackageDisplayName: "Burst Drill",
+                primaryGearDisplayName: "Training Blade",
+                supportGearDisplayName: "Guard Charm");
         }
     }
 }

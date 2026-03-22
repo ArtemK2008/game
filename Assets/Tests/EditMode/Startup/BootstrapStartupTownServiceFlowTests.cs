@@ -18,6 +18,10 @@ namespace Survivalon.Tests.EditMode.Startup
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            seededGameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+            seededGameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 2);
+            storage.Seed(seededGameState);
 
             try
             {
@@ -29,6 +33,17 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
                 Assert.That(ContainsText(hostObject, "Cavern Service Hub"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progression hub"), Is.True);
+                Assert.That(ContainsText(hostObject, "Material power path:"), Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "Already affordable projects: Combat Baseline Project, Farm Yield Project"),
+                    Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "New project targets after refinement: Push Offense Project, Boss Salvage Project"),
+                    Is.True);
                 Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
                 Assert.That(

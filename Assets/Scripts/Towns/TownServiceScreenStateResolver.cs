@@ -69,6 +69,7 @@ namespace Survivalon.Towns
                 placeholderState.OriginNodeId,
                 gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
                 gameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
+                BuildMaterialPowerPathState(gameState),
                 BuildProgressionOptions(gameState),
                 BuildConversionOptions(gameState),
                 skillPackageAssignmentService.BuildOptionsForSelectedCharacter(gameState),
@@ -120,6 +121,56 @@ namespace Survivalon.Towns
             }
 
             return conversionOptions;
+        }
+
+        private TownServiceMaterialPowerPathState BuildMaterialPowerPathState(PersistentGameState gameState)
+        {
+            TownServiceConversionDefinition refinementDefinition =
+                TownServiceConversionCatalog.Get(TownServiceConversionId.RegionMaterialRefinement);
+            int currentPersistentProgressionMaterialAmount =
+                gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial);
+            int currentRegionMaterialAmount =
+                gameState.ResourceBalances.GetAmount(refinementDefinition.InputResourceCategory);
+            int readyRefinementCount = currentRegionMaterialAmount / refinementDefinition.InputAmount;
+            int regionMaterialTowardsNextRefinementAmount =
+                currentRegionMaterialAmount % refinementDefinition.InputAmount;
+            int persistentProgressionMaterialAfterRefinementPath = readyRefinementCount > 0
+                ? currentPersistentProgressionMaterialAmount +
+                    (readyRefinementCount * refinementDefinition.OutputAmount)
+                : currentPersistentProgressionMaterialAmount + refinementDefinition.OutputAmount;
+            List<string> alreadyAffordableProjectDisplayNames = new List<string>();
+            List<string> newProjectTargetDisplayNames = new List<string>();
+
+            for (int index = 0; index < AccountWideProgressionUpgradeCatalog.All.Count; index++)
+            {
+                AccountWideProgressionUpgradeDefinition upgradeDefinition =
+                    AccountWideProgressionUpgradeCatalog.All[index];
+
+                if (upgradeDefinition.CostResourceCategory != refinementDefinition.OutputResourceCategory ||
+                    progressionBoardService.IsPurchased(gameState, upgradeDefinition.UpgradeId))
+                {
+                    continue;
+                }
+
+                if (upgradeDefinition.CostAmount <= currentPersistentProgressionMaterialAmount)
+                {
+                    alreadyAffordableProjectDisplayNames.Add(upgradeDefinition.DisplayName);
+                    continue;
+                }
+
+                if (upgradeDefinition.CostAmount <= persistentProgressionMaterialAfterRefinementPath)
+                {
+                    newProjectTargetDisplayNames.Add(upgradeDefinition.DisplayName);
+                }
+            }
+
+            return new TownServiceMaterialPowerPathState(
+                readyRefinementCount,
+                regionMaterialTowardsNextRefinementAmount,
+                refinementDefinition.InputAmount,
+                persistentProgressionMaterialAfterRefinementPath,
+                alreadyAffordableProjectDisplayNames,
+                newProjectTargetDisplayNames);
         }
 
         private IReadOnlyList<PlayableCharacterGearAssignmentOption> BuildGearAssignmentOptions(PersistentGameState gameState)
