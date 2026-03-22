@@ -37,6 +37,7 @@ namespace Survivalon.Tests.EditMode.Startup
                         $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
                     Is.Not.Null);
                 Assert.That(FindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton"), Is.Not.Null);
+                Assert.That(FindButton(hostObject, "RegionMaterialRefinement_ConversionButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, $"TownService_{GearIds.GuardCharm}_GearButton"), Is.Not.Null);
                 Assert.That(
@@ -69,6 +70,36 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(ContainsText(hostObject, "Run Shell: region_002_node_001"), Is.True);
                 Assert.That(ContainsText(hostObject, "Cavern Service Hub"), Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldConvertRegionMaterialFromTownServiceScreenAndPersistImmediately()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            seededGameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+            storage.Seed(seededGameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Persistent progression material: 1"), Is.True);
+                Assert.That(storage.SavedGameState, Is.Not.Null);
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
+                Assert.That(
+                    storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                    Is.EqualTo(1));
             }
             finally
             {

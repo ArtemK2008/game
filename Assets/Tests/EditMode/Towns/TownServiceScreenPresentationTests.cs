@@ -27,10 +27,15 @@ namespace Survivalon.Tests.EditMode.Towns
                 "Entered from: region_001_node_002\n" +
                 "Functions: Progression hub, Build preparation"));
             Assert.That(progressionText, Does.Contain("Persistent progression material: 1"));
+            Assert.That(progressionText, Does.Contain("Region material: 2"));
             Assert.That(progressionText, Does.Contain("- Combat Baseline Project | Cost: Persistent progression material x1 | Purchased"));
             Assert.That(progressionText, Does.Contain("- Push Offense Project | Cost: Persistent progression material x2 | Need 1 more"));
             Assert.That(progressionText, Does.Contain("- Farm Yield Project | Cost: Persistent progression material x1 | Affordable"));
             Assert.That(progressionText, Does.Contain("- Boss Salvage Project | Cost: Persistent progression material x2 | Need 1 more"));
+            Assert.That(
+                progressionText,
+                Does.Contain(
+                    "- Region Material Refinement | Region material x3 -> Persistent progression material x1 | Need 1 more"));
             Assert.That(buildText, Is.EqualTo(
                 "Build preparation\n" +
                 "Selected character: Vanguard\n" +
@@ -62,6 +67,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 new RegionId("region_002"),
                 new NodeId("region_001_node_002"),
                 persistentProgressionMaterialAmount: 1,
+                regionMaterialAmount: 2,
                 progressionOptions: new[]
                 {
                     new TownServiceProgressionOptionState(
@@ -91,6 +97,18 @@ namespace Survivalon.Tests.EditMode.Towns
                         ResourceCategory.PersistentProgressionMaterial,
                         costAmount: 2,
                         isPurchased: false,
+                        isAffordable: false),
+                },
+                conversionOptions: new[]
+                {
+                    new TownServiceConversionOptionState(
+                        TownServiceConversionId.RegionMaterialRefinement,
+                        "Region Material Refinement",
+                        ResourceCategory.RegionMaterial,
+                        inputAmount: 3,
+                        ResourceCategory.PersistentProgressionMaterial,
+                        outputAmount: 1,
+                        availableInputAmount: 2,
                         isAffordable: false),
                 },
                 skillPackageOptions: new[]
