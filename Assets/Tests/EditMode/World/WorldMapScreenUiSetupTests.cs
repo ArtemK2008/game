@@ -70,6 +70,7 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsAssignedPackageSummary = false;
                 bool containsPrimaryGearSummary = false;
                 bool containsSupportGearSummary = false;
+                bool containsLocationIdentityLabel = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("State:"))
@@ -106,6 +107,11 @@ namespace Survivalon.Tests.EditMode.World
                     {
                         containsSupportGearSummary = true;
                     }
+
+                    if (label.text.Contains("Echo Caverns / region_002_node_001"))
+                    {
+                        containsLocationIdentityLabel = true;
+                    }
                 }
 
                 Assert.That(containsStateLabel, Is.True);
@@ -115,6 +121,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(containsAssignedPackageSummary, Is.True);
                 Assert.That(containsPrimaryGearSummary, Is.True);
                 Assert.That(containsSupportGearSummary, Is.True);
+                Assert.That(containsLocationIdentityLabel, Is.True);
                 Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "character_striker_CharacterButton"), Is.Not.Null);
                 Assert.That(

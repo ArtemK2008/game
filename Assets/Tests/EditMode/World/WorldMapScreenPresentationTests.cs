@@ -201,10 +201,11 @@ namespace Survivalon.Tests.EditMode.World
                     NodeState.Available,
                     isSelectable: true,
                     isCurrentContext: false,
-                    isSelected: false));
+                    isSelected: false,
+                    "Echo Caverns"));
 
             Assert.That(labelText, Is.EqualTo(
-                "region_002 / region_002_node_001\n" +
+                "Echo Caverns / region_002_node_001\n" +
                 "Type: ServiceOrProgression | State: Available | Selectable"));
         }
 
@@ -333,7 +334,8 @@ namespace Survivalon.Tests.EditMode.World
                 nodeState,
                 isSelectable,
                 isCurrentContext,
-                isSelected);
+                isSelected,
+                "Verdant Frontier");
         }
     }
 }

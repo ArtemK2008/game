@@ -35,6 +35,7 @@ namespace Survivalon.World
             }
 
             NodeId originNodeId = ResolveCurrentContextNodeId();
+            WorldRegion enterableRegion = worldGraph.GetRegion(enterableNode.RegionId);
             worldState.SetCurrentNode(enterableNode.NodeId);
             worldState.SetLastSafeNode(originNodeId);
             worldState.ReplaceReachableNodes(BuildUpdatedReachableNodes(originNodeId));
@@ -47,7 +48,8 @@ namespace Survivalon.World
                 originNodeId,
                 enterableNode.CombatEncounter,
                 enterableNode.BossProgressionGate,
-                enterableNode.TownServiceContext);
+                enterableNode.TownServiceContext,
+                enterableRegion.LocationIdentity);
             return true;
         }
 

@@ -45,9 +45,11 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Is.EqualTo(
                 "Run finished.\n" +
+                "Location: Verdant Frontier\n" +
                 "Node: region_001_node_004\n" +
                 "Resolution: Succeeded\n" +
                 "Rewards gained: Soft currency x1, Region material x1\n" +
+                "Reward source: Frontier salvage\n" +
                 "Milestone rewards: Persistent progression material x1\n" +
                 "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock No\n" +
                 "Boss gate unlock: Cavern gate opened\n" +
@@ -80,6 +82,8 @@ namespace Survivalon.Tests.EditMode.World
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
             Assert.That(summaryText, Does.Contain("Rewards gained: None"));
+            Assert.That(summaryText, Does.Contain("Location: Echo Caverns"));
+            Assert.That(summaryText, Does.Not.Contain("Reward source:"));
             Assert.That(summaryText, Does.Contain("Progress changes: node not tracked; persistent +0; route unlock No"));
             Assert.That(summaryText, Does.Contain("- Stop: No"));
         }
@@ -158,6 +162,7 @@ namespace Survivalon.Tests.EditMode.World
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
             Assert.That(summaryText, Does.Contain("Rewards gained: Soft currency x1"));
+            Assert.That(summaryText, Does.Contain("Reward source: Frontier salvage"));
             Assert.That(summaryText, Does.Contain("Boss rewards: Persistent progression material x2"));
             Assert.That(summaryText, Does.Not.Contain("Milestone rewards:"));
         }

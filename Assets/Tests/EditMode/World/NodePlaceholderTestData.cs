@@ -1,6 +1,7 @@
 using Survivalon.Core;
 using Survivalon.Data.Combat;
 using Survivalon.Data.Towns;
+using Survivalon.Data.World;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
@@ -17,7 +18,8 @@ namespace Survivalon.Tests.EditMode.World
                 new RegionId("region_002"),
                 NodeType.ServiceOrProgression,
                 NodeState.Available,
-                new NodeId("region_001_node_002"));
+                new NodeId("region_001_node_002"),
+                locationIdentity: LocationIdentityCatalog.EchoCaverns);
         }
 
         public static NodePlaceholderState CreateTownServicePlaceholderState()
@@ -28,7 +30,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.ServiceOrProgression,
                 NodeState.Available,
                 BootstrapWorldScenario.ForestPushNodeId,
-                townServiceContext: TownServiceContextCatalog.CavernServiceHub);
+                townServiceContext: TownServiceContextCatalog.CavernServiceHub,
+                locationIdentity: LocationIdentityCatalog.EchoCaverns);
         }
 
         public static NodePlaceholderState CreateCombatPlaceholderState()
@@ -39,7 +42,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.Combat,
                 NodeState.Available,
                 new NodeId("region_001_node_002"),
-                CombatStandardEncounterCatalog.EnemyUnitEncounter);
+                CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier);
         }
 
         public static NodePlaceholderState CreateBossCombatPlaceholderState()
@@ -51,7 +55,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeState.Available,
                 new NodeId("region_001_node_004"),
                 CombatBossEncounterCatalog.GateBossEncounter,
-                ForestGateProgressionGate);
+                ForestGateProgressionGate,
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier);
         }
 
         public static NodePlaceholderState CreateForestGateBossPlaceholderState()
@@ -63,7 +68,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeState.Available,
                 BootstrapWorldScenario.ForestPushNodeId,
                 CombatBossEncounterCatalog.GateBossEncounter,
-                ForestGateProgressionGate);
+                ForestGateProgressionGate,
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier);
         }
 
         public static NodePlaceholderState CreatePushCombatPlaceholderState()
@@ -74,7 +80,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.Combat,
                 NodeState.InProgress,
                 new NodeId("region_001_node_001"),
-                CombatStandardEncounterCatalog.BulwarkRaiderEncounter);
+                CombatStandardEncounterCatalog.BulwarkRaiderEncounter,
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier);
         }
     }
 }

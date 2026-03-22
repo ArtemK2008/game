@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
 using Survivalon.Data.Towns;
+using Survivalon.Data.World;
 
 namespace Survivalon.World
 {
@@ -64,7 +65,8 @@ namespace Survivalon.World
                         BootstrapWorldScenario.ForestFarmNodeId,
                     },
                     ResourceCategory.RegionMaterial,
-                    "frontier"),
+                    "frontier",
+                    LocationIdentityCatalog.VerdantFrontier),
                 new WorldRegion(
                     BootstrapWorldScenario.CavernRegionId,
                     1,
@@ -75,7 +77,8 @@ namespace Survivalon.World
                         BootstrapWorldScenario.CavernGateNodeId,
                     },
                     ResourceCategory.PersistentProgressionMaterial,
-                    "depths"),
+                    "depths",
+                    LocationIdentityCatalog.EchoCaverns),
             };
 
             List<WorldNodeConnection> connections = new List<WorldNodeConnection>

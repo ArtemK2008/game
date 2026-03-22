@@ -176,7 +176,7 @@ namespace Survivalon.World
             }
 
             return
-                $"{nodeOption.RegionId.Value} / {nodeOption.NodeId.Value}\n" +
+                $"{nodeOption.LocationDisplayName} / {nodeOption.NodeId.Value}\n" +
                 $"Type: {nodeOption.NodeType} | State: {nodeOption.NodeState} | {BuildAvailabilityLabel(nodeOption)}";
         }
 

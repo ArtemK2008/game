@@ -11,7 +11,8 @@ namespace Survivalon.World
             NodeState nodeState,
             bool isSelectable,
             bool isCurrentContext,
-            bool isSelected)
+            bool isSelected,
+            string locationDisplayName = null)
         {
             NodeId = nodeId;
             RegionId = regionId;
@@ -20,6 +21,9 @@ namespace Survivalon.World
             IsSelectable = isSelectable;
             IsCurrentContext = isCurrentContext;
             IsSelected = isSelected;
+            LocationDisplayName = string.IsNullOrWhiteSpace(locationDisplayName)
+                ? regionId.Value
+                : locationDisplayName;
         }
 
         public NodeId NodeId { get; }
@@ -35,6 +39,8 @@ namespace Survivalon.World
         public bool IsCurrentContext { get; }
 
         public bool IsSelected { get; }
+
+        public string LocationDisplayName { get; }
     }
 }
 

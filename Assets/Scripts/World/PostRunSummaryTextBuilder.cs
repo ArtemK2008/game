@@ -21,9 +21,11 @@ namespace Survivalon.World
 
             return
                 "Run finished.\n" +
+                $"Location: {postRunStateController.NodeContext.LocationIdentity.DisplayName}\n" +
                 $"Node: {runResult.NodeId.Value}\n" +
                 $"Resolution: {runResult.ResolutionState}\n" +
                 $"Rewards gained: {BuildRewardSummary(runResult.RewardPayload)}\n" +
+                BuildRewardSourceLine(postRunStateController, runResult) +
                 BuildBossRewardLine(runResult.RewardPayload) +
                 BuildMilestoneRewardLine(runResult.RewardPayload) +
                 $"Progress changes: {BuildProgressSummary(runResult)}\n" +
@@ -47,6 +49,28 @@ namespace Survivalon.World
             }
 
             return BuildRewardListSummary(rewardPayload.CurrencyRewards, rewardPayload.MaterialRewards);
+        }
+
+        private static string BuildRewardSourceLine(
+            PostRunStateController postRunStateController,
+            RunResult runResult)
+        {
+            if (postRunStateController == null)
+            {
+                throw new ArgumentNullException(nameof(postRunStateController));
+            }
+
+            if (runResult == null)
+            {
+                throw new ArgumentNullException(nameof(runResult));
+            }
+
+            if (!runResult.RewardPayload.HasRewards)
+            {
+                return string.Empty;
+            }
+
+            return $"Reward source: {postRunStateController.NodeContext.LocationIdentity.RewardSourceDisplayName}\n";
         }
 
         private static string BuildMilestoneRewardLine(RunRewardPayload rewardPayload)
