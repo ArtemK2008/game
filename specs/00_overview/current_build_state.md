@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 067**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, and **065a**.
+This summary reflects completed work through **Milestone 067**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, and **067a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -58,6 +58,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The service shell currently exposes two MVP-readable sections:
   - a progression-hub summary tied to the existing account-wide progression sink and current persistent progression material balance
   - a build-preparation summary tied to the currently selected character, assigned skill package, and equipped primary/support gear
+- The service shell overview now also surfaces the current authored location identity and its reward focus/source, so the live cavern service flow reads explicitly as `Echo Caverns` rather than only as a raw region id.
 - The service shell now also supports one short direct progression interaction:
   - affordable account-wide projects can be purchased directly from the town/service screen
   - purchase spends `Persistent progression material`
@@ -299,6 +300,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ## Known temporary placeholders / technical shortcuts
 - The world graph, town-service context mapping, and initial persistent state are currently seeded by `BootstrapWorldMapFactory`.
 - The first shipped location identities are still bootstrap-seeded content data rather than authored external content assets.
+- The fallback location-identity seam still exists as a defensive default for missing world data, but current shipped bootstrap regions and their entered placeholder states are explicitly covered as authored identities rather than fallback-generated ones.
 - The world map, node screen, town/service shell, post-run panel, and combat shell are runtime-generated placeholder UI.
 - Main menu flow is still a placeholder target rather than a real menu system.
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.

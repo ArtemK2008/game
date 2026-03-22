@@ -40,6 +40,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState, Is.Not.Null);
             Assert.That(placeholderState.NodeId, Is.EqualTo(selectedNodeId));
             Assert.That(placeholderState.LocationIdentity.DisplayName, Is.EqualTo("Echo Caverns"));
+            Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(placeholderState.OriginNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
             Assert.That(worldState.CurrentNodeId, Is.EqualTo(selectedNodeId));
             Assert.That(worldState.LastSafeNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
@@ -60,6 +61,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState, Is.Not.Null);
             Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.VerdantFrontier));
+            Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(
                 placeholderState.CombatEncounter.PrimaryEnemyProfile,
                 Is.SameAs(CombatStandardEnemyProfileCatalog.EnemyUnit));
@@ -92,6 +94,7 @@ namespace Survivalon.Tests.EditMode.World
                 Is.SameAs(CombatBossProfileCatalog.GateBoss));
             Assert.That(placeholderState.BossProgressionGate, Is.Not.Null);
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.VerdantFrontier));
+            Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(
                 placeholderState.BossProgressionGate.UnlockedNodeId,
                 Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
@@ -114,6 +117,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.TownServiceContext.ContextId, Is.EqualTo("town_service_cavern_hub"));
             Assert.That(placeholderState.TownServiceContext.DisplayName, Is.EqualTo("Cavern Service Hub"));
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.EchoCaverns));
+            Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
         }
 
         [Test]

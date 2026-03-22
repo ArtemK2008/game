@@ -24,7 +24,8 @@ namespace Survivalon.Data.World
                 $"location_identity_{regionId.Value}",
                 regionId.Value,
                 "Regional stockpile",
-                "Mixed regional value");
+                "Mixed regional value",
+                isFallbackIdentity: true);
         }
     }
 }

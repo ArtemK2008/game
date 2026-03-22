@@ -22,6 +22,9 @@ namespace Survivalon.Tests.EditMode.Towns
 
             Assert.That(overviewText, Is.EqualTo(
                 "Service context: Cavern Service Hub\n" +
+                "Location: Echo Caverns\n" +
+                "Reward focus: Persistent progression gains\n" +
+                "Reward source: Cavern relic caches\n" +
                 "Region: region_002\n" +
                 "Node: region_002_node_001\n" +
                 "Entered from: region_001_node_002\n" +
@@ -77,6 +80,9 @@ namespace Survivalon.Tests.EditMode.Towns
                 new NodeId("region_002_node_001"),
                 new RegionId("region_002"),
                 new NodeId("region_001_node_002"),
+                locationDisplayName: "Echo Caverns",
+                locationRewardSourceDisplayName: "Cavern relic caches",
+                locationRewardFocusDisplayName: "Persistent progression gains",
                 persistentProgressionMaterialAmount: 1,
                 regionMaterialAmount: 2,
                 materialPowerPathState: new TownServiceMaterialPowerPathState(
