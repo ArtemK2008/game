@@ -12,7 +12,7 @@ namespace Survivalon.World
 {
     public sealed class WorldMapScreen : MonoBehaviour
     {
-        private const float SummaryPreferredHeight = 150f;
+        private const float SummaryPreferredHeight = 214f;
         private const float CharacterSelectionSummaryPreferredHeight = 44f;
         private const float CharacterSelectionButtonPreferredHeight = 40f;
         private const float BuildAssignmentSummaryPreferredHeight = 104f;
@@ -78,15 +78,14 @@ namespace Survivalon.World
 
         private void Refresh()
         {
+            WorldMapWorldStateSummary worldStateSummary = screenController.BuildWorldStateSummary();
             IReadOnlyList<WorldMapNodeOption> nodeOptions = screenController.BuildNodeOptions();
             titleText.text = "World Map";
             summaryText.text = WorldMapScreenTextBuilder.BuildSummaryText(
-                nodeOptions,
+                worldStateSummary,
                 screenController.HasSelection,
                 screenController.HasSelection ? screenController.SelectedNodeId : default,
-                screenController.SessionContext,
-                screenController.HasForwardRouteChoice,
-                screenController.ForwardSelectableNodeCount);
+                screenController.SessionContext);
             RefreshCharacterSelection();
             RefreshBuildAssignment();
             RefreshEntryButton();
@@ -557,8 +556,8 @@ namespace Survivalon.World
             buttonRectTransform.pivot = new Vector2(0.5f, 1f);
 
             LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
-            layoutElement.minHeight = 72f;
-            layoutElement.preferredHeight = 72f;
+            layoutElement.minHeight = 84f;
+            layoutElement.preferredHeight = 84f;
             layoutElement.flexibleWidth = 1f;
 
             Image buttonImage = buttonObject.GetComponent<Image>();

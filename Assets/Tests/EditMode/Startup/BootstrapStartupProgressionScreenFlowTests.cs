@@ -328,7 +328,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
-                Assert.That(ContainsText(hostObject, "Recent node: region_001_node_004"), Is.True);
+                Assert.That(ContainsText(hostObject, "Recent: region_001_node_004"), Is.True);
                 Assert.That(
                     storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
                     Is.EqualTo(regionMaterialBeforeFarm + 2));

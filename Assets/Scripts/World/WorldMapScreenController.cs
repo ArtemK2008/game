@@ -13,6 +13,7 @@ namespace Survivalon.World
         private readonly NodeReachabilityResolver nodeReachabilityResolver;
         private readonly WorldNodeAccessResolver worldNodeAccessResolver;
         private readonly WorldNodeStateResolver worldNodeStateResolver;
+        private readonly WorldMapWorldStateSummaryResolver worldStateSummaryResolver;
         private readonly SessionContextState sessionContext;
         private readonly Dictionary<RegionId, int> regionOrderById;
         private readonly HashSet<NodeId> forwardSelectableNodeIds;
@@ -34,6 +35,7 @@ namespace Survivalon.World
             this.worldNodeStateResolver = worldNodeStateResolver ?? new WorldNodeStateResolver();
             this.worldNodeAccessResolver = worldNodeAccessResolver
                 ?? new WorldNodeAccessResolver(this.nodeReachabilityResolver, this.worldNodeStateResolver);
+            worldStateSummaryResolver = new WorldMapWorldStateSummaryResolver(this.worldNodeStateResolver);
             this.sessionContext = sessionContext;
             regionOrderById = CreateRegionOrderLookup(worldGraph);
             forwardSelectableNodeIds = CreateSelectableNodeIdSet(
@@ -73,10 +75,22 @@ namespace Survivalon.World
                     selectableNodeIds.Contains(node.NodeId),
                     node.NodeId == currentContextNodeId,
                     hasSelectedNode && node.NodeId == selectedNodeId,
-                    region.LocationIdentity.DisplayName));
+                    region.LocationIdentity.DisplayName,
+                    ResolvePathRole(node.NodeId, currentContextNodeId)));
             }
 
             return nodeOptions;
+        }
+
+        public WorldMapWorldStateSummary BuildWorldStateSummary()
+        {
+            NodeId currentContextNodeId = ResolveCurrentContextNodeId();
+            return worldStateSummaryResolver.Resolve(
+                worldGraph,
+                worldState,
+                currentContextNodeId,
+                selectableNodeIds,
+                forwardSelectableNodeIds);
         }
 
         public bool TrySelectNode(NodeId nodeId)
@@ -169,6 +183,26 @@ namespace Survivalon.World
             }
 
             throw new InvalidOperationException("World map requires a current node or last safe node.");
+        }
+
+        private WorldMapPathRole ResolvePathRole(NodeId nodeId, NodeId currentContextNodeId)
+        {
+            if (nodeId == currentContextNodeId)
+            {
+                return WorldMapPathRole.CurrentContext;
+            }
+
+            if (forwardSelectableNodeIds.Contains(nodeId))
+            {
+                return WorldMapPathRole.ForwardRoute;
+            }
+
+            if (selectableNodeIds.Contains(nodeId))
+            {
+                return WorldMapPathRole.BacktrackOrFarmRoute;
+            }
+
+            return WorldMapPathRole.BlockedPath;
         }
     }
 }

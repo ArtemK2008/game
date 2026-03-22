@@ -65,12 +65,16 @@ namespace Survivalon.Tests.EditMode.World
                 Text[] labels = hostObject.GetComponentsInChildren<Text>(true);
                 bool containsStateLabel = false;
                 bool containsForwardRouteSummary = false;
+                bool containsReadableLocationSummary = false;
+                bool containsBlockedLinkSummary = false;
+                bool containsStateLegend = false;
                 bool containsRecentNodeSummary = false;
                 bool containsCharacterSelectionSummary = false;
                 bool containsAssignedPackageSummary = false;
                 bool containsPrimaryGearSummary = false;
                 bool containsSupportGearSummary = false;
                 bool containsLocationIdentityLabel = false;
+                bool containsPathRoleLabel = false;
                 foreach (Text label in labels)
                 {
                     if (label.text.Contains("State:"))
@@ -78,12 +82,27 @@ namespace Survivalon.Tests.EditMode.World
                         containsStateLabel = true;
                     }
 
-                    if (label.text.Contains("Forward route options: 2"))
+                    if (label.text.Contains("Forward routes: region_001_node_004, region_002_node_001"))
                     {
                         containsForwardRouteSummary = true;
                     }
 
-                    if (label.text.Contains("Recent node: region_001_node_002"))
+                    if (label.text.Contains("Location: Verdant Frontier | Region: region_001"))
+                    {
+                        containsReadableLocationSummary = true;
+                    }
+
+                    if (label.text.Contains("Blocked links: region_001_node_003"))
+                    {
+                        containsBlockedLinkSummary = true;
+                    }
+
+                    if (label.text.Contains("State legend: Available = enterable"))
+                    {
+                        containsStateLegend = true;
+                    }
+
+                    if (label.text.Contains("Recent: region_001_node_002"))
                     {
                         containsRecentNodeSummary = true;
                     }
@@ -112,16 +131,25 @@ namespace Survivalon.Tests.EditMode.World
                     {
                         containsLocationIdentityLabel = true;
                     }
+
+                    if (label.text.Contains("Path: Forward route"))
+                    {
+                        containsPathRoleLabel = true;
+                    }
                 }
 
                 Assert.That(containsStateLabel, Is.True);
                 Assert.That(containsForwardRouteSummary, Is.True);
+                Assert.That(containsReadableLocationSummary, Is.True);
+                Assert.That(containsBlockedLinkSummary, Is.True);
+                Assert.That(containsStateLegend, Is.True);
                 Assert.That(containsRecentNodeSummary, Is.True);
                 Assert.That(containsCharacterSelectionSummary, Is.True);
                 Assert.That(containsAssignedPackageSummary, Is.True);
                 Assert.That(containsPrimaryGearSummary, Is.True);
                 Assert.That(containsSupportGearSummary, Is.True);
                 Assert.That(containsLocationIdentityLabel, Is.True);
+                Assert.That(containsPathRoleLabel, Is.True);
                 Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "character_striker_CharacterButton"), Is.Not.Null);
                 Assert.That(

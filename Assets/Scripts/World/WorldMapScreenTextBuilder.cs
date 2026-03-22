@@ -10,19 +10,16 @@ namespace Survivalon.World
     public static class WorldMapScreenTextBuilder
     {
         public static string BuildSummaryText(
-            IReadOnlyList<WorldMapNodeOption> nodeOptions,
+            WorldMapWorldStateSummary worldStateSummary,
             bool hasSelectedNode,
             NodeId selectedNodeId,
-            SessionContextState sessionContext,
-            bool hasForwardRouteChoice,
-            int forwardSelectableNodeCount)
+            SessionContextState sessionContext)
         {
-            if (nodeOptions == null)
+            if (worldStateSummary == null)
             {
-                throw new ArgumentNullException(nameof(nodeOptions));
+                throw new ArgumentNullException(nameof(worldStateSummary));
             }
 
-            string currentNodeLabel = "unknown";
             string selectedNodeLabel = hasSelectedNode ? selectedNodeId.Value : "none";
             string recentNodeLabel = GetSessionNodeLabel(
                 sessionContext,
@@ -36,33 +33,17 @@ namespace Survivalon.World
                 sessionContext,
                 context => context.HasLastSelectedNode,
                 context => context.LastSelectedNodeId);
-            int selectableCount = 0;
-
-            foreach (WorldMapNodeOption nodeOption in nodeOptions)
-            {
-                if (nodeOption.IsCurrentContext)
-                {
-                    currentNodeLabel = nodeOption.NodeId.Value;
-                }
-
-                if (nodeOption.IsSelectable)
-                {
-                    selectableCount++;
-                }
-            }
-
-            string routeChoiceLabel = hasForwardRouteChoice
-                ? "Branch choice available"
-                : "Single forward route";
 
             return
-                $"Current node: {currentNodeLabel}\n" +
-                $"Recent node: {recentNodeLabel}\n" +
-                $"Recent push target: {recentPushTargetLabel}\n" +
-                $"Last selected node: {lastSelectedNodeLabel}\n" +
-                $"Selectable destinations: {selectableCount}\n" +
-                $"Forward route options: {forwardSelectableNodeCount} ({routeChoiceLabel})\n" +
-                $"Selected node: {selectedNodeLabel}\n" +
+                $"Location: {worldStateSummary.CurrentLocationDisplayName} | Region: {worldStateSummary.CurrentRegionId.Value}\n" +
+                $"Current node: {worldStateSummary.CurrentNodeId.Value} ({worldStateSummary.CurrentNodeState}) | Selected: {selectedNodeLabel}\n" +
+                $"Reachable destinations: {worldStateSummary.SelectableDestinationCount} ({worldStateSummary.ForwardRouteNodeIds.Count} forward / {worldStateSummary.BacktrackOrFarmNodeIds.Count} backtrack-farm)\n" +
+                $"Forward routes: {BuildNodeListLabel(worldStateSummary.ForwardRouteNodeIds)}\n" +
+                $"Backtrack / farm: {BuildNodeListLabel(worldStateSummary.BacktrackOrFarmNodeIds)}\n" +
+                $"Blocked links: {BuildNodeListLabel(worldStateSummary.BlockedLinkedNodeIds)}\n" +
+                $"Recent: {recentNodeLabel} | Push target: {recentPushTargetLabel} | Last selected: {lastSelectedNodeLabel}\n" +
+                "State legend: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked\n" +
+                "Status legend: Current = active anchor | Selectable = can enter now | Known = visible but not enterable\n" +
                 "Select a reachable node, then confirm entry to start the current node flow.";
         }
 
@@ -177,7 +158,25 @@ namespace Survivalon.World
 
             return
                 $"{nodeOption.LocationDisplayName} / {nodeOption.NodeId.Value}\n" +
-                $"Type: {nodeOption.NodeType} | State: {nodeOption.NodeState} | {BuildAvailabilityLabel(nodeOption)}";
+                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {nodeOption.NodeType} | State: {nodeOption.NodeState}\n" +
+                $"Status: {BuildAvailabilityLabel(nodeOption)}";
+        }
+
+        private static string BuildPathRoleLabel(WorldMapPathRole pathRole)
+        {
+            switch (pathRole)
+            {
+                case WorldMapPathRole.CurrentContext:
+                    return "Current anchor";
+                case WorldMapPathRole.ForwardRoute:
+                    return "Forward route";
+                case WorldMapPathRole.BacktrackOrFarmRoute:
+                    return "Backtrack / farm route";
+                case WorldMapPathRole.BlockedPath:
+                    return "Blocked path";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(pathRole), pathRole, "Unknown world map path role.");
+            }
         }
 
         private static string BuildAvailabilityLabel(WorldMapNodeOption nodeOption)
@@ -248,6 +247,27 @@ namespace Survivalon.World
             }
 
             return selector(sessionContext).Value;
+        }
+
+        private static string BuildNodeListLabel(IReadOnlyList<NodeId> nodeIds)
+        {
+            if (nodeIds == null)
+            {
+                throw new ArgumentNullException(nameof(nodeIds));
+            }
+
+            if (nodeIds.Count == 0)
+            {
+                return "none";
+            }
+
+            string[] labels = new string[nodeIds.Count];
+            for (int index = 0; index < nodeIds.Count; index++)
+            {
+                labels[index] = nodeIds[index].Value;
+            }
+
+            return string.Join(", ", labels);
         }
     }
 }
