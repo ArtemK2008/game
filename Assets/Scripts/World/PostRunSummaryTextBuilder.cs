@@ -26,6 +26,7 @@ namespace Survivalon.World
                 $"Rewards gained: {BuildRewardSummary(runResult.RewardPayload)}\n" +
                 BuildMilestoneRewardLine(runResult.RewardPayload) +
                 $"Progress changes: {BuildProgressSummary(runResult)}\n" +
+                BuildBossProgressionGateLine(runResult) +
                 "Next actions:\n" +
                 $"- Replay: {FormatYesNo(postRunStateController.CanReplayNode)}\n" +
                 $"- Return to world: {FormatYesNo(postRunStateController.CanReturnToWorld)}\n" +
@@ -96,6 +97,18 @@ namespace Survivalon.World
                 $"{nodeProgressSummary}; " +
                 $"persistent +{runResult.PersistentProgressionDelta}; " +
                 $"route unlock {FormatYesNo(runResult.DidUnlockRoute)}";
+        }
+
+        private static string BuildBossProgressionGateLine(RunResult runResult)
+        {
+            if (runResult == null)
+            {
+                throw new ArgumentNullException(nameof(runResult));
+            }
+
+            return runResult.HasBossProgressionGateUnlock
+                ? $"Boss gate unlock: {runResult.BossProgressionGateUnlockSummary}\n"
+                : string.Empty;
         }
 
         private static string FormatYesNo(bool value)

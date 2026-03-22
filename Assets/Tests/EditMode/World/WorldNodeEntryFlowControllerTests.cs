@@ -69,23 +69,16 @@ namespace Survivalon.Tests.EditMode.World
             PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
 
-            worldState.SetCurrentNode(BootstrapWorldScenario.CavernServiceNodeId);
-            worldState.SetLastSafeNode(BootstrapWorldScenario.ForestPushNodeId);
-            worldState.ReplaceReachableNodes(new[]
-            {
-                BootstrapWorldScenario.CavernServiceNodeId,
-                BootstrapWorldScenario.CavernGateNodeId,
-            });
             worldState.ReplaceNodeStates(new[]
             {
                 PersistentStateTestData.CreateNodeState(
-                    BootstrapWorldScenario.CavernGateNodeId,
+                    BootstrapWorldScenario.ForestGateNodeId,
                     unlockThreshold: 3,
                     nodeState: NodeState.Available,
                     unlockProgress: 0),
             });
 
-            bool entered = controller.TryEnterNode(BootstrapWorldScenario.CavernGateNodeId, out NodePlaceholderState placeholderState);
+            bool entered = controller.TryEnterNode(BootstrapWorldScenario.ForestGateNodeId, out NodePlaceholderState placeholderState);
 
             Assert.That(entered, Is.True);
             Assert.That(placeholderState, Is.Not.Null);
@@ -94,6 +87,13 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 placeholderState.CombatEncounter.PrimaryEnemyProfile,
                 Is.SameAs(CombatBossProfileCatalog.GateBoss));
+            Assert.That(placeholderState.BossProgressionGate, Is.Not.Null);
+            Assert.That(
+                placeholderState.BossProgressionGate.UnlockedNodeId,
+                Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
+            Assert.That(
+                placeholderState.BossProgressionGate.UnlockSummaryText,
+                Is.EqualTo("Cavern gate opened"));
         }
 
         [Test]

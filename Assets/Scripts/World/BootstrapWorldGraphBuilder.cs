@@ -27,7 +27,10 @@ namespace Survivalon.World
                     BootstrapWorldScenario.ForestRegionId,
                     NodeType.BossOrGate,
                     NodeState.Locked,
-                    CombatBossEncounterCatalog.GateBossEncounter),
+                    CombatBossEncounterCatalog.GateBossEncounter,
+                    new BossProgressionGateDefinition(
+                        BootstrapWorldScenario.CavernGateNodeId,
+                        "Cavern gate opened")),
                 new WorldNode(
                     BootstrapWorldScenario.ForestFarmNodeId,
                     BootstrapWorldScenario.ForestRegionId,
@@ -77,6 +80,7 @@ namespace Survivalon.World
                 new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestGateNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestFarmNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.CavernServiceNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.ForestGateNodeId, BootstrapWorldScenario.CavernGateNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernGateNodeId),
             };
 

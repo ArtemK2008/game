@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 058**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, and **056a**.
+This summary reflects completed work through **Milestone 059**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, and **056a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -39,6 +39,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Runs use explicit lifecycle states: `RunStart`, `RunActive`, `RunResolved`, and `PostRun`.
 - Post-run shows a compact summary and allows replay, return to world, or stop session.
 - The post-run summary now presents rewards and progress changes in a more clearly grouped aggregated format.
+- The post-run summary now also shows a compact explicit boss-gate unlock line when a boss defeat opens new forward progression.
 - Replay re-enters the same node cleanly.
 - Return/stop save a world-level safe resume context.
 
@@ -58,6 +59,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - forest entry and forest farm use `Enemy Unit`
   - forest push uses `Bulwark Raider`
   - current gate/boss nodes use the explicit `Gate Boss` encounter
+- The first shipped boss progression gate now exists in live bootstrap content:
+  - defeating the forest `Gate Boss` unlocks `region_002_node_002` / `Cavern Gate`
+  - that result is surfaced explicitly in post-run summary text
+  - the unlocked `Cavern Gate` becomes reachable on return to the world map through the existing bootstrap route graph
 
 ### Auto-battle / hostility / no-manual-combat loop
 - Combat uses deterministic auto-targeting.
@@ -236,7 +241,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current auto-triggered active skill layer is still interpreted through small hardcoded resolver paths for the single shipped active skill, `Burst Strike`.
 - Standard enemy and boss variety are still intentionally small: one faster baseline standard enemy, one slower sturdier push-oriented standard enemy variant, and one explicit gate-boss profile/encounter currently exist, while broader enemy rosters and faction/content variety are still deferred.
 - Standard-enemy encounter/profile data and boss encounter/profile data now live in separate small catalogs, while current encounter content remains bootstrap-seeded.
-- Boss/gate node progress behavior is intentionally temporary and should be revisited in the later progression/boss milestones.
+- Boss/gate node progress behavior is still intentionally temporary beyond the new forest-gate unlock result; boss defeat now opens the next gate target, but boss reward differentiation and broader boss clear semantics are still deferred.
 
 ## Source note
 This file is derived from the milestone notes in `specs/milestone/` plus the current codebase entry flow. It should be updated after each completed milestone so it remains the compact source for current implemented build state.

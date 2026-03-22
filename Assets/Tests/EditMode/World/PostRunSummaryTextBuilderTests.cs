@@ -35,7 +35,8 @@ namespace Survivalon.Tests.EditMode.World
                 new RunNextActionContext(
                     canReplayNode: true,
                     canChooseAnotherNode: true,
-                    canStopSession: true));
+                    canStopSession: true),
+                "Cavern gate opened");
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 runResult);
@@ -49,6 +50,7 @@ namespace Survivalon.Tests.EditMode.World
                 "Rewards gained: Soft currency x1, Region material x1\n" +
                 "Milestone rewards: Persistent progression material x1\n" +
                 "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes\n" +
+                "Boss gate unlock: Cavern gate opened\n" +
                 "Next actions:\n" +
                 "- Replay: Yes\n" +
                 "- Return to world: Yes\n" +
@@ -106,6 +108,19 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Does.Contain("Progress changes: node +1 this run; tracked total 2 / 3; persistent +0; route unlock No"));
             Assert.That(summaryText, Does.Not.Contain("Milestone rewards:"));
+        }
+
+        [Test]
+        public void ShouldOmitBossGateUnlockLineWhenNoBossProgressionGateWasUnlocked()
+        {
+            RunResult runResult = CreateSucceededRunResult();
+            PostRunStateController postRunStateController = new PostRunStateController(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                runResult);
+
+            string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
+
+            Assert.That(summaryText, Does.Not.Contain("Boss gate unlock:"));
         }
 
         [Test]
