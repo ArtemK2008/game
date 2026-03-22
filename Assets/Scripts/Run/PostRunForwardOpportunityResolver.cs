@@ -32,9 +32,13 @@ namespace Survivalon.Run
             if (runResult.HasBossProgressionGateUnlock &&
                 runResult.BossProgressionGateUnlock.TryGetUnlockedNodeId(out NodeId unlockedNodeId))
             {
-                return new PostRunForwardOpportunityState(
-                    worldNodeDisplayNameResolver.Resolve(worldGraph, unlockedNodeId),
-                    PostRunForwardOpportunityKind.NewlyUnlockedPushTarget);
+                WorldNode unlockedNode = worldGraph.GetNode(unlockedNodeId);
+                if (IsPushTarget(unlockedNode))
+                {
+                    return new PostRunForwardOpportunityState(
+                        worldNodeDisplayNameResolver.Resolve(unlockedNode),
+                        PostRunForwardOpportunityKind.NewlyUnlockedPushTarget);
+                }
             }
 
             if (persistentWorldState == null || !HasWorldAnchor(persistentWorldState))

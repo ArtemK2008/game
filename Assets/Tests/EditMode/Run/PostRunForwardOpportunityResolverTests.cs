@@ -38,6 +38,35 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldIgnoreBossUnlockThatPointsAtServiceNode()
+        {
+            PostRunForwardOpportunityState forwardOpportunityState =
+                new PostRunForwardOpportunityResolver().Resolve(
+                    new RunResult(
+                        BootstrapWorldScenario.ForestGateNodeId,
+                        RunResolutionState.Succeeded,
+                        RunRewardPayload.Empty,
+                        1,
+                        1,
+                        3,
+                        0,
+                        false,
+                        new RunNextActionContext(
+                            canReplayNode: true,
+                            canChooseAnotherNode: true,
+                            canStopSession: true),
+                        BossProgressionGateUnlockResult.CreateUnlocked(BootstrapWorldScenario.CavernServiceNodeId)),
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    persistentWorldState: null);
+
+            Assert.That(forwardOpportunityState.HasOpportunity, Is.False);
+            Assert.That(forwardOpportunityState.TargetDisplayName, Is.Null);
+            Assert.That(
+                forwardOpportunityState.OpportunityKind,
+                Is.EqualTo(PostRunForwardOpportunityKind.None));
+        }
+
+        [Test]
         public void ShouldKeepServiceHubOutOfForwardPushTargetSelection()
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();

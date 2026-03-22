@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
@@ -63,7 +64,8 @@ namespace Survivalon.Run
                 return null;
             }
 
-            var enterableNodes = worldNodeAccessResolver.GetEnterableNodes(worldGraph, persistentWorldState);
+            IReadOnlyList<WorldNode> enterableNodes =
+                worldNodeAccessResolver.GetEnterableNodes(worldGraph, persistentWorldState);
             for (int index = 0; index < enterableNodes.Count; index++)
             {
                 WorldNode node = enterableNodes[index];
