@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
+using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 
@@ -67,7 +68,9 @@ namespace Survivalon.Towns
                 placeholderState.RegionId,
                 placeholderState.OriginNodeId,
                 gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                gameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
                 BuildProgressionOptions(gameState),
+                BuildConversionOptions(gameState),
                 skillPackageAssignmentService.BuildOptionsForSelectedCharacter(gameState),
                 BuildGearAssignmentOptions(gameState),
                 selectedCharacter.DisplayName,
@@ -94,6 +97,29 @@ namespace Survivalon.Towns
             }
 
             return progressionOptions;
+        }
+
+        private static IReadOnlyList<TownServiceConversionOptionState> BuildConversionOptions(PersistentGameState gameState)
+        {
+            List<TownServiceConversionOptionState> conversionOptions = new List<TownServiceConversionOptionState>();
+
+            for (int index = 0; index < TownServiceConversionCatalog.All.Count; index++)
+            {
+                TownServiceConversionDefinition conversionDefinition = TownServiceConversionCatalog.All[index];
+                int availableInputAmount =
+                    gameState.ResourceBalances.GetAmount(conversionDefinition.InputResourceCategory);
+                conversionOptions.Add(new TownServiceConversionOptionState(
+                    conversionDefinition.ConversionId,
+                    conversionDefinition.DisplayName,
+                    conversionDefinition.InputResourceCategory,
+                    conversionDefinition.InputAmount,
+                    conversionDefinition.OutputResourceCategory,
+                    conversionDefinition.OutputAmount,
+                    availableInputAmount,
+                    availableInputAmount >= conversionDefinition.InputAmount));
+            }
+
+            return conversionOptions;
         }
 
         private IReadOnlyList<PlayableCharacterGearAssignmentOption> BuildGearAssignmentOptions(PersistentGameState gameState)

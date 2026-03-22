@@ -1,6 +1,7 @@
 using System;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 using UnityEngine;
@@ -32,6 +33,7 @@ namespace Survivalon.Towns
         private PersistentGameState currentGameState;
         private TownServiceScreenStateResolver stateResolver;
         private TownServiceProgressionInteractionService progressionInteractionService;
+        private TownServiceConversionInteractionService conversionInteractionService;
         private TownServiceBuildPreparationInteractionService buildPreparationInteractionService;
 
         public void Show(
@@ -41,6 +43,7 @@ namespace Survivalon.Towns
             Action stopSessionRequested = null,
             TownServiceScreenStateResolver stateResolver = null,
             TownServiceProgressionInteractionService progressionInteractionService = null,
+            TownServiceConversionInteractionService conversionInteractionService = null,
             TownServiceBuildPreparationInteractionService buildPreparationInteractionService = null)
         {
             if (placeholderState == null)
@@ -71,6 +74,7 @@ namespace Survivalon.Towns
             currentGameState = gameState;
             this.stateResolver = stateResolver ?? new TownServiceScreenStateResolver();
             this.progressionInteractionService = progressionInteractionService ?? new TownServiceProgressionInteractionService();
+            this.conversionInteractionService = conversionInteractionService ?? new TownServiceConversionInteractionService();
             this.buildPreparationInteractionService = buildPreparationInteractionService ??
                 new TownServiceBuildPreparationInteractionService();
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
@@ -417,6 +421,21 @@ namespace Survivalon.Towns
                 AccountWideUpgradeId upgradeId = progressionOption.UpgradeId;
                 progressionButton.onClick.AddListener(() => HandleProgressionPurchaseRequested(upgradeId));
             }
+
+            for (int index = 0; index < screenState.ConversionOptions.Count; index++)
+            {
+                TownServiceConversionOptionState conversionOption = screenState.ConversionOptions[index];
+                Button conversionButton = CreateActionButton(
+                    progressionActionContainer,
+                    $"{conversionOption.ConversionId}_ConversionButton",
+                    TownServiceScreenTextBuilder.BuildConversionActionButtonLabel(conversionOption),
+                    new Color(0.24f, 0.30f, 0.44f, 1f),
+                    out _);
+                conversionButton.interactable = conversionOption.IsAffordable;
+
+                TownServiceConversionId conversionId = conversionOption.ConversionId;
+                conversionButton.onClick.AddListener(() => HandleConversionRequested(conversionId));
+            }
         }
 
         private void RefreshBuildActionButtons(TownServiceScreenState screenState)
@@ -513,6 +532,21 @@ namespace Survivalon.Towns
             }
 
             if (!buildPreparationInteractionService.TryAssignSkillPackage(currentGameState, skillPackageId))
+            {
+                return;
+            }
+
+            Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
+        }
+
+        private void HandleConversionRequested(TownServiceConversionId conversionId)
+        {
+            if (conversionInteractionService == null || stateResolver == null)
+            {
+                return;
+            }
+
+            if (!conversionInteractionService.TryConvert(currentGameState, conversionId))
             {
                 return;
             }

@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 064**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, and **063a**.
+This summary reflects completed work through **Milestone 065**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, and **063a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -57,6 +57,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - purchase spends `Persistent progression material`
   - purchased state and balances persist immediately
   - the service screen refreshes in place after purchase
+- The service shell now also supports one short direct conversion/refinement interaction:
+  - `Region material x3 -> Persistent progression material x1`
+  - the conversion is visible in the progression-hub section
+  - successful conversion persists immediately and refreshes the service screen in place
+  - insufficient region material leaves the conversion visible but unavailable
 - The service shell now also supports one short direct build-preparation interaction for the currently selected character:
   - skill package assignment can be changed there using the existing persistent character-assignment rules
   - primary and support gear can be equipped or unequipped there using the existing persistent loadout rules
@@ -179,6 +184,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - purchases spend persistent progression material and persist immediately
   - already-purchased projects are no longer buyable there
   - unaffordable projects remain visible but unavailable
+- The town/service shell now also exposes one small refinement path into that same sink:
+  - `Region material x3 -> Persistent progression material x1`
+  - this gives repeatable region farming a direct safe-context conversion path into future account-wide project purchasing
 
 ### Persistent character baseline, selection placeholder, and linked progression
 - The build now has two explicit playable characters stored in persistent game state:
@@ -261,12 +269,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - The first run-time skill choice now exists only as a compact placeholder choice for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
 - Gear now exists for two categories with a minimal pre-run equip/unequip placeholder and two simple live stat effects; broader gear UI, gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
-- The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, selected-character build preparation, and return/stop actions, but not a full service interaction suite.
+- The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, one fixed region-material refinement action, selected-character build preparation, and return/stop actions, but not a full service interaction suite.
 
 ## Not implemented yet
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
-- Additional progression sinks and broader service/town interaction beyond the current direct project purchase flow
+- Additional progression sinks and broader service/town interaction beyond the current direct project purchase flow and one fixed refinement action
 - Deeper town/build navigation beyond the current short direct selected-character package and gear controls
 - Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
 - Additional gear categories beyond the current two-slot baseline, richer live gear effects, and broader itemization/loot systems

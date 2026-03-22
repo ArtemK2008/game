@@ -14,7 +14,9 @@ namespace Survivalon.Towns
             RegionId regionId,
             NodeId originNodeId,
             int persistentProgressionMaterialAmount,
+            int regionMaterialAmount,
             IReadOnlyList<TownServiceProgressionOptionState> progressionOptions,
+            IReadOnlyList<TownServiceConversionOptionState> conversionOptions,
             IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions,
             IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions,
             string selectedCharacterDisplayName,
@@ -24,6 +26,7 @@ namespace Survivalon.Towns
         {
             ServiceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
             ProgressionOptions = progressionOptions ?? throw new ArgumentNullException(nameof(progressionOptions));
+            ConversionOptions = conversionOptions ?? throw new ArgumentNullException(nameof(conversionOptions));
             SkillPackageOptions = skillPackageOptions ?? throw new ArgumentNullException(nameof(skillPackageOptions));
             GearAssignmentOptions = gearAssignmentOptions ?? throw new ArgumentNullException(nameof(gearAssignmentOptions));
             SelectedCharacterDisplayName = selectedCharacterDisplayName ??
@@ -38,6 +41,7 @@ namespace Survivalon.Towns
             RegionId = regionId;
             OriginNodeId = originNodeId;
             PersistentProgressionMaterialAmount = persistentProgressionMaterialAmount;
+            RegionMaterialAmount = regionMaterialAmount;
         }
 
         public TownServiceContextDefinition ServiceContext { get; }
@@ -50,7 +54,11 @@ namespace Survivalon.Towns
 
         public int PersistentProgressionMaterialAmount { get; }
 
+        public int RegionMaterialAmount { get; }
+
         public IReadOnlyList<TownServiceProgressionOptionState> ProgressionOptions { get; }
+
+        public IReadOnlyList<TownServiceConversionOptionState> ConversionOptions { get; }
 
         public IReadOnlyList<PlayableCharacterSkillPackageOption> SkillPackageOptions { get; }
 

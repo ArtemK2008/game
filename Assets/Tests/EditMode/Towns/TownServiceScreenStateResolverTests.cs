@@ -2,6 +2,7 @@ using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
+using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
 using Survivalon.Towns;
@@ -15,6 +16,7 @@ namespace Survivalon.Tests.EditMode.Towns
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
             gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 2);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 4);
 
             PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService =
                 new PlayableCharacterSkillPackageAssignmentService();
@@ -47,6 +49,7 @@ namespace Survivalon.Tests.EditMode.Towns
 
             Assert.That(screenState.ServiceContext.DisplayName, Is.EqualTo("Cavern Service Hub"));
             Assert.That(screenState.PersistentProgressionMaterialAmount, Is.EqualTo(1));
+            Assert.That(screenState.RegionMaterialAmount, Is.EqualTo(4));
             Assert.That(screenState.SelectedCharacterDisplayName, Is.EqualTo("Vanguard"));
             Assert.That(screenState.AssignedSkillPackageDisplayName, Is.EqualTo("Burst Drill"));
             Assert.That(screenState.PrimaryGearDisplayName, Is.EqualTo("Training Blade"));
@@ -68,6 +71,21 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(screenState.ProgressionOptions[3].UpgradeDisplayName, Is.EqualTo("Boss Salvage Project"));
             Assert.That(screenState.ProgressionOptions[3].IsPurchased, Is.False);
             Assert.That(screenState.ProgressionOptions[3].IsAffordable, Is.False);
+            Assert.That(screenState.ConversionOptions.Count, Is.EqualTo(1));
+            Assert.That(
+                screenState.ConversionOptions[0].ConversionId,
+                Is.EqualTo(TownServiceConversionId.RegionMaterialRefinement));
+            Assert.That(
+                screenState.ConversionOptions[0].ConversionDisplayName,
+                Is.EqualTo("Region Material Refinement"));
+            Assert.That(screenState.ConversionOptions[0].InputResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
+            Assert.That(screenState.ConversionOptions[0].InputAmount, Is.EqualTo(3));
+            Assert.That(
+                screenState.ConversionOptions[0].OutputResourceCategory,
+                Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(screenState.ConversionOptions[0].OutputAmount, Is.EqualTo(1));
+            Assert.That(screenState.ConversionOptions[0].AvailableInputAmount, Is.EqualTo(4));
+            Assert.That(screenState.ConversionOptions[0].IsAffordable, Is.True);
             Assert.That(screenState.SkillPackageOptions.Count, Is.EqualTo(2));
             Assert.That(screenState.SkillPackageOptions[0].SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
             Assert.That(screenState.SkillPackageOptions[0].IsAssigned, Is.False);

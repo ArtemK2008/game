@@ -3,6 +3,7 @@ using System.Text;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
+using Survivalon.Data.Towns;
 
 namespace Survivalon.Towns
 {
@@ -34,6 +35,7 @@ namespace Survivalon.Towns
             builder.AppendLine("Progression hub");
             builder.AppendLine(
                 $"Persistent progression material: {screenState.PersistentProgressionMaterialAmount}");
+            builder.AppendLine($"Region material: {screenState.RegionMaterialAmount}");
             builder.Append("Projects:");
 
             for (int index = 0; index < screenState.ProgressionOptions.Count; index++)
@@ -50,6 +52,27 @@ namespace Survivalon.Towns
                 builder.Append(BuildProgressionAvailabilityText(
                     progressionOption,
                     screenState.PersistentProgressionMaterialAmount));
+            }
+
+            builder.AppendLine();
+            builder.Append("Conversions:");
+
+            for (int index = 0; index < screenState.ConversionOptions.Count; index++)
+            {
+                TownServiceConversionOptionState conversionOption = screenState.ConversionOptions[index];
+                builder.AppendLine();
+                builder.Append("- ");
+                builder.Append(conversionOption.ConversionDisplayName);
+                builder.Append(" | ");
+                builder.Append(ResolveResourceDisplayName(conversionOption.InputResourceCategory));
+                builder.Append(" x");
+                builder.Append(conversionOption.InputAmount);
+                builder.Append(" -> ");
+                builder.Append(ResolveResourceDisplayName(conversionOption.OutputResourceCategory));
+                builder.Append(" x");
+                builder.Append(conversionOption.OutputAmount);
+                builder.Append(" | ");
+                builder.Append(BuildConversionAvailabilityText(conversionOption));
             }
 
             return builder.ToString();
@@ -96,6 +119,21 @@ namespace Survivalon.Towns
                 : $"Equip {gearCategoryLabel}: {gearAssignmentOption.DisplayName}";
         }
 
+        public static string BuildConversionActionButtonLabel(TownServiceConversionOptionState conversionOption)
+        {
+            if (conversionOption == null)
+            {
+                throw new ArgumentNullException(nameof(conversionOption));
+            }
+
+            if (conversionOption.IsAffordable)
+            {
+                return $"Run {conversionOption.ConversionDisplayName}";
+            }
+
+            return $"{conversionOption.ConversionDisplayName} Unavailable";
+        }
+
         private static string BuildFunctionSummary(TownServiceScreenState screenState)
         {
             if (screenState.ServiceContext.HasProgressionHubAccess &&
@@ -127,6 +165,22 @@ namespace Survivalon.Towns
             }
 
             int missingAmount = progressionOption.CostAmount - persistentProgressionMaterialAmount;
+            if (missingAmount <= 0)
+            {
+                return "Unavailable";
+            }
+
+            return $"Need {missingAmount} more";
+        }
+
+        private static string BuildConversionAvailabilityText(TownServiceConversionOptionState conversionOption)
+        {
+            if (conversionOption.IsAffordable)
+            {
+                return "Affordable";
+            }
+
+            int missingAmount = conversionOption.InputAmount - conversionOption.AvailableInputAmount;
             if (missingAmount <= 0)
             {
                 return "Unavailable";

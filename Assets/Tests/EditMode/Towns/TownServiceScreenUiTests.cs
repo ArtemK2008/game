@@ -40,6 +40,7 @@ namespace Survivalon.Tests.EditMode.Towns
             bool stoppedSession = false;
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
             gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 2);
 
             try
             {
@@ -69,6 +70,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(TryFindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "PushOffenseProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton"), Is.Not.Null);
+                Assert.That(TryFindButton(hostObject, "RegionMaterialRefinement_ConversionButton"), Is.Not.Null);
                 Assert.That(
                     TryFindButton(
                         hostObject,
@@ -105,6 +107,63 @@ namespace Survivalon.Tests.EditMode.Towns
         }
 
         [Test]
+        public void Show_ShouldConvertAffordableRegionMaterialAndRefreshVisibleProgressionState()
+        {
+            GameObject hostObject = new GameObject("TownServiceScreenHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            TownServiceConversionInteractionService interactionService =
+                new TownServiceConversionInteractionService(persistenceService);
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+
+            try
+            {
+                TownServiceScreen townServiceScreen = hostObject.AddComponent<TownServiceScreen>();
+                townServiceScreen.Show(
+                    NodePlaceholderTestData.CreateTownServicePlaceholderState(),
+                    gameState,
+                    () => { },
+                    () => { },
+                    conversionInteractionService: interactionService);
+
+                Button conversionButton = FindButton(hostObject, "RegionMaterialRefinement_ConversionButton");
+
+                Assert.That(conversionButton.interactable, Is.True);
+                Assert.That(
+                    FindButtonLabel(hostObject, "RegionMaterialRefinement_ConversionButton"),
+                    Is.EqualTo("Run Region Material Refinement"));
+
+                conversionButton.onClick.Invoke();
+
+                Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
+                Assert.That(
+                    gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                    Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Persistent progression material: 1"), Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "- Region Material Refinement | Region material x3 -> Persistent progression material x1 | Need 3 more"),
+                    Is.True);
+                Assert.That(storage.SavedGameState, Is.Not.Null);
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
+                Assert.That(
+                    storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                    Is.EqualTo(1));
+                Assert.That(FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").interactable, Is.False);
+                Assert.That(
+                    FindButtonLabel(hostObject, "RegionMaterialRefinement_ConversionButton"),
+                    Is.EqualTo("Region Material Refinement Unavailable"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldPurchaseAffordableUpgradeAndRefreshVisibleProgressionState()
         {
             GameObject hostObject = new GameObject("TownServiceScreenHost");
@@ -114,6 +173,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 new TownServiceProgressionInteractionService(persistenceService);
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
             gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 2);
 
             try
             {
@@ -134,11 +194,13 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(pushOffenseButton.interactable, Is.False);
                 Assert.That(farmYieldButton.interactable, Is.True);
                 Assert.That(bossSalvageButton.interactable, Is.False);
+                Assert.That(FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").interactable, Is.False);
 
                 combatBaselineButton.onClick.Invoke();
 
                 Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(0));
                 Assert.That(ContainsText(hostObject, "Persistent progression material: 0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Region material: 2"), Is.True);
                 Assert.That(ContainsText(hostObject, "- Combat Baseline Project | Cost: Persistent progression material x1 | Purchased"), Is.True);
                 Assert.That(ContainsText(hostObject, "- Farm Yield Project | Cost: Persistent progression material x1 | Need 1 more"), Is.True);
                 Assert.That(storage.SavedGameState, Is.Not.Null);
@@ -168,6 +230,7 @@ namespace Survivalon.Tests.EditMode.Towns
             TownServiceBuildPreparationInteractionService interactionService =
                 new TownServiceBuildPreparationInteractionService(persistenceService);
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 2);
 
             try
             {
