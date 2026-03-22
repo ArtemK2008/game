@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
+using Survivalon.Combat;
 using Survivalon.Core;
+using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 using Survivalon.Tests.EditMode.World;
@@ -215,6 +217,59 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(savedClearedFarmNodeState.UnlockThreshold, Is.EqualTo(3));
                 Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(unlockedNextNodeId, out PersistentNodeState savedUnlockedNodeState), Is.True);
                 Assert.That(savedUnlockedNodeState.State, Is.EqualTo(NodeState.Available));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldUnlockCavernGateAfterForestGateBossDefeatAndShowBossGateSummary()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
+                FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+                FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(hostObject);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_003_Button");
+                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss gate unlock: Cavern gate opened"), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock Yes"),
+                    Is.True);
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(
+                    storage.SavedGameState.WorldState.TryGetNodeState(BootstrapWorldScenario.CavernGateNodeId, out PersistentNodeState cavernGateNodeState),
+                    Is.True);
+                Assert.That(cavernGateNodeState.State, Is.EqualTo(NodeState.Available));
+
+                Button cavernGateButton = FindButton(hostObject, "region_002_node_002_Button");
+                Text cavernGateLabel = cavernGateButton.GetComponentInChildren<Text>(true);
+
+                Assert.That(cavernGateButton.interactable, Is.True);
+                Assert.That(cavernGateLabel, Is.Not.Null);
+                Assert.That(cavernGateLabel.text, Does.Contain("State: Available"));
             }
             finally
             {

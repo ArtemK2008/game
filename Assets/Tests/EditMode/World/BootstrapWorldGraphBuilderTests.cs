@@ -15,7 +15,7 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(worldGraph.Regions.Count, Is.EqualTo(2));
             Assert.That(worldGraph.Nodes.Count, Is.EqualTo(6));
-            Assert.That(worldGraph.Connections.Count, Is.EqualTo(5));
+            Assert.That(worldGraph.Connections.Count, Is.EqualTo(6));
 
             AssertNode(worldGraph, BootstrapWorldScenario.ForestEntryNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.Cleared);
             AssertNode(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.InProgress);
@@ -33,6 +33,15 @@ namespace Survivalon.Tests.EditMode.World
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter,
                 Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
             Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossProgressionGate,
+                Is.Not.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossProgressionGate.UnlockedNodeId,
+                Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossProgressionGate.UnlockSummaryText,
+                Is.EqualTo("Cavern gate opened"));
+            Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).CombatEncounter,
                 Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(
@@ -41,6 +50,9 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).CombatEncounter,
                 Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossProgressionGate,
+                Is.Null);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter.EncounterType,
                 Is.EqualTo(CombatEncounterType.Boss));
@@ -77,6 +89,7 @@ namespace Survivalon.Tests.EditMode.World
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestGateNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestFarmNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.CavernServiceNodeId);
+            AssertConnection(worldGraph, BootstrapWorldScenario.ForestGateNodeId, BootstrapWorldScenario.CavernGateNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernGateNodeId);
         }
 

@@ -11,7 +11,8 @@ namespace Survivalon.World
             RegionId regionId,
             NodeType nodeType,
             NodeState state,
-            CombatEncounterDefinition combatEncounter = null)
+            CombatEncounterDefinition combatEncounter = null,
+            BossProgressionGateDefinition bossProgressionGate = null)
         {
             if (combatEncounter != null && nodeType != NodeType.Combat && nodeType != NodeType.BossOrGate)
             {
@@ -20,11 +21,19 @@ namespace Survivalon.World
                     nameof(combatEncounter));
             }
 
+            if (bossProgressionGate != null && nodeType != NodeType.BossOrGate)
+            {
+                throw new ArgumentException(
+                    "Boss progression gate data requires a boss-or-gate node type.",
+                    nameof(bossProgressionGate));
+            }
+
             NodeId = nodeId;
             RegionId = regionId;
             NodeType = nodeType;
             State = state;
             CombatEncounter = combatEncounter;
+            BossProgressionGate = bossProgressionGate;
         }
 
         public NodeId NodeId { get; }
@@ -36,6 +45,8 @@ namespace Survivalon.World
         public NodeState State { get; }
 
         public CombatEncounterDefinition CombatEncounter { get; }
+
+        public BossProgressionGateDefinition BossProgressionGate { get; }
     }
 }
 

@@ -14,7 +14,8 @@ namespace Survivalon.Run
             int nodeProgressThreshold,
             int persistentProgressionDelta,
             bool didUnlockRoute,
-            RunNextActionContext nextActionContext)
+            RunNextActionContext nextActionContext,
+            string bossProgressionGateUnlockSummary = "")
         {
             if (nodeProgressDelta < 0)
             {
@@ -55,6 +56,7 @@ namespace Survivalon.Run
             PersistentProgressionDelta = persistentProgressionDelta;
             DidUnlockRoute = didUnlockRoute;
             NextActionContext = nextActionContext ?? throw new ArgumentNullException(nameof(nextActionContext));
+            BossProgressionGateUnlockSummary = bossProgressionGateUnlockSummary ?? string.Empty;
         }
 
         public NodeId NodeId { get; }
@@ -76,6 +78,10 @@ namespace Survivalon.Run
         public bool DidUnlockRoute { get; }
 
         public RunNextActionContext NextActionContext { get; }
+
+        public string BossProgressionGateUnlockSummary { get; }
+
+        public bool HasBossProgressionGateUnlock => !string.IsNullOrWhiteSpace(BossProgressionGateUnlockSummary);
     }
 }
 

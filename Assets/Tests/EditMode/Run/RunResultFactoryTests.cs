@@ -33,6 +33,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(runResult.NodeProgressValue, Is.EqualTo(2));
             Assert.That(runResult.NodeProgressThreshold, Is.EqualTo(3));
             Assert.That(runResult.DidUnlockRoute, Is.True);
+            Assert.That(runResult.BossProgressionGateUnlockSummary, Is.EqualTo("Cavern gate opened"));
         }
 
         [Test]
@@ -68,7 +69,8 @@ namespace Survivalon.Tests.EditMode.Run
                     progressThreshold: 3,
                     didReachClearThreshold: false,
                     nodeStateAfterUpdate: NodeState.InProgress),
-                didUnlockRoute: true);
+                didUnlockRoute: true,
+                bossProgressionGateUnlockSummary: "Cavern gate opened");
         }
     }
 }

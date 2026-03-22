@@ -75,6 +75,36 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldUnlockBossProgressionGateOnSuccessfulBossDefeatBeforeThreshold()
+        {
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            RunProgressResolutionService service = new RunProgressResolutionService();
+
+            Assert.That(worldState.TryGetNodeState(BootstrapWorldScenario.ForestGateNodeId, out PersistentNodeState forestGateState), Is.True);
+            forestGateState.MarkAvailable();
+
+            RunProgressResolution resolution = service.Resolve(
+                NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
+                RunResolutionState.Succeeded,
+                CreateResolvedEncounter(
+                    NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
+                    CombatEncounterOutcome.PlayerVictory),
+                worldState,
+                worldGraph);
+
+            Assert.That(resolution.NodeProgressDelta, Is.EqualTo(1));
+            Assert.That(resolution.NodeProgressUpdate.IsTracked, Is.True);
+            Assert.That(resolution.NodeProgressUpdate.CurrentProgress, Is.EqualTo(1));
+            Assert.That(resolution.NodeProgressUpdate.ProgressThreshold, Is.EqualTo(3));
+            Assert.That(resolution.NodeProgressUpdate.DidReachClearThreshold, Is.False);
+            Assert.That(resolution.DidUnlockRoute, Is.True);
+            Assert.That(resolution.BossProgressionGateUnlockSummary, Is.EqualTo("Cavern gate opened"));
+            Assert.That(worldState.TryGetNodeState(BootstrapWorldScenario.CavernGateNodeId, out PersistentNodeState cavernGateState), Is.True);
+            Assert.That(cavernGateState.State, Is.EqualTo(NodeState.Available));
+        }
+
+        [Test]
         public void ShouldKeepFailedTrackedCombatAtZeroProgressAndWithoutUnlock()
         {
             PersistentWorldState worldState = new PersistentWorldState();
@@ -157,6 +187,32 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(resolution.DidUnlockRoute, Is.False);
             Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_003"), out PersistentNodeState gateNodeState), Is.True);
             Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Locked));
+        }
+
+        [Test]
+        public void ShouldKeepOrdinaryClearRuleSeparateFromBossGateUnlockSummary()
+        {
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            RunProgressResolutionService service = new RunProgressResolutionService();
+
+            Assert.That(worldState.TryGetNodeState(new NodeId("region_001_node_002"), out PersistentNodeState pushNodeState), Is.True);
+            pushNodeState.ApplyUnlockProgress(1);
+
+            RunProgressResolution resolution = service.Resolve(
+                NodePlaceholderTestData.CreatePushCombatPlaceholderState(),
+                RunResolutionState.Succeeded,
+                CreateResolvedEncounter(
+                    NodePlaceholderTestData.CreatePushCombatPlaceholderState(),
+                    CombatEncounterOutcome.PlayerVictory),
+                worldState,
+                worldGraph);
+
+            Assert.That(resolution.NodeProgressUpdate.DidReachClearThreshold, Is.True);
+            Assert.That(resolution.DidUnlockRoute, Is.True);
+            Assert.That(resolution.BossProgressionGateUnlockSummary, Is.Empty);
+            Assert.That(worldState.TryGetNodeState(BootstrapWorldScenario.CavernGateNodeId, out PersistentNodeState cavernGateState), Is.True);
+            Assert.That(cavernGateState.State, Is.EqualTo(NodeState.Locked));
         }
 
         [Test]

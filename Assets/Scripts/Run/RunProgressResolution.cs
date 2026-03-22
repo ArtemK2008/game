@@ -8,7 +8,8 @@ namespace Survivalon.Run
         public RunProgressResolution(
             int nodeProgressDelta,
             NodeProgressUpdateResult nodeProgressUpdate,
-            bool didUnlockRoute)
+            bool didUnlockRoute,
+            string bossProgressionGateUnlockSummary = "")
         {
             if (nodeProgressDelta < 0)
             {
@@ -18,6 +19,7 @@ namespace Survivalon.Run
             NodeProgressDelta = nodeProgressDelta;
             NodeProgressUpdate = nodeProgressUpdate ?? throw new ArgumentNullException(nameof(nodeProgressUpdate));
             DidUnlockRoute = didUnlockRoute;
+            BossProgressionGateUnlockSummary = bossProgressionGateUnlockSummary ?? string.Empty;
         }
 
         public int NodeProgressDelta { get; }
@@ -25,6 +27,8 @@ namespace Survivalon.Run
         public NodeProgressUpdateResult NodeProgressUpdate { get; }
 
         public bool DidUnlockRoute { get; }
+
+        public string BossProgressionGateUnlockSummary { get; }
     }
 }
 

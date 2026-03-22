@@ -6,6 +6,11 @@ namespace Survivalon.Tests.EditMode.World
 {
     public static class NodePlaceholderTestData
     {
+        private static readonly BossProgressionGateDefinition ForestGateProgressionGate =
+            new BossProgressionGateDefinition(
+                BootstrapWorldScenario.CavernGateNodeId,
+                "Cavern gate opened");
+
         public static NodePlaceholderState CreateServicePlaceholderState()
         {
             return new NodePlaceholderState(
@@ -35,7 +40,20 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.BossOrGate,
                 NodeState.Available,
                 new NodeId("region_001_node_004"),
-                CombatBossEncounterCatalog.GateBossEncounter);
+                CombatBossEncounterCatalog.GateBossEncounter,
+                ForestGateProgressionGate);
+        }
+
+        public static NodePlaceholderState CreateForestGateBossPlaceholderState()
+        {
+            return new NodePlaceholderState(
+                BootstrapWorldScenario.ForestGateNodeId,
+                BootstrapWorldScenario.ForestRegionId,
+                NodeType.BossOrGate,
+                NodeState.Available,
+                BootstrapWorldScenario.ForestPushNodeId,
+                CombatBossEncounterCatalog.GateBossEncounter,
+                ForestGateProgressionGate);
         }
 
         public static NodePlaceholderState CreatePushCombatPlaceholderState()
