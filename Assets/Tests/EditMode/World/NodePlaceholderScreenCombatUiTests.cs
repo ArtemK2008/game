@@ -30,9 +30,12 @@ namespace Survivalon.Tests.EditMode.World
                 Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
                 Assert.That(advanceButtonText.text, Is.EqualTo("Combat Auto-Running"));
 
+                Assert.That(ContainsText(hostObject, "Run HUD"), Is.True);
+                Assert.That(ContainsText(hostObject, "Context: Verdant Frontier / region_001_node_004 (Combat)"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
                 Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
-                Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.True);
-                Assert.That(ContainsText(hostObject, "Targeting: Vanguard -> Enemy Unit; Enemy Unit -> Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
@@ -79,7 +82,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(
                     TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton"),
                     Is.Not.Null);
-                Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.False);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.False);
                 Assert.That(
                     FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").GetComponent<LayoutElement>(),
                     Is.Null);
@@ -103,7 +106,10 @@ namespace Survivalon.Tests.EditMode.World
 
                 Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
-                Assert.That(ContainsText(hostObject, "Elapsed: 0s | Outcome: Ongoing"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run HUD"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Health: Striker 110 / 110 | Enemy Unit 75 / 75"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
                 Assert.That(
                     FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").gameObject.activeSelf,
                     Is.False);
@@ -137,7 +143,10 @@ namespace Survivalon.Tests.EditMode.World
 
                 AutoAdvanceCombat(hostObject, 5, 0.25f);
 
-                Assert.That(ContainsText(hostObject, "Targeting: Vanguard -> Enemy Unit; Enemy Unit -> Vanguard"), Is.True);
+                string runHudSummary = FindTextInObject(hostObject, "CombatShellSummary");
+
+                Assert.That(runHudSummary, Does.Contain("Run state: Auto-battle active"));
+                Assert.That(runHudSummary, Does.Not.Contain("Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"));
                 Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Contain("Player | Alive: Yes | Act: Yes"));
                 Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Not.Contain("HP: 120 / 120"));
                 Assert.That(FindTextInObject(hostObject, "EnemyCombatEntity"), Does.Contain("Enemy | Alive: Yes | Act: Yes"));

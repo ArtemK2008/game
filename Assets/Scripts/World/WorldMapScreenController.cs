@@ -16,9 +16,6 @@ namespace Survivalon.World
         private readonly WorldMapWorldStateSummaryResolver worldStateSummaryResolver;
         private readonly SessionContextState sessionContext;
         private readonly Dictionary<RegionId, int> regionOrderById;
-        private readonly HashSet<NodeId> forwardSelectableNodeIds;
-        private readonly HashSet<NodeId> pathSelectableNodeIds;
-        private readonly HashSet<NodeId> selectableNodeIds;
         private bool hasSelectedNode;
         private NodeId selectedNodeId;
 
@@ -39,20 +36,14 @@ namespace Survivalon.World
             worldStateSummaryResolver = new WorldMapWorldStateSummaryResolver(this.worldNodeStateResolver);
             this.sessionContext = sessionContext;
             regionOrderById = CreateRegionOrderLookup(worldGraph);
-            forwardSelectableNodeIds = CreateSelectableNodeIdSet(
-                this.worldNodeAccessResolver.GetForwardEnterableNodes(worldGraph, worldState));
-            pathSelectableNodeIds = CreateSelectableNodeIdSet(
-                this.worldNodeAccessResolver.GetPathEnterableNodes(worldGraph, worldState));
-            selectableNodeIds = CreateSelectableNodeIdSet(
-                this.worldNodeAccessResolver.GetEnterableNodes(worldGraph, worldState));
             this.sessionContext?.SeedFromWorldState(worldState);
         }
 
         public bool HasSelection => hasSelectedNode;
 
-        public bool HasForwardRouteChoice => forwardSelectableNodeIds.Count > 1;
+        public bool HasForwardRouteChoice => BuildAccessState().ForwardSelectableNodeIds.Count > 1;
 
-        public int ForwardSelectableNodeCount => forwardSelectableNodeIds.Count;
+        public int ForwardSelectableNodeCount => BuildAccessState().ForwardSelectableNodeIds.Count;
 
         public SessionContextState SessionContext => sessionContext;
 
@@ -63,6 +54,7 @@ namespace Survivalon.World
         public IReadOnlyList<WorldMapNodeOption> BuildNodeOptions()
         {
             NodeId currentContextNodeId = ResolveCurrentContextNodeId();
+            WorldMapAccessState accessState = BuildAccessState();
             List<WorldNode> orderedNodes = new List<WorldNode>(worldGraph.Nodes);
             orderedNodes.Sort(CompareNodes);
 
@@ -75,11 +67,11 @@ namespace Survivalon.World
                     node.RegionId,
                     node.NodeType,
                     worldNodeStateResolver.ResolveNodeState(worldGraph, worldState, node.NodeId),
-                    selectableNodeIds.Contains(node.NodeId),
+                    accessState.SelectableNodeIds.Contains(node.NodeId),
                     node.NodeId == currentContextNodeId,
                     hasSelectedNode && node.NodeId == selectedNodeId,
                     region.LocationIdentity.DisplayName,
-                    ResolvePathRole(node.NodeId, currentContextNodeId)));
+                    ResolvePathRole(node.NodeId, currentContextNodeId, accessState)));
             }
 
             return nodeOptions;
@@ -88,25 +80,27 @@ namespace Survivalon.World
         public WorldMapWorldStateSummary BuildWorldStateSummary()
         {
             NodeId currentContextNodeId = ResolveCurrentContextNodeId();
+            WorldMapAccessState accessState = BuildAccessState();
             return worldStateSummaryResolver.Resolve(
                 worldGraph,
                 worldState,
                 currentContextNodeId,
-                selectableNodeIds,
-                pathSelectableNodeIds,
-                forwardSelectableNodeIds);
+                accessState.SelectableNodeIds,
+                accessState.PathSelectableNodeIds,
+                accessState.ForwardSelectableNodeIds);
         }
 
         public bool TrySelectNode(NodeId nodeId)
         {
-            if (!selectableNodeIds.Contains(nodeId))
+            WorldMapAccessState accessState = BuildAccessState();
+            if (!accessState.SelectableNodeIds.Contains(nodeId))
             {
                 return false;
             }
 
             selectedNodeId = nodeId;
             hasSelectedNode = true;
-            sessionContext?.RecordSelection(nodeId, forwardSelectableNodeIds.Contains(nodeId));
+            sessionContext?.RecordSelection(nodeId, accessState.ForwardSelectableNodeIds.Contains(nodeId));
             return true;
         }
 
@@ -124,9 +118,17 @@ namespace Survivalon.World
 
         public IReadOnlyList<NodeId> GetForwardSelectableNodeIds()
         {
-            List<NodeId> nodeIds = new List<NodeId>(forwardSelectableNodeIds);
+            List<NodeId> nodeIds = new List<NodeId>(BuildAccessState().ForwardSelectableNodeIds);
             nodeIds.Sort((left, right) => StringComparer.Ordinal.Compare(left.Value, right.Value));
             return nodeIds;
+        }
+
+        private WorldMapAccessState BuildAccessState()
+        {
+            return new WorldMapAccessState(
+                CreateSelectableNodeIdSet(worldNodeAccessResolver.GetEnterableNodes(worldGraph, worldState)),
+                CreateSelectableNodeIdSet(worldNodeAccessResolver.GetPathEnterableNodes(worldGraph, worldState)),
+                CreateSelectableNodeIdSet(worldNodeAccessResolver.GetForwardEnterableNodes(worldGraph, worldState)));
         }
 
         private static Dictionary<RegionId, int> CreateRegionOrderLookup(WorldGraph worldGraph)
@@ -189,26 +191,48 @@ namespace Survivalon.World
             throw new InvalidOperationException("World map requires a current node or last safe node.");
         }
 
-        private WorldMapPathRole ResolvePathRole(NodeId nodeId, NodeId currentContextNodeId)
+        private static WorldMapPathRole ResolvePathRole(
+            NodeId nodeId,
+            NodeId currentContextNodeId,
+            WorldMapAccessState accessState)
         {
             if (nodeId == currentContextNodeId)
             {
                 return WorldMapPathRole.CurrentContext;
             }
 
-            if (forwardSelectableNodeIds.Contains(nodeId))
+            if (accessState.ForwardSelectableNodeIds.Contains(nodeId))
             {
                 return WorldMapPathRole.ForwardRoute;
             }
 
-            if (selectableNodeIds.Contains(nodeId))
+            if (accessState.SelectableNodeIds.Contains(nodeId))
             {
-                return pathSelectableNodeIds.Contains(nodeId)
+                return accessState.PathSelectableNodeIds.Contains(nodeId)
                     ? WorldMapPathRole.BacktrackRoute
                     : WorldMapPathRole.ReplayableFarmNode;
             }
 
             return WorldMapPathRole.BlockedPath;
+        }
+
+        private sealed class WorldMapAccessState
+        {
+            public WorldMapAccessState(
+                HashSet<NodeId> selectableNodeIds,
+                HashSet<NodeId> pathSelectableNodeIds,
+                HashSet<NodeId> forwardSelectableNodeIds)
+            {
+                SelectableNodeIds = selectableNodeIds ?? throw new ArgumentNullException(nameof(selectableNodeIds));
+                PathSelectableNodeIds = pathSelectableNodeIds ?? throw new ArgumentNullException(nameof(pathSelectableNodeIds));
+                ForwardSelectableNodeIds = forwardSelectableNodeIds ?? throw new ArgumentNullException(nameof(forwardSelectableNodeIds));
+            }
+
+            public HashSet<NodeId> SelectableNodeIds { get; }
+
+            public HashSet<NodeId> PathSelectableNodeIds { get; }
+
+            public HashSet<NodeId> ForwardSelectableNodeIds { get; }
         }
     }
 }

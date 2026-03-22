@@ -104,6 +104,34 @@ namespace Survivalon.Tests.EditMode.World
             AssertNodeOption(nodeOptions, new NodeId("node_locked"), false, false, false, WorldMapPathRole.BlockedPath);
         }
 
+        [Test]
+        public void ShouldRecomputeAccessAndPathRolesWhenWorldStateChangesAfterControllerConstruction()
+        {
+            WorldGraph worldGraph = WorldFlowTestData.CreateFarmAccessGraph();
+            PersistentWorldState worldState = WorldFlowTestData.CreateFarmAccessWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+
+            Assert.That(controller.GetForwardSelectableNodeIds(), Is.EqualTo(new[] { new NodeId("node_reachable") }));
+
+            worldState.SetCurrentNode(new NodeId("node_reachable"));
+            worldState.SetLastSafeNode(new NodeId("node_current"));
+            worldState.ReplaceReachableNodes(new[] { new NodeId("node_current") });
+
+            IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
+            WorldMapWorldStateSummary summary = controller.BuildWorldStateSummary();
+
+            Assert.That(controller.GetForwardSelectableNodeIds(), Is.Empty);
+            Assert.That(controller.HasForwardRouteChoice, Is.False);
+            Assert.That(controller.ForwardSelectableNodeCount, Is.EqualTo(0));
+            AssertNodeOption(nodeOptions, new NodeId("node_current"), true, false, false, WorldMapPathRole.BacktrackRoute);
+            AssertNodeOption(nodeOptions, new NodeId("node_reachable"), false, true, false, WorldMapPathRole.CurrentContext);
+            AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false, WorldMapPathRole.ReplayableFarmNode);
+            Assert.That(summary.CurrentNodeId, Is.EqualTo(new NodeId("node_reachable")));
+            Assert.That(summary.ForwardRouteNodeIds, Is.Empty);
+            Assert.That(summary.BacktrackRouteNodeIds, Is.EqualTo(new[] { new NodeId("node_current") }));
+            Assert.That(summary.ReplayableFarmNodeIds, Is.EqualTo(new[] { new NodeId("node_cleared_farm") }));
+        }
+
         private static void AssertNodeOption(
             IReadOnlyList<WorldMapNodeOption> nodeOptions,
             NodeId nodeId,

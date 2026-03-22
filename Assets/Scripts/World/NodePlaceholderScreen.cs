@@ -30,6 +30,7 @@ namespace Survivalon.World
         private Font uiFont;
         private WorldGraph worldGraph;
         private RunPersistentContext persistentContext;
+        private readonly RunHudStateResolver runHudStateResolver = new RunHudStateResolver();
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
@@ -551,7 +552,15 @@ namespace Survivalon.World
                 return;
             }
 
-            combatShellView.Show(runLifecycleController.CombatEncounterState);
+            RunHudState runHudState = runHudStateResolver.Resolve(
+                runLifecycleController.NodeContext,
+                runLifecycleController.CurrentState,
+                runLifecycleController.CombatEncounterState,
+                persistentContext?.PersistentWorldState);
+            combatShellView.Show(
+                runLifecycleController.CombatEncounterState,
+                title: "Run HUD",
+                summary: RunHudTextBuilder.BuildSummaryText(runHudState));
         }
 
         private void RefreshAdvanceButton()
