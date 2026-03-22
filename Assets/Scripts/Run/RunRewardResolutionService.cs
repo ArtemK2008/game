@@ -159,8 +159,18 @@ namespace Survivalon.Run
                     ResourceCategory.PersistentProgressionMaterial,
                     SuccessfulBossMaterialRewards[0].Amount +
                         progressionEffects.BossProgressionMaterialRewardBonus +
-                        nodeContext.LocationIdentity.BossPersistentProgressionMaterialBonus),
+                        ResolveBossRewardContentBonus(nodeContext)),
             };
+        }
+
+        private static int ResolveBossRewardContentBonus(NodePlaceholderState nodeContext)
+        {
+            if (nodeContext.BossRewardContent == null)
+            {
+                return 0;
+            }
+
+            return nodeContext.BossRewardContent.PersistentProgressionMaterialBonus;
         }
 
         private static bool ShouldGrantBossRewards(

@@ -10,7 +10,6 @@ namespace Survivalon.Data.World
             string rewardSourceDisplayName,
             string rewardFocusDisplayName,
             string enemyEmphasisDisplayName,
-            int bossPersistentProgressionMaterialBonus = 0,
             bool isFallbackIdentity = false)
         {
             if (string.IsNullOrWhiteSpace(locationIdentityId))
@@ -44,19 +43,11 @@ namespace Survivalon.Data.World
                     nameof(enemyEmphasisDisplayName));
             }
 
-            if (bossPersistentProgressionMaterialBonus < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(bossPersistentProgressionMaterialBonus),
-                    "Location boss progression material bonus cannot be negative.");
-            }
-
             LocationIdentityId = locationIdentityId;
             DisplayName = displayName;
             RewardSourceDisplayName = rewardSourceDisplayName;
             RewardFocusDisplayName = rewardFocusDisplayName;
             EnemyEmphasisDisplayName = enemyEmphasisDisplayName;
-            BossPersistentProgressionMaterialBonus = bossPersistentProgressionMaterialBonus;
             IsFallbackIdentity = isFallbackIdentity;
         }
 
@@ -69,8 +60,6 @@ namespace Survivalon.Data.World
         public string RewardFocusDisplayName { get; }
 
         public string EnemyEmphasisDisplayName { get; }
-
-        public int BossPersistentProgressionMaterialBonus { get; }
 
         public bool IsFallbackIdentity { get; }
     }

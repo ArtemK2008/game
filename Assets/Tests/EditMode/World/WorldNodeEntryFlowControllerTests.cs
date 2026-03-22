@@ -98,9 +98,42 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.VerdantFrontier));
             Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Frontier raiders"));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
+            Assert.That(placeholderState.BossRewardContent, Is.Null);
             Assert.That(
                 placeholderState.BossProgressionGate.UnlockedNodeId,
                 Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
+        }
+
+        [Test]
+        public void ShouldCarryBootstrapCavernBossRewardContentIntoPlaceholderState()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+
+            worldState.ReplaceNodeStates(new[]
+            {
+                PersistentStateTestData.CreateNodeState(
+                    BootstrapWorldScenario.CavernGateNodeId,
+                    unlockThreshold: 3,
+                    nodeState: NodeState.Available,
+                    unlockProgress: 0),
+            });
+            worldState.SetCurrentNode(BootstrapWorldScenario.CavernServiceNodeId);
+            worldState.SetLastSafeNode(BootstrapWorldScenario.ForestPushNodeId);
+            worldState.ReplaceReachableNodes(new[]
+            {
+                BootstrapWorldScenario.CavernServiceNodeId,
+            });
+
+            bool entered = controller.TryEnterNode(BootstrapWorldScenario.CavernGateNodeId, out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.EchoCaverns));
+            Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
+            Assert.That(placeholderState.BossRewardContent, Is.Not.Null);
+            Assert.That(placeholderState.BossRewardContent.PersistentProgressionMaterialBonus, Is.EqualTo(1));
         }
 
         [Test]
@@ -122,6 +155,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.EchoCaverns));
             Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Gate guardians"));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
+            Assert.That(placeholderState.BossRewardContent, Is.Null);
         }
 
         [Test]

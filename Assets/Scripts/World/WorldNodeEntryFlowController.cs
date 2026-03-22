@@ -49,7 +49,8 @@ namespace Survivalon.World
                 enterableNode.CombatEncounter,
                 enterableNode.BossProgressionGate,
                 enterableNode.TownServiceContext,
-                enterableRegion.LocationIdentity);
+                enterableRegion.LocationIdentity,
+                enterableNode.BossRewardContent);
             return true;
         }
 
