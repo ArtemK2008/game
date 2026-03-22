@@ -31,6 +31,8 @@ namespace Survivalon.World
         private WorldGraph worldGraph;
         private RunPersistentContext persistentContext;
         private readonly RunHudStateResolver runHudStateResolver = new RunHudStateResolver();
+        private readonly RunTimeSkillUpgradeChoiceStateResolver runTimeSkillUpgradeChoiceStateResolver =
+            new RunTimeSkillUpgradeChoiceStateResolver();
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
@@ -282,21 +284,21 @@ namespace Survivalon.World
                 runTimeSkillUpgradePanelObject.transform,
                 uiFont,
                 "RunTimeSkillUpgradeSummary",
-                16,
-                FontStyle.Bold,
+                17,
+                FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.90f, 0.92f, 0.97f, 1f));
-            RuntimeUiSupport.AddLayoutElement(runTimeSkillUpgradeText.gameObject, 40f);
+            RuntimeUiSupport.AddLayoutElement(runTimeSkillUpgradeText.gameObject, 52f);
 
             GameObject runTimeSkillUpgradeListObject = new GameObject(
                 "RunTimeSkillUpgradeList",
                 typeof(RectTransform),
-                typeof(HorizontalLayoutGroup),
+                typeof(VerticalLayoutGroup),
                 typeof(ContentSizeFitter));
             runTimeSkillUpgradeListObject.transform.SetParent(runTimeSkillUpgradePanelObject.transform, false);
 
-            HorizontalLayoutGroup runTimeSkillUpgradeListLayout =
-                runTimeSkillUpgradeListObject.GetComponent<HorizontalLayoutGroup>();
+            VerticalLayoutGroup runTimeSkillUpgradeListLayout =
+                runTimeSkillUpgradeListObject.GetComponent<VerticalLayoutGroup>();
             runTimeSkillUpgradeListLayout.spacing = 8f;
             runTimeSkillUpgradeListLayout.childAlignment = TextAnchor.UpperLeft;
             runTimeSkillUpgradeListLayout.childControlWidth = true;
@@ -480,19 +482,20 @@ namespace Survivalon.World
                 return;
             }
 
-            runTimeSkillUpgradeText.text = NodePlaceholderScreenTextBuilder.BuildRunTimeSkillUpgradeText(
+            RunTimeSkillUpgradeChoiceState choiceState = runTimeSkillUpgradeChoiceStateResolver.Resolve(
                 runLifecycleController.RunTimeSkillUpgradeOptions);
+            runTimeSkillUpgradeText.text = RunTimeSkillUpgradeChoiceTextBuilder.BuildPanelText(choiceState);
 
-            foreach (CombatRunTimeSkillUpgradeOption upgradeOption in runLifecycleController.RunTimeSkillUpgradeOptions)
+            foreach (RunTimeSkillUpgradeChoiceOptionState optionState in choiceState.Options)
             {
-                CreateRunTimeSkillUpgradeButton(upgradeOption);
+                CreateRunTimeSkillUpgradeButton(optionState);
             }
         }
 
-        private void CreateRunTimeSkillUpgradeButton(CombatRunTimeSkillUpgradeOption upgradeOption)
+        private void CreateRunTimeSkillUpgradeButton(RunTimeSkillUpgradeChoiceOptionState optionState)
         {
             GameObject buttonObject = new GameObject(
-                $"{upgradeOption.UpgradeId}_RunTimeSkillUpgradeButton",
+                $"{optionState.UpgradeId}_RunTimeSkillUpgradeButton",
                 typeof(RectTransform),
                 typeof(Image),
                 typeof(Button),
@@ -503,8 +506,8 @@ namespace Survivalon.World
             buttonRectTransform.localScale = Vector3.one;
 
             LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
-            layoutElement.minHeight = 60f;
-            layoutElement.preferredHeight = 60f;
+            layoutElement.minHeight = 86f;
+            layoutElement.preferredHeight = 86f;
             layoutElement.flexibleWidth = 1f;
 
             Image buttonImage = buttonObject.GetComponent<Image>();
@@ -513,7 +516,7 @@ namespace Survivalon.World
             Button button = buttonObject.GetComponent<Button>();
             button.targetGraphic = buttonImage;
             button.onClick.AddListener(() =>
-                HandleRunTimeSkillUpgradeSelection(upgradeOption.UpgradeId));
+                HandleRunTimeSkillUpgradeSelection(optionState.UpgradeId));
 
             ColorBlock colors = button.colors;
             colors.normalColor = buttonImage.color;
@@ -528,17 +531,16 @@ namespace Survivalon.World
                 uiFont,
                 "Label",
                 15,
-                FontStyle.Bold,
-                TextAnchor.MiddleCenter,
+                FontStyle.Normal,
+                TextAnchor.UpperLeft,
                 Color.white);
-            buttonText.text =
-                $"{upgradeOption.DisplayName}\n{upgradeOption.Description}";
+            buttonText.text = RunTimeSkillUpgradeChoiceTextBuilder.BuildOptionButtonText(optionState);
 
             RectTransform textRectTransform = buttonText.rectTransform;
             textRectTransform.anchorMin = Vector2.zero;
             textRectTransform.anchorMax = Vector2.one;
-            textRectTransform.offsetMin = new Vector2(12f, 8f);
-            textRectTransform.offsetMax = new Vector2(-12f, -8f);
+            textRectTransform.offsetMin = new Vector2(14f, 10f);
+            textRectTransform.offsetMax = new Vector2(-14f, -10f);
             textRectTransform.localScale = Vector3.one;
         }
 

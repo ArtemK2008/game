@@ -27,6 +27,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.False);
                 Assert.That(ContainsText(hostObject, "Revisit value: Region material yield +1"), Is.True);
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
@@ -83,6 +84,17 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
+                    Is.True);
+                Assert.That(
+                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton")
+                        .GetComponentInChildren<UnityEngine.UI.Text>(true).text,
+                    Does.Contain("Best for: Steadier burst pressure."));
+                Assert.That(
+                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton")
+                        .GetComponentInChildren<UnityEngine.UI.Text>(true).text,
+                    Does.Contain("Best for: Bigger damage spikes."));
                 FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);

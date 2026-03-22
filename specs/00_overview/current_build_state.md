@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 071**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, and **070a**.
+This summary reflects completed work through **Milestone 072**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, and **070a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -151,6 +151,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - One run-time skill-upgrade choice layer now exists on top of the current triggered active skill seam:
   - when the selected current package grants `Burst Strike`, run start now pauses for one small run-only choice before combat auto-starts
   - the current shipped choices are temporary run-only modifiers on `Burst Strike`: `Burst Tempo` (faster cadence for the current run) and `Burst Payload` (harder hit for the current run)
+  - that run-start choice now appears through one compact readable choice panel with a clear header, short effect summaries, quick-pick hints, and one click target per option
   - that choice applies only to the current run and is not persisted into later runs or character/package state
 - Enemy hostility is explicit and can defeat the player.
 - Defeated entities become inactive and stop contributing to combat.
@@ -320,7 +321,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Character selection now exists only as a minimal world-map placeholder path; broader roster UI and deeper multi-character systems are still deferred.
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
-- The first run-time skill choice now exists only as a compact placeholder choice for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
+- The first run-time skill choice now exists only as one compact readable choice panel for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
 - Gear now exists for two categories with a minimal pre-run equip/unequip placeholder and two simple live stat effects; broader gear UI, gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
 - The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, one fixed region-material refinement action, selected-character build preparation, and return/stop actions, but not a full service interaction suite.
 
