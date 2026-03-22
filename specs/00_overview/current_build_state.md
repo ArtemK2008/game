@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 061**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, and **061a**.
+This summary reflects completed work through **Milestone 062**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, and **061a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -52,11 +52,16 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The service shell currently exposes two MVP-readable sections:
   - a progression-hub summary tied to the existing account-wide progression sink and current persistent progression material balance
   - a build-preparation summary tied to the currently selected character, assigned skill package, and equipped primary/support gear
+- The service shell now also supports one short direct progression interaction:
+  - affordable account-wide projects can be purchased directly from the town/service screen
+  - purchase spends `Persistent progression material`
+  - purchased state and balances persist immediately
+  - the service screen refreshes in place after purchase
 - The service shell currently supports two safe actions:
   - return to world map
   - stop session
-- The service shell is intentionally read-only for now. Actual build changes still happen on the world map, and actual progression-sink spending still uses the existing domain logic without a dedicated purchase flow in the service shell yet.
-- The service shell now uses a safer scrollable content area for its readable overview, progression, and build sections, but it remains intentionally compact and read-only.
+- The service shell now uses a safer scrollable content area for its readable overview, progression, and build sections.
+- Build preparation remains intentionally read-only in the service shell for now. Actual build changes still happen on the world map in the current MVP.
 
 ### Combat foundation
 - Combat exists as a placeholder shell inside the current node/run flow rather than as a dedicated final combat scene.
@@ -160,7 +165,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current account-wide upgrades increase player max health, player attack power, and ordinary region-material reward output in future runs, without changing enemy baseline stats or milestone reward amounts.
 - The new push-oriented offense upgrade helps harder combat more directly by increasing player-side baseline damage enough to visibly improve tougher future encounters.
 - The new farm-oriented yield upgrade helps repeatable farming more directly by increasing ordinary region-material rewards on standard region-material combat clears.
-- The new town/service shell now exposes that sink as a readable progression-hub summary, but it does not yet provide the next-step purchase interaction flow.
+- The town/service shell now exposes that sink as the current live purchase surface:
+  - affordable projects can be bought directly from `Cavern Service Hub`
+  - purchases spend persistent progression material and persist immediately
+  - already-purchased projects are no longer buyable there
+  - unaffordable projects remain visible but unavailable
 
 ### Persistent character baseline, selection placeholder, and linked progression
 - The build now has two explicit playable characters stored in persistent game state:
@@ -235,18 +244,18 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Broad farm access applies only to persistently `Cleared` nodes; uncleared nodes still follow the normal reachability rules.
 - Failed or incomplete combat runs do **not** currently grant node progress in the MVP, because node progress is still kill-driven and the single-enemy combat prototype has no failed partial-kill case.
 - Rewards and economy are still early and placeholder-level beyond the new soft-currency, one region-material path, one clear-threshold milestone reward, and one structural account-wide progression sink; broader reward differentiation and additional sinks are not implemented yet.
-- The new account-wide sink is now wired into live player combat baseline stats and has a small read-only summary inside the current town/service shell, but purchase interaction is still not exposed there yet.
+- The new account-wide sink is now wired into live player combat baseline stats and can now be spent directly through the current town/service shell, while broader sink interaction depth is still deferred.
 - Character selection now exists only as a minimal world-map placeholder path; broader roster UI and deeper multi-character systems are still deferred.
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - The first run-time skill choice now exists only as a compact placeholder choice for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
 - Gear now exists for two categories with a minimal pre-run equip/unequip placeholder and two simple live stat effects; broader gear UI, gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
-- The current town/service shell is intentionally shell-level: it provides a distinct safe context with progression/build summaries and return/stop actions, but not a full service interaction suite.
+- The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, build summaries, and return/stop actions, but not a full service interaction suite.
 
 ## Not implemented yet
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
-- Additional progression sinks and interactive sink spending through the service/town layer
+- Additional progression sinks and broader service/town interaction beyond the current direct project purchase flow
 - Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
 - Additional gear categories beyond the current two-slot baseline, richer live gear effects, and broader itemization/loot systems
 - Multi-entity combat, broader skill systems, advanced AI, and broader combat content
