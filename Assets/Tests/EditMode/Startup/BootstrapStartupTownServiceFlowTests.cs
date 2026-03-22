@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.Startup;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
@@ -29,7 +31,18 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Progression hub"), Is.True);
                 Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
-                Assert.That(ContainsText(hostObject, "Current build changes still happen on the world map in this MVP."), Is.True);
+                Assert.That(
+                    FindButton(
+                        hostObject,
+                        $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
+                    Is.Not.Null);
+                Assert.That(FindButton(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton"), Is.Not.Null);
+                Assert.That(FindButton(hostObject, $"TownService_{GearIds.GuardCharm}_GearButton"), Is.Not.Null);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "Use the assignment controls below to update the selected character for future runs."),
+                    Is.True);
             }
             finally
             {
@@ -88,6 +101,62 @@ namespace Survivalon.Tests.EditMode.Startup
                         out ProgressionEntryState progressionEntry),
                     Is.True);
                 Assert.That(progressionEntry.IsUnlocked, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldAssignBuildPreparationFromTownServiceScreenAndPersistImmediately()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                FindButton(
+                    hostObject,
+                    $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton")
+                    .onClick.Invoke();
+                FindButton(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+                FindButton(hostObject, $"TownService_{GearIds.GuardCharm}_GearButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Primary gear: Training Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Support gear: Guard Charm"), Is.True);
+                Assert.That(storage.SavedGameState, Is.Not.Null);
+                Assert.That(
+                    storage.SavedGameState.TryGetCharacterState(
+                        "character_vanguard",
+                        out PersistentCharacterState savedVanguardState),
+                    Is.True);
+                Assert.That(savedVanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
+                Assert.That(
+                    savedVanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.PrimaryCombat,
+                        out EquippedGearState savedPrimaryGearState),
+                    Is.True);
+                Assert.That(savedPrimaryGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
+                Assert.That(
+                    savedVanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.SecondarySupport,
+                        out EquippedGearState savedSupportGearState),
+                    Is.True);
+                Assert.That(savedSupportGearState.GearId, Is.EqualTo(GearIds.GuardCharm));
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(hostObject, "Selected character: Vanguard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Primary gear: Training Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Support gear: Guard Charm"), Is.True);
             }
             finally
             {

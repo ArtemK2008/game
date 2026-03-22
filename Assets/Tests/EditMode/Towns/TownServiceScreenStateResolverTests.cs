@@ -64,6 +64,16 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(screenState.ProgressionOptions[2].UpgradeDisplayName, Is.EqualTo("Farm Yield Project"));
             Assert.That(screenState.ProgressionOptions[2].IsPurchased, Is.False);
             Assert.That(screenState.ProgressionOptions[2].IsAffordable, Is.True);
+            Assert.That(screenState.SkillPackageOptions.Count, Is.EqualTo(2));
+            Assert.That(screenState.SkillPackageOptions[0].SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardDefault));
+            Assert.That(screenState.SkillPackageOptions[0].IsAssigned, Is.False);
+            Assert.That(screenState.SkillPackageOptions[1].SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
+            Assert.That(screenState.SkillPackageOptions[1].IsAssigned, Is.True);
+            Assert.That(screenState.GearAssignmentOptions.Count, Is.EqualTo(2));
+            Assert.That(screenState.GearAssignmentOptions[0].GearId, Is.EqualTo(GearIds.TrainingBlade));
+            Assert.That(screenState.GearAssignmentOptions[0].IsEquipped, Is.True);
+            Assert.That(screenState.GearAssignmentOptions[1].GearId, Is.EqualTo(GearIds.GuardCharm));
+            Assert.That(screenState.GearAssignmentOptions[1].IsEquipped, Is.True);
         }
 
         [Test]

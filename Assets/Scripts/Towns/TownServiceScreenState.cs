@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.Data.Towns;
 
 namespace Survivalon.Towns
@@ -14,6 +15,8 @@ namespace Survivalon.Towns
             NodeId originNodeId,
             int persistentProgressionMaterialAmount,
             IReadOnlyList<TownServiceProgressionOptionState> progressionOptions,
+            IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions,
+            IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions,
             string selectedCharacterDisplayName,
             string assignedSkillPackageDisplayName,
             string primaryGearDisplayName,
@@ -21,6 +24,8 @@ namespace Survivalon.Towns
         {
             ServiceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
             ProgressionOptions = progressionOptions ?? throw new ArgumentNullException(nameof(progressionOptions));
+            SkillPackageOptions = skillPackageOptions ?? throw new ArgumentNullException(nameof(skillPackageOptions));
+            GearAssignmentOptions = gearAssignmentOptions ?? throw new ArgumentNullException(nameof(gearAssignmentOptions));
             SelectedCharacterDisplayName = selectedCharacterDisplayName ??
                 throw new ArgumentNullException(nameof(selectedCharacterDisplayName));
             AssignedSkillPackageDisplayName = assignedSkillPackageDisplayName ??
@@ -46,6 +51,10 @@ namespace Survivalon.Towns
         public int PersistentProgressionMaterialAmount { get; }
 
         public IReadOnlyList<TownServiceProgressionOptionState> ProgressionOptions { get; }
+
+        public IReadOnlyList<PlayableCharacterSkillPackageOption> SkillPackageOptions { get; }
+
+        public IReadOnlyList<PlayableCharacterGearAssignmentOption> GearAssignmentOptions { get; }
 
         public string SelectedCharacterDisplayName { get; }
 

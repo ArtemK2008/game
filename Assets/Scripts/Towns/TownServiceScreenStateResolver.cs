@@ -12,13 +12,21 @@ namespace Survivalon.Towns
     {
         private readonly PlayableCharacterSelectionService characterSelectionService;
         private readonly AccountWideProgressionBoardService progressionBoardService;
+        private readonly PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService;
+        private readonly PlayableCharacterGearAssignmentService gearAssignmentService;
 
         public TownServiceScreenStateResolver(
             PlayableCharacterSelectionService characterSelectionService = null,
-            AccountWideProgressionBoardService progressionBoardService = null)
+            AccountWideProgressionBoardService progressionBoardService = null,
+            PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService = null,
+            PlayableCharacterGearAssignmentService gearAssignmentService = null)
         {
             this.characterSelectionService = characterSelectionService ?? new PlayableCharacterSelectionService();
             this.progressionBoardService = progressionBoardService ?? new AccountWideProgressionBoardService();
+            this.skillPackageAssignmentService = skillPackageAssignmentService ??
+                new PlayableCharacterSkillPackageAssignmentService(this.characterSelectionService);
+            this.gearAssignmentService = gearAssignmentService ??
+                new PlayableCharacterGearAssignmentService(this.characterSelectionService);
         }
 
         public TownServiceScreenState Resolve(NodePlaceholderState placeholderState, PersistentGameState gameState)
@@ -60,6 +68,8 @@ namespace Survivalon.Towns
                 placeholderState.OriginNodeId,
                 gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
                 BuildProgressionOptions(gameState),
+                skillPackageAssignmentService.BuildOptionsForSelectedCharacter(gameState),
+                BuildGearAssignmentOptions(gameState),
                 selectedCharacter.DisplayName,
                 assignedSkillPackage.DisplayName,
                 ResolveEquippedGearDisplayName(selectedCharacterState, GearCategory.PrimaryCombat),
@@ -84,6 +94,29 @@ namespace Survivalon.Towns
             }
 
             return progressionOptions;
+        }
+
+        private IReadOnlyList<PlayableCharacterGearAssignmentOption> BuildGearAssignmentOptions(PersistentGameState gameState)
+        {
+            List<PlayableCharacterGearAssignmentOption> gearAssignmentOptions =
+                new List<PlayableCharacterGearAssignmentOption>();
+            AppendGearAssignmentOptions(gearAssignmentOptions, gameState, GearCategory.PrimaryCombat);
+            AppendGearAssignmentOptions(gearAssignmentOptions, gameState, GearCategory.SecondarySupport);
+            return gearAssignmentOptions;
+        }
+
+        private void AppendGearAssignmentOptions(
+            List<PlayableCharacterGearAssignmentOption> targetOptions,
+            PersistentGameState gameState,
+            GearCategory gearCategory)
+        {
+            IReadOnlyList<PlayableCharacterGearAssignmentOption> categoryOptions =
+                gearAssignmentService.BuildOptionsForSelectedCharacter(gameState, gearCategory);
+
+            for (int index = 0; index < categoryOptions.Count; index++)
+            {
+                targetOptions.Add(categoryOptions[index]);
+            }
         }
 
         private static string ResolveEquippedGearDisplayName(
