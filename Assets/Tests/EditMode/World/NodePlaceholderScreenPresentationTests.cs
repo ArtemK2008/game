@@ -145,17 +145,6 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void BuildRunTimeSkillUpgradeText_ShouldMatchExistingChoiceFormatting()
-        {
-            string choiceText = NodePlaceholderScreenTextBuilder.BuildRunTimeSkillUpgradeText(
-                CombatRunTimeSkillUpgradeCatalog.GetTriggeredActiveSkillUpgradeOptions(CombatSkillCatalog.BurstStrike));
-
-            Assert.That(choiceText, Is.EqualTo(
-                "Run-only skill choice\n" +
-                "Choose 1 upgrade before combat auto-starts. Options: 2"));
-        }
-
-        [Test]
         public void BuildStatusText_ShouldFallbackToGenericResolvedTextWhenCombatEncounterIsMissing()
         {
             string statusText = NodePlaceholderScreenTextBuilder.BuildStatusText(

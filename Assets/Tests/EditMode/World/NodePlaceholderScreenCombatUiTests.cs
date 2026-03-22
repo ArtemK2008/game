@@ -36,6 +36,10 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
                 Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
+                Assert.That(FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").gameObject.activeSelf, Is.False);
+                Assert.That(
+                    TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton"),
+                    Is.Null);
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Player | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
@@ -77,11 +81,30 @@ namespace Survivalon.Tests.EditMode.World
                     Is.True);
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
                 Assert.That(
+                    ContainsText(hostObject, "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
+                    Is.True);
+                Assert.That(
                     TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton"),
                     Is.Not.Null);
                 Assert.That(
                     TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton"),
                     Is.Not.Null);
+                Assert.That(
+                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton")
+                        .GetComponentInChildren<Text>(true).text,
+                    Does.Contain("Effect: Burst Strike triggers faster during this run."));
+                Assert.That(
+                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton")
+                        .GetComponentInChildren<Text>(true).text,
+                    Does.Contain("Best for: Steadier burst pressure."));
+                Assert.That(
+                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton")
+                        .GetComponentInChildren<Text>(true).text,
+                    Does.Contain("Effect: Burst Strike hits harder during this run."));
+                Assert.That(
+                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton")
+                        .GetComponentInChildren<Text>(true).text,
+                    Does.Contain("Best for: Bigger damage spikes."));
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.False);
                 Assert.That(
                     FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").GetComponent<LayoutElement>(),
