@@ -64,6 +64,7 @@ namespace Survivalon.World
             List<WorldMapNodeOption> nodeOptions = new List<WorldMapNodeOption>(orderedNodes.Count);
             foreach (WorldNode node in orderedNodes)
             {
+                WorldRegion region = worldGraph.GetRegion(node.RegionId);
                 nodeOptions.Add(new WorldMapNodeOption(
                     node.NodeId,
                     node.RegionId,
@@ -71,7 +72,8 @@ namespace Survivalon.World
                     worldNodeStateResolver.ResolveNodeState(worldGraph, worldState, node.NodeId),
                     selectableNodeIds.Contains(node.NodeId),
                     node.NodeId == currentContextNodeId,
-                    hasSelectedNode && node.NodeId == selectedNodeId));
+                    hasSelectedNode && node.NodeId == selectedNodeId,
+                    region.LocationIdentity.DisplayName));
             }
 
             return nodeOptions;

@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 066**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, and **065a**.
+This summary reflects completed work through **Milestone 067**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, and **065a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -29,11 +29,17 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### World map and node entry
 - A runtime world graph exists with regions, nodes, explicit connections, and limited branching.
+- The shipped bootstrap content now has two explicit location identities attached through world content data:
+  - `Verdant Frontier`
+  - `Echo Caverns`
+- World regions/nodes now carry that location identity explicitly through node-entry state instead of relying only on raw region ids.
 - Reachability supports forward movement and backtracking from current world context.
 - The world map shows node identity, node type, node state, current/selectable status, and a small summary of current context.
+- World-map node labels now surface the shipped location identity alongside node id so the current regions read as distinct places in the prototype flow.
 - The placeholder world map now keeps its node list inside a simple scrollable viewport with stable full-width node-button alignment, so lower node buttons remain reachable and readable as the header, character-selection, and package-assignment area grows.
 - The same placeholder world map now also exposes one minimal two-slot gear equip/unequip area for the currently selected character without changing the overall placeholder screen structure.
 - Entering a selected node routes into a placeholder node screen through explicit node-entry flow logic.
+- The placeholder node screen now also surfaces the current location identity and reward focus for the entered content.
 - `ServiceOrProgression` entry currently routes into one explicit town/service shell only when node content supplies a town-service context definition; otherwise it falls back to the generic placeholder node shell.
 
 ### Run lifecycle and post-run flow
@@ -162,6 +168,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - A purchased farm-oriented account-wide upgrade can increase that ordinary region-material reward output on repeatable standard combat runs.
 - Granted region material is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
 - The current post-run summary aggregates the region-material reward alongside soft currency when both are granted.
+- Reward/source presentation is now location-aware in the shipped bootstrap content, so the current post-run flow names the reward source based on the entered location identity rather than showing only generic reward text.
 
 ### Ordinary vs milestone rewards
 - Ordinary run rewards currently remain small and repeatable: successful combat runs grant soft currency, and standard combat runs in region-material regions also grant region material.
@@ -260,6 +267,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
 - Ordinary reward output stays grouped into one readable reward line rather than a noisy detailed breakdown.
 - Milestone rewards are shown on a separate compact line when present, so clear-threshold runs feel distinct without expanding into a detailed reward panel.
+- The summary now also surfaces the current location identity and reward source for shipped content, making the region/material loop more legible in the MVP flow.
 - Progress changes are grouped into one readable line that distinguishes node progress gained this run from the current tracked total, while still surfacing persistent progression delta and route-unlock result.
 
 ## Important current rules / constraints
@@ -290,6 +298,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ## Known temporary placeholders / technical shortcuts
 - The world graph, town-service context mapping, and initial persistent state are currently seeded by `BootstrapWorldMapFactory`.
+- The first shipped location identities are still bootstrap-seeded content data rather than authored external content assets.
 - The world map, node screen, town/service shell, post-run panel, and combat shell are runtime-generated placeholder UI.
 - Main menu flow is still a placeholder target rather than a real menu system.
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.

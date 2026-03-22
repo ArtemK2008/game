@@ -24,7 +24,9 @@ namespace Survivalon.Tests.EditMode.World
                 RunLifecycleState.RunStart);
 
             Assert.That(summaryText, Is.EqualTo(
+                "Location: Echo Caverns\n" +
                 "Region: region_002\n" +
+                "Reward focus: Persistent progression gains\n" +
                 "Type: ServiceOrProgression\n" +
                 "Node state: Available\n" +
                 "Lifecycle: RunStart\n" +
@@ -260,9 +262,11 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Is.EqualTo(
                 "Run finished.\n" +
+                "Location: Verdant Frontier\n" +
                 "Node: region_001_node_004\n" +
                 "Resolution: Succeeded\n" +
                 "Rewards gained: Soft currency x1, Region material x1\n" +
+                "Reward source: Frontier salvage\n" +
                 "Milestone rewards: Persistent progression material x1\n" +
                 "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes\n" +
                 "Next actions:\n" +
@@ -304,6 +308,7 @@ namespace Survivalon.Tests.EditMode.World
                 runResult);
 
             Assert.That(summaryText, Does.Contain("Rewards gained: Soft currency x1, Region material x1"));
+            Assert.That(summaryText, Does.Contain("Reward source: Frontier salvage"));
             Assert.That(summaryText, Does.Not.Contain("Milestone rewards:"));
             Assert.That(summaryText, Does.Contain("Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock No"));
         }

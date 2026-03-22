@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Survivalon.Core;
+using Survivalon.Data.World;
 
 namespace Survivalon.World
 {
@@ -14,7 +15,8 @@ namespace Survivalon.World
             NodeId entryNodeId,
             IEnumerable<NodeId> nodeIds,
             ResourceCategory resourceCategory,
-            string difficultyBand)
+            string difficultyBand,
+            LocationIdentityDefinition locationIdentity = null)
         {
             if (progressionOrder < 0)
             {
@@ -49,6 +51,7 @@ namespace Survivalon.World
             EntryNodeId = entryNodeId;
             ResourceCategory = resourceCategory;
             DifficultyBand = difficultyBand ?? string.Empty;
+            LocationIdentity = locationIdentity ?? LocationIdentityCatalog.CreateFallback(regionId);
         }
 
         public RegionId RegionId { get; }
@@ -62,6 +65,8 @@ namespace Survivalon.World
         public ResourceCategory ResourceCategory { get; }
 
         public string DifficultyBand { get; }
+
+        public LocationIdentityDefinition LocationIdentity { get; }
     }
 }
 

@@ -2,6 +2,7 @@ using System;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
 using Survivalon.Data.Towns;
+using Survivalon.Data.World;
 
 namespace Survivalon.World
 {
@@ -15,7 +16,8 @@ namespace Survivalon.World
             NodeId originNodeId,
             CombatEncounterDefinition combatEncounter = null,
             BossProgressionGateDefinition bossProgressionGate = null,
-            TownServiceContextDefinition townServiceContext = null)
+            TownServiceContextDefinition townServiceContext = null,
+            LocationIdentityDefinition locationIdentity = null)
         {
             if (combatEncounter != null && nodeType != NodeType.Combat && nodeType != NodeType.BossOrGate)
             {
@@ -43,6 +45,7 @@ namespace Survivalon.World
             NodeType = nodeType;
             NodeState = nodeState;
             OriginNodeId = originNodeId;
+            LocationIdentity = locationIdentity ?? LocationIdentityCatalog.CreateFallback(regionId);
             CombatEncounter = combatEncounter;
             BossProgressionGate = bossProgressionGate;
             TownServiceContext = townServiceContext;
@@ -57,6 +60,8 @@ namespace Survivalon.World
         public NodeState NodeState { get; }
 
         public NodeId OriginNodeId { get; }
+
+        public LocationIdentityDefinition LocationIdentity { get; }
 
         public bool UsesCombatShell => NodeType == NodeType.Combat || NodeType == NodeType.BossOrGate;
 

@@ -16,6 +16,8 @@ namespace Survivalon.Run
 
         public RunResult RunResult => runResult;
 
+        public NodePlaceholderState NodeContext => nodeContext;
+
         public bool CanReplayNode => runResult.NextActionContext.CanReplayNode;
 
         public bool CanReturnToWorld => runResult.NextActionContext.CanChooseAnotherNode;

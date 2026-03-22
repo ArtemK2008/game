@@ -59,6 +59,16 @@ namespace Survivalon.World
             return node;
         }
 
+        public WorldRegion GetRegion(RegionId regionId)
+        {
+            if (!regionsById.TryGetValue(regionId, out WorldRegion region))
+            {
+                throw new KeyNotFoundException($"World region '{regionId}' was not found.");
+            }
+
+            return region;
+        }
+
         public IReadOnlyList<WorldNodeConnection> GetOutboundConnections(NodeId sourceNodeId)
         {
             if (!nodesById.ContainsKey(sourceNodeId))
