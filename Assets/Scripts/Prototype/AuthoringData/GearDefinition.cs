@@ -1,11 +1,15 @@
 using UnityEngine;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Gear;
 
-namespace Survivalon.Data.Gear
+namespace Survivalon.Prototype.AuthoringData
 {
+    /// <summary>
+    /// Хранит dormant prototype-описание gear для неиспользуемого authoring slice.
+    /// </summary>
     [CreateAssetMenu(
         fileName = "GearDefinition",
-        menuName = "Survivalon/Data/Gear/Gear Definition")]
+        menuName = "Survivalon/Prototype/Authoring/Gear Definition")]
     public sealed class GearDefinition : ScriptableObject
     {
         [SerializeField]

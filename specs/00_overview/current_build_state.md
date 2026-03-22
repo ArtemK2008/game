@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 073**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, and **refactor04**.
+This summary reflects completed work through **Milestone 073**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, and **refactor05**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -375,6 +375,7 @@ This file is derived from the milestone notes in `specs/milestone/` plus the cur
 - The shared runtime UI helper used by the placeholder startup, world, combat, and town screens now also lives under `Assets/Scripts/Core/`, with focused EditMode smoke coverage under `Assets/Tests/EditMode/Core/`.
 - The character slice now keeps authored/static character content under `Assets/Scripts/Data/Characters/`, while runtime character services, runtime option models, and their direct EditMode tests live under `Assets/Scripts/Characters/` and `Assets/Tests/EditMode/Characters/`.
 - The account-wide progression slice now keeps authored/static upgrade ids, definitions, and catalogs under `Assets/Scripts/Data/Progression/`, while persistent progression state, purchase logic, and runtime effect resolution remain under `Assets/Scripts/State/Persistence/`.
+- The old unused ScriptableObject authoring-model prototype slice is now isolated under `Assets/Scripts/Prototype/AuthoringData/`, with its matching dormant EditMode container test under `Assets/Tests/EditMode/Prototype/AuthoringData/`, so it no longer reads like active shipped runtime data.
 - EditMode tests are now physically grouped much more closely to runtime domain ownership through `Core`, `Startup`, `Combat`, `Run`, `World`, `State`, `State/Persistence`, and `Data` test folders.
 - Runtime and EditMode test namespaces now mirror that domain folder structure under `Survivalon.*` and `Survivalon.Tests.EditMode.*`, with only the intentionally cross-domain root assembly marker/smoke-test exceptions left unchanged.
 - The follow-up namespace cleanup removed the broad redundant cross-domain `using` noise from runtime and EditMode files; runtime behavior stayed unchanged.

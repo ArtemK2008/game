@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Survivalon.Core;
 
-namespace Survivalon.Data.World
+namespace Survivalon.Prototype.AuthoringData
 {
+    /// <summary>
+    /// Хранит dormant prototype-описание узла мира для неиспользуемого authoring slice.
+    /// </summary>
     [CreateAssetMenu(
         fileName = "NodeDefinition",
-        menuName = "Survivalon/Data/World/Node Definition")]
+        menuName = "Survivalon/Prototype/Authoring/Node Definition")]
     public sealed class NodeDefinition : ScriptableObject
     {
         [SerializeField]

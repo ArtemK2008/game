@@ -3,11 +3,14 @@ using UnityEngine;
 using Survivalon.Data.Combat;
 using Survivalon.Data.Gear;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Prototype.AuthoringData
 {
+    /// <summary>
+    /// Хранит dormant prototype-описание персонажа для неиспользуемого authoring slice.
+    /// </summary>
     [CreateAssetMenu(
         fileName = "CharacterDefinition",
-        menuName = "Survivalon/Data/Characters/Character Definition")]
+        menuName = "Survivalon/Prototype/Authoring/Character Definition")]
     public sealed class CharacterDefinition : ScriptableObject
     {
         [SerializeField]
