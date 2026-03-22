@@ -68,6 +68,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(TryFindGameObject(hostObject, "Content"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "PushOffenseProject_PurchaseUpgradeButton"), Is.Not.Null);
+                Assert.That(TryFindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(
                     TryFindButton(
                         hostObject,
@@ -127,10 +128,12 @@ namespace Survivalon.Tests.EditMode.Towns
                 Button combatBaselineButton = FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton");
                 Button pushOffenseButton = FindButton(hostObject, "PushOffenseProject_PurchaseUpgradeButton");
                 Button farmYieldButton = FindButton(hostObject, "FarmYieldProject_PurchaseUpgradeButton");
+                Button bossSalvageButton = FindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton");
 
                 Assert.That(combatBaselineButton.interactable, Is.True);
                 Assert.That(pushOffenseButton.interactable, Is.False);
                 Assert.That(farmYieldButton.interactable, Is.True);
+                Assert.That(bossSalvageButton.interactable, Is.False);
 
                 combatBaselineButton.onClick.Invoke();
 
@@ -148,6 +151,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton").interactable, Is.False);
                 Assert.That(FindButtonLabel(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.EqualTo("Combat Baseline Project Purchased"));
                 Assert.That(FindButton(hostObject, "FarmYieldProject_PurchaseUpgradeButton").interactable, Is.False);
+                Assert.That(FindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton").interactable, Is.False);
             }
             finally
             {

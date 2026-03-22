@@ -30,6 +30,7 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(progressionText, Does.Contain("- Combat Baseline Project | Cost: Persistent progression material x1 | Purchased"));
             Assert.That(progressionText, Does.Contain("- Push Offense Project | Cost: Persistent progression material x2 | Need 1 more"));
             Assert.That(progressionText, Does.Contain("- Farm Yield Project | Cost: Persistent progression material x1 | Affordable"));
+            Assert.That(progressionText, Does.Contain("- Boss Salvage Project | Cost: Persistent progression material x2 | Need 1 more"));
             Assert.That(buildText, Is.EqualTo(
                 "Build preparation\n" +
                 "Selected character: Vanguard\n" +
@@ -84,6 +85,13 @@ namespace Survivalon.Tests.EditMode.Towns
                         costAmount: 1,
                         isPurchased: false,
                         isAffordable: true),
+                    new TownServiceProgressionOptionState(
+                        AccountWideUpgradeId.BossSalvageProject,
+                        "Boss Salvage Project",
+                        ResourceCategory.PersistentProgressionMaterial,
+                        costAmount: 2,
+                        isPurchased: false,
+                        isAffordable: false),
                 },
                 skillPackageOptions: new[]
                 {

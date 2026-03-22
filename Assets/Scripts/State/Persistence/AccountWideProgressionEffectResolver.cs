@@ -14,6 +14,7 @@ namespace Survivalon.State.Persistence
             int playerMaxHealthBonus = 0;
             int playerAttackPowerBonus = 0;
             int ordinaryRegionMaterialRewardBonus = 0;
+            int bossProgressionMaterialRewardBonus = 0;
 
             foreach (AccountWideProgressionUpgradeDefinition upgradeDefinition in AccountWideProgressionUpgradeCatalog.All)
             {
@@ -31,12 +32,15 @@ namespace Survivalon.State.Persistence
                 playerAttackPowerBonus += upgradeDefinition.PlayerAttackPowerBonus * entry.CurrentValue;
                 ordinaryRegionMaterialRewardBonus +=
                     upgradeDefinition.OrdinaryRegionMaterialRewardBonus * entry.CurrentValue;
+                bossProgressionMaterialRewardBonus +=
+                    upgradeDefinition.BossProgressionMaterialRewardBonus * entry.CurrentValue;
             }
 
             return new AccountWideProgressionEffectState(
                 playerMaxHealthBonus,
                 playerAttackPowerBonus,
-                ordinaryRegionMaterialRewardBonus);
+                ordinaryRegionMaterialRewardBonus,
+                bossProgressionMaterialRewardBonus);
         }
     }
 }

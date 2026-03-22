@@ -8,6 +8,19 @@ namespace Survivalon.State.Persistence
             int playerMaxHealthBonus,
             int playerAttackPowerBonus,
             int ordinaryRegionMaterialRewardBonus)
+            : this(
+                playerMaxHealthBonus,
+                playerAttackPowerBonus,
+                ordinaryRegionMaterialRewardBonus,
+                bossProgressionMaterialRewardBonus: 0)
+        {
+        }
+
+        public AccountWideProgressionEffectState(
+            int playerMaxHealthBonus,
+            int playerAttackPowerBonus,
+            int ordinaryRegionMaterialRewardBonus,
+            int bossProgressionMaterialRewardBonus)
         {
             if (playerMaxHealthBonus < 0)
             {
@@ -26,9 +39,17 @@ namespace Survivalon.State.Persistence
                     "Ordinary region-material reward bonus cannot be negative.");
             }
 
+            if (bossProgressionMaterialRewardBonus < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(bossProgressionMaterialRewardBonus),
+                    "Boss progression-material reward bonus cannot be negative.");
+            }
+
             PlayerMaxHealthBonus = playerMaxHealthBonus;
             PlayerAttackPowerBonus = playerAttackPowerBonus;
             OrdinaryRegionMaterialRewardBonus = ordinaryRegionMaterialRewardBonus;
+            BossProgressionMaterialRewardBonus = bossProgressionMaterialRewardBonus;
         }
 
         public int PlayerMaxHealthBonus { get; }
@@ -36,6 +57,8 @@ namespace Survivalon.State.Persistence
         public int PlayerAttackPowerBonus { get; }
 
         public int OrdinaryRegionMaterialRewardBonus { get; }
+
+        public int BossProgressionMaterialRewardBonus { get; }
     }
 }
 

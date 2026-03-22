@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 063**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, and **063a**.
+This summary reflects completed work through **Milestone 064**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, and **063a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -164,11 +164,16 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### One account-wide progression sink
 - The build now has one persistent account-wide upgrade sink stored in `PersistentProgressionState`.
-- It currently contains three small upgrades/projects that consume `ResourceCategory.PersistentProgressionMaterial` and permanently record account-wide benefits in persistent data.
+- It currently contains four small upgrades/projects that consume `ResourceCategory.PersistentProgressionMaterial` and permanently record account-wide benefits in persistent data.
 - Purchased upgrade state persists through the normal saved game-state flow and resolves into a small account-wide effect model that now feeds both player combat baseline stats and ordinary reward efficiency before future runs start.
 - The current account-wide upgrades increase player max health, player attack power, and ordinary region-material reward output in future runs, without changing enemy baseline stats or milestone reward amounts.
 - The new push-oriented offense upgrade helps harder combat more directly by increasing player-side baseline damage enough to visibly improve tougher future encounters.
 - The new farm-oriented yield upgrade helps repeatable farming more directly by increasing ordinary region-material rewards on standard region-material combat clears.
+- The new project-style powerup layer now also includes one explicit boss-focused efficiency project:
+  - `Boss Salvage Project`
+  - it consumes persistent progression material through the same town/service progression sink
+  - once purchased, successful future boss clears grant `+1` extra persistent progression material in the existing boss reward bundle
+  - this gives the current prototype one persistent project mechanic that is clearly separate from direct node unlock progression
 - The town/service shell now exposes that sink as the current live purchase surface:
   - affordable projects can be bought directly from `Cavern Service Hub`
   - purchases spend persistent progression material and persist immediately

@@ -36,6 +36,7 @@ namespace Survivalon.Tests.EditMode.Startup
                         hostObject,
                         $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
                     Is.Not.Null);
+                Assert.That(FindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, $"TownService_{GearIds.GuardCharm}_GearButton"), Is.Not.Null);
                 Assert.That(

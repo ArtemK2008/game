@@ -276,6 +276,41 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldIncreaseFutureBossRewardBundleWhenBossSalvageProjectIsPurchased()
+        {
+            PersistentGameState baselineGameState = BootstrapWorldTestData.CreateGameState();
+            PersistentGameState upgradedGameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+            AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
+
+            Assert.That(selectionService.TrySelectCharacter(baselineGameState, "character_striker"), Is.True);
+            Assert.That(selectionService.TrySelectCharacter(upgradedGameState, "character_striker"), Is.True);
+            upgradedGameState.ResourceBalances.Add(
+                ResourceCategory.PersistentProgressionMaterial,
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.BossSalvageProject).CostAmount);
+            Assert.That(
+                boardService.TryPurchase(upgradedGameState, AccountWideUpgradeId.BossSalvageProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+
+            RunLifecycleController baselineController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(baselineGameState));
+            RunLifecycleController upgradedController = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(upgradedGameState));
+
+            RunLifecycleControllerTestData.RunToPostRun(baselineController);
+            RunLifecycleControllerTestData.RunToPostRun(upgradedController);
+
+            Assert.That(baselineController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(upgradedController.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(baselineController.RunResult.RewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(upgradedController.RunResult.RewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(3));
+            Assert.That(baselineGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(2));
+            Assert.That(upgradedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(3));
+        }
+
+        [Test]
         public void ShouldStopAutomaticCombatFlowAfterPostRunIsReached()
         {
             RunLifecycleController controller = new RunLifecycleController(RunLifecycleControllerTestData.CreateCombatNodeState());

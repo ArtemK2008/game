@@ -64,6 +64,31 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldIncreaseBossRewardBundleWhenBossSalvageProjectIsPurchased()
+        {
+            RunRewardResolutionService service = new RunRewardResolutionService();
+
+            RunRewardPayload rewardPayload = service.Resolve(
+                NodePlaceholderTestData.CreateBossCombatPlaceholderState(),
+                RunResolutionState.Succeeded,
+                BootstrapWorldTestData.CreateWorldGraph(),
+                progressionEffects: new AccountWideProgressionEffectState(
+                    playerMaxHealthBonus: 0,
+                    playerAttackPowerBonus: 0,
+                    ordinaryRegionMaterialRewardBonus: 0,
+                    bossProgressionMaterialRewardBonus: 1));
+
+            Assert.That(rewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(rewardPayload.BossCurrencyRewards, Is.Empty);
+            Assert.That(rewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.BossMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(3));
+            Assert.That(rewardPayload.MaterialRewards, Is.Empty);
+            Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
+        }
+
+        [Test]
         public void ShouldIncreaseOrdinaryRegionMaterialRewardWhenFarmYieldProjectIsPurchased()
         {
             RunRewardResolutionService service = new RunRewardResolutionService();
@@ -96,6 +121,30 @@ namespace Survivalon.Tests.EditMode.Run
                 RunResolutionState.Succeeded);
 
             Assert.That(rewardPayload, Is.SameAs(RunRewardPayload.Empty));
+        }
+
+        [Test]
+        public void ShouldKeepOrdinaryCombatRewardsUnchangedWhenOnlyBossSalvageProjectIsPurchased()
+        {
+            RunRewardResolutionService service = new RunRewardResolutionService();
+
+            RunRewardPayload rewardPayload = service.Resolve(
+                NodePlaceholderTestData.CreateCombatPlaceholderState(),
+                RunResolutionState.Succeeded,
+                BootstrapWorldTestData.CreateWorldGraph(),
+                progressionEffects: new AccountWideProgressionEffectState(
+                    playerMaxHealthBonus: 0,
+                    playerAttackPowerBonus: 0,
+                    ordinaryRegionMaterialRewardBonus: 0,
+                    bossProgressionMaterialRewardBonus: 1));
+
+            Assert.That(rewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(rewardPayload.MaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.MaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
+            Assert.That(rewardPayload.MaterialRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(rewardPayload.BossMaterialRewards, Is.Empty);
         }
 
         [Test]
