@@ -53,12 +53,15 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(screenState.SupportGearDisplayName, Is.EqualTo("Guard Charm"));
             Assert.That(screenState.ProgressionOptions.Count, Is.EqualTo(3));
             Assert.That(screenState.ProgressionOptions[0].UpgradeId, Is.EqualTo(AccountWideUpgradeId.CombatBaselineProject));
+            Assert.That(screenState.ProgressionOptions[0].UpgradeDisplayName, Is.EqualTo("Combat Baseline Project"));
             Assert.That(screenState.ProgressionOptions[0].IsPurchased, Is.True);
             Assert.That(screenState.ProgressionOptions[0].IsAffordable, Is.False);
             Assert.That(screenState.ProgressionOptions[1].UpgradeId, Is.EqualTo(AccountWideUpgradeId.PushOffenseProject));
+            Assert.That(screenState.ProgressionOptions[1].UpgradeDisplayName, Is.EqualTo("Push Offense Project"));
             Assert.That(screenState.ProgressionOptions[1].IsPurchased, Is.False);
             Assert.That(screenState.ProgressionOptions[1].IsAffordable, Is.False);
             Assert.That(screenState.ProgressionOptions[2].UpgradeId, Is.EqualTo(AccountWideUpgradeId.FarmYieldProject));
+            Assert.That(screenState.ProgressionOptions[2].UpgradeDisplayName, Is.EqualTo("Farm Yield Project"));
             Assert.That(screenState.ProgressionOptions[2].IsPurchased, Is.False);
             Assert.That(screenState.ProgressionOptions[2].IsAffordable, Is.True);
         }

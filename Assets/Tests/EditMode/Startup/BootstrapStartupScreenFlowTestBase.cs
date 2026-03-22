@@ -40,6 +40,18 @@ namespace Survivalon.Tests.EditMode.Startup
             FindButton(rootObject, "EnterSelectedNodeButton").onClick.Invoke();
         }
 
+        protected static void ShowEnteredPlaceholderState(
+            BootstrapStartup bootstrapStartup,
+            NodePlaceholderState placeholderState)
+        {
+            MethodInfo showEnteredNodeContextMethod = typeof(BootstrapStartup).GetMethod(
+                "ShowEnteredNodeContext",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(showEnteredNodeContextMethod, Is.Not.Null);
+
+            showEnteredNodeContextMethod.Invoke(bootstrapStartup, new object[] { placeholderState });
+        }
+
         protected static void ReturnToWorldMap(GameObject rootObject)
         {
             if (CountActiveComponents<TownServiceScreen>(rootObject) > 0)

@@ -9,6 +9,7 @@ namespace Survivalon.State.Persistence
         private static readonly AccountWideProgressionUpgradeDefinition CombatBaselineProject =
             new AccountWideProgressionUpgradeDefinition(
                 AccountWideUpgradeId.CombatBaselineProject,
+                "Combat Baseline Project",
                 "account_wide_combat_baseline_project",
                 ResourceCategory.PersistentProgressionMaterial,
                 costAmount: 1,
@@ -18,6 +19,7 @@ namespace Survivalon.State.Persistence
         private static readonly AccountWideProgressionUpgradeDefinition PushOffenseProject =
             new AccountWideProgressionUpgradeDefinition(
                 AccountWideUpgradeId.PushOffenseProject,
+                "Push Offense Project",
                 "account_wide_push_offense_project",
                 ResourceCategory.PersistentProgressionMaterial,
                 costAmount: 2,
@@ -27,6 +29,7 @@ namespace Survivalon.State.Persistence
         private static readonly AccountWideProgressionUpgradeDefinition FarmYieldProject =
             new AccountWideProgressionUpgradeDefinition(
                 AccountWideUpgradeId.FarmYieldProject,
+                "Farm Yield Project",
                 "account_wide_farm_yield_project",
                 ResourceCategory.PersistentProgressionMaterial,
                 costAmount: 1,

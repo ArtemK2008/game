@@ -57,8 +57,13 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(ContainsText(hostObject, "Progression hub"), Is.True);
                 Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
+                Assert.That(hostObject.GetComponentsInChildren<ScrollRect>(true).Length, Is.EqualTo(1));
+                Assert.That(TryFindGameObject(hostObject, "ContentViewport"), Is.Not.Null);
+                Assert.That(TryFindGameObject(hostObject, "Content"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "AdvanceRunLifecycleButton"), Is.Null);
                 Assert.That(TryFindButton(hostObject, "ReplayNodeButton"), Is.Null);
+                Assert.That(TryFindButton(hostObject, "PurchaseUpgradeButton"), Is.Null);
+                Assert.That(TryFindButton(hostObject, "AssignGearButton"), Is.Null);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
                 FindButton(hostObject, "StopSessionButton").onClick.Invoke();
@@ -84,6 +89,20 @@ namespace Survivalon.Tests.EditMode.Towns
             }
 
             return false;
+        }
+
+        private static GameObject TryFindGameObject(GameObject rootObject, string objectName)
+        {
+            Transform[] transforms = rootObject.GetComponentsInChildren<Transform>(true);
+            foreach (Transform currentTransform in transforms)
+            {
+                if (currentTransform.gameObject.name == objectName)
+                {
+                    return currentTransform.gameObject;
+                }
+            }
+
+            return null;
         }
 
         private static Button FindButton(GameObject rootObject, string buttonObjectName)

@@ -9,11 +9,11 @@ namespace Survivalon.Towns
 {
     public sealed class TownServiceScreen : MonoBehaviour
     {
-        private const float OverviewPreferredHeight = 120f;
-        private const float ProgressionPreferredHeight = 168f;
-        private const float BuildPreparationPreferredHeight = 132f;
-
         private Canvas canvas;
+        private RectTransform panelRectTransform;
+        private RectTransform contentViewportRectTransform;
+        private RectTransform contentRectTransform;
+        private ScrollRect contentScrollRect;
         private Text titleText;
         private Text overviewText;
         private Text progressionText;
@@ -79,6 +79,7 @@ namespace Survivalon.Towns
             stopSessionButtonText.text = onStopSessionRequested == null
                 ? "Stop Session Unavailable"
                 : "Stop Session";
+            RefreshLayout();
         }
 
         private void EnsureUi()
@@ -120,7 +121,7 @@ namespace Survivalon.Towns
             Image panelImage = panelObject.GetComponent<Image>();
             panelImage.color = new Color(0.10f, 0.12f, 0.16f, 0.96f);
 
-            RectTransform panelRectTransform = panelObject.GetComponent<RectTransform>();
+            panelRectTransform = panelObject.GetComponent<RectTransform>();
             panelRectTransform.anchorMin = new Vector2(0.14f, 0.10f);
             panelRectTransform.anchorMax = new Vector2(0.86f, 0.90f);
             panelRectTransform.offsetMin = Vector2.zero;
@@ -146,35 +147,104 @@ namespace Survivalon.Towns
                 Color.white);
             RuntimeUiSupport.AddLayoutElement(titleText.gameObject, 44f);
 
+            GameObject contentScrollViewObject = new GameObject(
+                "ContentScrollView",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(ScrollRect),
+                typeof(LayoutElement));
+            contentScrollViewObject.transform.SetParent(panelObject.transform, false);
+
+            Image contentScrollViewImage = contentScrollViewObject.GetComponent<Image>();
+            contentScrollViewImage.color = new Color(1f, 1f, 1f, 0.04f);
+
+            RectTransform contentScrollViewRectTransform = contentScrollViewObject.GetComponent<RectTransform>();
+            contentScrollViewRectTransform.localScale = Vector3.one;
+
+            LayoutElement contentScrollViewLayoutElement = contentScrollViewObject.GetComponent<LayoutElement>();
+            contentScrollViewLayoutElement.minHeight = 200f;
+            contentScrollViewLayoutElement.flexibleHeight = 1f;
+
+            GameObject contentViewportObject = new GameObject(
+                "ContentViewport",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(RectMask2D));
+            contentViewportObject.transform.SetParent(contentScrollViewObject.transform, false);
+
+            Image contentViewportImage = contentViewportObject.GetComponent<Image>();
+            contentViewportImage.color = new Color(1f, 1f, 1f, 0.01f);
+
+            contentViewportRectTransform = contentViewportObject.GetComponent<RectTransform>();
+            contentViewportRectTransform.anchorMin = Vector2.zero;
+            contentViewportRectTransform.anchorMax = Vector2.one;
+            contentViewportRectTransform.offsetMin = Vector2.zero;
+            contentViewportRectTransform.offsetMax = Vector2.zero;
+            contentViewportRectTransform.localScale = Vector3.one;
+
+            GameObject contentObject = new GameObject(
+                "Content",
+                typeof(RectTransform),
+                typeof(VerticalLayoutGroup),
+                typeof(ContentSizeFitter));
+            contentObject.transform.SetParent(contentViewportObject.transform, false);
+
+            contentRectTransform = contentObject.GetComponent<RectTransform>();
+            contentRectTransform.anchorMin = new Vector2(0f, 1f);
+            contentRectTransform.anchorMax = new Vector2(1f, 1f);
+            contentRectTransform.pivot = new Vector2(0.5f, 1f);
+            contentRectTransform.localScale = Vector3.one;
+
+            VerticalLayoutGroup contentLayout = contentObject.GetComponent<VerticalLayoutGroup>();
+            contentLayout.padding = new RectOffset(12, 12, 12, 12);
+            contentLayout.spacing = 12f;
+            contentLayout.childAlignment = TextAnchor.UpperLeft;
+            contentLayout.childControlWidth = true;
+            contentLayout.childControlHeight = true;
+            contentLayout.childForceExpandWidth = true;
+            contentLayout.childForceExpandHeight = false;
+
+            ContentSizeFitter contentFitter = contentObject.GetComponent<ContentSizeFitter>();
+            contentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            contentScrollRect = contentScrollViewObject.GetComponent<ScrollRect>();
+            contentScrollRect.viewport = contentViewportRectTransform;
+            contentScrollRect.content = contentRectTransform;
+            contentScrollRect.horizontal = false;
+            contentScrollRect.vertical = true;
+            contentScrollRect.movementType = ScrollRect.MovementType.Clamped;
+            contentScrollRect.scrollSensitivity = 28f;
+
             overviewText = RuntimeUiSupport.CreateText(
-                panelObject.transform,
+                contentObject.transform,
                 uiFont,
                 "Overview",
                 18,
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.90f, 0.92f, 0.97f, 1f));
-            RuntimeUiSupport.AddLayoutElement(overviewText.gameObject, OverviewPreferredHeight);
+            RuntimeUiSupport.GetOrAddComponent<LayoutElement>(overviewText.gameObject).flexibleWidth = 1f;
 
             progressionText = RuntimeUiSupport.CreateText(
-                panelObject.transform,
+                contentObject.transform,
                 uiFont,
                 "ProgressionSummary",
                 18,
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.91f, 0.96f, 1f));
-            RuntimeUiSupport.AddLayoutElement(progressionText.gameObject, ProgressionPreferredHeight);
+            RuntimeUiSupport.GetOrAddComponent<LayoutElement>(progressionText.gameObject).flexibleWidth = 1f;
 
             buildPreparationText = RuntimeUiSupport.CreateText(
-                panelObject.transform,
+                contentObject.transform,
                 uiFont,
                 "BuildPreparationSummary",
                 18,
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.91f, 0.96f, 1f));
-            RuntimeUiSupport.AddLayoutElement(buildPreparationText.gameObject, BuildPreparationPreferredHeight);
+            RuntimeUiSupport.GetOrAddComponent<LayoutElement>(buildPreparationText.gameObject).flexibleWidth = 1f;
 
             GameObject actionRowObject = new GameObject(
                 "ActionRow",
@@ -264,6 +334,31 @@ namespace Survivalon.Towns
             textRectTransform.localScale = Vector3.one;
 
             return button;
+        }
+
+        private void RefreshLayout()
+        {
+            Canvas.ForceUpdateCanvases();
+
+            if (contentRectTransform != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentRectTransform);
+            }
+
+            if (contentViewportRectTransform != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentViewportRectTransform);
+            }
+
+            if (panelRectTransform != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
+            }
+
+            if (contentScrollRect != null)
+            {
+                contentScrollRect.verticalNormalizedPosition = 1f;
+            }
         }
 
         private void HandleReturnToWorldRequested()
