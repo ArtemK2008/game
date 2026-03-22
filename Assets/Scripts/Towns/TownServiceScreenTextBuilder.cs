@@ -53,7 +53,7 @@ namespace Survivalon.Towns
                 builder.Append("- ");
                 builder.Append(progressionOption.UpgradeDisplayName);
                 builder.Append(" | Cost: ");
-                builder.Append(ResolveResourceDisplayName(progressionOption.CostResourceCategory));
+                builder.Append(PlayerFacingCoreLabelFormatter.FormatResourceCategory(progressionOption.CostResourceCategory));
                 builder.Append(" x");
                 builder.Append(progressionOption.CostAmount);
                 builder.Append(" | ");
@@ -72,11 +72,11 @@ namespace Survivalon.Towns
                 builder.Append("- ");
                 builder.Append(conversionOption.ConversionDisplayName);
                 builder.Append(" | ");
-                builder.Append(ResolveResourceDisplayName(conversionOption.InputResourceCategory));
+                builder.Append(PlayerFacingCoreLabelFormatter.FormatResourceCategory(conversionOption.InputResourceCategory));
                 builder.Append(" x");
                 builder.Append(conversionOption.InputAmount);
                 builder.Append(" -> ");
-                builder.Append(ResolveResourceDisplayName(conversionOption.OutputResourceCategory));
+                builder.Append(PlayerFacingCoreLabelFormatter.FormatResourceCategory(conversionOption.OutputResourceCategory));
                 builder.Append(" x");
                 builder.Append(conversionOption.OutputAmount);
                 builder.Append(" | ");
@@ -240,20 +240,6 @@ namespace Survivalon.Towns
             }
 
             return string.Join(", ", projectDisplayNames);
-        }
-
-        private static string ResolveResourceDisplayName(ResourceCategory resourceCategory)
-        {
-            return resourceCategory switch
-            {
-                ResourceCategory.PersistentProgressionMaterial => "Persistent progression material",
-                ResourceCategory.RegionMaterial => "Region material",
-                ResourceCategory.SoftCurrency => "Soft currency",
-                _ => throw new ArgumentOutOfRangeException(
-                    nameof(resourceCategory),
-                    resourceCategory,
-                    "Unknown resource category."),
-            };
         }
 
         private static string ResolveGearCategoryDisplayName(GearCategory gearCategory)
