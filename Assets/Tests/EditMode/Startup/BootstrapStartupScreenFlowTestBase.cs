@@ -172,24 +172,38 @@ namespace Survivalon.Tests.EditMode.Startup
 
         protected sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
         {
-            public PersistentGameState SavedGameState { get; private set; }
+            private PersistentGameState savedGameState;
+
+            public PersistentGameState SavedGameState => savedGameState;
 
             public bool HasSavedState => SavedGameState != null;
 
+            public int SaveCallCount { get; private set; }
+
             public void Seed(PersistentGameState gameState)
             {
-                SavedGameState = gameState;
+                savedGameState = CloneGameState(gameState);
+                SaveCallCount = 0;
             }
 
             public void Save(PersistentGameState gameState)
             {
-                SavedGameState = gameState;
+                savedGameState = CloneGameState(gameState);
+                SaveCallCount++;
             }
 
             public bool TryLoad(out PersistentGameState gameState)
             {
-                gameState = SavedGameState;
+                gameState = savedGameState == null ? null : CloneGameState(savedGameState);
                 return gameState != null;
+            }
+
+            private static PersistentGameState CloneGameState(PersistentGameState gameState)
+            {
+                string json = JsonUtility.ToJson(gameState);
+                PersistentGameState clonedGameState = JsonUtility.FromJson<PersistentGameState>(json);
+                Assert.That(clonedGameState, Is.Not.Null);
+                return clonedGameState;
             }
         }
 

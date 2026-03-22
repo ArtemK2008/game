@@ -91,10 +91,20 @@ namespace Survivalon.Tests.EditMode.Startup
                 CreateAndInitializeBootstrap(hostObject, storage);
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+
+                Assert.That(storage.SaveCallCount, Is.EqualTo(0));
+                Assert.That(storage.SavedGameState, Is.Not.Null);
+                Assert.That(storage.SavedGameState, Is.Not.SameAs(seededGameState));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(3));
+                Assert.That(
+                    storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                    Is.EqualTo(0));
+
                 FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
                 Assert.That(ContainsText(hostObject, "Persistent progression material: 1"), Is.True);
+                Assert.That(storage.SaveCallCount, Is.EqualTo(1));
                 Assert.That(storage.SavedGameState, Is.Not.Null);
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
                 Assert.That(

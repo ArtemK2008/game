@@ -87,6 +87,7 @@ namespace Survivalon.Startup
                 () => HandleTownServiceReturnRequested(placeholderState.NodeId),
                 () => HandleTownServiceStopRequested(placeholderState.NodeId),
                 progressionInteractionService: new TownServiceProgressionInteractionService(persistenceService),
+                conversionInteractionService: new TownServiceConversionInteractionService(persistenceService),
                 buildPreparationInteractionService: new TownServiceBuildPreparationInteractionService(persistenceService));
         }
 

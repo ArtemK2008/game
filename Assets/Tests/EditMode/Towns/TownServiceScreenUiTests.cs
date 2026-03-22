@@ -140,6 +140,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(
                     gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
                     Is.EqualTo(1));
+                Assert.That(storage.SaveCallCount, Is.EqualTo(1));
                 Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
                 Assert.That(ContainsText(hostObject, "Persistent progression material: 1"), Is.True);
                 Assert.That(
@@ -148,6 +149,7 @@ namespace Survivalon.Tests.EditMode.Towns
                         "- Region Material Refinement | Region material x3 -> Persistent progression material x1 | Need 3 more"),
                     Is.True);
                 Assert.That(storage.SavedGameState, Is.Not.Null);
+                Assert.That(storage.SavedGameState, Is.Not.SameAs(gameState));
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
                 Assert.That(
                     storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
@@ -371,15 +373,26 @@ namespace Survivalon.Tests.EditMode.Towns
         {
             public PersistentGameState SavedGameState { get; private set; }
 
+            public int SaveCallCount { get; private set; }
+
             public void Save(PersistentGameState gameState)
             {
-                SavedGameState = gameState;
+                SavedGameState = CloneGameState(gameState);
+                SaveCallCount++;
             }
 
             public bool TryLoad(out PersistentGameState gameState)
             {
-                gameState = SavedGameState;
+                gameState = SavedGameState == null ? null : CloneGameState(SavedGameState);
                 return gameState != null;
+            }
+
+            private static PersistentGameState CloneGameState(PersistentGameState gameState)
+            {
+                string json = JsonUtility.ToJson(gameState);
+                PersistentGameState clonedGameState = JsonUtility.FromJson<PersistentGameState>(json);
+                Assert.That(clonedGameState, Is.Not.Null);
+                return clonedGameState;
             }
         }
     }
