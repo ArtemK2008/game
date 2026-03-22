@@ -527,7 +527,15 @@ namespace Survivalon.Towns
                 return;
             }
 
-            if (!buildPreparationInteractionService.TryApplyGearAssignment(currentGameState, gearAssignmentOption))
+            bool changed = gearAssignmentOption.IsEquipped
+                ? buildPreparationInteractionService.TryClearGear(
+                    currentGameState,
+                    gearAssignmentOption.GearCategory)
+                : buildPreparationInteractionService.TryAssignGear(
+                    currentGameState,
+                    gearAssignmentOption.GearId);
+
+            if (!changed)
             {
                 return;
             }

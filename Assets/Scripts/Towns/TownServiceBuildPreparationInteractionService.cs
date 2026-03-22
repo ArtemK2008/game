@@ -1,5 +1,6 @@
 using System;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Towns
@@ -36,23 +37,26 @@ namespace Survivalon.Towns
             return changed;
         }
 
-        public bool TryApplyGearAssignment(
-            PersistentGameState gameState,
-            PlayableCharacterGearAssignmentOption gearAssignmentOption)
+        public bool TryAssignGear(PersistentGameState gameState, string gearId)
         {
             if (gameState == null)
             {
                 throw new ArgumentNullException(nameof(gameState));
             }
 
-            if (gearAssignmentOption == null)
+            bool changed = gearAssignmentService.TryAssignSelectedCharacterGear(gameState, gearId);
+            PersistIfChanged(gameState, changed);
+            return changed;
+        }
+
+        public bool TryClearGear(PersistentGameState gameState, GearCategory gearCategory)
+        {
+            if (gameState == null)
             {
-                throw new ArgumentNullException(nameof(gearAssignmentOption));
+                throw new ArgumentNullException(nameof(gameState));
             }
 
-            bool changed = gearAssignmentOption.IsEquipped
-                ? gearAssignmentService.TryClearSelectedCharacterGear(gameState, gearAssignmentOption.GearCategory)
-                : gearAssignmentService.TryAssignSelectedCharacterGear(gameState, gearAssignmentOption.GearId);
+            bool changed = gearAssignmentService.TryClearSelectedCharacterGear(gameState, gearCategory);
             PersistIfChanged(gameState, changed);
             return changed;
         }

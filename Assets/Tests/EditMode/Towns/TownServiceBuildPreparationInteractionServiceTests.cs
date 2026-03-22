@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using Survivalon.Combat;
 using Survivalon.Core;
@@ -13,6 +15,19 @@ namespace Survivalon.Tests.EditMode.Towns
 {
     public sealed class TownServiceBuildPreparationInteractionServiceTests
     {
+        [Test]
+        public void PublicInteractionMethods_ShouldNotDependOnGearPresentationOptionModel()
+        {
+            ParameterInfo[] publicParameters = typeof(TownServiceBuildPreparationInteractionService)
+                .GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                .SelectMany(methodInfo => methodInfo.GetParameters())
+                .ToArray();
+
+            Assert.That(
+                publicParameters.Any(parameterInfo => parameterInfo.ParameterType == typeof(PlayableCharacterGearAssignmentOption)),
+                Is.False);
+        }
+
         [Test]
         public void ShouldAssignSelectedCharacterSkillPackageAndPersistUpdatedState()
         {
@@ -41,7 +56,7 @@ namespace Survivalon.Tests.EditMode.Towns
         }
 
         [Test]
-        public void ShouldAssignGearThroughTownInteractionAndPersistUpdatedLoadoutState()
+        public void ShouldAssignGearByGearIdThroughTownInteractionAndPersistUpdatedLoadoutState()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
             SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
@@ -49,22 +64,8 @@ namespace Survivalon.Tests.EditMode.Towns
                 new TownServiceBuildPreparationInteractionService(persistenceService);
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
 
-            bool primaryChanged = interactionService.TryApplyGearAssignment(
-                gameState,
-                new PlayableCharacterGearAssignmentOption(
-                    "character_vanguard",
-                    GearIds.TrainingBlade,
-                    "Training Blade",
-                    GearCategory.PrimaryCombat,
-                    isEquipped: false));
-            bool supportChanged = interactionService.TryApplyGearAssignment(
-                gameState,
-                new PlayableCharacterGearAssignmentOption(
-                    "character_vanguard",
-                    GearIds.GuardCharm,
-                    "Guard Charm",
-                    GearCategory.SecondarySupport,
-                    isEquipped: false));
+            bool primaryChanged = interactionService.TryAssignGear(gameState, GearIds.TrainingBlade);
+            bool supportChanged = interactionService.TryAssignGear(gameState, GearIds.GuardCharm);
 
             Assert.That(primaryChanged, Is.True);
             Assert.That(supportChanged, Is.True);
@@ -104,6 +105,43 @@ namespace Survivalon.Tests.EditMode.Towns
         }
 
         [Test]
+        public void ShouldClearGearByCategoryThroughTownInteractionAndPersistUpdatedLoadoutState()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            TownServiceBuildPreparationInteractionService interactionService =
+                new TownServiceBuildPreparationInteractionService(persistenceService);
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterGearAssignmentService gearAssignmentService =
+                new PlayableCharacterGearAssignmentService();
+
+            Assert.That(gearAssignmentService.TryAssignSelectedCharacterGear(gameState, GearIds.TrainingBlade), Is.True);
+
+            bool changed = interactionService.TryClearGear(gameState, GearCategory.PrimaryCombat);
+
+            Assert.That(changed, Is.True);
+            Assert.That(
+                gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState),
+                Is.True);
+            Assert.That(
+                vanguardState.LoadoutState.TryGetEquippedGearState(
+                    GearCategory.PrimaryCombat,
+                    out _),
+                Is.False);
+            Assert.That(storage.SavedGameState, Is.Not.Null);
+            Assert.That(
+                storage.SavedGameState.TryGetCharacterState(
+                    "character_vanguard",
+                    out PersistentCharacterState savedVanguardState),
+                Is.True);
+            Assert.That(
+                savedVanguardState.LoadoutState.TryGetEquippedGearState(
+                    GearCategory.PrimaryCombat,
+                    out _),
+                Is.False);
+        }
+
+        [Test]
         public void ShouldUseUpdatedTownBuildStateForFutureRunEntry()
         {
             TownServiceBuildPreparationInteractionService interactionService =
@@ -115,26 +153,8 @@ namespace Survivalon.Tests.EditMode.Towns
                     gameState,
                     PlayableCharacterSkillPackageIds.VanguardBurstDrill),
                 Is.True);
-            Assert.That(
-                interactionService.TryApplyGearAssignment(
-                    gameState,
-                    new PlayableCharacterGearAssignmentOption(
-                        "character_vanguard",
-                        GearIds.TrainingBlade,
-                        "Training Blade",
-                        GearCategory.PrimaryCombat,
-                        isEquipped: false)),
-                Is.True);
-            Assert.That(
-                interactionService.TryApplyGearAssignment(
-                    gameState,
-                    new PlayableCharacterGearAssignmentOption(
-                        "character_vanguard",
-                        GearIds.GuardCharm,
-                        "Guard Charm",
-                        GearCategory.SecondarySupport,
-                        isEquipped: false)),
-                Is.True);
+            Assert.That(interactionService.TryAssignGear(gameState, GearIds.TrainingBlade), Is.True);
+            Assert.That(interactionService.TryAssignGear(gameState, GearIds.GuardCharm), Is.True);
 
             RunPersistentContext persistentContext = RunPersistentContext.FromGameState(gameState);
             RunLifecycleController controller = new RunLifecycleController(
