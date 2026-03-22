@@ -1,8 +1,12 @@
 using System;
 using Survivalon.Core;
+using Survivalon.State.Persistence;
 
-namespace Survivalon.State.Persistence
+namespace Survivalon.Data.Progression
 {
+    /// <summary>
+    /// Описывает authored definition account-wide progression upgrade без persistent mutation logic.
+    /// </summary>
     public sealed class AccountWideProgressionUpgradeDefinition
     {
         public AccountWideProgressionUpgradeDefinition(

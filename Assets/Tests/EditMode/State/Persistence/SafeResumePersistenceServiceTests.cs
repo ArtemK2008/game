@@ -2,10 +2,14 @@ using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
+using Survivalon.Data.Progression;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
+    /// <summary>
+    /// Проверяет safe-resume persistence с уже купленными progression upgrades после выноса authored catalog в Data.Progression.
+    /// </summary>
     public sealed class SafeResumePersistenceServiceTests
     {
         [Test]

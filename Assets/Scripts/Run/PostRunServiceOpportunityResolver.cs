@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using Survivalon.Core;
+using Survivalon.Data.Progression;
 using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 
 namespace Survivalon.Run
 {
+    /// <summary>
+    /// Определяет, есть ли после run осмысленная причина вернуться в service hub по текущему progression state.
+    /// </summary>
     public sealed class PostRunServiceOpportunityResolver
     {
         private readonly WorldNodeAccessResolver worldNodeAccessResolver;

@@ -2,12 +2,16 @@ using NUnit.Framework;
 using UnityEngine;
 using Survivalon.Combat;
 using Survivalon.Core;
+using Survivalon.Data.Progression;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 using Survivalon.Tests.EditMode.World;
 
 namespace Survivalon.Tests.EditMode.Startup
 {
+    /// <summary>
+    /// Проверяет startup -> combat flow при сохранении progression behavior после data-split рефактора.
+    /// </summary>
     public sealed class BootstrapStartupCombatScreenFlowTests : BootstrapStartupScreenFlowTestBase
     {
         [Test]

@@ -1,8 +1,12 @@
 using System;
+using Survivalon.Data.Progression;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Towns
 {
+    /// <summary>
+    /// Оркестрирует покупку account-wide progression upgrades из town/service shell.
+    /// </summary>
     public sealed class TownServiceProgressionInteractionService
     {
         private readonly AccountWideProgressionBoardService progressionBoardService;

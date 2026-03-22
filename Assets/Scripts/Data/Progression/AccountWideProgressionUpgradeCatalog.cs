@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using Survivalon.Core;
 
-namespace Survivalon.State.Persistence
+namespace Survivalon.Data.Progression
 {
+    /// <summary>
+    /// Хранит authored catalog account-wide progression upgrades для текущего shipped prototype.
+    /// </summary>
     public static class AccountWideProgressionUpgradeCatalog
     {
         private static readonly AccountWideProgressionUpgradeDefinition CombatBaselineProject =

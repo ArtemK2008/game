@@ -1,6 +1,8 @@
-
-namespace Survivalon.State.Persistence
+namespace Survivalon.Data.Progression
 {
+    /// <summary>
+    /// Перечисляет authored account-wide upgrade ids для progression catalog.
+    /// </summary>
     public enum AccountWideUpgradeId
     {
         CombatBaselineProject = 0,
