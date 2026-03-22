@@ -14,6 +14,7 @@ namespace Survivalon.World
         private readonly WorldNodeAccessResolver worldNodeAccessResolver;
         private readonly WorldNodeStateResolver worldNodeStateResolver;
         private readonly WorldMapWorldStateSummaryResolver worldStateSummaryResolver;
+        private readonly WorldNodeDisplayNameResolver worldNodeDisplayNameResolver;
         private readonly SessionContextState sessionContext;
         private readonly Dictionary<RegionId, int> regionOrderById;
         private bool hasSelectedNode;
@@ -33,7 +34,10 @@ namespace Survivalon.World
             this.worldNodeStateResolver = worldNodeStateResolver ?? new WorldNodeStateResolver();
             this.worldNodeAccessResolver = worldNodeAccessResolver
                 ?? new WorldNodeAccessResolver(this.nodeReachabilityResolver, this.worldNodeStateResolver);
-            worldStateSummaryResolver = new WorldMapWorldStateSummaryResolver(this.worldNodeStateResolver);
+            worldNodeDisplayNameResolver = new WorldNodeDisplayNameResolver();
+            worldStateSummaryResolver = new WorldMapWorldStateSummaryResolver(
+                this.worldNodeStateResolver,
+                worldNodeDisplayNameResolver);
             this.sessionContext = sessionContext;
             regionOrderById = CreateRegionOrderLookup(worldGraph);
             this.sessionContext?.SeedFromWorldState(worldState);
@@ -71,6 +75,7 @@ namespace Survivalon.World
                     node.NodeId == currentContextNodeId,
                     hasSelectedNode && node.NodeId == selectedNodeId,
                     region.LocationIdentity.DisplayName,
+                    worldNodeDisplayNameResolver.Resolve(node),
                     ResolvePathRole(node.NodeId, currentContextNodeId, accessState)));
             }
 
@@ -121,6 +126,16 @@ namespace Survivalon.World
             List<NodeId> nodeIds = new List<NodeId>(BuildAccessState().ForwardSelectableNodeIds);
             nodeIds.Sort((left, right) => StringComparer.Ordinal.Compare(left.Value, right.Value));
             return nodeIds;
+        }
+
+        public string ResolveSelectedNodeDisplayName()
+        {
+            if (!hasSelectedNode)
+            {
+                return null;
+            }
+
+            return worldNodeDisplayNameResolver.Resolve(worldGraph, selectedNodeId);
         }
 
         private WorldMapAccessState BuildAccessState()

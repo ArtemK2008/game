@@ -8,14 +8,13 @@ namespace Survivalon.World
     {
         public WorldMapWorldStateSummary(
             string currentLocationDisplayName,
-            RegionId currentRegionId,
-            NodeId currentNodeId,
+            WorldMapNodeReferenceDisplayState currentNode,
             NodeState currentNodeState,
             int selectableDestinationCount,
-            IReadOnlyList<NodeId> forwardRouteNodeIds,
-            IReadOnlyList<NodeId> backtrackRouteNodeIds,
-            IReadOnlyList<NodeId> replayableFarmNodeIds,
-            IReadOnlyList<NodeId> blockedLinkedNodeIds)
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> forwardRouteNodes,
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> backtrackRouteNodes,
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> replayableFarmNodes,
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> blockedLinkedNodes)
         {
             if (string.IsNullOrWhiteSpace(currentLocationDisplayName))
             {
@@ -24,24 +23,29 @@ namespace Survivalon.World
                     nameof(currentLocationDisplayName));
             }
 
-            if (forwardRouteNodeIds == null)
+            if (currentNode == null)
             {
-                throw new ArgumentNullException(nameof(forwardRouteNodeIds));
+                throw new ArgumentNullException(nameof(currentNode));
             }
 
-            if (backtrackRouteNodeIds == null)
+            if (forwardRouteNodes == null)
             {
-                throw new ArgumentNullException(nameof(backtrackRouteNodeIds));
+                throw new ArgumentNullException(nameof(forwardRouteNodes));
             }
 
-            if (replayableFarmNodeIds == null)
+            if (backtrackRouteNodes == null)
             {
-                throw new ArgumentNullException(nameof(replayableFarmNodeIds));
+                throw new ArgumentNullException(nameof(backtrackRouteNodes));
             }
 
-            if (blockedLinkedNodeIds == null)
+            if (replayableFarmNodes == null)
             {
-                throw new ArgumentNullException(nameof(blockedLinkedNodeIds));
+                throw new ArgumentNullException(nameof(replayableFarmNodes));
+            }
+
+            if (blockedLinkedNodes == null)
+            {
+                throw new ArgumentNullException(nameof(blockedLinkedNodes));
             }
 
             if (selectableDestinationCount < 0)
@@ -53,32 +57,47 @@ namespace Survivalon.World
             }
 
             CurrentLocationDisplayName = currentLocationDisplayName;
-            CurrentRegionId = currentRegionId;
-            CurrentNodeId = currentNodeId;
+            CurrentNode = currentNode;
             CurrentNodeState = currentNodeState;
             SelectableDestinationCount = selectableDestinationCount;
-            ForwardRouteNodeIds = new List<NodeId>(forwardRouteNodeIds).AsReadOnly();
-            BacktrackRouteNodeIds = new List<NodeId>(backtrackRouteNodeIds).AsReadOnly();
-            ReplayableFarmNodeIds = new List<NodeId>(replayableFarmNodeIds).AsReadOnly();
-            BlockedLinkedNodeIds = new List<NodeId>(blockedLinkedNodeIds).AsReadOnly();
+            ForwardRouteNodes = new List<WorldMapNodeReferenceDisplayState>(forwardRouteNodes).AsReadOnly();
+            BacktrackRouteNodes = new List<WorldMapNodeReferenceDisplayState>(backtrackRouteNodes).AsReadOnly();
+            ReplayableFarmNodes = new List<WorldMapNodeReferenceDisplayState>(replayableFarmNodes).AsReadOnly();
+            BlockedLinkedNodes = new List<WorldMapNodeReferenceDisplayState>(blockedLinkedNodes).AsReadOnly();
         }
 
         public string CurrentLocationDisplayName { get; }
 
-        public RegionId CurrentRegionId { get; }
-
-        public NodeId CurrentNodeId { get; }
+        public WorldMapNodeReferenceDisplayState CurrentNode { get; }
 
         public NodeState CurrentNodeState { get; }
 
         public int SelectableDestinationCount { get; }
 
-        public IReadOnlyList<NodeId> ForwardRouteNodeIds { get; }
+        public IReadOnlyList<WorldMapNodeReferenceDisplayState> ForwardRouteNodes { get; }
 
-        public IReadOnlyList<NodeId> BacktrackRouteNodeIds { get; }
+        public IReadOnlyList<WorldMapNodeReferenceDisplayState> BacktrackRouteNodes { get; }
 
-        public IReadOnlyList<NodeId> ReplayableFarmNodeIds { get; }
+        public IReadOnlyList<WorldMapNodeReferenceDisplayState> ReplayableFarmNodes { get; }
 
-        public IReadOnlyList<NodeId> BlockedLinkedNodeIds { get; }
+        public IReadOnlyList<WorldMapNodeReferenceDisplayState> BlockedLinkedNodes { get; }
+    }
+
+    public sealed class WorldMapNodeReferenceDisplayState
+    {
+        public WorldMapNodeReferenceDisplayState(NodeId nodeId, string displayName)
+        {
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                throw new ArgumentException("Display name cannot be null or whitespace.", nameof(displayName));
+            }
+
+            NodeId = nodeId;
+            DisplayName = displayName;
+        }
+
+        public NodeId NodeId { get; }
+
+        public string DisplayName { get; }
     }
 }

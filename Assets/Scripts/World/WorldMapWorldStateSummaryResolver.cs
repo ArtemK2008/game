@@ -8,10 +8,14 @@ namespace Survivalon.World
     public sealed class WorldMapWorldStateSummaryResolver
     {
         private readonly WorldNodeStateResolver worldNodeStateResolver;
+        private readonly WorldNodeDisplayNameResolver worldNodeDisplayNameResolver;
 
-        public WorldMapWorldStateSummaryResolver(WorldNodeStateResolver worldNodeStateResolver = null)
+        public WorldMapWorldStateSummaryResolver(
+            WorldNodeStateResolver worldNodeStateResolver = null,
+            WorldNodeDisplayNameResolver worldNodeDisplayNameResolver = null)
         {
             this.worldNodeStateResolver = worldNodeStateResolver ?? new WorldNodeStateResolver();
+            this.worldNodeDisplayNameResolver = worldNodeDisplayNameResolver ?? new WorldNodeDisplayNameResolver();
         }
 
         public WorldMapWorldStateSummary Resolve(
@@ -52,21 +56,21 @@ namespace Survivalon.World
             HashSet<NodeId> forwardRouteSet = new HashSet<NodeId>(forwardSelectableNodeIds);
             HashSet<NodeId> pathRouteSet = new HashSet<NodeId>(pathSelectableNodeIds);
 
-            List<NodeId> forwardRouteNodeIds = new List<NodeId>();
-            List<NodeId> blockedLinkedNodeIds = new List<NodeId>();
+            List<WorldMapNodeReferenceDisplayState> forwardRouteNodes = new List<WorldMapNodeReferenceDisplayState>();
+            List<WorldMapNodeReferenceDisplayState> blockedLinkedNodes = new List<WorldMapNodeReferenceDisplayState>();
             foreach (WorldNodeConnection connection in worldGraph.GetOutboundConnections(currentContextNodeId))
             {
                 if (forwardRouteSet.Contains(connection.TargetNodeId))
                 {
-                    forwardRouteNodeIds.Add(connection.TargetNodeId);
+                    forwardRouteNodes.Add(CreateNodeReference(worldGraph, connection.TargetNodeId));
                     continue;
                 }
 
-                blockedLinkedNodeIds.Add(connection.TargetNodeId);
+                blockedLinkedNodes.Add(CreateNodeReference(worldGraph, connection.TargetNodeId));
             }
 
-            List<NodeId> backtrackRouteNodeIds = new List<NodeId>();
-            List<NodeId> replayableFarmNodeIds = new List<NodeId>();
+            List<WorldMapNodeReferenceDisplayState> backtrackRouteNodes = new List<WorldMapNodeReferenceDisplayState>();
+            List<WorldMapNodeReferenceDisplayState> replayableFarmNodes = new List<WorldMapNodeReferenceDisplayState>();
             foreach (NodeId selectableNodeId in selectableNodeIds)
             {
                 if (selectableNodeId == currentContextNodeId || forwardRouteSet.Contains(selectableNodeId))
@@ -76,33 +80,47 @@ namespace Survivalon.World
 
                 if (pathRouteSet.Contains(selectableNodeId))
                 {
-                    backtrackRouteNodeIds.Add(selectableNodeId);
+                    backtrackRouteNodes.Add(CreateNodeReference(worldGraph, selectableNodeId));
                     continue;
                 }
 
-                replayableFarmNodeIds.Add(selectableNodeId);
+                replayableFarmNodes.Add(CreateNodeReference(worldGraph, selectableNodeId));
             }
 
-            forwardRouteNodeIds.Sort(CompareNodeIds);
-            backtrackRouteNodeIds.Sort(CompareNodeIds);
-            replayableFarmNodeIds.Sort(CompareNodeIds);
-            blockedLinkedNodeIds.Sort(CompareNodeIds);
+            forwardRouteNodes.Sort(CompareNodeReferences);
+            backtrackRouteNodes.Sort(CompareNodeReferences);
+            replayableFarmNodes.Sort(CompareNodeReferences);
+            blockedLinkedNodes.Sort(CompareNodeReferences);
 
             return new WorldMapWorldStateSummary(
                 currentRegion.LocationIdentity.DisplayName,
-                currentRegion.RegionId,
-                currentContextNodeId,
+                CreateNodeReference(worldGraph, currentContextNodeId),
                 worldNodeStateResolver.ResolveNodeState(worldGraph, worldState, currentContextNodeId),
                 selectableNodeIds.Count,
-                forwardRouteNodeIds,
-                backtrackRouteNodeIds,
-                replayableFarmNodeIds,
-                blockedLinkedNodeIds);
+                forwardRouteNodes,
+                backtrackRouteNodes,
+                replayableFarmNodes,
+                blockedLinkedNodes);
         }
 
-        private static int CompareNodeIds(NodeId left, NodeId right)
+        private WorldMapNodeReferenceDisplayState CreateNodeReference(WorldGraph worldGraph, NodeId nodeId)
         {
-            return StringComparer.Ordinal.Compare(left.Value, right.Value);
+            return new WorldMapNodeReferenceDisplayState(
+                nodeId,
+                worldNodeDisplayNameResolver.Resolve(worldGraph, nodeId));
+        }
+
+        private static int CompareNodeReferences(
+            WorldMapNodeReferenceDisplayState left,
+            WorldMapNodeReferenceDisplayState right)
+        {
+            int displayNameComparison = StringComparer.Ordinal.Compare(left.DisplayName, right.DisplayName);
+            if (displayNameComparison != 0)
+            {
+                return displayNameComparison;
+            }
+
+            return StringComparer.Ordinal.Compare(left.NodeId.Value, right.NodeId.Value);
         }
     }
 }

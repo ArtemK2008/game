@@ -11,16 +11,12 @@ namespace Survivalon.Combat
         public static CombatRunTimeSkillUpgradeOption BurstTempo { get; } = new CombatRunTimeSkillUpgradeOption(
             upgradeId: "combat_run_upgrade_burst_tempo",
             displayName: "Burst Tempo",
-            description: "Burst Strike triggers faster during this run.",
-            sourceSkillDisplayName: "Burst Strike",
-            selectionHint: "Steadier burst pressure.");
+            description: "Burst Strike triggers faster during this run.");
 
         public static CombatRunTimeSkillUpgradeOption BurstPayload { get; } = new CombatRunTimeSkillUpgradeOption(
             upgradeId: "combat_run_upgrade_burst_payload",
             displayName: "Burst Payload",
-            description: "Burst Strike hits harder during this run.",
-            sourceSkillDisplayName: "Burst Strike",
-            selectionHint: "Bigger damage spikes.");
+            description: "Burst Strike hits harder during this run.");
 
         private static readonly IReadOnlyList<CombatRunTimeSkillUpgradeOption> BurstStrikeUpgradeOptions =
             new[]

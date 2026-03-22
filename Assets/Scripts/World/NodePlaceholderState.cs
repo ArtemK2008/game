@@ -20,7 +20,8 @@ namespace Survivalon.World
             LocationIdentityDefinition locationIdentity = null,
             BossRewardContentDefinition bossRewardContent = null,
             RegionMaterialYieldContentDefinition regionMaterialYieldContent = null,
-            bool supportsRegionMaterialRewards = false)
+            bool supportsRegionMaterialRewards = false,
+            string nodeDisplayName = null)
         {
             if (combatEncounter != null && nodeType != NodeType.Combat && nodeType != NodeType.BossOrGate)
             {
@@ -62,6 +63,9 @@ namespace Survivalon.World
             NodeType = nodeType;
             NodeState = nodeState;
             OriginNodeId = originNodeId;
+            NodeDisplayName = string.IsNullOrWhiteSpace(nodeDisplayName)
+                ? nodeId.Value
+                : nodeDisplayName;
             LocationIdentity = locationIdentity ?? LocationIdentityCatalog.CreateFallback(regionId);
             CombatEncounter = combatEncounter;
             BossProgressionGate = bossProgressionGate;
@@ -80,6 +84,8 @@ namespace Survivalon.World
         public NodeState NodeState { get; }
 
         public NodeId OriginNodeId { get; }
+
+        public string NodeDisplayName { get; }
 
         public LocationIdentityDefinition LocationIdentity { get; }
 

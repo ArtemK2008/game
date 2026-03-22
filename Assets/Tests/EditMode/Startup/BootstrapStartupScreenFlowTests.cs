@@ -88,8 +88,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
-                Assert.That(ContainsText(hostObject, "Recent: region_002_node_001"), Is.True);
-                Assert.That(ContainsText(hostObject, "Push target: region_002_node_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
+                Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub (Available) | Selected: none"), Is.True);
             }
             finally
             {
@@ -139,12 +139,12 @@ namespace Survivalon.Tests.EditMode.Startup
             {
                 CreateAndInitializeBootstrap(hostObject, storage);
 
-                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier | Region: region_001"), Is.True);
-                Assert.That(ContainsText(hostObject, "Current node: region_001_node_002 (InProgress) | Selected: none"), Is.True);
-                Assert.That(ContainsText(hostObject, "Forward routes: region_001_node_004, region_002_node_001"), Is.True);
-                Assert.That(ContainsText(hostObject, "Backtrack routes: region_001_node_001 | Replayable farm nodes: none"), Is.True);
-                Assert.That(ContainsText(hostObject, "Blocked links: region_001_node_003"), Is.True);
-                Assert.That(ContainsText(hostObject, "State legend: Available = enterable"), Is.True);
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Forward: Cavern Service Hub, Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Backtrack: Frontier Entry | Replayable: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Blocked: Frontier Gate"), Is.True);
+                Assert.That(ContainsText(hostObject, "Node states: Available = enterable"), Is.True);
             }
             finally
             {

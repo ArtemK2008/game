@@ -29,11 +29,20 @@ namespace Survivalon.Tests.EditMode.World
                 worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).CombatEncounter,
                 Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).DisplayName,
+                Is.EqualTo("Frontier Entry"));
+            Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestPushNodeId).CombatEncounter,
                 Is.SameAs(CombatStandardEncounterCatalog.BulwarkRaiderEncounter));
             Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestPushNodeId).DisplayName,
+                Is.EqualTo("Raider Trail"));
+            Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter,
                 Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).DisplayName,
+                Is.EqualTo("Frontier Gate"));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossProgressionGate,
                 Is.Not.Null);
@@ -46,6 +55,9 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).CombatEncounter,
                 Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).DisplayName,
+                Is.EqualTo("Forest Farm"));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).RegionMaterialYieldContent,
                 Is.Not.Null);
@@ -62,8 +74,14 @@ namespace Survivalon.Tests.EditMode.World
                 worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).TownServiceContext.DisplayName,
                 Is.EqualTo("Cavern Service Hub"));
             Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).DisplayName,
+                Is.EqualTo("Cavern Service Hub"));
+            Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).CombatEncounter,
                 Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).DisplayName,
+                Is.EqualTo("Cavern Gate"));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossProgressionGate,
                 Is.Null);

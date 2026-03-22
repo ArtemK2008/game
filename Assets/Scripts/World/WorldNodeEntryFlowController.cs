@@ -54,7 +54,8 @@ namespace Survivalon.World
                 enterableNode.RegionMaterialYieldContent,
                 RegionMaterialRewardSupportResolver.Supports(
                     enterableNode.NodeType,
-                    enterableRegion.ResourceCategory));
+                    enterableRegion.ResourceCategory),
+                enterableNode.DisplayName);
             return true;
         }
 

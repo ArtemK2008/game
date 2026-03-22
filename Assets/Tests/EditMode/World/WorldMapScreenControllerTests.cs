@@ -24,6 +24,8 @@ namespace Survivalon.Tests.EditMode.World
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_004"), true, false, false, WorldMapPathRole.ForwardRoute);
             AssertNodeOption(nodeOptions, new NodeId("region_002_node_001"), true, false, false, WorldMapPathRole.ForwardRoute);
             AssertNodeOption(nodeOptions, new NodeId("region_002_node_002"), false, false, false, WorldMapPathRole.BlockedPath);
+            AssertNodeDisplayName(nodeOptions, new NodeId("region_001_node_004"), "Forest Farm");
+            AssertNodeDisplayName(nodeOptions, new NodeId("region_002_node_001"), "Cavern Service Hub");
         }
 
         [Test]
@@ -126,10 +128,10 @@ namespace Survivalon.Tests.EditMode.World
             AssertNodeOption(nodeOptions, new NodeId("node_current"), true, false, false, WorldMapPathRole.BacktrackRoute);
             AssertNodeOption(nodeOptions, new NodeId("node_reachable"), false, true, false, WorldMapPathRole.CurrentContext);
             AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false, WorldMapPathRole.ReplayableFarmNode);
-            Assert.That(summary.CurrentNodeId, Is.EqualTo(new NodeId("node_reachable")));
-            Assert.That(summary.ForwardRouteNodeIds, Is.Empty);
-            Assert.That(summary.BacktrackRouteNodeIds, Is.EqualTo(new[] { new NodeId("node_current") }));
-            Assert.That(summary.ReplayableFarmNodeIds, Is.EqualTo(new[] { new NodeId("node_cleared_farm") }));
+            Assert.That(summary.CurrentNode.NodeId, Is.EqualTo(new NodeId("node_reachable")));
+            Assert.That(summary.ForwardRouteNodes, Is.Empty);
+            Assert.That(ExtractNodeIds(summary.BacktrackRouteNodes), Is.EqualTo(new[] { new NodeId("node_current") }));
+            Assert.That(ExtractNodeIds(summary.ReplayableFarmNodes), Is.EqualTo(new[] { new NodeId("node_cleared_farm") }));
         }
 
         private static void AssertNodeOption(
@@ -155,6 +157,37 @@ namespace Survivalon.Tests.EditMode.World
             }
 
             Assert.Fail($"World map node option '{nodeId}' was not found.");
+        }
+
+        private static void AssertNodeDisplayName(
+            IReadOnlyList<WorldMapNodeOption> nodeOptions,
+            NodeId nodeId,
+            string expectedDisplayName)
+        {
+            foreach (WorldMapNodeOption nodeOption in nodeOptions)
+            {
+                if (nodeOption.NodeId != nodeId)
+                {
+                    continue;
+                }
+
+                Assert.That(nodeOption.NodeDisplayName, Is.EqualTo(expectedDisplayName));
+                return;
+            }
+
+            Assert.Fail($"World map node option '{nodeId}' was not found.");
+        }
+
+        private static IReadOnlyList<NodeId> ExtractNodeIds(
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> nodes)
+        {
+            List<NodeId> nodeIds = new List<NodeId>(nodes.Count);
+            for (int index = 0; index < nodes.Count; index++)
+            {
+                nodeIds.Add(nodes[index].NodeId);
+            }
+
+            return nodeIds;
         }
 
     }

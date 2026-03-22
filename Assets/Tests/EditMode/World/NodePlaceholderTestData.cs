@@ -23,7 +23,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.ServiceOrProgression,
                 NodeState.Available,
                 new NodeId("region_001_node_002"),
-                locationIdentity: LocationIdentityCatalog.EchoCaverns);
+                locationIdentity: LocationIdentityCatalog.EchoCaverns,
+                nodeDisplayName: "Cavern Service Hub");
         }
 
         public static NodePlaceholderState CreateTownServicePlaceholderState()
@@ -35,7 +36,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeState.Available,
                 BootstrapWorldScenario.ForestPushNodeId,
                 townServiceContext: TownServiceContextCatalog.CavernServiceHub,
-                locationIdentity: LocationIdentityCatalog.EchoCaverns);
+                locationIdentity: LocationIdentityCatalog.EchoCaverns,
+                nodeDisplayName: "Cavern Service Hub");
         }
 
         public static NodePlaceholderState CreateCombatPlaceholderState()
@@ -48,7 +50,8 @@ namespace Survivalon.Tests.EditMode.World
                 new NodeId("region_001_node_002"),
                 CombatStandardEncounterCatalog.EnemyUnitEncounter,
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier,
-                supportsRegionMaterialRewards: true);
+                supportsRegionMaterialRewards: true,
+                nodeDisplayName: "Forest Farm");
         }
 
         public static NodePlaceholderState CreateFrontierFarmPlaceholderState()
@@ -62,7 +65,8 @@ namespace Survivalon.Tests.EditMode.World
                 CombatStandardEncounterCatalog.EnemyUnitEncounter,
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier,
                 regionMaterialYieldContent: FrontierFarmYieldContent,
-                supportsRegionMaterialRewards: true);
+                supportsRegionMaterialRewards: true,
+                nodeDisplayName: "Forest Farm");
         }
 
         public static NodePlaceholderState CreateBossCombatPlaceholderState()
@@ -75,7 +79,8 @@ namespace Survivalon.Tests.EditMode.World
                 new NodeId("region_001_node_004"),
                 CombatBossEncounterCatalog.GateBossEncounter,
                 ForestGateProgressionGate,
-                locationIdentity: LocationIdentityCatalog.VerdantFrontier);
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier,
+                nodeDisplayName: "Frontier Gate");
         }
 
         public static NodePlaceholderState CreateForestGateBossPlaceholderState()
@@ -88,7 +93,8 @@ namespace Survivalon.Tests.EditMode.World
                 BootstrapWorldScenario.ForestPushNodeId,
                 CombatBossEncounterCatalog.GateBossEncounter,
                 ForestGateProgressionGate,
-                locationIdentity: LocationIdentityCatalog.VerdantFrontier);
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier,
+                nodeDisplayName: "Frontier Gate");
         }
 
         public static NodePlaceholderState CreateCavernGateBossPlaceholderState()
@@ -101,7 +107,8 @@ namespace Survivalon.Tests.EditMode.World
                 BootstrapWorldScenario.CavernServiceNodeId,
                 CombatBossEncounterCatalog.GateBossEncounter,
                 locationIdentity: LocationIdentityCatalog.EchoCaverns,
-                bossRewardContent: CavernGateBossRewardContent);
+                bossRewardContent: CavernGateBossRewardContent,
+                nodeDisplayName: "Cavern Gate");
         }
 
         public static NodePlaceholderState CreatePushCombatPlaceholderState()
@@ -114,7 +121,8 @@ namespace Survivalon.Tests.EditMode.World
                 new NodeId("region_001_node_001"),
                 CombatStandardEncounterCatalog.BulwarkRaiderEncounter,
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier,
-                supportsRegionMaterialRewards: true);
+                supportsRegionMaterialRewards: true,
+                nodeDisplayName: "Raider Trail");
         }
     }
 }

@@ -16,7 +16,8 @@ namespace Survivalon.World
             BossProgressionGateDefinition bossProgressionGate = null,
             TownServiceContextDefinition townServiceContext = null,
             BossRewardContentDefinition bossRewardContent = null,
-            RegionMaterialYieldContentDefinition regionMaterialYieldContent = null)
+            RegionMaterialYieldContentDefinition regionMaterialYieldContent = null,
+            string displayName = null)
         {
             if (combatEncounter != null && nodeType != NodeType.Combat && nodeType != NodeType.BossOrGate)
             {
@@ -57,6 +58,9 @@ namespace Survivalon.World
             RegionId = regionId;
             NodeType = nodeType;
             State = state;
+            DisplayName = string.IsNullOrWhiteSpace(displayName)
+                ? nodeId.Value
+                : displayName;
             CombatEncounter = combatEncounter;
             BossProgressionGate = bossProgressionGate;
             TownServiceContext = townServiceContext;
@@ -71,6 +75,8 @@ namespace Survivalon.World
         public NodeType NodeType { get; }
 
         public NodeState State { get; }
+
+        public string DisplayName { get; }
 
         public CombatEncounterDefinition CombatEncounter { get; }
 

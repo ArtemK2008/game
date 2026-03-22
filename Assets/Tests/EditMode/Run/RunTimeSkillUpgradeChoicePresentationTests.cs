@@ -29,6 +29,22 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void Resolve_ShouldUsePresentationCatalogForUiFacingChoiceCopy()
+        {
+            RunTimeSkillUpgradeChoiceStateResolver resolver = new RunTimeSkillUpgradeChoiceStateResolver(
+                new RunTimeSkillUpgradeChoicePresentationCatalog());
+
+            RunTimeSkillUpgradeChoiceState choiceState = resolver.Resolve(
+                CombatRunTimeSkillUpgradeCatalog.GetTriggeredActiveSkillUpgradeOptions(CombatSkillCatalog.BurstStrike));
+
+            Assert.That(
+                choiceState.SummaryDisplayName,
+                Is.EqualTo("Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."));
+            Assert.That(choiceState.Options[0].PickHint, Is.EqualTo("Steadier burst pressure."));
+            Assert.That(choiceState.Options[1].PickHint, Is.EqualTo("Bigger damage spikes."));
+        }
+
+        [Test]
         public void Resolve_ShouldRejectMissingUpgradeOptions()
         {
             RunTimeSkillUpgradeChoiceStateResolver resolver = new RunTimeSkillUpgradeChoiceStateResolver();

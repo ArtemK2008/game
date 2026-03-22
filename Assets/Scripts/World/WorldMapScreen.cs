@@ -83,9 +83,7 @@ namespace Survivalon.World
             titleText.text = "World Map";
             summaryText.text = WorldMapScreenTextBuilder.BuildSummaryText(
                 worldStateSummary,
-                screenController.HasSelection,
-                screenController.HasSelection ? screenController.SelectedNodeId : default,
-                screenController.SessionContext);
+                screenController.ResolveSelectedNodeDisplayName());
             RefreshCharacterSelection();
             RefreshBuildAssignment();
             RefreshEntryButton();
@@ -798,11 +796,13 @@ namespace Survivalon.World
 
         private void RefreshEntryButton()
         {
-            bool hasSelectedNode = screenController.TryGetSelectedNodeId(out NodeId selectedNodeId);
+            bool hasSelectedNode = screenController.TryGetSelectedNodeId(out _);
             WorldMapScreenButtonState buttonState = WorldMapScreenStateResolver.ResolveEntryButtonState(
                 onNodeEntryRequested != null,
                 hasSelectedNode,
-                selectedNodeId);
+                hasSelectedNode
+                    ? screenController.ResolveSelectedNodeDisplayName()
+                    : null);
             enterSelectedNodeButton.interactable = buttonState.IsInteractable;
             enterSelectedNodeButtonText.text = buttonState.Label;
         }

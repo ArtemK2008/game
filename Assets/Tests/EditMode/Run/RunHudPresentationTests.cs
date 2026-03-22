@@ -34,6 +34,7 @@ namespace Survivalon.Tests.EditMode.Run
             string summaryText = RunHudTextBuilder.BuildSummaryText(runHudState);
 
             Assert.That(runHudState.LocationDisplayName, Is.EqualTo("Verdant Frontier"));
+            Assert.That(runHudState.NodeDisplayName, Is.EqualTo("Raider Trail"));
             Assert.That(runHudState.NodeId, Is.EqualTo(new NodeId("region_001_node_002")));
             Assert.That(runHudState.RunStateDisplayName, Is.EqualTo("Auto-battle active"));
             Assert.That(runHudState.OutcomeDisplayName, Is.EqualTo("Ongoing"));
@@ -45,7 +46,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(runHudState.CurrentProgress, Is.EqualTo(1));
             Assert.That(runHudState.ProgressThreshold, Is.EqualTo(3));
             Assert.That(runHudState.ProgressGoalDisplayName, Is.EqualTo("node clear"));
-            Assert.That(summaryText, Does.Contain("Context: Verdant Frontier / region_001_node_002 (Combat)"));
+            Assert.That(RunHudTextBuilder.BuildContextTitle(runHudState), Is.EqualTo("Verdant Frontier | Raider Trail"));
             Assert.That(summaryText, Does.Contain("Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"));
             Assert.That(summaryText, Does.Contain("Health: Vanguard 120 / 120 | Bulwark Raider 105 / 105"));
             Assert.That(summaryText, Does.Contain("Progress: 1 / 3 toward node clear"));
@@ -71,10 +72,11 @@ namespace Survivalon.Tests.EditMode.Run
             string summaryText = RunHudTextBuilder.BuildSummaryText(runHudState);
 
             Assert.That(runHudState.LocationDisplayName, Is.EqualTo("Echo Caverns"));
+            Assert.That(runHudState.NodeDisplayName, Is.EqualTo("Cavern Gate"));
             Assert.That(runHudState.RunStateDisplayName, Is.EqualTo("Auto-battle resolved"));
             Assert.That(runHudState.OutcomeDisplayName, Is.EqualTo("PlayerVictory"));
             Assert.That(runHudState.ProgressGoalDisplayName, Is.EqualTo("gate clear"));
-            Assert.That(summaryText, Does.Contain("Context: Echo Caverns / region_002_node_002 (BossOrGate)"));
+            Assert.That(RunHudTextBuilder.BuildContextTitle(runHudState), Is.EqualTo("Echo Caverns | Cavern Gate"));
             Assert.That(summaryText, Does.Contain("Run state: Auto-battle resolved | Outcome: PlayerVictory | Elapsed: 0s"));
             Assert.That(summaryText, Does.Contain("Health: Vanguard 120 / 120 | Gate Boss 180 / 180"));
             Assert.That(summaryText, Does.Contain("Progress: 0 / 3 toward gate clear"));

@@ -7,9 +7,7 @@ namespace Survivalon.Combat
         public CombatRunTimeSkillUpgradeOption(
             string upgradeId,
             string displayName,
-            string description,
-            string sourceSkillDisplayName,
-            string selectionHint)
+            string description)
         {
             if (string.IsNullOrWhiteSpace(upgradeId))
             {
@@ -26,25 +24,9 @@ namespace Survivalon.Combat
                 throw new ArgumentException("Description cannot be null or whitespace.", nameof(description));
             }
 
-            if (string.IsNullOrWhiteSpace(sourceSkillDisplayName))
-            {
-                throw new ArgumentException(
-                    "Source skill display name cannot be null or whitespace.",
-                    nameof(sourceSkillDisplayName));
-            }
-
-            if (string.IsNullOrWhiteSpace(selectionHint))
-            {
-                throw new ArgumentException(
-                    "Selection hint cannot be null or whitespace.",
-                    nameof(selectionHint));
-            }
-
             UpgradeId = upgradeId;
             DisplayName = displayName;
             Description = description;
-            SourceSkillDisplayName = sourceSkillDisplayName;
-            SelectionHint = selectionHint;
         }
 
         public string UpgradeId { get; }
@@ -52,9 +34,5 @@ namespace Survivalon.Combat
         public string DisplayName { get; }
 
         public string Description { get; }
-
-        public string SourceSkillDisplayName { get; }
-
-        public string SelectionHint { get; }
     }
 }
