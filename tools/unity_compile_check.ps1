@@ -4,6 +4,25 @@ param(
     [string]$LogPath = "C:\IT_related\myGame\Survivalon\Logs\unity_compile_check.log"
 )
 
+if (-not (Test-Path $UnityPath)) {
+    Write-Error "Unity executable was not found: $UnityPath"
+    exit 10
+}
+
+if (-not (Test-Path $ProjectPath)) {
+    Write-Error "Project path was not found: $ProjectPath"
+    exit 11
+}
+
+$logDirectory = Split-Path -Path $LogPath -Parent
+if (-not (Test-Path $logDirectory)) {
+    New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null
+}
+
+if (Test-Path $LogPath) {
+    Remove-Item $LogPath -Force
+}
+
 $arguments = @(
     '-batchmode',
     '-nographics',
@@ -14,7 +33,12 @@ $arguments = @(
     '-logFile', $LogPath
 )
 
-Start-Process -FilePath $UnityPath -ArgumentList $arguments -Wait -NoNewWindow
+$process = Start-Process `
+    -FilePath $UnityPath `
+    -ArgumentList $arguments `
+    -Wait `
+    -NoNewWindow `
+    -PassThru
 
 if (-not (Test-Path $LogPath)) {
     Write-Error "Compile log was not created: $LogPath"
@@ -23,11 +47,9 @@ if (-not (Test-Path $LogPath)) {
 
 $logText = Get-Content -Path $LogPath -Raw
 
-# Keep this simple and biased toward catching real compiler failures.
 $hasCompilerErrors =
-    $logText -match 'error CS\d+' -or
+    $logText -match '\berror CS\d+\b' -or
     $logText -match 'Scripts have compiler errors' -or
-    $logText -match 'error[s]?\s*\n' -or
     $logText -match 'Compilation failed'
 
 if ($hasCompilerErrors) {
@@ -36,6 +58,11 @@ if ($hasCompilerErrors) {
     exit 1
 }
 
+if ($process.ExitCode -ne 0) {
+    Write-Error "Unity compile/import pass exited with code $($process.ExitCode). See log: $LogPath"
+    exit 12
+}
+
 Write-Host "Unity compile/import pass completed without detected compiler errors."
-Write-Host $LogPath
+Write-Host "Log: $LogPath"
 exit 0

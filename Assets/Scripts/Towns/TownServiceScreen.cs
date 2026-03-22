@@ -13,6 +13,7 @@ namespace Survivalon.Towns
         private RectTransform panelRectTransform;
         private RectTransform contentViewportRectTransform;
         private RectTransform contentRectTransform;
+        private RectTransform progressionActionContainer;
         private ScrollRect contentScrollRect;
         private Text titleText;
         private Text overviewText;
@@ -25,13 +26,18 @@ namespace Survivalon.Towns
         private Font uiFont;
         private Action onReturnToWorldRequested;
         private Action onStopSessionRequested;
+        private NodePlaceholderState currentPlaceholderState;
+        private PersistentGameState currentGameState;
+        private TownServiceScreenStateResolver stateResolver;
+        private TownServiceProgressionInteractionService progressionInteractionService;
 
         public void Show(
             NodePlaceholderState placeholderState,
             PersistentGameState gameState,
             Action returnToWorldRequested,
             Action stopSessionRequested = null,
-            TownServiceScreenStateResolver stateResolver = null)
+            TownServiceScreenStateResolver stateResolver = null,
+            TownServiceProgressionInteractionService progressionInteractionService = null)
         {
             if (placeholderState == null)
             {
@@ -57,16 +63,17 @@ namespace Survivalon.Towns
                     nameof(placeholderState));
             }
 
-            TownServiceScreenStateResolver effectiveStateResolver = stateResolver ?? new TownServiceScreenStateResolver();
-            TownServiceScreenState screenState = effectiveStateResolver.Resolve(placeholderState, gameState);
-
+            currentPlaceholderState = placeholderState;
+            currentGameState = gameState;
+            this.stateResolver = stateResolver ?? new TownServiceScreenStateResolver();
+            this.progressionInteractionService = progressionInteractionService ?? new TownServiceProgressionInteractionService();
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
             gameObject.name = "TownServiceScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
             EnsureUi();
-            Refresh(screenState);
+            Refresh(this.stateResolver.Resolve(currentPlaceholderState, currentGameState));
         }
 
         private void Refresh(TownServiceScreenState screenState)
@@ -75,6 +82,10 @@ namespace Survivalon.Towns
             overviewText.text = TownServiceScreenTextBuilder.BuildOverviewText(screenState);
             progressionText.text = TownServiceScreenTextBuilder.BuildProgressionText(screenState);
             buildPreparationText.text = TownServiceScreenTextBuilder.BuildBuildPreparationText(screenState);
+            progressionText.gameObject.SetActive(screenState.ServiceContext.HasProgressionHubAccess);
+            progressionActionContainer.gameObject.SetActive(screenState.ServiceContext.HasProgressionHubAccess);
+            buildPreparationText.gameObject.SetActive(screenState.ServiceContext.HasBuildPreparationAccess);
+            RefreshProgressionActionButtons(screenState);
             stopSessionButton.interactable = onStopSessionRequested != null;
             stopSessionButtonText.text = onStopSessionRequested == null
                 ? "Stop Session Unavailable"
@@ -236,6 +247,8 @@ namespace Survivalon.Towns
                 new Color(0.88f, 0.91f, 0.96f, 1f));
             RuntimeUiSupport.GetOrAddComponent<LayoutElement>(progressionText.gameObject).flexibleWidth = 1f;
 
+            progressionActionContainer = CreateProgressionActionContainer(contentObject.transform);
+
             buildPreparationText = RuntimeUiSupport.CreateText(
                 contentObject.transform,
                 uiFont,
@@ -334,6 +347,108 @@ namespace Survivalon.Towns
             textRectTransform.localScale = Vector3.one;
 
             return button;
+        }
+
+        private RectTransform CreateProgressionActionContainer(Transform parent)
+        {
+            GameObject actionContainerObject = new GameObject(
+                "ProgressionActionContainer",
+                typeof(RectTransform),
+                typeof(VerticalLayoutGroup),
+                typeof(ContentSizeFitter));
+            actionContainerObject.transform.SetParent(parent, false);
+
+            VerticalLayoutGroup actionContainerLayout = actionContainerObject.GetComponent<VerticalLayoutGroup>();
+            actionContainerLayout.spacing = 8f;
+            actionContainerLayout.childAlignment = TextAnchor.UpperLeft;
+            actionContainerLayout.childControlWidth = true;
+            actionContainerLayout.childControlHeight = true;
+            actionContainerLayout.childForceExpandWidth = true;
+            actionContainerLayout.childForceExpandHeight = false;
+
+            ContentSizeFitter actionContainerFitter = actionContainerObject.GetComponent<ContentSizeFitter>();
+            actionContainerFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            actionContainerFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            RectTransform actionContainerRectTransform = actionContainerObject.GetComponent<RectTransform>();
+            actionContainerRectTransform.anchorMin = new Vector2(0f, 1f);
+            actionContainerRectTransform.anchorMax = new Vector2(1f, 1f);
+            actionContainerRectTransform.pivot = new Vector2(0.5f, 1f);
+            actionContainerRectTransform.localScale = Vector3.one;
+
+            return actionContainerRectTransform;
+        }
+
+        private void RefreshProgressionActionButtons(TownServiceScreenState screenState)
+        {
+            ClearProgressionActionButtons();
+
+            if (!screenState.ServiceContext.HasProgressionHubAccess)
+            {
+                return;
+            }
+
+            for (int index = 0; index < screenState.ProgressionOptions.Count; index++)
+            {
+                TownServiceProgressionOptionState progressionOption = screenState.ProgressionOptions[index];
+                string buttonLabel = BuildProgressionActionButtonLabel(progressionOption);
+                Button progressionButton = CreateActionButton(
+                    progressionActionContainer,
+                    $"{progressionOption.UpgradeId}_PurchaseUpgradeButton",
+                    buttonLabel,
+                    new Color(0.21f, 0.35f, 0.24f, 1f),
+                    out _);
+                progressionButton.interactable = progressionOption.IsAffordable && !progressionOption.IsPurchased;
+
+                AccountWideUpgradeId upgradeId = progressionOption.UpgradeId;
+                progressionButton.onClick.AddListener(() => HandleProgressionPurchaseRequested(upgradeId));
+            }
+        }
+
+        private void ClearProgressionActionButtons()
+        {
+            if (progressionActionContainer == null)
+            {
+                return;
+            }
+
+            for (int index = progressionActionContainer.childCount - 1; index >= 0; index--)
+            {
+                GameObject childObject = progressionActionContainer.GetChild(index).gameObject;
+                if (Application.isPlaying)
+                {
+                    Destroy(childObject);
+                    continue;
+                }
+
+                DestroyImmediate(childObject);
+            }
+        }
+
+        private static string BuildProgressionActionButtonLabel(TownServiceProgressionOptionState progressionOption)
+        {
+            if (progressionOption.IsPurchased)
+            {
+                return $"{progressionOption.UpgradeDisplayName} Purchased";
+            }
+
+            if (progressionOption.IsAffordable)
+            {
+                return $"Buy {progressionOption.UpgradeDisplayName}";
+            }
+
+            return $"{progressionOption.UpgradeDisplayName} Unavailable";
+        }
+
+        private void HandleProgressionPurchaseRequested(AccountWideUpgradeId upgradeId)
+        {
+            if (progressionInteractionService == null || stateResolver == null)
+            {
+                return;
+            }
+
+            progressionInteractionService.TryPurchase(currentGameState, upgradeId);
+            Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
         }
 
         private void RefreshLayout()

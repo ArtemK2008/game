@@ -15,6 +15,19 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
+$resultsDirectory = Split-Path -Path $ResultsPath -Parent
+if (-not (Test-Path $resultsDirectory)) {
+    New-Item -ItemType Directory -Path $resultsDirectory -Force | Out-Null
+}
+
+if (Test-Path $ResultsPath) {
+    Remove-Item $ResultsPath -Force
+}
+
+if (Test-Path $TestLogPath) {
+    Remove-Item $TestLogPath -Force
+}
+
 $arguments = @(
     '-batchmode',
     '-nographics',
@@ -27,7 +40,17 @@ $arguments = @(
     '-quit'
 )
 
-Start-Process -FilePath $UnityPath -ArgumentList $arguments -Wait -NoNewWindow
+$process = Start-Process `
+    -FilePath $UnityPath `
+    -ArgumentList $arguments `
+    -Wait `
+    -NoNewWindow `
+    -PassThru
+
+if ($process.ExitCode -ne 0) {
+    Write-Error "Unity EditMode run exited with code $($process.ExitCode). See log: $TestLogPath"
+    exit 20
+}
 
 if (-not (Test-Path $ResultsPath)) {
     Write-Error "EditMode results file was not created: $ResultsPath"

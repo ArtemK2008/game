@@ -4,6 +4,7 @@ using UnityEngine;
 using Survivalon.Core;
 using Survivalon.State.Persistence;
 using Survivalon.Towns;
+using Survivalon.Tests.EditMode.World;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.Startup
@@ -45,18 +46,28 @@ namespace Survivalon.Tests.EditMode.Startup
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            seededGameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+            storage.Seed(seededGameState);
 
             try
             {
                 CreateAndInitializeBootstrap(hostObject, storage);
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton").onClick.Invoke();
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 Assert.That(storage.HasSavedState, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
                 Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+                Assert.That(
+                    storage.SavedGameState.ProgressionState.TryGetEntry(
+                        "account_wide_combat_baseline_project",
+                        out ProgressionEntryState progressionEntry),
+                    Is.True);
+                Assert.That(progressionEntry.IsUnlocked, Is.True);
             }
             finally
             {
