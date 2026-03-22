@@ -31,12 +31,12 @@ namespace Survivalon.Tests.EditMode.World
                 3,
                 3,
                 0,
-                true,
+                false,
                 new RunNextActionContext(
                     canReplayNode: true,
                     canChooseAnotherNode: true,
                     canStopSession: true),
-                "Cavern gate opened");
+                BossProgressionGateUnlockResult.CreateUnlocked(BootstrapWorldScenario.CavernGateNodeId));
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 runResult);
@@ -49,7 +49,7 @@ namespace Survivalon.Tests.EditMode.World
                 "Resolution: Succeeded\n" +
                 "Rewards gained: Soft currency x1, Region material x1\n" +
                 "Milestone rewards: Persistent progression material x1\n" +
-                "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes\n" +
+                "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock No\n" +
                 "Boss gate unlock: Cavern gate opened\n" +
                 "Next actions:\n" +
                 "- Replay: Yes\n" +

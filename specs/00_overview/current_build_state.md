@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 059**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, and **056a**.
+This summary reflects completed work through **Milestone 059**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, and **059a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -40,6 +40,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Post-run shows a compact summary and allows replay, return to world, or stop session.
 - The post-run summary now presents rewards and progress changes in a more clearly grouped aggregated format.
 - The post-run summary now also shows a compact explicit boss-gate unlock line when a boss defeat opens new forward progression.
+- Ordinary route unlock state and boss-gate unlock state are now tracked separately in run results, so the summary no longer relies on one overloaded unlock flag.
 - Replay re-enters the same node cleanly.
 - Return/stop save a world-level safe resume context.
 
@@ -61,7 +62,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current gate/boss nodes use the explicit `Gate Boss` encounter
 - The first shipped boss progression gate now exists in live bootstrap content:
   - defeating the forest `Gate Boss` unlocks `region_002_node_002` / `Cavern Gate`
-  - that result is surfaced explicitly in post-run summary text
+  - that result is surfaced explicitly in post-run summary text from structured boss-gate unlock data, separate from ordinary route-unlock state
   - the unlocked `Cavern Gate` becomes reachable on return to the world map through the existing bootstrap route graph
 
 ### Auto-battle / hostility / no-manual-combat loop

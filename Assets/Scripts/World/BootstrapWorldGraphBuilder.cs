@@ -28,9 +28,7 @@ namespace Survivalon.World
                     NodeType.BossOrGate,
                     NodeState.Locked,
                     CombatBossEncounterCatalog.GateBossEncounter,
-                    new BossProgressionGateDefinition(
-                        BootstrapWorldScenario.CavernGateNodeId,
-                        "Cavern gate opened")),
+                    new BossProgressionGateDefinition(BootstrapWorldScenario.CavernGateNodeId)),
                 new WorldNode(
                     BootstrapWorldScenario.ForestFarmNodeId,
                     BootstrapWorldScenario.ForestRegionId,

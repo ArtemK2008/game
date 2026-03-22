@@ -30,7 +30,7 @@ namespace Survivalon.Run
                     canReplayNode: true,
                     canChooseAnotherNode: true,
                     canStopSession: true),
-                progressResolution.BossProgressionGateUnlockSummary);
+                progressResolution.BossProgressionGateUnlock);
         }
     }
 }

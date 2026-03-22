@@ -15,13 +15,15 @@ namespace Survivalon.Tests.EditMode.World
             PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             BossProgressionGateUnlockService service = new BossProgressionGateUnlockService();
 
-            string unlockSummary = service.TryUnlockProgressionGate(
+            BossProgressionGateUnlockResult unlockResult = service.TryUnlockProgressionGate(
                 NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
                 didDefeatBoss: true,
                 worldGraph,
                 worldState);
 
-            Assert.That(unlockSummary, Is.EqualTo("Cavern gate opened"));
+            Assert.That(unlockResult.DidUnlock, Is.True);
+            Assert.That(unlockResult.TryGetUnlockedNodeId(out NodeId unlockedNodeId), Is.True);
+            Assert.That(unlockedNodeId, Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
             Assert.That(worldState.TryGetNodeState(BootstrapWorldScenario.CavernGateNodeId, out PersistentNodeState unlockedNodeState), Is.True);
             Assert.That(unlockedNodeState.State, Is.EqualTo(NodeState.Available));
         }
@@ -33,13 +35,14 @@ namespace Survivalon.Tests.EditMode.World
             PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
             BossProgressionGateUnlockService service = new BossProgressionGateUnlockService();
 
-            string unlockSummary = service.TryUnlockProgressionGate(
+            BossProgressionGateUnlockResult unlockResult = service.TryUnlockProgressionGate(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 didDefeatBoss: true,
                 worldGraph,
                 worldState);
 
-            Assert.That(unlockSummary, Is.Empty);
+            Assert.That(unlockResult.DidUnlock, Is.False);
+            Assert.That(unlockResult.TryGetUnlockedNodeId(out _), Is.False);
             Assert.That(worldState.TryGetNodeState(BootstrapWorldScenario.CavernGateNodeId, out PersistentNodeState cavernGateNodeState), Is.True);
             Assert.That(cavernGateNodeState.State, Is.EqualTo(NodeState.Locked));
         }
@@ -73,6 +76,18 @@ namespace Survivalon.Tests.EditMode.World
                 .ToArray();
 
             Assert.That(reachableNodeIds, Has.Member(BootstrapWorldScenario.CavernGateNodeId));
+        }
+
+        [Test]
+        public void ShouldRepresentBossGateUnlockAsStructuredDomainData()
+        {
+            Assert.That(typeof(BossProgressionGateDefinition).GetProperty("UnlockedNodeId"), Is.Not.Null);
+            Assert.That(typeof(BossProgressionGateDefinition).GetProperty("UnlockSummaryText"), Is.Null);
+            Assert.That(
+                typeof(BossProgressionGateUnlockService)
+                    .GetMethod(nameof(BossProgressionGateUnlockService.TryUnlockProgressionGate))
+                    .ReturnType,
+                Is.EqualTo(typeof(BossProgressionGateUnlockResult)));
         }
     }
 }

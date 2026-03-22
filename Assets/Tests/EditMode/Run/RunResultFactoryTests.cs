@@ -3,6 +3,7 @@ using Survivalon.Core;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.Run
 {
@@ -33,7 +34,22 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(runResult.NodeProgressValue, Is.EqualTo(2));
             Assert.That(runResult.NodeProgressThreshold, Is.EqualTo(3));
             Assert.That(runResult.DidUnlockRoute, Is.True);
-            Assert.That(runResult.BossProgressionGateUnlockSummary, Is.EqualTo("Cavern gate opened"));
+            Assert.That(runResult.HasBossProgressionGateUnlock, Is.False);
+            Assert.That(runResult.BossProgressionGateUnlock.TryGetUnlockedNodeId(out _), Is.False);
+        }
+
+        [Test]
+        public void ShouldCreateRunResultWithSeparateBossGateUnlockWithoutOrdinaryRouteUnlock()
+        {
+            RunResult runResult = RunResultFactory.Create(
+                NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
+                RunResolutionState.Succeeded,
+                CreateBossProgressionResolution());
+
+            Assert.That(runResult.DidUnlockRoute, Is.False);
+            Assert.That(runResult.HasBossProgressionGateUnlock, Is.True);
+            Assert.That(runResult.BossProgressionGateUnlock.TryGetUnlockedNodeId(out NodeId unlockedNodeId), Is.True);
+            Assert.That(unlockedNodeId, Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
         }
 
         [Test]
@@ -69,8 +85,22 @@ namespace Survivalon.Tests.EditMode.Run
                     progressThreshold: 3,
                     didReachClearThreshold: false,
                     nodeStateAfterUpdate: NodeState.InProgress),
-                didUnlockRoute: true,
-                bossProgressionGateUnlockSummary: "Cavern gate opened");
+                didUnlockRoute: true);
+        }
+
+        private static RunProgressResolution CreateBossProgressionResolution()
+        {
+            return new RunProgressResolution(
+                1,
+                new NodeProgressUpdateResult(
+                    isTracked: true,
+                    currentProgress: 1,
+                    progressThreshold: 3,
+                    didReachClearThreshold: false,
+                    nodeStateAfterUpdate: NodeState.InProgress),
+                didUnlockRoute: false,
+                bossProgressionGateUnlock: BossProgressionGateUnlockResult.CreateUnlocked(
+                    BootstrapWorldScenario.CavernGateNodeId));
         }
     }
 }
