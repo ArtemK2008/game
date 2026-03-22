@@ -5,21 +5,18 @@ namespace Survivalon.World
 {
     public sealed class BossProgressionGateDefinition
     {
-        public BossProgressionGateDefinition(NodeId unlockedNodeId, string unlockSummaryText)
+        public BossProgressionGateDefinition(NodeId unlockedNodeId)
         {
-            if (string.IsNullOrWhiteSpace(unlockSummaryText))
+            if (string.IsNullOrWhiteSpace(unlockedNodeId.Value))
             {
                 throw new ArgumentException(
-                    "Boss progression gate unlock summary text cannot be null or whitespace.",
-                    nameof(unlockSummaryText));
+                    "Boss progression gate unlocked node id cannot be null or whitespace.",
+                    nameof(unlockedNodeId));
             }
 
             UnlockedNodeId = unlockedNodeId;
-            UnlockSummaryText = unlockSummaryText;
         }
 
         public NodeId UnlockedNodeId { get; }
-
-        public string UnlockSummaryText { get; }
     }
 }

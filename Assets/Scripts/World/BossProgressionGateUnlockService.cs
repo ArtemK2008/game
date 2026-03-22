@@ -6,7 +6,7 @@ namespace Survivalon.World
 {
     public sealed class BossProgressionGateUnlockService
     {
-        public string TryUnlockProgressionGate(
+        public BossProgressionGateUnlockResult TryUnlockProgressionGate(
             NodePlaceholderState nodeContext,
             bool didDefeatBoss,
             WorldGraph worldGraph,
@@ -19,7 +19,7 @@ namespace Survivalon.World
 
             if (!didDefeatBoss || worldGraph == null || worldState == null || nodeContext.BossProgressionGate == null)
             {
-                return string.Empty;
+                return BossProgressionGateUnlockResult.None;
             }
 
             BossProgressionGateDefinition bossProgressionGate = nodeContext.BossProgressionGate;
@@ -27,7 +27,7 @@ namespace Survivalon.World
 
             if (ResolveNodeState(worldGraph, worldState, unlockedNode.NodeId) != NodeState.Locked)
             {
-                return string.Empty;
+                return BossProgressionGateUnlockResult.None;
             }
 
             PersistentNodeState persistentNodeState = worldState.GetOrAddNodeState(
@@ -37,11 +37,11 @@ namespace Survivalon.World
 
             if (persistentNodeState.State != NodeState.Locked)
             {
-                return string.Empty;
+                return BossProgressionGateUnlockResult.None;
             }
 
             persistentNodeState.MarkAvailable();
-            return bossProgressionGate.UnlockSummaryText;
+            return BossProgressionGateUnlockResult.CreateUnlocked(bossProgressionGate.UnlockedNodeId);
         }
 
         private static NodeState ResolveNodeState(

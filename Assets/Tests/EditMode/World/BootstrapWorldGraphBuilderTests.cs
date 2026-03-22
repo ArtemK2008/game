@@ -39,9 +39,6 @@ namespace Survivalon.Tests.EditMode.World
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossProgressionGate.UnlockedNodeId,
                 Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
             Assert.That(
-                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossProgressionGate.UnlockSummaryText,
-                Is.EqualTo("Cavern gate opened"));
-            Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).CombatEncounter,
                 Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(

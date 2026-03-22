@@ -7,9 +7,7 @@ namespace Survivalon.Tests.EditMode.World
     public static class NodePlaceholderTestData
     {
         private static readonly BossProgressionGateDefinition ForestGateProgressionGate =
-            new BossProgressionGateDefinition(
-                BootstrapWorldScenario.CavernGateNodeId,
-                "Cavern gate opened");
+            new BossProgressionGateDefinition(BootstrapWorldScenario.CavernGateNodeId);
 
         public static NodePlaceholderState CreateServicePlaceholderState()
         {

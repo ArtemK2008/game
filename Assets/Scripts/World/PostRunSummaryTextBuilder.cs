@@ -106,9 +106,23 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(runResult));
             }
 
-            return runResult.HasBossProgressionGateUnlock
-                ? $"Boss gate unlock: {runResult.BossProgressionGateUnlockSummary}\n"
-                : string.Empty;
+            if (!runResult.HasBossProgressionGateUnlock ||
+                !runResult.BossProgressionGateUnlock.TryGetUnlockedNodeId(out NodeId unlockedNodeId))
+            {
+                return string.Empty;
+            }
+
+            return $"Boss gate unlock: {BuildBossProgressionGateSummary(unlockedNodeId)}\n";
+        }
+
+        private static string BuildBossProgressionGateSummary(NodeId unlockedNodeId)
+        {
+            if (unlockedNodeId == BootstrapWorldScenario.CavernGateNodeId)
+            {
+                return "Cavern gate opened";
+            }
+
+            return $"{unlockedNodeId.Value} unlocked";
         }
 
         private static string FormatYesNo(bool value)

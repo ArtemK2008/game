@@ -91,9 +91,6 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 placeholderState.BossProgressionGate.UnlockedNodeId,
                 Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
-            Assert.That(
-                placeholderState.BossProgressionGate.UnlockSummaryText,
-                Is.EqualTo("Cavern gate opened"));
         }
 
         [Test]

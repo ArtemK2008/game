@@ -39,23 +39,22 @@ namespace Survivalon.Run
                 nodeContext,
                 persistentWorldState,
                 nodeProgressDelta);
-            bool didUnlockOrdinaryRoute = ResolveRouteUnlock(
+            bool didUnlockRoute = ResolveRouteUnlock(
                 nodeContext,
                 worldGraph,
                 persistentWorldState,
                 nodeProgressUpdate);
-            string bossProgressionGateUnlockSummary = ResolveBossProgressionGateUnlockSummary(
+            BossProgressionGateUnlockResult bossProgressionGateUnlock = ResolveBossProgressionGateUnlock(
                 nodeContext,
                 resolutionState,
                 worldGraph,
                 persistentWorldState);
-            bool didUnlockRoute = didUnlockOrdinaryRoute || !string.IsNullOrWhiteSpace(bossProgressionGateUnlockSummary);
 
             return new RunProgressResolution(
                 nodeProgressDelta,
                 nodeProgressUpdate,
                 didUnlockRoute,
-                bossProgressionGateUnlockSummary);
+                bossProgressionGateUnlock);
         }
 
         private static int ResolveNodeProgressDelta(
@@ -106,7 +105,7 @@ namespace Survivalon.Run
                 nodeContext.NodeId) > 0;
         }
 
-        private string ResolveBossProgressionGateUnlockSummary(
+        private BossProgressionGateUnlockResult ResolveBossProgressionGateUnlock(
             NodePlaceholderState nodeContext,
             RunResolutionState resolutionState,
             WorldGraph worldGraph,

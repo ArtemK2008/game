@@ -1,5 +1,6 @@
 using System;
 using Survivalon.State.Persistence;
+using Survivalon.World;
 
 namespace Survivalon.Run
 {
@@ -9,7 +10,7 @@ namespace Survivalon.Run
             int nodeProgressDelta,
             NodeProgressUpdateResult nodeProgressUpdate,
             bool didUnlockRoute,
-            string bossProgressionGateUnlockSummary = "")
+            BossProgressionGateUnlockResult bossProgressionGateUnlock = null)
         {
             if (nodeProgressDelta < 0)
             {
@@ -19,7 +20,7 @@ namespace Survivalon.Run
             NodeProgressDelta = nodeProgressDelta;
             NodeProgressUpdate = nodeProgressUpdate ?? throw new ArgumentNullException(nameof(nodeProgressUpdate));
             DidUnlockRoute = didUnlockRoute;
-            BossProgressionGateUnlockSummary = bossProgressionGateUnlockSummary ?? string.Empty;
+            BossProgressionGateUnlock = bossProgressionGateUnlock ?? BossProgressionGateUnlockResult.None;
         }
 
         public int NodeProgressDelta { get; }
@@ -28,7 +29,9 @@ namespace Survivalon.Run
 
         public bool DidUnlockRoute { get; }
 
-        public string BossProgressionGateUnlockSummary { get; }
+        public BossProgressionGateUnlockResult BossProgressionGateUnlock { get; }
+
+        public bool HasBossProgressionGateUnlock => BossProgressionGateUnlock.DidUnlock;
     }
 }
 

@@ -254,7 +254,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss gate unlock: Cavern gate opened"), Is.True);
                 Assert.That(
-                    ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock Yes"),
+                    ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock No"),
                     Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
