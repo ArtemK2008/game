@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 
 namespace Survivalon.Towns
 {
@@ -66,7 +68,32 @@ namespace Survivalon.Towns
                 $"Assigned package: {screenState.AssignedSkillPackageDisplayName}\n" +
                 $"Primary gear: {screenState.PrimaryGearDisplayName}\n" +
                 $"Support gear: {screenState.SupportGearDisplayName}\n" +
-                "Current build changes still happen on the world map in this MVP.";
+                "Use the assignment controls below to update the selected character for future runs.";
+        }
+
+        public static string BuildSkillPackageActionButtonLabel(PlayableCharacterSkillPackageOption skillPackageOption)
+        {
+            if (skillPackageOption == null)
+            {
+                throw new ArgumentNullException(nameof(skillPackageOption));
+            }
+
+            return skillPackageOption.IsAssigned
+                ? $"Assigned package: {skillPackageOption.DisplayName}"
+                : $"Assign package: {skillPackageOption.DisplayName}";
+        }
+
+        public static string BuildGearAssignmentActionButtonLabel(PlayableCharacterGearAssignmentOption gearAssignmentOption)
+        {
+            if (gearAssignmentOption == null)
+            {
+                throw new ArgumentNullException(nameof(gearAssignmentOption));
+            }
+
+            string gearCategoryLabel = ResolveGearCategoryDisplayName(gearAssignmentOption.GearCategory);
+            return gearAssignmentOption.IsEquipped
+                ? $"Unequip {gearCategoryLabel}: {gearAssignmentOption.DisplayName}"
+                : $"Equip {gearCategoryLabel}: {gearAssignmentOption.DisplayName}";
         }
 
         private static string BuildFunctionSummary(TownServiceScreenState screenState)
@@ -119,6 +146,19 @@ namespace Survivalon.Towns
                     nameof(resourceCategory),
                     resourceCategory,
                     "Unknown resource category."),
+            };
+        }
+
+        private static string ResolveGearCategoryDisplayName(GearCategory gearCategory)
+        {
+            return gearCategory switch
+            {
+                GearCategory.PrimaryCombat => "primary",
+                GearCategory.SecondarySupport => "support",
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(gearCategory),
+                    gearCategory,
+                    "Unknown gear category."),
             };
         }
     }

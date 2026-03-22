@@ -86,7 +86,8 @@ namespace Survivalon.Startup
                 gameState,
                 () => HandleTownServiceReturnRequested(placeholderState.NodeId),
                 () => HandleTownServiceStopRequested(placeholderState.NodeId),
-                progressionInteractionService: new TownServiceProgressionInteractionService(persistenceService));
+                progressionInteractionService: new TownServiceProgressionInteractionService(persistenceService),
+                buildPreparationInteractionService: new TownServiceBuildPreparationInteractionService(persistenceService));
         }
 
         private void HandleNodeEntryRequested(NodeId nodeId)

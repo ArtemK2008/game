@@ -1,6 +1,8 @@
 using System;
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
 using Survivalon.Towns;
@@ -34,7 +36,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 "Assigned package: Burst Drill\n" +
                 "Primary gear: Training Blade\n" +
                 "Support gear: Guard Charm\n" +
-                "Current build changes still happen on the world map in this MVP."));
+                "Use the assignment controls below to update the selected character for future runs."));
         }
 
         [Test]
@@ -82,6 +84,30 @@ namespace Survivalon.Tests.EditMode.Towns
                         costAmount: 1,
                         isPurchased: false,
                         isAffordable: true),
+                },
+                skillPackageOptions: new[]
+                {
+                    new PlayableCharacterSkillPackageOption(
+                        "character_vanguard",
+                        PlayableCharacterSkillPackageIds.VanguardBurstDrill,
+                        "Burst Drill",
+                        "Adds Burst Strike.",
+                        isAssigned: true),
+                },
+                gearAssignmentOptions: new[]
+                {
+                    new PlayableCharacterGearAssignmentOption(
+                        "character_vanguard",
+                        GearIds.TrainingBlade,
+                        "Training Blade",
+                        GearCategory.PrimaryCombat,
+                        isEquipped: true),
+                    new PlayableCharacterGearAssignmentOption(
+                        "character_vanguard",
+                        GearIds.GuardCharm,
+                        "Guard Charm",
+                        GearCategory.SecondarySupport,
+                        isEquipped: true),
                 },
                 "Vanguard",
                 "Burst Drill",

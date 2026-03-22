@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
 using Survivalon.Towns;
@@ -66,9 +68,28 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(TryFindGameObject(hostObject, "Content"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "PushOffenseProject_PurchaseUpgradeButton"), Is.Not.Null);
+                Assert.That(
+                    TryFindButton(
+                        hostObject,
+                        $"TownService_{PlayableCharacterSkillPackageIds.VanguardDefault}_SkillPackageButton"),
+                    Is.Not.Null);
+                Assert.That(
+                    TryFindButton(
+                        hostObject,
+                        $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
+                    Is.Not.Null);
+                Assert.That(
+                    TryFindButton(
+                        hostObject,
+                        $"TownService_{GearIds.TrainingBlade}_GearButton"),
+                    Is.Not.Null);
+                Assert.That(
+                    TryFindButton(
+                        hostObject,
+                        $"TownService_{GearIds.GuardCharm}_GearButton"),
+                    Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "AdvanceRunLifecycleButton"), Is.Null);
                 Assert.That(TryFindButton(hostObject, "ReplayNodeButton"), Is.Null);
-                Assert.That(TryFindButton(hostObject, "AssignGearButton"), Is.Null);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
                 FindButton(hostObject, "StopSessionButton").onClick.Invoke();
@@ -127,6 +148,89 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton").interactable, Is.False);
                 Assert.That(FindButtonLabel(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.EqualTo("Combat Baseline Project Purchased"));
                 Assert.That(FindButton(hostObject, "FarmYieldProject_PurchaseUpgradeButton").interactable, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldAssignBuildPreparationOptionsAndRefreshVisibleBuildSummary()
+        {
+            GameObject hostObject = new GameObject("TownServiceScreenHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            TownServiceBuildPreparationInteractionService interactionService =
+                new TownServiceBuildPreparationInteractionService(persistenceService);
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                TownServiceScreen townServiceScreen = hostObject.AddComponent<TownServiceScreen>();
+                townServiceScreen.Show(
+                    NodePlaceholderTestData.CreateTownServicePlaceholderState(),
+                    gameState,
+                    () => { },
+                    () => { },
+                    buildPreparationInteractionService: interactionService);
+
+                FindButton(
+                    hostObject,
+                    $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton")
+                    .onClick.Invoke();
+                FindButton(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+                FindButton(hostObject, $"TownService_{GearIds.GuardCharm}_GearButton").onClick.Invoke();
+
+                Assert.That(
+                    gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState),
+                    Is.True);
+                Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
+                Assert.That(
+                    vanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.PrimaryCombat,
+                        out EquippedGearState equippedPrimaryGearState),
+                    Is.True);
+                Assert.That(equippedPrimaryGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
+                Assert.That(
+                    vanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.SecondarySupport,
+                        out EquippedGearState equippedSupportGearState),
+                    Is.True);
+                Assert.That(equippedSupportGearState.GearId, Is.EqualTo(GearIds.GuardCharm));
+                Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Primary gear: Training Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Support gear: Guard Charm"), Is.True);
+                Assert.That(
+                    FindButtonLabel(
+                        hostObject,
+                        $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
+                    Is.EqualTo("Assigned package: Burst Drill"));
+                Assert.That(
+                    FindButtonLabel(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton"),
+                    Is.EqualTo("Unequip primary: Training Blade"));
+                Assert.That(
+                    FindButtonLabel(hostObject, $"TownService_{GearIds.GuardCharm}_GearButton"),
+                    Is.EqualTo("Unequip support: Guard Charm"));
+                Assert.That(storage.SavedGameState, Is.Not.Null);
+                Assert.That(
+                    storage.SavedGameState.TryGetCharacterState(
+                        "character_vanguard",
+                        out PersistentCharacterState savedVanguardState),
+                    Is.True);
+                Assert.That(savedVanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
+                Assert.That(
+                    savedVanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.PrimaryCombat,
+                        out EquippedGearState savedPrimaryGearState),
+                    Is.True);
+                Assert.That(savedPrimaryGearState.GearId, Is.EqualTo(GearIds.TrainingBlade));
+                Assert.That(
+                    savedVanguardState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.SecondarySupport,
+                        out EquippedGearState savedSupportGearState),
+                    Is.True);
+                Assert.That(savedSupportGearState.GearId, Is.EqualTo(GearIds.GuardCharm));
             }
             finally
             {

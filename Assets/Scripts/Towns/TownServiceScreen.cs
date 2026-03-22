@@ -1,5 +1,6 @@
 using System;
 using Survivalon.Core;
+using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Survivalon.Towns
         private RectTransform contentViewportRectTransform;
         private RectTransform contentRectTransform;
         private RectTransform progressionActionContainer;
+        private RectTransform buildActionContainer;
         private ScrollRect contentScrollRect;
         private Text titleText;
         private Text overviewText;
@@ -30,6 +32,7 @@ namespace Survivalon.Towns
         private PersistentGameState currentGameState;
         private TownServiceScreenStateResolver stateResolver;
         private TownServiceProgressionInteractionService progressionInteractionService;
+        private TownServiceBuildPreparationInteractionService buildPreparationInteractionService;
 
         public void Show(
             NodePlaceholderState placeholderState,
@@ -37,7 +40,8 @@ namespace Survivalon.Towns
             Action returnToWorldRequested,
             Action stopSessionRequested = null,
             TownServiceScreenStateResolver stateResolver = null,
-            TownServiceProgressionInteractionService progressionInteractionService = null)
+            TownServiceProgressionInteractionService progressionInteractionService = null,
+            TownServiceBuildPreparationInteractionService buildPreparationInteractionService = null)
         {
             if (placeholderState == null)
             {
@@ -67,6 +71,8 @@ namespace Survivalon.Towns
             currentGameState = gameState;
             this.stateResolver = stateResolver ?? new TownServiceScreenStateResolver();
             this.progressionInteractionService = progressionInteractionService ?? new TownServiceProgressionInteractionService();
+            this.buildPreparationInteractionService = buildPreparationInteractionService ??
+                new TownServiceBuildPreparationInteractionService();
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
             gameObject.name = "TownServiceScreen";
@@ -85,7 +91,9 @@ namespace Survivalon.Towns
             progressionText.gameObject.SetActive(screenState.ServiceContext.HasProgressionHubAccess);
             progressionActionContainer.gameObject.SetActive(screenState.ServiceContext.HasProgressionHubAccess);
             buildPreparationText.gameObject.SetActive(screenState.ServiceContext.HasBuildPreparationAccess);
+            buildActionContainer.gameObject.SetActive(screenState.ServiceContext.HasBuildPreparationAccess);
             RefreshProgressionActionButtons(screenState);
+            RefreshBuildActionButtons(screenState);
             stopSessionButton.interactable = onStopSessionRequested != null;
             stopSessionButtonText.text = onStopSessionRequested == null
                 ? "Stop Session Unavailable"
@@ -247,7 +255,9 @@ namespace Survivalon.Towns
                 new Color(0.88f, 0.91f, 0.96f, 1f));
             RuntimeUiSupport.GetOrAddComponent<LayoutElement>(progressionText.gameObject).flexibleWidth = 1f;
 
-            progressionActionContainer = CreateProgressionActionContainer(contentObject.transform);
+            progressionActionContainer = CreateActionContainer(
+                contentObject.transform,
+                "ProgressionActionContainer");
 
             buildPreparationText = RuntimeUiSupport.CreateText(
                 contentObject.transform,
@@ -258,6 +268,10 @@ namespace Survivalon.Towns
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.91f, 0.96f, 1f));
             RuntimeUiSupport.GetOrAddComponent<LayoutElement>(buildPreparationText.gameObject).flexibleWidth = 1f;
+
+            buildActionContainer = CreateActionContainer(
+                contentObject.transform,
+                "BuildActionContainer");
 
             GameObject actionRowObject = new GameObject(
                 "ActionRow",
@@ -349,10 +363,10 @@ namespace Survivalon.Towns
             return button;
         }
 
-        private RectTransform CreateProgressionActionContainer(Transform parent)
+        private RectTransform CreateActionContainer(Transform parent, string objectName)
         {
             GameObject actionContainerObject = new GameObject(
-                "ProgressionActionContainer",
+                objectName,
                 typeof(RectTransform),
                 typeof(VerticalLayoutGroup),
                 typeof(ContentSizeFitter));
@@ -381,7 +395,7 @@ namespace Survivalon.Towns
 
         private void RefreshProgressionActionButtons(TownServiceScreenState screenState)
         {
-            ClearProgressionActionButtons();
+            ClearActionButtons(progressionActionContainer);
 
             if (!screenState.ServiceContext.HasProgressionHubAccess)
             {
@@ -405,16 +419,56 @@ namespace Survivalon.Towns
             }
         }
 
-        private void ClearProgressionActionButtons()
+        private void RefreshBuildActionButtons(TownServiceScreenState screenState)
         {
-            if (progressionActionContainer == null)
+            ClearActionButtons(buildActionContainer);
+
+            if (!screenState.ServiceContext.HasBuildPreparationAccess)
             {
                 return;
             }
 
-            for (int index = progressionActionContainer.childCount - 1; index >= 0; index--)
+            for (int index = 0; index < screenState.SkillPackageOptions.Count; index++)
             {
-                GameObject childObject = progressionActionContainer.GetChild(index).gameObject;
+                PlayableCharacterSkillPackageOption skillPackageOption = screenState.SkillPackageOptions[index];
+                Button skillPackageButton = CreateActionButton(
+                    buildActionContainer,
+                    $"TownService_{skillPackageOption.SkillPackageId}_SkillPackageButton",
+                    TownServiceScreenTextBuilder.BuildSkillPackageActionButtonLabel(skillPackageOption),
+                    new Color(0.38f, 0.32f, 0.16f, 1f),
+                    out _);
+                skillPackageButton.interactable = !skillPackageOption.IsAssigned;
+
+                string skillPackageId = skillPackageOption.SkillPackageId;
+                skillPackageButton.onClick.AddListener(() => HandleSkillPackageAssignmentRequested(skillPackageId));
+            }
+
+            for (int index = 0; index < screenState.GearAssignmentOptions.Count; index++)
+            {
+                PlayableCharacterGearAssignmentOption gearAssignmentOption = screenState.GearAssignmentOptions[index];
+                Button gearAssignmentButton = CreateActionButton(
+                    buildActionContainer,
+                    $"TownService_{gearAssignmentOption.GearId}_GearButton",
+                    TownServiceScreenTextBuilder.BuildGearAssignmentActionButtonLabel(gearAssignmentOption),
+                    new Color(0.18f, 0.44f, 0.28f, 1f),
+                    out _);
+
+                PlayableCharacterGearAssignmentOption capturedGearAssignmentOption = gearAssignmentOption;
+                gearAssignmentButton.onClick.AddListener(
+                    () => HandleGearAssignmentRequested(capturedGearAssignmentOption));
+            }
+        }
+
+        private static void ClearActionButtons(RectTransform actionContainer)
+        {
+            if (actionContainer == null)
+            {
+                return;
+            }
+
+            for (int index = actionContainer.childCount - 1; index >= 0; index--)
+            {
+                GameObject childObject = actionContainer.GetChild(index).gameObject;
                 if (Application.isPlaying)
                 {
                     Destroy(childObject);
@@ -448,6 +502,36 @@ namespace Survivalon.Towns
             }
 
             progressionInteractionService.TryPurchase(currentGameState, upgradeId);
+            Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
+        }
+
+        private void HandleSkillPackageAssignmentRequested(string skillPackageId)
+        {
+            if (buildPreparationInteractionService == null || stateResolver == null)
+            {
+                return;
+            }
+
+            if (!buildPreparationInteractionService.TryAssignSkillPackage(currentGameState, skillPackageId))
+            {
+                return;
+            }
+
+            Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
+        }
+
+        private void HandleGearAssignmentRequested(PlayableCharacterGearAssignmentOption gearAssignmentOption)
+        {
+            if (buildPreparationInteractionService == null || stateResolver == null)
+            {
+                return;
+            }
+
+            if (!buildPreparationInteractionService.TryApplyGearAssignment(currentGameState, gearAssignmentOption))
+            {
+                return;
+            }
+
             Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
         }
 

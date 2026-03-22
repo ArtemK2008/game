@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 062**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, and **061a**.
+This summary reflects completed work through **Milestone 063**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, and **061a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -57,11 +57,15 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - purchase spends `Persistent progression material`
   - purchased state and balances persist immediately
   - the service screen refreshes in place after purchase
+- The service shell now also supports one short direct build-preparation interaction for the currently selected character:
+  - skill package assignment can be changed there using the existing persistent character-assignment rules
+  - primary and support gear can be equipped or unequipped there using the existing persistent loadout rules
+  - successful changes persist immediately and the service screen refreshes in place
+- The world map still keeps its existing build controls in parallel for now; the town/service shell is an additional safe-context build-preparation surface, not a replacement hub yet.
 - The service shell currently supports two safe actions:
   - return to world map
   - stop session
 - The service shell now uses a safer scrollable content area for its readable overview, progression, and build sections.
-- Build preparation remains intentionally read-only in the service shell for now. Actual build changes still happen on the world map in the current MVP.
 
 ### Combat foundation
 - Combat exists as a placeholder shell inside the current node/run flow rather than as a dedicated final combat scene.
@@ -184,6 +188,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - the selected character's currently assigned package is shown next to the existing character-selection area
   - only valid package choices for the currently selected character are shown
   - changing the package updates that character's persistent `skillPackageId`, and future run entry uses the assigned package instead of only the profile default
+- The current town/service shell now exposes the same selected-character skill-package assignment through a second safe-context MVP interaction surface, while still using the same persistent assignment rules and selected-character state.
 - Run entry now resolves the current selected persistent playable character into the player-side combat baseline instead of relying only on an anonymous hardcoded player concept.
 - The current player combat identity and base stats come from that character-backed baseline, and existing account-wide progression effects continue to layer on top of it before combat begins.
 - The selected playable character now also has one live character-linked progression path:
@@ -219,6 +224,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - it shows the currently equipped `PrimaryCombat` and `SecondarySupport` gear
   - it allows equipping or unequipping the shipped starter items before future runs
   - the change is persistent and follows the currently selected character
+- The current town/service shell now also exposes the same selected-character primary/support gear equip state and allows equipping or unequipping those shipped starter items before future runs through the same persistent loadout seam.
 - Current startup/bootstrap normalization now validates persisted equipped-gear entries against:
   - owned gear state
   - current shipped gear ids
@@ -250,12 +256,13 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - The first run-time skill choice now exists only as a compact placeholder choice for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
 - Gear now exists for two categories with a minimal pre-run equip/unequip placeholder and two simple live stat effects; broader gear UI, gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
-- The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, build summaries, and return/stop actions, but not a full service interaction suite.
+- The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, selected-character build preparation, and return/stop actions, but not a full service interaction suite.
 
 ## Not implemented yet
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
 - Additional progression sinks and broader service/town interaction beyond the current direct project purchase flow
+- Deeper town/build navigation beyond the current short direct selected-character package and gear controls
 - Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
 - Additional gear categories beyond the current two-slot baseline, richer live gear effects, and broader itemization/loot systems
 - Multi-entity combat, broader skill systems, advanced AI, and broader combat content
