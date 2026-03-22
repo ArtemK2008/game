@@ -19,6 +19,7 @@ namespace Survivalon.World
             PersistentWorldState worldState,
             NodeId currentContextNodeId,
             IReadOnlyCollection<NodeId> selectableNodeIds,
+            IReadOnlyCollection<NodeId> pathSelectableNodeIds,
             IReadOnlyCollection<NodeId> forwardSelectableNodeIds)
         {
             if (worldGraph == null)
@@ -36,6 +37,11 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(selectableNodeIds));
             }
 
+            if (pathSelectableNodeIds == null)
+            {
+                throw new ArgumentNullException(nameof(pathSelectableNodeIds));
+            }
+
             if (forwardSelectableNodeIds == null)
             {
                 throw new ArgumentNullException(nameof(forwardSelectableNodeIds));
@@ -44,6 +50,7 @@ namespace Survivalon.World
             WorldNode currentNode = worldGraph.GetNode(currentContextNodeId);
             WorldRegion currentRegion = worldGraph.GetRegion(currentNode.RegionId);
             HashSet<NodeId> forwardRouteSet = new HashSet<NodeId>(forwardSelectableNodeIds);
+            HashSet<NodeId> pathRouteSet = new HashSet<NodeId>(pathSelectableNodeIds);
 
             List<NodeId> forwardRouteNodeIds = new List<NodeId>();
             List<NodeId> blockedLinkedNodeIds = new List<NodeId>();
@@ -58,7 +65,8 @@ namespace Survivalon.World
                 blockedLinkedNodeIds.Add(connection.TargetNodeId);
             }
 
-            List<NodeId> backtrackOrFarmNodeIds = new List<NodeId>();
+            List<NodeId> backtrackRouteNodeIds = new List<NodeId>();
+            List<NodeId> replayableFarmNodeIds = new List<NodeId>();
             foreach (NodeId selectableNodeId in selectableNodeIds)
             {
                 if (selectableNodeId == currentContextNodeId || forwardRouteSet.Contains(selectableNodeId))
@@ -66,10 +74,19 @@ namespace Survivalon.World
                     continue;
                 }
 
-                backtrackOrFarmNodeIds.Add(selectableNodeId);
+                if (pathRouteSet.Contains(selectableNodeId))
+                {
+                    backtrackRouteNodeIds.Add(selectableNodeId);
+                    continue;
+                }
+
+                replayableFarmNodeIds.Add(selectableNodeId);
             }
 
-            backtrackOrFarmNodeIds.Sort(CompareNodeIds);
+            forwardRouteNodeIds.Sort(CompareNodeIds);
+            backtrackRouteNodeIds.Sort(CompareNodeIds);
+            replayableFarmNodeIds.Sort(CompareNodeIds);
+            blockedLinkedNodeIds.Sort(CompareNodeIds);
 
             return new WorldMapWorldStateSummary(
                 currentRegion.LocationIdentity.DisplayName,
@@ -78,7 +95,8 @@ namespace Survivalon.World
                 worldNodeStateResolver.ResolveNodeState(worldGraph, worldState, currentContextNodeId),
                 selectableNodeIds.Count,
                 forwardRouteNodeIds,
-                backtrackOrFarmNodeIds,
+                backtrackRouteNodeIds,
+                replayableFarmNodeIds,
                 blockedLinkedNodeIds);
         }
 

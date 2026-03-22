@@ -142,7 +142,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier | Region: region_001"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current node: region_001_node_002 (InProgress) | Selected: none"), Is.True);
                 Assert.That(ContainsText(hostObject, "Forward routes: region_001_node_004, region_002_node_001"), Is.True);
-                Assert.That(ContainsText(hostObject, "Backtrack / farm: region_001_node_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Backtrack routes: region_001_node_001 | Replayable farm nodes: none"), Is.True);
                 Assert.That(ContainsText(hostObject, "Blocked links: region_001_node_003"), Is.True);
                 Assert.That(ContainsText(hostObject, "State legend: Available = enterable"), Is.True);
             }

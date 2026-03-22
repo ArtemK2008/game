@@ -13,7 +13,8 @@ namespace Survivalon.World
             NodeState currentNodeState,
             int selectableDestinationCount,
             IReadOnlyList<NodeId> forwardRouteNodeIds,
-            IReadOnlyList<NodeId> backtrackOrFarmNodeIds,
+            IReadOnlyList<NodeId> backtrackRouteNodeIds,
+            IReadOnlyList<NodeId> replayableFarmNodeIds,
             IReadOnlyList<NodeId> blockedLinkedNodeIds)
         {
             if (string.IsNullOrWhiteSpace(currentLocationDisplayName))
@@ -28,9 +29,14 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(forwardRouteNodeIds));
             }
 
-            if (backtrackOrFarmNodeIds == null)
+            if (backtrackRouteNodeIds == null)
             {
-                throw new ArgumentNullException(nameof(backtrackOrFarmNodeIds));
+                throw new ArgumentNullException(nameof(backtrackRouteNodeIds));
+            }
+
+            if (replayableFarmNodeIds == null)
+            {
+                throw new ArgumentNullException(nameof(replayableFarmNodeIds));
             }
 
             if (blockedLinkedNodeIds == null)
@@ -52,7 +58,8 @@ namespace Survivalon.World
             CurrentNodeState = currentNodeState;
             SelectableDestinationCount = selectableDestinationCount;
             ForwardRouteNodeIds = new List<NodeId>(forwardRouteNodeIds).AsReadOnly();
-            BacktrackOrFarmNodeIds = new List<NodeId>(backtrackOrFarmNodeIds).AsReadOnly();
+            BacktrackRouteNodeIds = new List<NodeId>(backtrackRouteNodeIds).AsReadOnly();
+            ReplayableFarmNodeIds = new List<NodeId>(replayableFarmNodeIds).AsReadOnly();
             BlockedLinkedNodeIds = new List<NodeId>(blockedLinkedNodeIds).AsReadOnly();
         }
 
@@ -68,7 +75,9 @@ namespace Survivalon.World
 
         public IReadOnlyList<NodeId> ForwardRouteNodeIds { get; }
 
-        public IReadOnlyList<NodeId> BacktrackOrFarmNodeIds { get; }
+        public IReadOnlyList<NodeId> BacktrackRouteNodeIds { get; }
+
+        public IReadOnlyList<NodeId> ReplayableFarmNodeIds { get; }
 
         public IReadOnlyList<NodeId> BlockedLinkedNodeIds { get; }
     }

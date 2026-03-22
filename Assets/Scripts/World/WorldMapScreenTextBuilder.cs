@@ -37,9 +37,9 @@ namespace Survivalon.World
             return
                 $"Location: {worldStateSummary.CurrentLocationDisplayName} | Region: {worldStateSummary.CurrentRegionId.Value}\n" +
                 $"Current node: {worldStateSummary.CurrentNodeId.Value} ({worldStateSummary.CurrentNodeState}) | Selected: {selectedNodeLabel}\n" +
-                $"Reachable destinations: {worldStateSummary.SelectableDestinationCount} ({worldStateSummary.ForwardRouteNodeIds.Count} forward / {worldStateSummary.BacktrackOrFarmNodeIds.Count} backtrack-farm)\n" +
+                $"Reachable destinations: {worldStateSummary.SelectableDestinationCount} ({worldStateSummary.ForwardRouteNodeIds.Count} forward / {worldStateSummary.BacktrackRouteNodeIds.Count} backtrack / {worldStateSummary.ReplayableFarmNodeIds.Count} replayable-farm)\n" +
                 $"Forward routes: {BuildNodeListLabel(worldStateSummary.ForwardRouteNodeIds)}\n" +
-                $"Backtrack / farm: {BuildNodeListLabel(worldStateSummary.BacktrackOrFarmNodeIds)}\n" +
+                $"Backtrack routes: {BuildNodeListLabel(worldStateSummary.BacktrackRouteNodeIds)} | Replayable farm nodes: {BuildNodeListLabel(worldStateSummary.ReplayableFarmNodeIds)}\n" +
                 $"Blocked links: {BuildNodeListLabel(worldStateSummary.BlockedLinkedNodeIds)}\n" +
                 $"Recent: {recentNodeLabel} | Push target: {recentPushTargetLabel} | Last selected: {lastSelectedNodeLabel}\n" +
                 "State legend: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked\n" +
@@ -170,8 +170,10 @@ namespace Survivalon.World
                     return "Current anchor";
                 case WorldMapPathRole.ForwardRoute:
                     return "Forward route";
-                case WorldMapPathRole.BacktrackOrFarmRoute:
-                    return "Backtrack / farm route";
+                case WorldMapPathRole.BacktrackRoute:
+                    return "Backtrack route";
+                case WorldMapPathRole.ReplayableFarmNode:
+                    return "Replayable farm node";
                 case WorldMapPathRole.BlockedPath:
                     return "Blocked path";
                 default:

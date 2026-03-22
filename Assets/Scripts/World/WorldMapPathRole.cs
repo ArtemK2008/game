@@ -4,7 +4,8 @@ namespace Survivalon.World
     {
         CurrentContext = 0,
         ForwardRoute = 1,
-        BacktrackOrFarmRoute = 2,
-        BlockedPath = 3,
+        BacktrackRoute = 2,
+        ReplayableFarmNode = 3,
+        BlockedPath = 4,
     }
 }
