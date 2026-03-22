@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Survivalon.Combat;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -9,6 +10,9 @@ using Survivalon.Tests.EditMode.World;
 
 namespace Survivalon.Tests.EditMode.Run
 {
+    /// <summary>
+    /// Проверяет боевой run lifecycle после переноса runtime character services в Characters.
+    /// </summary>
     public sealed class RunLifecycleControllerCombatTests
     {
         [Test]

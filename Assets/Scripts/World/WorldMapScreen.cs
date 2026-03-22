@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Characters;
 using UnityEngine;
 using UnityEngine.UI;
 using Survivalon.Core;

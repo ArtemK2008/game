@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -8,6 +9,9 @@ using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
+    /// <summary>
+    /// Проверяет player-facing presentation текста карты мира после выноса runtime character options в Characters.
+    /// </summary>
     public sealed class WorldMapScreenPresentationTests
     {
         [Test]

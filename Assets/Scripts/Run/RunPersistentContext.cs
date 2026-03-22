@@ -1,9 +1,13 @@
 using System;
+using Survivalon.Characters;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Run
 {
+    /// <summary>
+    /// Хранит persistent-срез мира, ресурсов и выбранного персонажа для текущего run.
+    /// </summary>
     public sealed class RunPersistentContext
     {
         public RunPersistentContext(

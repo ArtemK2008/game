@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -12,6 +13,9 @@ using UnityEngine.UI;
 
 namespace Survivalon.Tests.EditMode.Towns
 {
+    /// <summary>
+    /// Проверяет town/service screen UI после переноса runtime character services и options в Characters.
+    /// </summary>
     public sealed class TownServiceScreenUiTests
     {
         [SetUp]

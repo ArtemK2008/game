@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -9,6 +10,9 @@ using Survivalon.Towns;
 
 namespace Survivalon.Tests.EditMode.Towns
 {
+    /// <summary>
+    /// Проверяет town/service presentation после переноса runtime character option models в Characters.
+    /// </summary>
     public sealed class TownServiceScreenPresentationTests
     {
         [Test]

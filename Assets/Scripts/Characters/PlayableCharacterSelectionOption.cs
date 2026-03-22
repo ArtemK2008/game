@@ -1,7 +1,10 @@
 using System;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Characters
 {
+    /// <summary>
+    /// Описывает runtime-вариант выбора персонажа для экранов подготовки и карты мира.
+    /// </summary>
     public sealed class PlayableCharacterSelectionOption
     {
         public PlayableCharacterSelectionOption(

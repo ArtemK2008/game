@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -9,6 +10,9 @@ using Survivalon.Towns;
 
 namespace Survivalon.Tests.EditMode.Towns
 {
+    /// <summary>
+    /// Проверяет построение town/service state после выноса runtime character services в Characters.
+    /// </summary>
     public sealed class TownServiceScreenStateResolverTests
     {
         [Test]

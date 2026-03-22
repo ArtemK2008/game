@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -9,6 +10,9 @@ using Survivalon.World;
 
 namespace Survivalon.Towns
 {
+    /// <summary>
+    /// Собирает presentation state для town/service shell из текущего game state и character services.
+    /// </summary>
     public sealed class TownServiceScreenStateResolver
     {
         private readonly PlayableCharacterSelectionService characterSelectionService;
@@ -58,7 +62,7 @@ namespace Survivalon.Towns
 
             PersistentCharacterState selectedCharacterState = characterSelectionService.ResolveSelectedState(gameState);
             PlayableCharacterProfile selectedCharacter = PlayableCharacterCatalog.Get(selectedCharacterState.CharacterId);
-            PlayableCharacterSkillPackageOption assignedSkillPackage = PlayableCharacterSkillPackageCatalog.Get(
+            PlayableCharacterSkillPackageDefinition assignedSkillPackage = PlayableCharacterSkillPackageCatalog.Get(
                 selectedCharacterState.CharacterId,
                 selectedCharacterState.SkillPackageId);
 

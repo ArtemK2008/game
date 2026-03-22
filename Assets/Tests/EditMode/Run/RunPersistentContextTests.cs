@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.Run;
@@ -7,6 +8,9 @@ using Survivalon.Tests.EditMode.World;
 
 namespace Survivalon.Tests.EditMode.Run
 {
+    /// <summary>
+    /// Проверяет перенос выбранного персонажа и его gear baseline в run persistent context.
+    /// </summary>
     public sealed class RunPersistentContextTests
     {
         [Test]

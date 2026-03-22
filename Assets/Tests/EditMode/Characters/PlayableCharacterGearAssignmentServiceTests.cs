@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Tests.EditMode.Data
+namespace Survivalon.Tests.EditMode.Characters
 {
+    /// <summary>
+    /// Проверяет runtime-варианты gear assignment для выбранного персонажа.
+    /// </summary>
     public sealed class PlayableCharacterGearAssignmentServiceTests
     {
         [Test]

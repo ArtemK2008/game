@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 using Survivalon.Combat;
+using Survivalon.Characters;
 using Survivalon.Data.Characters;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
@@ -9,6 +10,9 @@ using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
+    /// <summary>
+    /// Проверяет combat UI placeholder-экрана узла с runtime character services из Characters.
+    /// </summary>
     public sealed class NodePlaceholderScreenCombatUiTests : NodePlaceholderScreenUiTestBase
     {
         [Test]

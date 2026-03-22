@@ -1,10 +1,13 @@
 using System;
-using Survivalon.Data.Characters;
+using Survivalon.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Towns
 {
+    /// <summary>
+    /// Оркестрирует package и gear-подготовку в town/service shell с немедленным persistence handoff.
+    /// </summary>
     public sealed class TownServiceBuildPreparationInteractionService
     {
         private readonly PlayableCharacterGearAssignmentService gearAssignmentService;

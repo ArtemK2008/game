@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Survivalon.Characters;
 using Survivalon.Core;
-using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.Data.Towns;
 
 namespace Survivalon.Towns
 {
+    /// <summary>
+    /// Форматирует человекочитаемый текст town/service shell из уже разрешенного screen state.
+    /// </summary>
     public static class TownServiceScreenTextBuilder
     {
         public static string BuildOverviewText(TownServiceScreenState screenState)

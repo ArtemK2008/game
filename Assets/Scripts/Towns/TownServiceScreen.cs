@@ -1,6 +1,6 @@
 using System;
+using Survivalon.Characters;
 using Survivalon.Core;
-using Survivalon.Data.Characters;
 using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
 using Survivalon.World;

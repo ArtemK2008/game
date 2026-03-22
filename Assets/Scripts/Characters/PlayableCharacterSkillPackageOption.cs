@@ -1,7 +1,10 @@
 using System;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Characters
 {
+    /// <summary>
+    /// Описывает runtime-вариант skill package с текущим состоянием назначения.
+    /// </summary>
     public sealed class PlayableCharacterSkillPackageOption
     {
         public PlayableCharacterSkillPackageOption(

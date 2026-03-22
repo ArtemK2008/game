@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Characters;
 using Survivalon.Core;
-using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 
 namespace Survivalon.World
 {
+    /// <summary>
+    /// Форматирует читаемый placeholder-текст карты мира и build summary без логики доступа.
+    /// </summary>
     public static class WorldMapScreenTextBuilder
     {
         public static string BuildSummaryText(
