@@ -1,8 +1,12 @@
 using System;
+using Survivalon.Characters;
 using Survivalon.Data.Characters;
 
 namespace Survivalon.State.Persistence
 {
+    /// <summary>
+    /// Нормализует persistent state играбельных персонажей и их package/gear baseline на старте.
+    /// </summary>
     public sealed class PersistentPlayableCharacterInitializer
     {
         private readonly PlayableCharacterSelectionService selectionService;

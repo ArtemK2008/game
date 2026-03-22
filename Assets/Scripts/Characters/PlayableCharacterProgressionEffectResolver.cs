@@ -1,8 +1,11 @@
 using System;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Characters
 {
+    /// <summary>
+    /// Разрешает простые runtime-эффекты прогрессии персонажа из persistent rank.
+    /// </summary>
     public sealed class PlayableCharacterProgressionEffectResolver
     {
         private const float MaxHealthBonusPerRank = 5f;

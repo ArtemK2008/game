@@ -1,10 +1,14 @@
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Tests.EditMode.Data
+namespace Survivalon.Tests.EditMode.Characters
 {
+    /// <summary>
+    /// Проверяет runtime-эффект прогрессии персонажа после переноса resolver в Characters.
+    /// </summary>
     public sealed class PlayableCharacterProgressionEffectResolverTests
     {
         [Test]

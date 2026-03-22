@@ -1,7 +1,11 @@
+using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Characters
 {
+    /// <summary>
+    /// Разрешает текущего играбельного персонажа из persistent state в runtime-профиль.
+    /// </summary>
     public sealed class PlayableCharacterResolver
     {
         private readonly PlayableCharacterSelectionService selectionService;

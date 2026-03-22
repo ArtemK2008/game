@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Combat;
@@ -8,6 +9,9 @@ using Survivalon.World;
 
 namespace Survivalon.Combat
 {
+    /// <summary>
+    /// Собирает runtime combat shell context из персонажа, врага, gear и progression effects.
+    /// </summary>
     public sealed class CombatShellContextFactory
     {
         private readonly PlayableCharacterProgressionEffectResolver playableCharacterProgressionEffectResolver;

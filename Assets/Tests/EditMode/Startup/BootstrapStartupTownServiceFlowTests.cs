@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -11,6 +12,9 @@ using UnityEngine;
 
 namespace Survivalon.Tests.EditMode.Startup
 {
+    /// <summary>
+    /// Проверяет startup -> town/service flow после переноса runtime character services и options в Characters.
+    /// </summary>
     public sealed class BootstrapStartupTownServiceFlowTests : BootstrapStartupScreenFlowTestBase
     {
         [Test]

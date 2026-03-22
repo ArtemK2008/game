@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -6,6 +7,9 @@ using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
+    /// <summary>
+    /// Проверяет инициализацию persistent characters после выноса runtime character services в Characters.
+    /// </summary>
     public sealed class PersistentPlayableCharacterInitializerTests
     {
         [Test]

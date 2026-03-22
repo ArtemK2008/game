@@ -1,8 +1,11 @@
 using System;
 using Survivalon.Data.Gear;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Characters
 {
+    /// <summary>
+    /// Описывает runtime-вариант экипировки для выбранного персонажа и категории gear.
+    /// </summary>
     public sealed class PlayableCharacterGearAssignmentOption
     {
         public PlayableCharacterGearAssignmentOption(

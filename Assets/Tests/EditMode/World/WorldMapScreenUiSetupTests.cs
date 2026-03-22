@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
@@ -13,6 +14,9 @@ using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
 {
+    /// <summary>
+    /// Проверяет runtime UI setup карты мира после переноса character services в Characters.
+    /// </summary>
     public sealed class WorldMapScreenUiSetupTests
     {
         [SetUp]

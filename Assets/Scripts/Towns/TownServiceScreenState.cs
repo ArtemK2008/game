@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Characters;
 using Survivalon.Core;
-using Survivalon.Data.Characters;
 using Survivalon.Data.Towns;
 
 namespace Survivalon.Towns
 {
+    /// <summary>
+    /// Хранит уже разрешенное состояние town/service screen без domain-логики.
+    /// </summary>
     public sealed class TownServiceScreenState
     {
         public TownServiceScreenState(

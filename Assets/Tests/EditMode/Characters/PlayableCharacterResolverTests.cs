@@ -1,11 +1,15 @@
 using NUnit.Framework;
 using Survivalon.Combat;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Tests.EditMode.Data
+namespace Survivalon.Tests.EditMode.Characters
 {
+    /// <summary>
+    /// Проверяет runtime-разрешение текущего персонажа из persistent state.
+    /// </summary>
     public sealed class PlayableCharacterResolverTests
     {
         [Test]

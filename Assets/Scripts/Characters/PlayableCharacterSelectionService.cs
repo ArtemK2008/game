@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Characters
 {
+    /// <summary>
+    /// Разрешает текущий выбор играбельного персонажа и безопасно применяет его в persistent state.
+    /// </summary>
     public sealed class PlayableCharacterSelectionService
     {
         public IReadOnlyList<PlayableCharacterSelectionOption> BuildSelectableOptions(PersistentGameState gameState)

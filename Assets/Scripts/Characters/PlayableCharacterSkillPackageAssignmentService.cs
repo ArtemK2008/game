@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Characters
 {
+    /// <summary>
+    /// Управляет назначением skill package для выбранного персонажа без смешивания с authored catalog.
+    /// </summary>
     public sealed class PlayableCharacterSkillPackageAssignmentService
     {
         private readonly PlayableCharacterSelectionService selectionService;
@@ -22,21 +26,21 @@ namespace Survivalon.Data.Characters
 
             PersistentCharacterState selectedCharacterState = selectionService.ResolveSelectedState(gameState);
             PlayableCharacterProfile selectedCharacter = PlayableCharacterCatalog.Get(selectedCharacterState.CharacterId);
-            IReadOnlyList<PlayableCharacterSkillPackageOption> availableOptions =
-                PlayableCharacterSkillPackageCatalog.GetOptions(selectedCharacter.CharacterId);
+            IReadOnlyList<PlayableCharacterSkillPackageDefinition> availableDefinitions =
+                PlayableCharacterSkillPackageCatalog.GetDefinitions(selectedCharacter.CharacterId);
             string assignedSkillPackageId = ResolveAssignedSkillPackageId(selectedCharacter, selectedCharacterState);
             List<PlayableCharacterSkillPackageOption> resolvedOptions =
-                new List<PlayableCharacterSkillPackageOption>(availableOptions.Count);
+                new List<PlayableCharacterSkillPackageOption>(availableDefinitions.Count);
 
-            for (int index = 0; index < availableOptions.Count; index++)
+            for (int index = 0; index < availableDefinitions.Count; index++)
             {
-                PlayableCharacterSkillPackageOption availableOption = availableOptions[index];
+                PlayableCharacterSkillPackageDefinition availableDefinition = availableDefinitions[index];
                 resolvedOptions.Add(new PlayableCharacterSkillPackageOption(
-                    availableOption.CharacterId,
-                    availableOption.SkillPackageId,
-                    availableOption.DisplayName,
-                    availableOption.Summary,
-                    isAssigned: availableOption.SkillPackageId == assignedSkillPackageId));
+                    availableDefinition.CharacterId,
+                    availableDefinition.SkillPackageId,
+                    availableDefinition.DisplayName,
+                    availableDefinition.Summary,
+                    isAssigned: availableDefinition.SkillPackageId == assignedSkillPackageId));
             }
 
             return resolvedOptions;
@@ -132,15 +136,15 @@ namespace Survivalon.Data.Characters
                 return characterProfile.DefaultSkillPackageId;
             }
 
-            IReadOnlyList<PlayableCharacterSkillPackageOption> fallbackOptions =
-                PlayableCharacterSkillPackageCatalog.GetOptions(characterProfile.CharacterId);
-            if (fallbackOptions.Count == 0)
+            IReadOnlyList<PlayableCharacterSkillPackageDefinition> fallbackDefinitions =
+                PlayableCharacterSkillPackageCatalog.GetDefinitions(characterProfile.CharacterId);
+            if (fallbackDefinitions.Count == 0)
             {
                 throw new InvalidOperationException(
                     $"No valid skill packages are configured for character '{characterProfile.CharacterId}'.");
             }
 
-            return fallbackOptions[0].SkillPackageId;
+            return fallbackDefinitions[0].SkillPackageId;
         }
     }
 }

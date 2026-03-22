@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Data.Characters
+namespace Survivalon.Characters
 {
+    /// <summary>
+    /// Строит и применяет runtime-варианты экипировки для выбранного персонажа.
+    /// </summary>
     public sealed class PlayableCharacterGearAssignmentService
     {
         private readonly PlayableCharacterSelectionService selectionService;

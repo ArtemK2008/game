@@ -3,35 +3,35 @@ using System.Collections.Generic;
 
 namespace Survivalon.Data.Characters
 {
+    /// <summary>
+    /// Хранит authored skill package definitions для доступных играбельных персонажей.
+    /// </summary>
     public static class PlayableCharacterSkillPackageCatalog
     {
-        private static readonly IReadOnlyList<PlayableCharacterSkillPackageOption> VanguardPackages = Array.AsReadOnly(new[]
+        private static readonly IReadOnlyList<PlayableCharacterSkillPackageDefinition> VanguardPackages = Array.AsReadOnly(new[]
         {
-            new PlayableCharacterSkillPackageOption(
+            new PlayableCharacterSkillPackageDefinition(
                 "character_vanguard",
                 PlayableCharacterSkillPackageIds.VanguardDefault,
                 "Standard Guard",
-                "No passive or active skill.",
-                isAssigned: false),
-            new PlayableCharacterSkillPackageOption(
+                "No passive or active skill."),
+            new PlayableCharacterSkillPackageDefinition(
                 "character_vanguard",
                 PlayableCharacterSkillPackageIds.VanguardBurstDrill,
                 "Burst Drill",
-                "Adds Burst Strike.",
-                isAssigned: false),
+                "Adds Burst Strike."),
         });
 
-        private static readonly IReadOnlyList<PlayableCharacterSkillPackageOption> StrikerPackages = Array.AsReadOnly(new[]
+        private static readonly IReadOnlyList<PlayableCharacterSkillPackageDefinition> StrikerPackages = Array.AsReadOnly(new[]
         {
-            new PlayableCharacterSkillPackageOption(
+            new PlayableCharacterSkillPackageDefinition(
                 "character_striker",
                 PlayableCharacterSkillPackageIds.StrikerDefault,
                 "Relentless Burst",
-                "Relentless Assault plus Burst Strike.",
-                isAssigned: false),
+                "Relentless Assault plus Burst Strike."),
         });
 
-        public static IReadOnlyList<PlayableCharacterSkillPackageOption> GetOptions(string characterId)
+        public static IReadOnlyList<PlayableCharacterSkillPackageDefinition> GetDefinitions(string characterId)
         {
             if (string.IsNullOrWhiteSpace(characterId))
             {
@@ -56,7 +56,7 @@ namespace Survivalon.Data.Characters
                 return false;
             }
 
-            IReadOnlyList<PlayableCharacterSkillPackageOption> packageOptions = GetOptions(characterId);
+            IReadOnlyList<PlayableCharacterSkillPackageDefinition> packageOptions = GetDefinitions(characterId);
             for (int index = 0; index < packageOptions.Count; index++)
             {
                 if (packageOptions[index].SkillPackageId == skillPackageId)
@@ -68,7 +68,7 @@ namespace Survivalon.Data.Characters
             return false;
         }
 
-        public static PlayableCharacterSkillPackageOption Get(string characterId, string skillPackageId)
+        public static PlayableCharacterSkillPackageDefinition Get(string characterId, string skillPackageId)
         {
             if (string.IsNullOrWhiteSpace(characterId))
             {
@@ -80,7 +80,7 @@ namespace Survivalon.Data.Characters
                 throw new ArgumentException("Skill package id cannot be null or whitespace.", nameof(skillPackageId));
             }
 
-            IReadOnlyList<PlayableCharacterSkillPackageOption> packageOptions = GetOptions(characterId);
+            IReadOnlyList<PlayableCharacterSkillPackageDefinition> packageOptions = GetDefinitions(characterId);
             for (int index = 0; index < packageOptions.Count; index++)
             {
                 if (packageOptions[index].SkillPackageId == skillPackageId)

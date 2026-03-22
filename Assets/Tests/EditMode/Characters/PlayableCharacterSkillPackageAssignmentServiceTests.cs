@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.State.Persistence;
 
-namespace Survivalon.Tests.EditMode.Data
+namespace Survivalon.Tests.EditMode.Characters
 {
+    /// <summary>
+    /// Проверяет runtime-назначение skill package после отделения authored definitions от assignment state.
+    /// </summary>
     public sealed class PlayableCharacterSkillPackageAssignmentServiceTests
     {
         [Test]
