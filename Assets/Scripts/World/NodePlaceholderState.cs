@@ -17,7 +17,8 @@ namespace Survivalon.World
             CombatEncounterDefinition combatEncounter = null,
             BossProgressionGateDefinition bossProgressionGate = null,
             TownServiceContextDefinition townServiceContext = null,
-            LocationIdentityDefinition locationIdentity = null)
+            LocationIdentityDefinition locationIdentity = null,
+            BossRewardContentDefinition bossRewardContent = null)
         {
             if (combatEncounter != null && nodeType != NodeType.Combat && nodeType != NodeType.BossOrGate)
             {
@@ -40,6 +41,13 @@ namespace Survivalon.World
                     nameof(townServiceContext));
             }
 
+            if (bossRewardContent != null && nodeType != NodeType.BossOrGate)
+            {
+                throw new ArgumentException(
+                    "Boss reward content requires a boss-or-gate placeholder node type.",
+                    nameof(bossRewardContent));
+            }
+
             NodeId = nodeId;
             RegionId = regionId;
             NodeType = nodeType;
@@ -49,6 +57,7 @@ namespace Survivalon.World
             CombatEncounter = combatEncounter;
             BossProgressionGate = bossProgressionGate;
             TownServiceContext = townServiceContext;
+            BossRewardContent = bossRewardContent;
         }
 
         public NodeId NodeId { get; }
@@ -70,6 +79,8 @@ namespace Survivalon.World
         public BossProgressionGateDefinition BossProgressionGate { get; }
 
         public TownServiceContextDefinition TownServiceContext { get; }
+
+        public BossRewardContentDefinition BossRewardContent { get; }
     }
 }
 

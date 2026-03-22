@@ -1,8 +1,11 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Combat;
+using Survivalon.Data.World;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.Run
 {
@@ -84,6 +87,29 @@ namespace Survivalon.Tests.EditMode.Run
                 Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
             Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(3));
             Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
+        }
+
+        [Test]
+        public void ShouldNotGrantCavernBossBonusWhenEchoCavernsBossNodeLacksSpecificBossRewardContent()
+        {
+            RunRewardResolutionService service = new RunRewardResolutionService();
+            NodePlaceholderState placeholderState = new NodePlaceholderState(
+                BootstrapWorldScenario.CavernGateNodeId,
+                BootstrapWorldScenario.CavernRegionId,
+                NodeType.BossOrGate,
+                NodeState.Available,
+                BootstrapWorldScenario.CavernServiceNodeId,
+                CombatBossEncounterCatalog.GateBossEncounter,
+                locationIdentity: LocationIdentityCatalog.EchoCaverns);
+
+            RunRewardPayload rewardPayload = service.Resolve(
+                placeholderState,
+                RunResolutionState.Succeeded,
+                BootstrapWorldTestData.CreateWorldGraph());
+
+            Assert.That(rewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.BossMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
         }
 
         [Test]

@@ -10,6 +10,8 @@ namespace Survivalon.Tests.EditMode.World
     {
         private static readonly BossProgressionGateDefinition ForestGateProgressionGate =
             new BossProgressionGateDefinition(BootstrapWorldScenario.CavernGateNodeId);
+        private static readonly BossRewardContentDefinition CavernGateBossRewardContent =
+            new BossRewardContentDefinition(1);
 
         public static NodePlaceholderState CreateServicePlaceholderState()
         {
@@ -81,7 +83,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeState.Available,
                 BootstrapWorldScenario.CavernServiceNodeId,
                 CombatBossEncounterCatalog.GateBossEncounter,
-                locationIdentity: LocationIdentityCatalog.EchoCaverns);
+                locationIdentity: LocationIdentityCatalog.EchoCaverns,
+                bossRewardContent: CavernGateBossRewardContent);
         }
 
         public static NodePlaceholderState CreatePushCombatPlaceholderState()

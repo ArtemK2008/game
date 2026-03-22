@@ -18,8 +18,7 @@ namespace Survivalon.Data.World
                 "Echo Caverns",
                 "Cavern relic caches",
                 "Persistent progression gains",
-                "Gate guardians",
-                bossPersistentProgressionMaterialBonus: 1);
+                "Gate guardians");
 
         public static LocationIdentityDefinition CreateFallback(RegionId regionId)
         {
@@ -29,7 +28,6 @@ namespace Survivalon.Data.World
                 "Regional stockpile",
                 "Mixed regional value",
                 "Mixed local threats",
-                bossPersistentProgressionMaterialBonus: 0,
                 isFallbackIdentity: true);
         }
     }

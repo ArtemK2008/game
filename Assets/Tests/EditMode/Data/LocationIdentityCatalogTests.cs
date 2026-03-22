@@ -14,13 +14,11 @@ namespace Survivalon.Tests.EditMode.Data
             Assert.That(LocationIdentityCatalog.VerdantFrontier.RewardSourceDisplayName, Is.EqualTo("Frontier salvage"));
             Assert.That(LocationIdentityCatalog.VerdantFrontier.RewardFocusDisplayName, Is.EqualTo("Region material farming"));
             Assert.That(LocationIdentityCatalog.VerdantFrontier.EnemyEmphasisDisplayName, Is.EqualTo("Frontier raiders"));
-            Assert.That(LocationIdentityCatalog.VerdantFrontier.BossPersistentProgressionMaterialBonus, Is.EqualTo(0));
             Assert.That(LocationIdentityCatalog.VerdantFrontier.IsFallbackIdentity, Is.False);
             Assert.That(LocationIdentityCatalog.EchoCaverns.DisplayName, Is.EqualTo("Echo Caverns"));
             Assert.That(LocationIdentityCatalog.EchoCaverns.RewardSourceDisplayName, Is.EqualTo("Cavern relic caches"));
             Assert.That(LocationIdentityCatalog.EchoCaverns.RewardFocusDisplayName, Is.EqualTo("Persistent progression gains"));
             Assert.That(LocationIdentityCatalog.EchoCaverns.EnemyEmphasisDisplayName, Is.EqualTo("Gate guardians"));
-            Assert.That(LocationIdentityCatalog.EchoCaverns.BossPersistentProgressionMaterialBonus, Is.EqualTo(1));
             Assert.That(LocationIdentityCatalog.EchoCaverns.IsFallbackIdentity, Is.False);
         }
 
@@ -34,8 +32,15 @@ namespace Survivalon.Tests.EditMode.Data
             Assert.That(fallbackIdentity.RewardSourceDisplayName, Is.EqualTo("Regional stockpile"));
             Assert.That(fallbackIdentity.RewardFocusDisplayName, Is.EqualTo("Mixed regional value"));
             Assert.That(fallbackIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Mixed local threats"));
-            Assert.That(fallbackIdentity.BossPersistentProgressionMaterialBonus, Is.EqualTo(0));
             Assert.That(fallbackIdentity.IsFallbackIdentity, Is.True);
+        }
+
+        [Test]
+        public void ShouldKeepMechanicalBossRewardBonusOutOfLocationIdentityDefinition()
+        {
+            Assert.That(
+                typeof(LocationIdentityDefinition).GetProperty("BossPersistentProgressionMaterialBonus"),
+                Is.Null);
         }
     }
 }

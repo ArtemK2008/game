@@ -48,7 +48,8 @@ namespace Survivalon.World
                     BootstrapWorldScenario.CavernRegionId,
                     NodeType.BossOrGate,
                     NodeState.Locked,
-                    CombatBossEncounterCatalog.GateBossEncounter),
+                    CombatBossEncounterCatalog.GateBossEncounter,
+                    bossRewardContent: new BossRewardContentDefinition(1)),
             };
 
             List<WorldRegion> regions = new List<WorldRegion>
