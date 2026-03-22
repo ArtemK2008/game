@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 065**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, and **065a**.
+This summary reflects completed work through **Milestone 066**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, and **065a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -62,6 +62,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - the conversion is visible in the progression-hub section
   - successful conversion persists immediately and refreshes the service screen in place
   - insufficient region material leaves the conversion visible but unavailable
+- The progression-hub section now also makes the current material-to-power loop explicit:
+  - it shows how repeated region-material farming feeds refinement and then future project purchases
+  - it shows current refinement readiness or next-refinement progress
+  - it shows which project targets are already affordable and which additional project targets the current refinement path would enable
 - The service shell now also supports one short direct build-preparation interaction for the currently selected character:
   - skill package assignment can be changed there using the existing persistent character-assignment rules
   - primary and support gear can be equipped or unequipped there using the existing persistent loadout rules
@@ -187,6 +191,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The town/service shell now also exposes one small refinement path into that same sink:
   - `Region material x3 -> Persistent progression material x1`
   - this gives repeatable region farming a direct safe-context conversion path into future account-wide project purchasing
+- The same town/service progression summary now makes that loop explicit as a current MVP powerup path by showing:
+  - current refinement readiness/progress
+  - current already-affordable projects
+  - new project targets the current refinement path would fund
 
 ### Persistent character baseline, selection placeholder, and linked progression
 - The build now has two explicit playable characters stored in persistent game state:

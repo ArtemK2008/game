@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
@@ -75,6 +76,7 @@ namespace Survivalon.Towns
                 builder.Append(BuildConversionAvailabilityText(conversionOption));
             }
 
+            AppendMaterialPowerPathText(builder, screenState.MaterialPowerPath);
             return builder.ToString();
         }
 
@@ -187,6 +189,50 @@ namespace Survivalon.Towns
             }
 
             return $"Need {missingAmount} more";
+        }
+
+        private static void AppendMaterialPowerPathText(
+            StringBuilder builder,
+            TownServiceMaterialPowerPathState materialPowerPath)
+        {
+            builder.AppendLine();
+            builder.AppendLine("Material power path:");
+            builder.AppendLine(
+                "Farm region material, refine it into persistent progression material, then invest it into projects.");
+
+            if (materialPowerPath.ReadyRefinementCount > 0)
+            {
+                builder.AppendLine($"Ready refinements now: {materialPowerPath.ReadyRefinementCount}");
+                builder.AppendLine(
+                    "Persistent progression material after ready refinements: " +
+                    materialPowerPath.PersistentProgressionMaterialAmountAfterRefinementPath);
+            }
+            else
+            {
+                builder.AppendLine(
+                    $"Refinement progress: {materialPowerPath.RegionMaterialTowardsNextRefinementAmount} / " +
+                    $"{materialPowerPath.RefinementInputRequirement} region material");
+                builder.AppendLine(
+                    "Persistent progression material after next refinement: " +
+                    materialPowerPath.PersistentProgressionMaterialAmountAfterRefinementPath);
+            }
+
+            builder.AppendLine(
+                "Already affordable projects: " +
+                BuildProjectDisplayNameSummary(materialPowerPath.AlreadyAffordableProjectDisplayNames));
+            builder.Append(
+                "New project targets after refinement: " +
+                BuildProjectDisplayNameSummary(materialPowerPath.NewProjectTargetDisplayNames));
+        }
+
+        private static string BuildProjectDisplayNameSummary(IReadOnlyList<string> projectDisplayNames)
+        {
+            if (projectDisplayNames == null || projectDisplayNames.Count == 0)
+            {
+                return "none";
+            }
+
+            return string.Join(", ", projectDisplayNames);
         }
 
         private static string ResolveResourceDisplayName(ResourceCategory resourceCategory)

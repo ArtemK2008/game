@@ -15,6 +15,7 @@ namespace Survivalon.Towns
             NodeId originNodeId,
             int persistentProgressionMaterialAmount,
             int regionMaterialAmount,
+            TownServiceMaterialPowerPathState materialPowerPathState,
             IReadOnlyList<TownServiceProgressionOptionState> progressionOptions,
             IReadOnlyList<TownServiceConversionOptionState> conversionOptions,
             IReadOnlyList<PlayableCharacterSkillPackageOption> skillPackageOptions,
@@ -25,6 +26,7 @@ namespace Survivalon.Towns
             string supportGearDisplayName)
         {
             ServiceContext = serviceContext ?? throw new ArgumentNullException(nameof(serviceContext));
+            MaterialPowerPath = materialPowerPathState ?? throw new ArgumentNullException(nameof(materialPowerPathState));
             ProgressionOptions = progressionOptions ?? throw new ArgumentNullException(nameof(progressionOptions));
             ConversionOptions = conversionOptions ?? throw new ArgumentNullException(nameof(conversionOptions));
             SkillPackageOptions = skillPackageOptions ?? throw new ArgumentNullException(nameof(skillPackageOptions));
@@ -55,6 +57,8 @@ namespace Survivalon.Towns
         public int PersistentProgressionMaterialAmount { get; }
 
         public int RegionMaterialAmount { get; }
+
+        public TownServiceMaterialPowerPathState MaterialPowerPath { get; }
 
         public IReadOnlyList<TownServiceProgressionOptionState> ProgressionOptions { get; }
 

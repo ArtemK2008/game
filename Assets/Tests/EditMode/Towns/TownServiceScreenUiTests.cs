@@ -62,6 +62,17 @@ namespace Survivalon.Tests.EditMode.Towns
 
                 Assert.That(ContainsText(hostObject, "Cavern Service Hub"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progression hub"), Is.True);
+                Assert.That(ContainsText(hostObject, "Material power path:"), Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "Already affordable projects: Combat Baseline Project, Farm Yield Project"),
+                    Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "New project targets after refinement: Push Offense Project, Boss Salvage Project"),
+                    Is.True);
                 Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
                 Assert.That(hostObject.GetComponentsInChildren<ScrollRect>(true).Length, Is.EqualTo(1));
@@ -143,6 +154,17 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(storage.SaveCallCount, Is.EqualTo(1));
                 Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
                 Assert.That(ContainsText(hostObject, "Persistent progression material: 1"), Is.True);
+                Assert.That(ContainsText(hostObject, "Material power path:"), Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "Already affordable projects: Combat Baseline Project, Farm Yield Project"),
+                    Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "New project targets after refinement: Push Offense Project, Boss Salvage Project"),
+                    Is.True);
                 Assert.That(
                     ContainsText(
                         hostObject,
