@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Survivalon.Core;
-using Survivalon.Run;
+using Survivalon.World;
 
-namespace Survivalon.World
+namespace Survivalon.Run
 {
     public static class PostRunSummaryTextBuilder
     {
