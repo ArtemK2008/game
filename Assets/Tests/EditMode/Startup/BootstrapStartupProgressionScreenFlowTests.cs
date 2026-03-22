@@ -252,6 +252,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss rewards: Persistent progression material x2"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss gate unlock: Cavern gate opened"), Is.True);
                 Assert.That(
                     ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock No"),
@@ -263,6 +264,7 @@ namespace Survivalon.Tests.EditMode.Startup
                     storage.SavedGameState.WorldState.TryGetNodeState(BootstrapWorldScenario.CavernGateNodeId, out PersistentNodeState cavernGateNodeState),
                     Is.True);
                 Assert.That(cavernGateNodeState.State, Is.EqualTo(NodeState.Available));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(3));
 
                 Button cavernGateButton = FindButton(hostObject, "region_002_node_002_Button");
                 Text cavernGateLabel = cavernGateButton.GetComponentInChildren<Text>(true);
