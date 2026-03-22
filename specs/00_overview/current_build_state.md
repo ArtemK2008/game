@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 070**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, and **070a**.
+This summary reflects completed work through **Milestone 071**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, and **070a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -44,6 +44,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current node and current node state
   - forward routes, true backtrack routes, replayable farm nodes, and blocked linked paths from the current context
   - compact state/status legends so the placeholder node list reads more clearly at a glance
+- World-map reachability/path-role projection is now rebuilt from the current world state each refresh instead of relying on constructor-time cached access sets, so reused world-map controllers cannot go stale after world-state changes.
 - World-map node labels now also carry a small path-role line:
   - `Current anchor`
   - `Forward route`
@@ -104,6 +105,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### Combat foundation
 - Combat exists as a placeholder shell inside the current node/run flow rather than as a dedicated final combat scene.
+- The combat placeholder shell now also exposes one compact readable run HUD layer during active/resolved combat:
+  - current location identity and node context
+  - current auto-battle/run state, outcome, and elapsed combat time
+  - player and enemy health at a glance
+  - tracked progress context when applicable, including boss gate-clear progress
 - The combat prototype is currently one player-side entity versus one enemy-side entity.
 - Combat entities have explicit allegiance, alive/active state, runtime health, and a small shared base stat model.
 - Base stats currently include max health, attack power, attack rate, and defense-based survivability.
@@ -304,7 +310,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.
 - Movement is **not** part of the current MVP combat model.
-- The combat shell is still a debug-style placeholder presentation, not a final combat HUD.
+- The combat shell now has one minimal readable run-HUD baseline, but it is still placeholder-level and not a final combat HUD.
 - `BossOrGate` currently shares the same tracked-progress rule and default threshold as ordinary combat nodes as a temporary MVP placeholder.
 - Current unlock behavior is limited to direct connected-node unlock on clear; advanced branch and gate semantics are still deferred.
 - Broad farm access applies only to persistently `Cleared` nodes; uncleared nodes still follow the normal reachability rules.

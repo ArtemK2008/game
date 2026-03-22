@@ -22,7 +22,11 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
 
-                Assert.That(ContainsText(hostObject, "Combat Shell: region_001_node_004"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run HUD"), Is.True);
+                Assert.That(ContainsText(hostObject, "Context: Verdant Frontier / region_001_node_004 (Combat)"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
                 Assert.That(ContainsText(hostObject, "Revisit value: Region material yield +1"), Is.True);
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
@@ -49,7 +53,11 @@ namespace Survivalon.Tests.EditMode.Startup
                 ReturnToWorldMap(hostObject);
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
 
-                Assert.That(ContainsText(hostObject, "Combat Shell: region_001_node_002"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run HUD"), Is.True);
+                Assert.That(ContainsText(hostObject, "Context: Verdant Frontier / region_001_node_002 (Combat)"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Bulwark Raider 105 / 105"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: 1 / 3 toward node clear"), Is.True);
                 Assert.That(ContainsText(hostObject, "Bulwark Raider"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 105 / 105 | ATK: 9"), Is.True);
                 Assert.That(FindButton(hostObject, "AdvanceRunLifecycleButton").interactable, Is.False);
@@ -78,6 +86,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Health: Striker 110 / 110 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 110 / 110 | ATK: 18"), Is.True);
             }
             finally

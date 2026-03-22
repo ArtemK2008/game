@@ -8,10 +8,10 @@ namespace Survivalon.Combat
 {
     public sealed class CombatShellView : MonoBehaviour
     {
-        public const float PreferredHeight = 252f;
+        public const float PreferredHeight = 304f;
 
         private const float TitleHeight = 32f;
-        private const float SummaryHeight = 64f;
+        private const float SummaryHeight = 116f;
         private const float EntityRowHeight = 104f;
 
         private Image backgroundImage;
@@ -23,7 +23,10 @@ namespace Survivalon.Combat
         private Text enemyEntityCardText;
         private Font uiFont;
 
-        public void Show(CombatEncounterState combatEncounterState)
+        public void Show(
+            CombatEncounterState combatEncounterState,
+            string title = null,
+            string summary = null)
         {
             if (combatEncounterState == null)
             {
@@ -32,8 +35,12 @@ namespace Survivalon.Combat
 
             gameObject.name = "CombatShellView";
             EnsureUi();
-            titleText.text = $"Combat Shell: {combatEncounterState.CombatContext.NodeId.Value}";
-            summaryText.text = CombatShellTextBuilder.BuildSummaryText(combatEncounterState);
+            titleText.text = string.IsNullOrWhiteSpace(title)
+                ? $"Combat Shell: {combatEncounterState.CombatContext.NodeId.Value}"
+                : title;
+            summaryText.text = string.IsNullOrWhiteSpace(summary)
+                ? CombatShellTextBuilder.BuildSummaryText(combatEncounterState)
+                : summary;
             ApplyEntityCard(
                 playerEntityCardImage,
                 playerEntityCardText,
