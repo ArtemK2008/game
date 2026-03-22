@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using Survivalon.Core;
-using Survivalon.State.Persistence;
 
 namespace Survivalon.Towns
 {
@@ -40,7 +39,7 @@ namespace Survivalon.Towns
                 TownServiceProgressionOptionState progressionOption = screenState.ProgressionOptions[index];
                 builder.AppendLine();
                 builder.Append("- ");
-                builder.Append(ResolveUpgradeDisplayName(progressionOption.UpgradeId));
+                builder.Append(progressionOption.UpgradeDisplayName);
                 builder.Append(" | Cost: ");
                 builder.Append(ResolveResourceDisplayName(progressionOption.CostResourceCategory));
                 builder.Append(" x");
@@ -107,17 +106,6 @@ namespace Survivalon.Towns
             }
 
             return $"Need {missingAmount} more";
-        }
-
-        private static string ResolveUpgradeDisplayName(AccountWideUpgradeId upgradeId)
-        {
-            return upgradeId switch
-            {
-                AccountWideUpgradeId.CombatBaselineProject => "Combat Baseline Project",
-                AccountWideUpgradeId.PushOffenseProject => "Push Offense Project",
-                AccountWideUpgradeId.FarmYieldProject => "Farm Yield Project",
-                _ => throw new ArgumentOutOfRangeException(nameof(upgradeId), upgradeId, "Unknown account-wide upgrade id."),
-            };
         }
 
         private static string ResolveResourceDisplayName(ResourceCategory resourceCategory)

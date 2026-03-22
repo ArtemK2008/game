@@ -63,18 +63,21 @@ namespace Survivalon.Tests.EditMode.Towns
                 {
                     new TownServiceProgressionOptionState(
                         AccountWideUpgradeId.CombatBaselineProject,
+                        "Combat Baseline Project",
                         ResourceCategory.PersistentProgressionMaterial,
                         costAmount: 1,
                         isPurchased: true,
                         isAffordable: false),
                     new TownServiceProgressionOptionState(
                         AccountWideUpgradeId.PushOffenseProject,
+                        "Push Offense Project",
                         ResourceCategory.PersistentProgressionMaterial,
                         costAmount: 2,
                         isPurchased: false,
                         isAffordable: false),
                     new TownServiceProgressionOptionState(
                         AccountWideUpgradeId.FarmYieldProject,
+                        "Farm Yield Project",
                         ResourceCategory.PersistentProgressionMaterial,
                         costAmount: 1,
                         isPurchased: false,

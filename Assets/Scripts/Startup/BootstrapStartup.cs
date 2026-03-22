@@ -98,7 +98,17 @@ namespace Survivalon.Startup
 
             sessionContext.RecordNodeEntry(nodeId);
             Debug.Log($"Entered node flow for {nodeId}.");
-            if (placeholderState.NodeType == NodeType.ServiceOrProgression)
+            ShowEnteredNodeContext(placeholderState);
+        }
+
+        private void ShowEnteredNodeContext(NodePlaceholderState placeholderState)
+        {
+            if (placeholderState == null)
+            {
+                throw new ArgumentNullException(nameof(placeholderState));
+            }
+
+            if (placeholderState.TownServiceContext != null)
             {
                 ShowTownServiceScreen(placeholderState);
                 return;

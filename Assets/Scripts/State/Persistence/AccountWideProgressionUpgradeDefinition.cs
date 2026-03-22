@@ -7,6 +7,7 @@ namespace Survivalon.State.Persistence
     {
         public AccountWideProgressionUpgradeDefinition(
             AccountWideUpgradeId upgradeId,
+            string displayName,
             string progressionId,
             ResourceCategory costResourceCategory,
             int costAmount,
@@ -14,6 +15,11 @@ namespace Survivalon.State.Persistence
             int playerAttackPowerBonus,
             int ordinaryRegionMaterialRewardBonus)
         {
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                throw new ArgumentException("Display name cannot be null or whitespace.", nameof(displayName));
+            }
+
             if (string.IsNullOrWhiteSpace(progressionId))
             {
                 throw new ArgumentException("Progression id cannot be null or whitespace.", nameof(progressionId));
@@ -42,6 +48,7 @@ namespace Survivalon.State.Persistence
             }
 
             UpgradeId = upgradeId;
+            DisplayName = displayName;
             ProgressionId = progressionId;
             LayerType = ProgressionLayerType.AccountWide;
             CostResourceCategory = costResourceCategory;
@@ -52,6 +59,8 @@ namespace Survivalon.State.Persistence
         }
 
         public AccountWideUpgradeId UpgradeId { get; }
+
+        public string DisplayName { get; }
 
         public string ProgressionId { get; }
 

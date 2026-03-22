@@ -76,6 +76,7 @@ namespace Survivalon.Towns
                     AccountWideProgressionUpgradeCatalog.All[index];
                 progressionOptions.Add(new TownServiceProgressionOptionState(
                     upgradeDefinition.UpgradeId,
+                    upgradeDefinition.DisplayName,
                     upgradeDefinition.CostResourceCategory,
                     upgradeDefinition.CostAmount,
                     progressionBoardService.IsPurchased(gameState, upgradeDefinition.UpgradeId),
