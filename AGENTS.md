@@ -82,3 +82,21 @@
 - Do not merge milestone history into one large file.
 - Do not remove milestone notes after updating `current_build_state.md`.
 - If milestone notes and current code appear inconsistent, surface the inconsistency instead of guessing.
+
+## Unity verification workflow (mandatory)
+
+For any task that changes `.cs`, `.asmdef`, scene wiring, runtime UI wiring, or tests:
+
+1. Do not run EditMode tests immediately.
+2. First run:
+   `pwsh -NoLogo -NoProfile -File tools/unity_compile_check.ps1`
+3. Read the compile log and fix all compiler errors before any test run.
+4. Only when compile/import is clean, run:
+   `pwsh -NoLogo -NoProfile -File tools/unity_editmode_verify.ps1`
+5. If batch mode still reports compiler errors and the compile log is not actionable enough, stop and tell the user:
+   "Please open the Unity project once manually in Safe Mode, then close it, and I will continue."
+
+Rules:
+- Never claim tests passed if compile check failed.
+- Always report the exact log/result file paths used.
+- Prefer this script-based workflow over ad hoc Unity commands.
