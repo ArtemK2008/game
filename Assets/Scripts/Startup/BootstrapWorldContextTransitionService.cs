@@ -1,16 +1,15 @@
 using System;
-using Survivalon.Run;
 using Survivalon.State;
 using Survivalon.State.Persistence;
 using Survivalon.Core;
 
 namespace Survivalon.Startup
 {
-    public sealed class BootstrapPostRunTransitionService
+    public sealed class BootstrapWorldContextTransitionService
     {
         private readonly SafeResumePersistenceService persistenceService;
 
-        public BootstrapPostRunTransitionService(SafeResumePersistenceService persistenceService)
+        public BootstrapWorldContextTransitionService(SafeResumePersistenceService persistenceService)
         {
             this.persistenceService = persistenceService ?? throw new ArgumentNullException(nameof(persistenceService));
         }
@@ -18,25 +17,25 @@ namespace Survivalon.Startup
         public StartupEntryTarget PrepareReturnToWorld(
             PersistentGameState gameState,
             SessionContextState sessionContext,
-            RunResult runResult)
+            NodeId contextNodeId)
         {
-            RecordAndPersist(gameState, sessionContext, runResult);
+            RecordAndPersist(gameState, sessionContext, contextNodeId);
             return StartupEntryTarget.WorldViewPlaceholder;
         }
 
         public StartupEntryTarget PrepareStopSession(
             PersistentGameState gameState,
             SessionContextState sessionContext,
-            RunResult runResult)
+            NodeId contextNodeId)
         {
-            RecordAndPersist(gameState, sessionContext, runResult);
+            RecordAndPersist(gameState, sessionContext, contextNodeId);
             return StartupEntryTarget.MainMenuPlaceholder;
         }
 
         private void RecordAndPersist(
             PersistentGameState gameState,
             SessionContextState sessionContext,
-            RunResult runResult)
+            NodeId contextNodeId)
         {
             if (gameState == null)
             {
@@ -48,12 +47,7 @@ namespace Survivalon.Startup
                 throw new ArgumentNullException(nameof(sessionContext));
             }
 
-            if (runResult == null)
-            {
-                throw new ArgumentNullException(nameof(runResult));
-            }
-
-            sessionContext.RecordRunReturned(runResult.NodeId);
+            sessionContext.RecordReturnedToWorldContext(contextNodeId);
             persistenceService.SaveResolvedWorldContext(gameState);
         }
     }

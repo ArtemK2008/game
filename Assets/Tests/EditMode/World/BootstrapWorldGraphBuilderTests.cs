@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Towns;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
@@ -44,6 +45,12 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).CombatEncounter,
                 Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).TownServiceContext,
+                Is.SameAs(TownServiceContextCatalog.CavernServiceHub));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).TownServiceContext.DisplayName,
+                Is.EqualTo("Cavern Service Hub"));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).CombatEncounter,
                 Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));

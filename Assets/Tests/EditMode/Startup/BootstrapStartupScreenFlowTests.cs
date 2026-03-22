@@ -3,6 +3,7 @@ using Survivalon.Startup;
 using UnityEngine;
 using Survivalon.Core;
 using Survivalon.State.Persistence;
+using Survivalon.Towns;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.Startup
@@ -10,7 +11,7 @@ namespace Survivalon.Tests.EditMode.Startup
     public sealed class BootstrapStartupScreenFlowTests : BootstrapStartupScreenFlowTestBase
     {
         [Test]
-        public void ShouldReuseSingleWorldMapAndPlaceholderScreenAcrossEnterAndReturnFlow()
+        public void ShouldReuseSingleWorldMapPlaceholderAndTownServiceScreensAcrossEnterAndReturnFlow()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -19,19 +20,19 @@ namespace Survivalon.Tests.EditMode.Startup
             {
                 CreateAndInitializeBootstrap(hostObject, storage);
 
-                AssertScreenCounts(hostObject, 1, 0, 1, 0);
+                AssertScreenCounts(hostObject, 1, 0, 1, 0, 0, 0);
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
-                AssertScreenCounts(hostObject, 0, 1, 1, 1);
+                AssertScreenCounts(hostObject, 0, 0, 1, 0, 1, 1);
 
-                ReturnToWorldMap(hostObject);
-                AssertScreenCounts(hostObject, 1, 0, 1, 1);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+                AssertScreenCounts(hostObject, 1, 0, 1, 0, 0, 1);
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
-                AssertScreenCounts(hostObject, 0, 1, 1, 1);
+                AssertScreenCounts(hostObject, 0, 1, 1, 1, 0, 1);
 
                 ReturnToWorldMap(hostObject);
-                AssertScreenCounts(hostObject, 1, 0, 1, 1);
+                AssertScreenCounts(hostObject, 1, 0, 1, 1, 0, 1);
             }
             finally
             {
@@ -40,7 +41,7 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldPersistSafeResumeContextWhenReturningToWorldFromPostRun()
+        public void ShouldPersistSafeResumeContextWhenReturningToWorldFromTownServiceScreen()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -50,7 +51,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 CreateAndInitializeBootstrap(hostObject, storage);
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
-                ReturnToWorldMap(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 Assert.That(storage.HasSavedState, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
@@ -74,7 +75,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 CreateAndInitializeBootstrap(hostObject, storage);
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
-                ReturnToWorldMap(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Recent node: region_002_node_001"), Is.True);
                 Assert.That(ContainsText(hostObject, "Recent push target: region_002_node_001"), Is.True);
@@ -86,7 +87,7 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldShowStartupPlaceholderWhenPostRunStopIsRequested()
+        public void ShouldShowStartupPlaceholderWhenTownServiceStopIsRequested()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -96,17 +97,17 @@ namespace Survivalon.Tests.EditMode.Startup
                 CreateAndInitializeBootstrap(hostObject, storage);
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
-                AdvanceToPostRun(hostObject);
                 FindButton(hostObject, "StopSessionButton").onClick.Invoke();
 
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(0));
                 Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(1));
 
                 StartupPlaceholderView placeholderView = hostObject.GetComponentInChildren<StartupPlaceholderView>(true);
                 Assert.That(placeholderView, Is.Not.Null);
                 Assert.That(ContainsText(hostObject, "Main Menu Placeholder"), Is.True);
-                Assert.That(ContainsText(hostObject, "Session stopped at a safe post-run point."), Is.True);
+                Assert.That(ContainsText(hostObject, "Session stopped at a safe world or service point."), Is.True);
                 Assert.That(storage.HasSavedState, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));

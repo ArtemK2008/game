@@ -4,6 +4,7 @@ using UnityEngine;
 using Survivalon.Run;
 using Survivalon.State;
 using Survivalon.State.Persistence;
+using Survivalon.Towns;
 using Survivalon.World;
 using Survivalon.Core;
 
@@ -15,7 +16,7 @@ namespace Survivalon.Startup
         private PersistentGameState gameState;
         private WorldNodeEntryFlowController nodeEntryFlowController;
         private SafeResumePersistenceService persistenceService;
-        private BootstrapPostRunTransitionService postRunTransitionService;
+        private BootstrapWorldContextTransitionService worldContextTransitionService;
         private SessionContextState sessionContext;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
@@ -27,7 +28,7 @@ namespace Survivalon.Startup
         private void Awake()
         {
             persistenceService ??= new SafeResumePersistenceService(CreateDefaultPersistenceStorage());
-            postRunTransitionService = new BootstrapPostRunTransitionService(persistenceService);
+            worldContextTransitionService = new BootstrapWorldContextTransitionService(persistenceService);
 
             BootstrapStartupState startupState = new BootstrapStartupStateFactory(persistenceService)
                 .Create(new BootstrapWorldMapFactory());
@@ -44,6 +45,7 @@ namespace Survivalon.Startup
         {
             SetOptionalScreenActive(FindOptionalScreen<StartupPlaceholderView>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
+            SetOptionalScreenActive(FindOptionalScreen<TownServiceScreen>(), false);
 
             WorldMapScreen worldMapScreen = EnsureWorldMapScreen();
             worldMapScreen.gameObject.SetActive(true);
@@ -59,6 +61,7 @@ namespace Survivalon.Startup
         {
             SetOptionalScreenActive(FindOptionalScreen<StartupPlaceholderView>(), false);
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
+            SetOptionalScreenActive(FindOptionalScreen<TownServiceScreen>(), false);
 
             NodePlaceholderScreen nodePlaceholderScreen = EnsureNodePlaceholderScreen();
             nodePlaceholderScreen.gameObject.SetActive(true);
@@ -70,6 +73,21 @@ namespace Survivalon.Startup
                 RunPersistentContext.FromGameState(gameState));
         }
 
+        private void ShowTownServiceScreen(NodePlaceholderState placeholderState)
+        {
+            SetOptionalScreenActive(FindOptionalScreen<StartupPlaceholderView>(), false);
+            SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
+            SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
+
+            TownServiceScreen townServiceScreen = EnsureTownServiceScreen();
+            townServiceScreen.gameObject.SetActive(true);
+            townServiceScreen.Show(
+                placeholderState,
+                gameState,
+                () => HandleTownServiceReturnRequested(placeholderState.NodeId),
+                () => HandleTownServiceStopRequested(placeholderState.NodeId));
+        }
+
         private void HandleNodeEntryRequested(NodeId nodeId)
         {
             if (!nodeEntryFlowController.TryEnterNode(nodeId, out NodePlaceholderState placeholderState))
@@ -79,27 +97,53 @@ namespace Survivalon.Startup
             }
 
             sessionContext.RecordNodeEntry(nodeId);
-            Debug.Log($"Entered placeholder node flow for {nodeId}.");
+            Debug.Log($"Entered node flow for {nodeId}.");
+            if (placeholderState.NodeType == NodeType.ServiceOrProgression)
+            {
+                ShowTownServiceScreen(placeholderState);
+                return;
+            }
+
             ShowNodePlaceholder(placeholderState);
         }
 
         private void HandleReturnToWorldRequested(RunResult runResult)
         {
-            StartupEntryTarget entryTarget = postRunTransitionService.PrepareReturnToWorld(
+            StartupEntryTarget entryTarget = worldContextTransitionService.PrepareReturnToWorld(
                 gameState,
                 sessionContext,
-                runResult);
+                runResult.NodeId);
             Debug.Log($"Returning from post-run state to world map after {runResult.ResolutionState} on {runResult.NodeId}.");
             ShowStartupEntryTarget(entryTarget);
         }
 
         private void HandleStopSessionRequested(RunResult runResult)
         {
-            StartupEntryTarget entryTarget = postRunTransitionService.PrepareStopSession(
+            StartupEntryTarget entryTarget = worldContextTransitionService.PrepareStopSession(
                 gameState,
                 sessionContext,
-                runResult);
+                runResult.NodeId);
             Debug.Log($"Stopping session from post-run state after {runResult.ResolutionState} on {runResult.NodeId}.");
+            ShowStartupEntryTarget(entryTarget);
+        }
+
+        private void HandleTownServiceReturnRequested(NodeId nodeId)
+        {
+            StartupEntryTarget entryTarget = worldContextTransitionService.PrepareReturnToWorld(
+                gameState,
+                sessionContext,
+                nodeId);
+            Debug.Log($"Returning from town/service context to world map at {nodeId}.");
+            ShowStartupEntryTarget(entryTarget);
+        }
+
+        private void HandleTownServiceStopRequested(NodeId nodeId)
+        {
+            StartupEntryTarget entryTarget = worldContextTransitionService.PrepareStopSession(
+                gameState,
+                sessionContext,
+                nodeId);
+            Debug.Log($"Stopping session from town/service context at {nodeId}.");
             ShowStartupEntryTarget(entryTarget);
         }
 
@@ -113,6 +157,7 @@ namespace Survivalon.Startup
 
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
+            SetOptionalScreenActive(FindOptionalScreen<TownServiceScreen>(), false);
 
             StartupPlaceholderView placeholderView = EnsurePlaceholderView();
             placeholderView.gameObject.SetActive(true);
@@ -159,6 +204,20 @@ namespace Survivalon.Startup
             nodePlaceholderObject.transform.SetParent(transform, false);
 
             return nodePlaceholderObject.AddComponent<NodePlaceholderScreen>();
+        }
+
+        private TownServiceScreen EnsureTownServiceScreen()
+        {
+            TownServiceScreen existingTownServiceScreen = GetComponentInChildren<TownServiceScreen>(true);
+            if (existingTownServiceScreen != null)
+            {
+                return existingTownServiceScreen;
+            }
+
+            GameObject townServiceObject = new GameObject("TownServiceScreen");
+            townServiceObject.transform.SetParent(transform, false);
+
+            return townServiceObject.AddComponent<TownServiceScreen>();
         }
 
         private static void SetOptionalScreenActive(Component component, bool isActive)

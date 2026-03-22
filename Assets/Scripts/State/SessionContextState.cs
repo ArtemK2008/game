@@ -60,7 +60,7 @@ namespace Survivalon.State
             recentNodeIdValue = nodeId.Value;
         }
 
-        public void RecordRunReturned(NodeId nodeId)
+        public void RecordReturnedToWorldContext(NodeId nodeId)
         {
             recentNodeIdValue = nodeId.Value;
         }

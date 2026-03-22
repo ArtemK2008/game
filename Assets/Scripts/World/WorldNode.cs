@@ -1,6 +1,7 @@
 using System;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Towns;
 
 namespace Survivalon.World
 {
@@ -12,7 +13,8 @@ namespace Survivalon.World
             NodeType nodeType,
             NodeState state,
             CombatEncounterDefinition combatEncounter = null,
-            BossProgressionGateDefinition bossProgressionGate = null)
+            BossProgressionGateDefinition bossProgressionGate = null,
+            TownServiceContextDefinition townServiceContext = null)
         {
             if (combatEncounter != null && nodeType != NodeType.Combat && nodeType != NodeType.BossOrGate)
             {
@@ -28,12 +30,20 @@ namespace Survivalon.World
                     nameof(bossProgressionGate));
             }
 
+            if (townServiceContext != null && nodeType != NodeType.ServiceOrProgression)
+            {
+                throw new ArgumentException(
+                    "Town service context data requires a service-or-progression node type.",
+                    nameof(townServiceContext));
+            }
+
             NodeId = nodeId;
             RegionId = regionId;
             NodeType = nodeType;
             State = state;
             CombatEncounter = combatEncounter;
             BossProgressionGate = bossProgressionGate;
+            TownServiceContext = townServiceContext;
         }
 
         public NodeId NodeId { get; }
@@ -47,6 +57,8 @@ namespace Survivalon.World
         public CombatEncounterDefinition CombatEncounter { get; }
 
         public BossProgressionGateDefinition BossProgressionGate { get; }
+
+        public TownServiceContextDefinition TownServiceContext { get; }
     }
 }
 

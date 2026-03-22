@@ -94,6 +94,24 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void ShouldCarryBootstrapTownServiceContextIntoPlaceholderState()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+
+            bool entered = controller.TryEnterNode(BootstrapWorldScenario.CavernServiceNodeId, out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.CombatEncounter, Is.Null);
+            Assert.That(placeholderState.BossProgressionGate, Is.Null);
+            Assert.That(placeholderState.TownServiceContext, Is.Not.Null);
+            Assert.That(placeholderState.TownServiceContext.ContextId, Is.EqualTo("town_service_cavern_hub"));
+            Assert.That(placeholderState.TownServiceContext.DisplayName, Is.EqualTo("Cavern Service Hub"));
+        }
+
+        [Test]
         public void ShouldRejectEnteringLockedOrUnreachableNode()
         {
             WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();

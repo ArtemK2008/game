@@ -1,5 +1,6 @@
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Towns;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
@@ -17,6 +18,17 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.ServiceOrProgression,
                 NodeState.Available,
                 new NodeId("region_001_node_002"));
+        }
+
+        public static NodePlaceholderState CreateTownServicePlaceholderState()
+        {
+            return new NodePlaceholderState(
+                BootstrapWorldScenario.CavernServiceNodeId,
+                BootstrapWorldScenario.CavernRegionId,
+                NodeType.ServiceOrProgression,
+                NodeState.Available,
+                BootstrapWorldScenario.ForestPushNodeId,
+                townServiceContext: TownServiceContextCatalog.CavernServiceHub);
         }
 
         public static NodePlaceholderState CreateCombatPlaceholderState()

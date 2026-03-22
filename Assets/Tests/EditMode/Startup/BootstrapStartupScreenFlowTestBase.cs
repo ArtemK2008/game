@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Survivalon.State.Persistence;
+using Survivalon.Towns;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.Startup
@@ -41,18 +42,27 @@ namespace Survivalon.Tests.EditMode.Startup
 
         protected static void ReturnToWorldMap(GameObject rootObject)
         {
+            if (CountActiveComponents<TownServiceScreen>(rootObject) > 0)
+            {
+                FindActiveButton(rootObject, "ReturnToWorldMapButton").onClick.Invoke();
+                return;
+            }
+
             AdvanceToPostRun(rootObject);
-            FindButton(rootObject, "ReturnToWorldMapButton").onClick.Invoke();
+            FindActiveButton(rootObject, "ReturnToWorldMapButton").onClick.Invoke();
         }
 
         protected static void AdvanceToPostRun(GameObject rootObject)
         {
-            Button advanceRunLifecycleButton = FindButton(rootObject, "AdvanceRunLifecycleButton");
-            Button returnToWorldButton = FindButton(rootObject, "ReturnToWorldMapButton");
+            if (CountActiveComponents<TownServiceScreen>(rootObject) > 0)
+            {
+                Assert.Fail("AdvanceToPostRun should not be used while the town service screen is active.");
+            }
 
             for (int index = 0; index < 40; index++)
             {
-                if (returnToWorldButton.interactable)
+                Button returnToWorldButton = TryFindActiveButton(rootObject, "ReturnToWorldMapButton");
+                if (returnToWorldButton != null && returnToWorldButton.interactable)
                 {
                     return;
                 }
@@ -61,6 +71,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 {
                     continue;
                 }
+
+                Button advanceRunLifecycleButton = TryFindActiveButton(rootObject, "AdvanceRunLifecycleButton");
+                Assert.That(advanceRunLifecycleButton, Is.Not.Null);
 
                 if (!advanceRunLifecycleButton.interactable)
                 {
@@ -79,12 +92,16 @@ namespace Survivalon.Tests.EditMode.Startup
             int activeWorldMapCount,
             int activePlaceholderCount,
             int totalWorldMapCount,
-            int totalPlaceholderCount)
+            int totalPlaceholderCount,
+            int activeTownServiceCount = 0,
+            int totalTownServiceCount = 0)
         {
             Assert.That(CountActiveComponents<WorldMapScreen>(rootObject), Is.EqualTo(activeWorldMapCount));
             Assert.That(CountActiveComponents<NodePlaceholderScreen>(rootObject), Is.EqualTo(activePlaceholderCount));
+            Assert.That(CountActiveComponents<TownServiceScreen>(rootObject), Is.EqualTo(activeTownServiceCount));
             Assert.That(rootObject.GetComponentsInChildren<WorldMapScreen>(true).Length, Is.EqualTo(totalWorldMapCount));
             Assert.That(rootObject.GetComponentsInChildren<NodePlaceholderScreen>(true).Length, Is.EqualTo(totalPlaceholderCount));
+            Assert.That(rootObject.GetComponentsInChildren<TownServiceScreen>(true).Length, Is.EqualTo(totalTownServiceCount));
         }
 
         protected static int CountActiveComponents<T>(GameObject rootObject) where T : Component
@@ -103,6 +120,12 @@ namespace Survivalon.Tests.EditMode.Startup
 
         protected static Button FindButton(GameObject rootObject, string buttonObjectName)
         {
+            Button activeButton = TryFindActiveButton(rootObject, buttonObjectName);
+            if (activeButton != null)
+            {
+                return activeButton;
+            }
+
             Button[] buttons = rootObject.GetComponentsInChildren<Button>(true);
             foreach (Button button in buttons)
             {
@@ -121,6 +144,11 @@ namespace Survivalon.Tests.EditMode.Startup
             Text[] labels = rootObject.GetComponentsInChildren<Text>(true);
             foreach (Text label in labels)
             {
+                if (!label.gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+
                 if (label.text.Contains(textFragment))
                 {
                     return true;
@@ -177,6 +205,32 @@ namespace Survivalon.Tests.EditMode.Startup
             }
 
             return false;
+        }
+
+        private static Button FindActiveButton(GameObject rootObject, string buttonObjectName)
+        {
+            Button button = TryFindActiveButton(rootObject, buttonObjectName);
+            if (button != null)
+            {
+                return button;
+            }
+
+            Assert.Fail($"Active button '{buttonObjectName}' was not found.");
+            return null;
+        }
+
+        private static Button TryFindActiveButton(GameObject rootObject, string buttonObjectName)
+        {
+            Button[] buttons = rootObject.GetComponentsInChildren<Button>(true);
+            foreach (Button button in buttons)
+            {
+                if (button.gameObject.name == buttonObjectName && button.gameObject.activeInHierarchy)
+                {
+                    return button;
+                }
+            }
+
+            return null;
         }
 
         private static void InvokeRuntimeAdvance(GameObject rootObject, float elapsedSeconds)

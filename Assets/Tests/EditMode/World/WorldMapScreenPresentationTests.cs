@@ -29,7 +29,7 @@ namespace Survivalon.Tests.EditMode.World
         {
             SessionContextState sessionContext = new SessionContextState();
             sessionContext.RecordSelection(new NodeId("region_001_node_004"), isForwardSelectable: true);
-            sessionContext.RecordRunReturned(new NodeId("region_001_node_002"));
+            sessionContext.RecordReturnedToWorldContext(new NodeId("region_001_node_002"));
 
             string summaryText = WorldMapScreenTextBuilder.BuildSummaryText(
                 new[]
@@ -52,7 +52,7 @@ namespace Survivalon.Tests.EditMode.World
                 "Selectable destinations: 2\n" +
                 "Forward route options: 2 (Branch choice available)\n" +
                 "Selected node: region_001_node_004\n" +
-                "Select a reachable node, then confirm entry to start the placeholder node flow."));
+                "Select a reachable node, then confirm entry to start the current node flow."));
         }
 
         [Test]

@@ -4,12 +4,12 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 060**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, and **059a**.
+This summary reflects completed work through **Milestone 061**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, and **059a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
 
-From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. At post-run, the player can replay the node, return to the world map, or stop the session. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. Non-combat placeholder nodes still use the simple placeholder run shell rather than real gameplay.
+From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. At post-run, the player can replay the node, return to the world map, or stop the session. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. The current cavern service node now opens a distinct town/service shell instead of the generic node placeholder, while broader non-combat content remains placeholder-level.
 
 Manual actions currently required:
 - select a node on the world map
@@ -34,6 +34,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The placeholder world map now keeps its node list inside a simple scrollable viewport with stable full-width node-button alignment, so lower node buttons remain reachable and readable as the header, character-selection, and package-assignment area grows.
 - The same placeholder world map now also exposes one minimal two-slot gear equip/unequip area for the currently selected character without changing the overall placeholder screen structure.
 - Entering a selected node routes into a placeholder node screen through explicit node-entry flow logic.
+- `ServiceOrProgression` entry currently routes into one explicit town/service shell when node content supplies a town-service context definition.
 
 ### Run lifecycle and post-run flow
 - Runs use explicit lifecycle states: `RunStart`, `RunActive`, `RunResolved`, and `PostRun`.
@@ -43,6 +44,18 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Ordinary route unlock state and boss-gate unlock state are now tracked separately in run results, so the summary no longer relies on one overloaded unlock flag.
 - Replay re-enters the same node cleanly.
 - Return/stop save a world-level safe resume context.
+
+### Town / service shell
+- The current build now has one explicit town-equivalent service context:
+  - `Cavern Service Hub`
+- It is reached through the existing cavern service node in the bootstrap world graph and opens a dedicated non-combat screen instead of the generic node placeholder shell.
+- The service shell currently exposes two MVP-readable sections:
+  - a progression-hub summary tied to the existing account-wide progression sink and current persistent progression material balance
+  - a build-preparation summary tied to the currently selected character, assigned skill package, and equipped primary/support gear
+- The service shell currently supports two safe actions:
+  - return to world map
+  - stop session
+- The service shell is intentionally read-only for now. Actual build changes still happen on the world map, and actual progression-sink spending still uses the existing domain logic without a dedicated purchase flow in the service shell yet.
 
 ### Combat foundation
 - Combat exists as a placeholder shell inside the current node/run flow rather than as a dedicated final combat scene.
@@ -146,7 +159,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current account-wide upgrades increase player max health, player attack power, and ordinary region-material reward output in future runs, without changing enemy baseline stats or milestone reward amounts.
 - The new push-oriented offense upgrade helps harder combat more directly by increasing player-side baseline damage enough to visibly improve tougher future encounters.
 - The new farm-oriented yield upgrade helps repeatable farming more directly by increasing ordinary region-material rewards on standard region-material combat clears.
-- Dedicated service-hub or town-style runtime access to this sink is not implemented yet; the sink currently exists through persistent domain/state logic and combat integration rather than through a new UI flow.
+- The new town/service shell now exposes that sink as a readable progression-hub summary, but it does not yet provide the next-step purchase interaction flow.
 
 ### Persistent character baseline, selection placeholder, and linked progression
 - The build now has two explicit playable characters stored in persistent game state:
@@ -221,25 +234,25 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Broad farm access applies only to persistently `Cleared` nodes; uncleared nodes still follow the normal reachability rules.
 - Failed or incomplete combat runs do **not** currently grant node progress in the MVP, because node progress is still kill-driven and the single-enemy combat prototype has no failed partial-kill case.
 - Rewards and economy are still early and placeholder-level beyond the new soft-currency, one region-material path, one clear-threshold milestone reward, and one structural account-wide progression sink; broader reward differentiation and additional sinks are not implemented yet.
-- The new account-wide sink is now wired into live player combat baseline stats, but it is not yet exposed through a dedicated service/town UI.
+- The new account-wide sink is now wired into live player combat baseline stats and has a small read-only summary inside the current town/service shell, but purchase interaction is still not exposed there yet.
 - Character selection now exists only as a minimal world-map placeholder path; broader roster UI and deeper multi-character systems are still deferred.
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - The first run-time skill choice now exists only as a compact placeholder choice for current `Burst Strike` users; broader in-run upgrade pools, repeated level-up chains, and upgrade UI depth are still deferred.
 - Gear now exists for two categories with a minimal pre-run equip/unequip placeholder and two simple live stat effects; broader gear UI, gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
-- Non-combat nodes still use placeholder run behavior.
+- The current town/service shell is intentionally shell-level: it provides a distinct safe context with progression/build summaries and return/stop actions, but not a full service interaction suite.
 
 ## Not implemented yet
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
-- Additional progression sinks and dedicated sink access through the service/town layer
+- Additional progression sinks and interactive sink spending through the service/town layer
 - Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
 - Additional gear categories beyond the current two-slot baseline, richer live gear effects, and broader itemization/loot systems
 - Multi-entity combat, broader skill systems, advanced AI, and broader combat content
 
 ## Known temporary placeholders / technical shortcuts
-- The world graph and initial persistent state are currently seeded by `BootstrapWorldMapFactory`.
-- The world map, node screen, post-run panel, and combat shell are runtime-generated placeholder UI.
+- The world graph, town-service context mapping, and initial persistent state are currently seeded by `BootstrapWorldMapFactory`.
+- The world map, node screen, town/service shell, post-run panel, and combat shell are runtime-generated placeholder UI.
 - Main menu flow is still a placeholder target rather than a real menu system.
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.
 - The current passive skill layer is still interpreted through a small hardcoded resolver path for the single shipped passive, `Relentless Assault`.
