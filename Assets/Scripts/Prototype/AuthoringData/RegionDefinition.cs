@@ -2,11 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Survivalon.Core;
 
-namespace Survivalon.Data.World
+namespace Survivalon.Prototype.AuthoringData
 {
+    /// <summary>
+    /// Хранит dormant prototype-описание региона для неиспользуемого authoring slice.
+    /// </summary>
     [CreateAssetMenu(
         fileName = "RegionDefinition",
-        menuName = "Survivalon/Data/World/Region Definition")]
+        menuName = "Survivalon/Prototype/Authoring/Region Definition")]
     public sealed class RegionDefinition : ScriptableObject
     {
         [SerializeField]

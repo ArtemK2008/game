@@ -1,8 +1,11 @@
 using System;
 using UnityEngine;
 
-namespace Survivalon.Data.World
+namespace Survivalon.Prototype.AuthoringData
 {
+    /// <summary>
+    /// Хранит dormant prototype-связь узлов для неиспользуемого authoring slice.
+    /// </summary>
     [Serializable]
     public sealed class NodeConnectionData
     {

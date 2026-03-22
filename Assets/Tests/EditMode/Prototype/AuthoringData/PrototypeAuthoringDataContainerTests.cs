@@ -2,14 +2,14 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using Survivalon.Core;
-using Survivalon.Data.Characters;
-using Survivalon.Data.Gear;
-using Survivalon.Data.Rewards;
-using Survivalon.Data.World;
+using Survivalon.Prototype.AuthoringData;
 
-namespace Survivalon.Tests.EditMode.Data
+namespace Survivalon.Tests.EditMode.Prototype.AuthoringData
 {
-    public sealed class BaseDataContainerTests
+    /// <summary>
+    /// Проверяет dormant prototype authoring containers после их изоляции от активного runtime data slice.
+    /// </summary>
+    public sealed class PrototypeAuthoringDataContainerTests
     {
         [Test]
         public void ShouldExposeTypedRegionIdFromSerializedValue()

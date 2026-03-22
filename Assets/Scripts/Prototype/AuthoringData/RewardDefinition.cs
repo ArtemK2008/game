@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Survivalon.Core;
-using Survivalon.Data.Gear;
+using Survivalon.Data.Rewards;
 
-namespace Survivalon.Data.Rewards
+namespace Survivalon.Prototype.AuthoringData
 {
+    /// <summary>
+    /// Хранит dormant prototype-описание награды для неиспользуемого authoring slice.
+    /// </summary>
     [CreateAssetMenu(
         fileName = "RewardDefinition",
-        menuName = "Survivalon/Data/Rewards/Reward Definition")]
+        menuName = "Survivalon/Prototype/Authoring/Reward Definition")]
     public sealed class RewardDefinition : ScriptableObject
     {
         [SerializeField]
