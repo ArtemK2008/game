@@ -70,6 +70,7 @@ namespace Survivalon.Towns
                 placeholderState.LocationIdentity.DisplayName,
                 placeholderState.LocationIdentity.RewardSourceDisplayName,
                 placeholderState.LocationIdentity.RewardFocusDisplayName,
+                placeholderState.LocationIdentity.EnemyEmphasisDisplayName,
                 gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
                 gameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
                 BuildMaterialPowerPathState(gameState),

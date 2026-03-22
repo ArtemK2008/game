@@ -76,6 +76,8 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(forestRegion.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(forestRegion.LocationIdentity.DisplayName, Is.EqualTo("Verdant Frontier"));
             Assert.That(forestRegion.LocationIdentity.RewardSourceDisplayName, Is.EqualTo("Frontier salvage"));
+            Assert.That(forestRegion.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Frontier raiders"));
+            Assert.That(forestRegion.LocationIdentity.BossPersistentProgressionMaterialBonus, Is.EqualTo(0));
             Assert.That(forestRegion.NodeIds, Is.EqualTo(new[]
             {
                 BootstrapWorldScenario.ForestEntryNodeId,
@@ -92,6 +94,8 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(cavernRegion.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(cavernRegion.LocationIdentity.DisplayName, Is.EqualTo("Echo Caverns"));
             Assert.That(cavernRegion.LocationIdentity.RewardSourceDisplayName, Is.EqualTo("Cavern relic caches"));
+            Assert.That(cavernRegion.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Gate guardians"));
+            Assert.That(cavernRegion.LocationIdentity.BossPersistentProgressionMaterialBonus, Is.EqualTo(1));
             Assert.That(cavernRegion.NodeIds, Is.EqualTo(new[]
             {
                 BootstrapWorldScenario.CavernServiceNodeId,

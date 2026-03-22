@@ -22,6 +22,7 @@ namespace Survivalon.Towns
                 $"Location: {screenState.LocationDisplayName}\n" +
                 $"Reward focus: {screenState.LocationRewardFocusDisplayName}\n" +
                 $"Reward source: {screenState.LocationRewardSourceDisplayName}\n" +
+                $"Enemy emphasis: {screenState.LocationEnemyEmphasisDisplayName}\n" +
                 $"Region: {screenState.RegionId.Value}\n" +
                 $"Node: {screenState.NodeId.Value}\n" +
                 $"Entered from: {screenState.OriginNodeId.Value}\n" +

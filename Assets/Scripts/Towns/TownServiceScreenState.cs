@@ -16,6 +16,7 @@ namespace Survivalon.Towns
             string locationDisplayName,
             string locationRewardSourceDisplayName,
             string locationRewardFocusDisplayName,
+            string locationEnemyEmphasisDisplayName,
             int persistentProgressionMaterialAmount,
             int regionMaterialAmount,
             TownServiceMaterialPowerPathState materialPowerPathState,
@@ -48,6 +49,8 @@ namespace Survivalon.Towns
                 throw new ArgumentNullException(nameof(locationRewardSourceDisplayName));
             LocationRewardFocusDisplayName = locationRewardFocusDisplayName ??
                 throw new ArgumentNullException(nameof(locationRewardFocusDisplayName));
+            LocationEnemyEmphasisDisplayName = locationEnemyEmphasisDisplayName ??
+                throw new ArgumentNullException(nameof(locationEnemyEmphasisDisplayName));
             NodeId = nodeId;
             RegionId = regionId;
             OriginNodeId = originNodeId;
@@ -68,6 +71,8 @@ namespace Survivalon.Towns
         public string LocationRewardSourceDisplayName { get; }
 
         public string LocationRewardFocusDisplayName { get; }
+
+        public string LocationEnemyEmphasisDisplayName { get; }
 
         public int PersistentProgressionMaterialAmount { get; }
 

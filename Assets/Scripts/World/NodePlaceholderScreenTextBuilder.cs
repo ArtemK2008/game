@@ -22,6 +22,7 @@ namespace Survivalon.World
                 $"Location: {placeholderState.LocationIdentity.DisplayName}\n" +
                 $"Region: {placeholderState.RegionId.Value}\n" +
                 $"Reward focus: {placeholderState.LocationIdentity.RewardFocusDisplayName}\n" +
+                $"Enemy emphasis: {placeholderState.LocationIdentity.EnemyEmphasisDisplayName}\n" +
                 $"Type: {placeholderState.NodeType}\n" +
                 $"Node state: {placeholderState.NodeState}\n" +
                 $"Lifecycle: {lifecycleState}\n" +

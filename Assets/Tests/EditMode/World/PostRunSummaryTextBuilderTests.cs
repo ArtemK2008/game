@@ -168,6 +168,46 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void ShouldShowCavernBossRewardBundleWithEchoCavernsRewardSource()
+        {
+            RunResult runResult = new RunResult(
+                BootstrapWorldScenario.CavernGateNodeId,
+                RunResolutionState.Succeeded,
+                new RunRewardPayload(
+                    new[]
+                    {
+                        new RunCurrencyReward(ResourceCategory.SoftCurrency, 1),
+                    },
+                    System.Array.Empty<RunMaterialReward>(),
+                    System.Array.Empty<RunCurrencyReward>(),
+                    System.Array.Empty<RunMaterialReward>(),
+                    System.Array.Empty<RunCurrencyReward>(),
+                    new[]
+                    {
+                        new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 3),
+                    }),
+                1,
+                1,
+                3,
+                0,
+                false,
+                new RunNextActionContext(
+                    canReplayNode: true,
+                    canChooseAnotherNode: true,
+                    canStopSession: true));
+            PostRunStateController postRunStateController = new PostRunStateController(
+                NodePlaceholderTestData.CreateCavernGateBossPlaceholderState(),
+                runResult);
+
+            string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
+
+            Assert.That(summaryText, Does.Contain("Location: Echo Caverns"));
+            Assert.That(summaryText, Does.Contain("Reward source: Cavern relic caches"));
+            Assert.That(summaryText, Does.Contain("Boss rewards: Persistent progression material x3"));
+            Assert.That(summaryText, Does.Not.Contain("Milestone rewards:"));
+        }
+
+        [Test]
         public void ShouldRejectMissingPostRunStateController()
         {
             Assert.That(

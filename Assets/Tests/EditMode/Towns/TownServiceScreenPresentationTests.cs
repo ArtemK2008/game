@@ -25,6 +25,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 "Location: Echo Caverns\n" +
                 "Reward focus: Persistent progression gains\n" +
                 "Reward source: Cavern relic caches\n" +
+                "Enemy emphasis: Gate guardians\n" +
                 "Region: region_002\n" +
                 "Node: region_002_node_001\n" +
                 "Entered from: region_001_node_002\n" +
@@ -83,6 +84,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 locationDisplayName: "Echo Caverns",
                 locationRewardSourceDisplayName: "Cavern relic caches",
                 locationRewardFocusDisplayName: "Persistent progression gains",
+                locationEnemyEmphasisDisplayName: "Gate guardians",
                 persistentProgressionMaterialAmount: 1,
                 regionMaterialAmount: 2,
                 materialPowerPathState: new TownServiceMaterialPowerPathState(

@@ -40,6 +40,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState, Is.Not.Null);
             Assert.That(placeholderState.NodeId, Is.EqualTo(selectedNodeId));
             Assert.That(placeholderState.LocationIdentity.DisplayName, Is.EqualTo("Echo Caverns"));
+            Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Gate guardians"));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(placeholderState.OriginNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
             Assert.That(worldState.CurrentNodeId, Is.EqualTo(selectedNodeId));
@@ -61,6 +62,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState, Is.Not.Null);
             Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.VerdantFrontier));
+            Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Frontier raiders"));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(
                 placeholderState.CombatEncounter.PrimaryEnemyProfile,
@@ -94,6 +96,7 @@ namespace Survivalon.Tests.EditMode.World
                 Is.SameAs(CombatBossProfileCatalog.GateBoss));
             Assert.That(placeholderState.BossProgressionGate, Is.Not.Null);
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.VerdantFrontier));
+            Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Frontier raiders"));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(
                 placeholderState.BossProgressionGate.UnlockedNodeId,
@@ -117,6 +120,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.TownServiceContext.ContextId, Is.EqualTo("town_service_cavern_hub"));
             Assert.That(placeholderState.TownServiceContext.DisplayName, Is.EqualTo("Cavern Service Hub"));
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.EchoCaverns));
+            Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Gate guardians"));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
         }
 

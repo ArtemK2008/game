@@ -64,6 +64,29 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldGrantHigherBossProgressionMaterialRewardForEchoCavernsBossRun()
+        {
+            RunRewardResolutionService service = new RunRewardResolutionService();
+
+            RunRewardPayload rewardPayload = service.Resolve(
+                NodePlaceholderTestData.CreateCavernGateBossPlaceholderState(),
+                RunResolutionState.Succeeded,
+                BootstrapWorldTestData.CreateWorldGraph());
+
+            Assert.That(rewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.CurrencyRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.SoftCurrency));
+            Assert.That(rewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(rewardPayload.MaterialRewards, Is.Empty);
+            Assert.That(rewardPayload.BossCurrencyRewards, Is.Empty);
+            Assert.That(rewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(
+                rewardPayload.BossMaterialRewards[0].ResourceCategory,
+                Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(3));
+            Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
+        }
+
+        [Test]
         public void ShouldIncreaseBossRewardBundleWhenBossSalvageProjectIsPurchased()
         {
             RunRewardResolutionService service = new RunRewardResolutionService();

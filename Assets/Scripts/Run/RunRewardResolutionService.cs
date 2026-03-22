@@ -157,7 +157,9 @@ namespace Survivalon.Run
             {
                 new RunMaterialReward(
                     ResourceCategory.PersistentProgressionMaterial,
-                    SuccessfulBossMaterialRewards[0].Amount + progressionEffects.BossProgressionMaterialRewardBonus),
+                    SuccessfulBossMaterialRewards[0].Amount +
+                        progressionEffects.BossProgressionMaterialRewardBonus +
+                        nodeContext.LocationIdentity.BossPersistentProgressionMaterialBonus),
             };
         }
 

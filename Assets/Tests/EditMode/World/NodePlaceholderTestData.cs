@@ -72,6 +72,18 @@ namespace Survivalon.Tests.EditMode.World
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier);
         }
 
+        public static NodePlaceholderState CreateCavernGateBossPlaceholderState()
+        {
+            return new NodePlaceholderState(
+                BootstrapWorldScenario.CavernGateNodeId,
+                BootstrapWorldScenario.CavernRegionId,
+                NodeType.BossOrGate,
+                NodeState.Available,
+                BootstrapWorldScenario.CavernServiceNodeId,
+                CombatBossEncounterCatalog.GateBossEncounter,
+                locationIdentity: LocationIdentityCatalog.EchoCaverns);
+        }
+
         public static NodePlaceholderState CreatePushCombatPlaceholderState()
         {
             return new NodePlaceholderState(
