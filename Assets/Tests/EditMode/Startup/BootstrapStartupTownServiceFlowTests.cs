@@ -3,6 +3,7 @@ using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
+using Survivalon.Data.Progression;
 using Survivalon.Startup;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;

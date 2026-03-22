@@ -1,9 +1,13 @@
 using System;
 using Survivalon.Core;
+using Survivalon.Data.Progression;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Towns
 {
+    /// <summary>
+    /// Хранит presentation-ready состояние одной progression purchase option для town/service shell.
+    /// </summary>
     public sealed class TownServiceProgressionOptionState
     {
         public TownServiceProgressionOptionState(

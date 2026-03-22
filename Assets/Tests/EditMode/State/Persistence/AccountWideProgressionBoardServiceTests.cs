@@ -1,9 +1,13 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Progression;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
+    /// <summary>
+    /// Проверяет runtime-покупку account-wide upgrades при static authored catalog в Data.Progression.
+    /// </summary>
     public sealed class AccountWideProgressionBoardServiceTests
     {
         [Test]

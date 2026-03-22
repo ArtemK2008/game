@@ -1,8 +1,12 @@
 using NUnit.Framework;
+using Survivalon.Data.Progression;
 using Survivalon.State.Persistence;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
+    /// <summary>
+    /// Проверяет разрешение runtime-effects из purchased progression entries и static upgrade definitions.
+    /// </summary>
     public sealed class AccountWideProgressionEffectResolverTests
     {
         [Test]

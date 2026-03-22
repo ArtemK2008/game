@@ -1,11 +1,15 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using Survivalon.Data.Progression;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
 using Survivalon.Towns;
 
 namespace Survivalon.Tests.EditMode.Towns
 {
+    /// <summary>
+    /// Проверяет town/service purchase flow после выноса static progression content в Data.Progression.
+    /// </summary>
     public sealed class TownServiceProgressionInteractionServiceTests
     {
         [Test]

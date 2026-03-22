@@ -1,7 +1,11 @@
 using System;
+using Survivalon.Data.Progression;
 
 namespace Survivalon.State.Persistence
 {
+    /// <summary>
+    /// Преобразует купленные persistent progression entries в применяемые account-wide runtime effects.
+    /// </summary>
     public sealed class AccountWideProgressionEffectResolver
     {
         public AccountWideProgressionEffectState Resolve(PersistentProgressionState progressionState)

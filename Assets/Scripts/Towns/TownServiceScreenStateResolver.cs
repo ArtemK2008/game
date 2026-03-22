@@ -4,6 +4,7 @@ using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
+using Survivalon.Data.Progression;
 using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
 using Survivalon.World;

@@ -1,4 +1,5 @@
 using System;
+using Survivalon.Data.Progression;
 
 namespace Survivalon.State.Persistence
 {
@@ -9,6 +10,9 @@ namespace Survivalon.State.Persistence
         InsufficientResources = 2,
     }
 
+    /// <summary>
+    /// Оркестрирует покупку account-wide upgrades через persistent progression state и resource balances.
+    /// </summary>
     public sealed class AccountWideProgressionBoardService
     {
         public bool HasRequiredResources(PersistentGameState gameState, AccountWideUpgradeId upgradeId)
