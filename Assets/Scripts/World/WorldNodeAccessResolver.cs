@@ -31,6 +31,18 @@ namespace Survivalon.World
             return enterableNodes;
         }
 
+        public IReadOnlyList<WorldNode> GetPathEnterableNodes(WorldGraph worldGraph, PersistentWorldState worldState)
+        {
+            ValidateInputs(worldGraph, worldState);
+
+            List<WorldNode> enterableNodes = new List<WorldNode>();
+            HashSet<NodeId> addedNodeIds = new HashSet<NodeId>();
+
+            AddPathEnterableNodes(worldGraph, worldState, addedNodeIds, enterableNodes);
+
+            return enterableNodes;
+        }
+
         public IReadOnlyList<WorldNode> GetForwardEnterableNodes(WorldGraph worldGraph, PersistentWorldState worldState)
         {
             ValidateInputs(worldGraph, worldState);

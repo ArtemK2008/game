@@ -21,6 +21,7 @@ namespace Survivalon.Tests.EditMode.World
                 worldState,
                 worldState.CurrentNodeId,
                 ToNodeIdSet(nodeAccessResolver.GetEnterableNodes(worldGraph, worldState)),
+                ToNodeIdSet(nodeAccessResolver.GetPathEnterableNodes(worldGraph, worldState)),
                 ToNodeIdSet(nodeAccessResolver.GetForwardEnterableNodes(worldGraph, worldState)));
 
             Assert.That(summary.CurrentLocationDisplayName, Is.EqualTo("Verdant Frontier"));
@@ -33,14 +34,37 @@ namespace Survivalon.Tests.EditMode.World
                 BootstrapWorldScenario.ForestFarmNodeId,
                 BootstrapWorldScenario.CavernServiceNodeId,
             }));
-            Assert.That(summary.BacktrackOrFarmNodeIds, Is.EqualTo(new[]
+            Assert.That(summary.BacktrackRouteNodeIds, Is.EqualTo(new[]
             {
                 BootstrapWorldScenario.ForestEntryNodeId,
             }));
+            Assert.That(summary.ReplayableFarmNodeIds, Is.Empty);
             Assert.That(summary.BlockedLinkedNodeIds, Is.EqualTo(new[]
             {
                 BootstrapWorldScenario.ForestGateNodeId,
             }));
+        }
+
+        [Test]
+        public void ShouldResolveReplayableFarmNodesSeparatelyFromBacktrackRoutes()
+        {
+            WorldGraph worldGraph = WorldFlowTestData.CreateFarmAccessGraph();
+            PersistentWorldState worldState = WorldFlowTestData.CreateFarmAccessWorldState();
+            WorldNodeAccessResolver nodeAccessResolver = new WorldNodeAccessResolver();
+            WorldMapWorldStateSummaryResolver resolver = new WorldMapWorldStateSummaryResolver();
+
+            WorldMapWorldStateSummary summary = resolver.Resolve(
+                worldGraph,
+                worldState,
+                worldState.CurrentNodeId,
+                ToNodeIdSet(nodeAccessResolver.GetEnterableNodes(worldGraph, worldState)),
+                ToNodeIdSet(nodeAccessResolver.GetPathEnterableNodes(worldGraph, worldState)),
+                ToNodeIdSet(nodeAccessResolver.GetForwardEnterableNodes(worldGraph, worldState)));
+
+            Assert.That(summary.ForwardRouteNodeIds, Is.EqualTo(new[] { new NodeId("node_reachable") }));
+            Assert.That(summary.BacktrackRouteNodeIds, Is.Empty);
+            Assert.That(summary.ReplayableFarmNodeIds, Is.EqualTo(new[] { new NodeId("node_cleared_farm") }));
+            Assert.That(summary.BlockedLinkedNodeIds, Is.Empty);
         }
 
         private static HashSet<NodeId> ToNodeIdSet(IReadOnlyList<WorldNode> nodes)

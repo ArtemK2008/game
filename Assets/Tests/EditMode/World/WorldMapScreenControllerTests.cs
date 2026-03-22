@@ -18,7 +18,7 @@ namespace Survivalon.Tests.EditMode.World
 
             IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
 
-            AssertNodeOption(nodeOptions, new NodeId("region_001_node_001"), true, false, false, WorldMapPathRole.BacktrackOrFarmRoute);
+            AssertNodeOption(nodeOptions, new NodeId("region_001_node_001"), true, false, false, WorldMapPathRole.BacktrackRoute);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_002"), false, true, false, WorldMapPathRole.CurrentContext);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_003"), false, false, false, WorldMapPathRole.BlockedPath);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_004"), true, false, false, WorldMapPathRole.ForwardRoute);
@@ -99,7 +99,7 @@ namespace Survivalon.Tests.EditMode.World
             IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
 
             AssertNodeOption(nodeOptions, new NodeId("node_reachable"), true, false, false, WorldMapPathRole.ForwardRoute);
-            AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false, WorldMapPathRole.BacktrackOrFarmRoute);
+            AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false, WorldMapPathRole.ReplayableFarmNode);
             AssertNodeOption(nodeOptions, new NodeId("node_unreachable_available"), false, false, false, WorldMapPathRole.BlockedPath);
             AssertNodeOption(nodeOptions, new NodeId("node_locked"), false, false, false, WorldMapPathRole.BlockedPath);
         }

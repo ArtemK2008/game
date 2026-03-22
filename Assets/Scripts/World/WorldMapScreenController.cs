@@ -17,6 +17,7 @@ namespace Survivalon.World
         private readonly SessionContextState sessionContext;
         private readonly Dictionary<RegionId, int> regionOrderById;
         private readonly HashSet<NodeId> forwardSelectableNodeIds;
+        private readonly HashSet<NodeId> pathSelectableNodeIds;
         private readonly HashSet<NodeId> selectableNodeIds;
         private bool hasSelectedNode;
         private NodeId selectedNodeId;
@@ -40,6 +41,8 @@ namespace Survivalon.World
             regionOrderById = CreateRegionOrderLookup(worldGraph);
             forwardSelectableNodeIds = CreateSelectableNodeIdSet(
                 this.worldNodeAccessResolver.GetForwardEnterableNodes(worldGraph, worldState));
+            pathSelectableNodeIds = CreateSelectableNodeIdSet(
+                this.worldNodeAccessResolver.GetPathEnterableNodes(worldGraph, worldState));
             selectableNodeIds = CreateSelectableNodeIdSet(
                 this.worldNodeAccessResolver.GetEnterableNodes(worldGraph, worldState));
             this.sessionContext?.SeedFromWorldState(worldState);
@@ -90,6 +93,7 @@ namespace Survivalon.World
                 worldState,
                 currentContextNodeId,
                 selectableNodeIds,
+                pathSelectableNodeIds,
                 forwardSelectableNodeIds);
         }
 
@@ -199,7 +203,9 @@ namespace Survivalon.World
 
             if (selectableNodeIds.Contains(nodeId))
             {
-                return WorldMapPathRole.BacktrackOrFarmRoute;
+                return pathSelectableNodeIds.Contains(nodeId)
+                    ? WorldMapPathRole.BacktrackRoute
+                    : WorldMapPathRole.ReplayableFarmNode;
             }
 
             return WorldMapPathRole.BlockedPath;

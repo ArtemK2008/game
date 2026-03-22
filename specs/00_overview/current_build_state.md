@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 070**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, and **069a**.
+This summary reflects completed work through **Milestone 070**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, and **070a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -42,12 +42,13 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The world map now also exposes one compact readable world-state summary:
   - current location identity and region
   - current node and current node state
-  - forward routes, backtrack/farm routes, and blocked linked paths from the current context
+  - forward routes, true backtrack routes, replayable farm nodes, and blocked linked paths from the current context
   - compact state/status legends so the placeholder node list reads more clearly at a glance
 - World-map node labels now also carry a small path-role line:
   - `Current anchor`
   - `Forward route`
-  - `Backtrack / farm route`
+  - `Backtrack route`
+  - `Replayable farm node`
   - `Blocked path`
 - The placeholder world map now keeps its node list inside a simple scrollable viewport with stable full-width node-button alignment, so lower node buttons remain reachable and readable as the header, character-selection, and package-assignment area grows.
 - The same placeholder world map now also exposes one minimal two-slot gear equip/unequip area for the currently selected character without changing the overall placeholder screen structure.

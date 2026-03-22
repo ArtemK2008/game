@@ -46,6 +46,7 @@ namespace Survivalon.Tests.EditMode.World
                     {
                         new NodeId("region_001_node_001"),
                     },
+                    System.Array.Empty<NodeId>(),
                     new[]
                     {
                         new NodeId("region_001_node_003"),
@@ -57,9 +58,9 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(summaryText, Is.EqualTo(
                 "Location: Verdant Frontier | Region: region_001\n" +
                 "Current node: region_001_node_002 (InProgress) | Selected: region_001_node_004\n" +
-                "Reachable destinations: 3 (2 forward / 1 backtrack-farm)\n" +
+                "Reachable destinations: 3 (2 forward / 1 backtrack / 0 replayable-farm)\n" +
                 "Forward routes: region_001_node_004, region_002_node_001\n" +
-                "Backtrack / farm: region_001_node_001\n" +
+                "Backtrack routes: region_001_node_001 | Replayable farm nodes: none\n" +
                 "Blocked links: region_001_node_003\n" +
                 "Recent: region_001_node_002 | Push target: region_001_node_004 | Last selected: region_001_node_004\n" +
                 "State legend: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked\n" +
@@ -82,6 +83,7 @@ namespace Survivalon.Tests.EditMode.World
                     {
                         new NodeId("region_001_node_001"),
                     },
+                    System.Array.Empty<NodeId>(),
                     System.Array.Empty<NodeId>()),
                 hasSelectedNode: false,
                 selectedNodeId: default,
@@ -89,9 +91,9 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Does.Contain("Location: Verdant Frontier | Region: region_001"));
             Assert.That(summaryText, Does.Contain("Current node: region_001_node_002 (InProgress) | Selected: none"));
-            Assert.That(summaryText, Does.Contain("Reachable destinations: 1 (0 forward / 1 backtrack-farm)"));
+            Assert.That(summaryText, Does.Contain("Reachable destinations: 1 (0 forward / 1 backtrack / 0 replayable-farm)"));
             Assert.That(summaryText, Does.Contain("Forward routes: none"));
-            Assert.That(summaryText, Does.Contain("Backtrack / farm: region_001_node_001"));
+            Assert.That(summaryText, Does.Contain("Backtrack routes: region_001_node_001 | Replayable farm nodes: none"));
             Assert.That(summaryText, Does.Contain("Blocked links: none"));
             Assert.That(summaryText, Does.Contain("Recent: none | Push target: none | Last selected: none"));
             Assert.That(summaryText, Does.Contain("State legend: Available = enterable"));
@@ -374,7 +376,8 @@ namespace Survivalon.Tests.EditMode.World
             NodeState currentNodeState,
             int selectableDestinationCount,
             IReadOnlyList<NodeId> forwardRouteNodeIds,
-            IReadOnlyList<NodeId> backtrackOrFarmNodeIds,
+            IReadOnlyList<NodeId> backtrackRouteNodeIds,
+            IReadOnlyList<NodeId> replayableFarmNodeIds,
             IReadOnlyList<NodeId> blockedLinkedNodeIds)
         {
             return new WorldMapWorldStateSummary(
@@ -384,7 +387,8 @@ namespace Survivalon.Tests.EditMode.World
                 currentNodeState,
                 selectableDestinationCount,
                 forwardRouteNodeIds,
-                backtrackOrFarmNodeIds,
+                backtrackRouteNodeIds,
+                replayableFarmNodeIds,
                 blockedLinkedNodeIds);
         }
     }
