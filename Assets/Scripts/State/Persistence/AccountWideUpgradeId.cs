@@ -6,6 +6,7 @@ namespace Survivalon.State.Persistence
         CombatBaselineProject = 0,
         PushOffenseProject = 1,
         FarmYieldProject = 2,
+        BossSalvageProject = 3,
     }
 }
 

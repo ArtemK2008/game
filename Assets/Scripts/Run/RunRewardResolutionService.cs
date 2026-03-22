@@ -33,7 +33,10 @@ namespace Survivalon.Run
                 resolutionState,
                 worldGraph,
                 progressionEffects);
-            RunMaterialReward[] bossMaterialRewards = ResolveBossMaterialRewards(nodeContext, resolutionState);
+            RunMaterialReward[] bossMaterialRewards = ResolveBossMaterialRewards(
+                nodeContext,
+                resolutionState,
+                progressionEffects);
             bool shouldGrantMilestoneRewards = ShouldGrantMilestoneRewards(progressResolution);
 
             if (!shouldGrantMilestoneRewards && bossMaterialRewards.Length == 0)
@@ -142,14 +145,20 @@ namespace Survivalon.Run
 
         private static RunMaterialReward[] ResolveBossMaterialRewards(
             NodePlaceholderState nodeContext,
-            RunResolutionState resolutionState)
+            RunResolutionState resolutionState,
+            AccountWideProgressionEffectState progressionEffects)
         {
             if (!ShouldGrantBossRewards(nodeContext, resolutionState))
             {
                 return Array.Empty<RunMaterialReward>();
             }
 
-            return SuccessfulBossMaterialRewards;
+            return new[]
+            {
+                new RunMaterialReward(
+                    ResourceCategory.PersistentProgressionMaterial,
+                    SuccessfulBossMaterialRewards[0].Amount + progressionEffects.BossProgressionMaterialRewardBonus),
+            };
         }
 
         private static bool ShouldGrantBossRewards(

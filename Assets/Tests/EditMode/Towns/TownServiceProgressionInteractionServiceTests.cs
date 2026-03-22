@@ -54,6 +54,36 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(storage.SavedGameState, Is.Null);
         }
 
+        [Test]
+        public void ShouldPurchaseBossSalvageProjectAndPersistFutureBossRewardEffect()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            TownServiceProgressionInteractionService interactionService =
+                new TownServiceProgressionInteractionService(persistenceService);
+            AccountWideProgressionEffectResolver effectResolver = new AccountWideProgressionEffectResolver();
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 2);
+
+            AccountWideUpgradePurchaseStatus purchaseStatus =
+                interactionService.TryPurchase(gameState, AccountWideUpgradeId.BossSalvageProject);
+
+            Assert.That(purchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(0));
+            Assert.That(storage.SavedGameState, Is.Not.Null);
+            Assert.That(
+                storage.SavedGameState.ProgressionState.TryGetEntry(
+                    "account_wide_boss_salvage_project",
+                    out ProgressionEntryState progressionEntry),
+                Is.True);
+            Assert.That(progressionEntry.IsUnlocked, Is.True);
+            Assert.That(progressionEntry.CurrentValue, Is.EqualTo(1));
+
+            AccountWideProgressionEffectState progressionEffects =
+                effectResolver.Resolve(storage.SavedGameState.ProgressionState);
+            Assert.That(progressionEffects.BossProgressionMaterialRewardBonus, Is.EqualTo(1));
+        }
+
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
         {
             public PersistentGameState SavedGameState { get; private set; }

@@ -36,11 +36,23 @@ namespace Survivalon.State.Persistence
                 playerMaxHealthBonus: 0,
                 playerAttackPowerBonus: 0,
                 ordinaryRegionMaterialRewardBonus: 1);
+        private static readonly AccountWideProgressionUpgradeDefinition BossSalvageProject =
+            new AccountWideProgressionUpgradeDefinition(
+                AccountWideUpgradeId.BossSalvageProject,
+                "Boss Salvage Project",
+                "account_wide_boss_salvage_project",
+                ResourceCategory.PersistentProgressionMaterial,
+                costAmount: 2,
+                playerMaxHealthBonus: 0,
+                playerAttackPowerBonus: 0,
+                ordinaryRegionMaterialRewardBonus: 0,
+                bossProgressionMaterialRewardBonus: 1);
         private static readonly AccountWideProgressionUpgradeDefinition[] AllDefinitions =
         {
             CombatBaselineProject,
             PushOffenseProject,
             FarmYieldProject,
+            BossSalvageProject,
         };
 
         public static IReadOnlyList<AccountWideProgressionUpgradeDefinition> All => AllDefinitions;
@@ -55,6 +67,8 @@ namespace Survivalon.State.Persistence
                     return PushOffenseProject;
                 case AccountWideUpgradeId.FarmYieldProject:
                     return FarmYieldProject;
+                case AccountWideUpgradeId.BossSalvageProject:
+                    return BossSalvageProject;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(upgradeId), upgradeId, "Unknown account-wide upgrade id.");
             }

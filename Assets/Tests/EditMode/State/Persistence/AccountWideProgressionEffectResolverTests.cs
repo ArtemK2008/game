@@ -15,6 +15,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(0));
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
         }
 
         [Test]
@@ -36,6 +37,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(10));
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
         }
 
         [Test]
@@ -57,6 +59,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(0));
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(4));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
         }
 
         [Test]
@@ -78,6 +81,29 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(0));
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(1));
+            Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ShouldResolvePurchasedBossSalvageProjectIntoAppliedEffectState()
+        {
+            PersistentProgressionState progressionState = new PersistentProgressionState();
+            AccountWideProgressionUpgradeDefinition upgradeDefinition =
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.BossSalvageProject);
+            ProgressionEntryState progressionEntry = progressionState.GetOrAddEntry(
+                upgradeDefinition.ProgressionId,
+                upgradeDefinition.LayerType);
+            AccountWideProgressionEffectResolver resolver = new AccountWideProgressionEffectResolver();
+
+            progressionEntry.Unlock();
+            progressionEntry.IncreaseValue(1);
+
+            AccountWideProgressionEffectState effects = resolver.Resolve(progressionState);
+
+            Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(0));
+            Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
+            Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(1));
         }
 
         [Test]
@@ -89,12 +115,14 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.CombatBaselineProject);
             UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.PushOffenseProject);
             UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.FarmYieldProject);
+            UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.BossSalvageProject);
 
             AccountWideProgressionEffectState effects = resolver.Resolve(progressionState);
 
             Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(10));
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(4));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(1));
+            Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(1));
         }
 
         [Test]

@@ -14,6 +14,29 @@ namespace Survivalon.State.Persistence
             int playerMaxHealthBonus,
             int playerAttackPowerBonus,
             int ordinaryRegionMaterialRewardBonus)
+            : this(
+                upgradeId,
+                displayName,
+                progressionId,
+                costResourceCategory,
+                costAmount,
+                playerMaxHealthBonus,
+                playerAttackPowerBonus,
+                ordinaryRegionMaterialRewardBonus,
+                bossProgressionMaterialRewardBonus: 0)
+        {
+        }
+
+        public AccountWideProgressionUpgradeDefinition(
+            AccountWideUpgradeId upgradeId,
+            string displayName,
+            string progressionId,
+            ResourceCategory costResourceCategory,
+            int costAmount,
+            int playerMaxHealthBonus,
+            int playerAttackPowerBonus,
+            int ordinaryRegionMaterialRewardBonus,
+            int bossProgressionMaterialRewardBonus)
         {
             if (string.IsNullOrWhiteSpace(displayName))
             {
@@ -47,6 +70,13 @@ namespace Survivalon.State.Persistence
                     "Ordinary region-material reward bonus cannot be negative.");
             }
 
+            if (bossProgressionMaterialRewardBonus < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(bossProgressionMaterialRewardBonus),
+                    "Boss progression-material reward bonus cannot be negative.");
+            }
+
             UpgradeId = upgradeId;
             DisplayName = displayName;
             ProgressionId = progressionId;
@@ -56,6 +86,7 @@ namespace Survivalon.State.Persistence
             PlayerMaxHealthBonus = playerMaxHealthBonus;
             PlayerAttackPowerBonus = playerAttackPowerBonus;
             OrdinaryRegionMaterialRewardBonus = ordinaryRegionMaterialRewardBonus;
+            BossProgressionMaterialRewardBonus = bossProgressionMaterialRewardBonus;
         }
 
         public AccountWideUpgradeId UpgradeId { get; }
@@ -75,6 +106,8 @@ namespace Survivalon.State.Persistence
         public int PlayerAttackPowerBonus { get; }
 
         public int OrdinaryRegionMaterialRewardBonus { get; }
+
+        public int BossProgressionMaterialRewardBonus { get; }
     }
 }
 
