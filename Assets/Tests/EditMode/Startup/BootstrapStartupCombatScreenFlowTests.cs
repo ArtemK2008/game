@@ -134,6 +134,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Reward source: Frontier salvage"), Is.True);
                 Assert.That(ContainsText(hostObject, "Milestone rewards:"), Is.False);
                 Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock No"), Is.True);
+                Assert.That(ContainsText(hostObject, "Recommended: Replay Forest Farm to keep pushing node progress."), Is.True);
                 Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
             }

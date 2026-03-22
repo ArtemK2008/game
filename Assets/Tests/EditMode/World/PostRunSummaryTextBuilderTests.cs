@@ -46,17 +46,13 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(summaryText, Is.EqualTo(
                 "Run finished.\n" +
                 "Location: Verdant Frontier\n" +
-                "Node: region_001_node_004\n" +
+                "Node: Forest Farm\n" +
                 "Resolution: Succeeded\n" +
                 "Rewards gained: Soft currency x1, Region material x1\n" +
                 "Reward source: Frontier salvage\n" +
                 "Milestone rewards: Persistent progression material x1\n" +
                 "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock No\n" +
-                "Boss gate unlock: Cavern gate opened\n" +
-                "Next actions:\n" +
-                "- Replay: Yes\n" +
-                "- Return to world: Yes\n" +
-                "- Stop: Yes"));
+                "Boss gate unlock: Cavern gate opened\n"));
         }
 
         [Test]
@@ -83,9 +79,10 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Does.Contain("Rewards gained: None"));
             Assert.That(summaryText, Does.Contain("Location: Echo Caverns"));
+            Assert.That(summaryText, Does.Contain("Node: Cavern Service Hub"));
             Assert.That(summaryText, Does.Not.Contain("Reward source:"));
             Assert.That(summaryText, Does.Contain("Progress changes: node not tracked; persistent +0; route unlock No"));
-            Assert.That(summaryText, Does.Contain("- Stop: No"));
+            Assert.That(summaryText, Does.Not.Contain("Next actions:"));
         }
 
         [Test]

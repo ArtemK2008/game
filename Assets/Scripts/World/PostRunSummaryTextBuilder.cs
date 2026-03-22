@@ -22,18 +22,14 @@ namespace Survivalon.World
             return
                 "Run finished.\n" +
                 $"Location: {postRunStateController.NodeContext.LocationIdentity.DisplayName}\n" +
-                $"Node: {runResult.NodeId.Value}\n" +
+                $"Node: {postRunStateController.NodeContext.NodeDisplayName}\n" +
                 $"Resolution: {runResult.ResolutionState}\n" +
                 $"Rewards gained: {BuildRewardSummary(runResult.RewardPayload)}\n" +
                 BuildRewardSourceLine(postRunStateController, runResult) +
                 BuildBossRewardLine(runResult.RewardPayload) +
                 BuildMilestoneRewardLine(runResult.RewardPayload) +
                 $"Progress changes: {BuildProgressSummary(runResult)}\n" +
-                BuildBossProgressionGateLine(runResult) +
-                "Next actions:\n" +
-                $"- Replay: {FormatYesNo(postRunStateController.CanReplayNode)}\n" +
-                $"- Return to world: {FormatYesNo(postRunStateController.CanReturnToWorld)}\n" +
-                $"- Stop: {FormatYesNo(postRunStateController.CanStopSession)}";
+                BuildBossProgressionGateLine(runResult);
         }
 
         private static string BuildRewardSummary(RunRewardPayload rewardPayload)

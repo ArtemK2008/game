@@ -70,11 +70,26 @@ namespace Survivalon.World
 
             return new NodePlaceholderScreenPostRunPanelState(
                 true,
-                new NodePlaceholderScreenButtonState("Replay Node", postRunStateController.CanReplayNode),
-                new NodePlaceholderScreenButtonState("Return To World Map", postRunStateController.CanReturnToWorld),
                 new NodePlaceholderScreenButtonState(
-                    hasStopSessionHandler ? "Stop Session" : "Stop Session Unavailable",
+                    BuildReplayButtonLabel(postRunStateController),
+                    postRunStateController.CanReplayNode),
+                new NodePlaceholderScreenButtonState("Return To World", postRunStateController.CanReturnToWorld),
+                new NodePlaceholderScreenButtonState(
+                    hasStopSessionHandler ? "Stop Safely" : "Stop Unavailable",
                     postRunStateController.CanStopSession && hasStopSessionHandler));
+        }
+
+        private static string BuildReplayButtonLabel(PostRunStateController postRunStateController)
+        {
+            if (postRunStateController == null)
+            {
+                throw new ArgumentNullException(nameof(postRunStateController));
+            }
+
+            string nodeDisplayName = postRunStateController.NodeContext.NodeDisplayName;
+            return string.IsNullOrWhiteSpace(nodeDisplayName)
+                ? "Replay This Node"
+                : $"Replay {nodeDisplayName}";
         }
     }
 

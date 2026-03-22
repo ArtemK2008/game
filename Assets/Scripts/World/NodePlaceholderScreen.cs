@@ -21,6 +21,7 @@ namespace Survivalon.World
         private CombatShellView combatShellView;
         private GameObject postRunSummaryPanelObject;
         private Text postRunSummaryText;
+        private Text postRunNextActionText;
         private Button advanceRunLifecycleButton;
         private Text advanceRunLifecycleButtonText;
         private Button replayButton;
@@ -35,6 +36,7 @@ namespace Survivalon.World
         private readonly RunHudStateResolver runHudStateResolver = new RunHudStateResolver();
         private readonly RunTimeSkillUpgradeChoiceStateResolver runTimeSkillUpgradeChoiceStateResolver =
             new RunTimeSkillUpgradeChoiceStateResolver();
+        private readonly PostRunNextActionResolver postRunNextActionResolver = new PostRunNextActionResolver();
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
@@ -350,7 +352,7 @@ namespace Survivalon.World
                 typeof(Image),
                 typeof(HorizontalLayoutGroup));
             postRunSummaryPanelObject.transform.SetParent(panelObject.transform, false);
-            RuntimeUiSupport.AddLayoutElement(postRunSummaryPanelObject, 226f);
+            RuntimeUiSupport.AddLayoutElement(postRunSummaryPanelObject, 232f);
 
             Image postRunPanelImage = postRunSummaryPanelObject.GetComponent<Image>();
             postRunPanelImage.color = new Color(0.12f, 0.13f, 0.18f, 0.96f);
@@ -374,7 +376,7 @@ namespace Survivalon.World
                 new Color(0.90f, 0.92f, 0.97f, 1f));
             RuntimeUiSupport.AddLayoutElement(
                 postRunSummaryText.gameObject,
-                170f,
+                176f,
                 flexibleWidth: 1f);
 
             GameObject postRunActionsColumnObject = new GameObject(
@@ -386,7 +388,7 @@ namespace Survivalon.World
             postRunActionsColumnRect.localScale = Vector3.one;
 
             VerticalLayoutGroup postRunActionsLayout = postRunActionsColumnObject.GetComponent<VerticalLayoutGroup>();
-            postRunActionsLayout.spacing = 10f;
+            postRunActionsLayout.spacing = 8f;
             postRunActionsLayout.childAlignment = TextAnchor.UpperCenter;
             postRunActionsLayout.childControlWidth = true;
             postRunActionsLayout.childControlHeight = true;
@@ -395,8 +397,18 @@ namespace Survivalon.World
 
             RuntimeUiSupport.AddLayoutElement(
                 postRunActionsColumnObject,
-                170f,
+                176f,
                 preferredWidth: 236f);
+
+            postRunNextActionText = RuntimeUiSupport.CreateText(
+                postRunActionsColumnObject.transform,
+                uiFont,
+                "PostRunNextActionSummary",
+                15,
+                FontStyle.Normal,
+                TextAnchor.UpperLeft,
+                new Color(0.86f, 0.90f, 0.95f, 1f));
+            RuntimeUiSupport.AddLayoutElement(postRunNextActionText.gameObject, 56f);
 
             replayButton = CreateActionButton(
                 postRunActionsColumnObject.transform,
@@ -645,6 +657,13 @@ namespace Survivalon.World
                 return;
             }
 
+            PostRunNextActionState nextActionState = postRunNextActionResolver.Resolve(
+                postRunStateController,
+                worldGraph,
+                persistentContext?.PersistentWorldState,
+                persistentContext?.ResourceBalancesState,
+                persistentContext?.PersistentProgressionState);
+            postRunNextActionText.text = PostRunNextActionTextBuilder.Build(nextActionState);
             postRunSummaryText.text = PostRunSummaryTextBuilder.Build(
                 postRunStateController,
                 runLifecycleController.RunResult);

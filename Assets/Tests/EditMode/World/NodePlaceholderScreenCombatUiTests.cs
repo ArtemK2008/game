@@ -248,6 +248,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Recommended: Replay Forest Farm for more Region material."), Is.True);
                 Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Run Lifecycle Complete"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
                 Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
@@ -324,6 +325,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Failed"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress changes: node +0 this run; tracked total 0 / 3; persistent +0; route unlock No"), Is.True);
+                Assert.That(ContainsText(hostObject, "Recommended: Replay Frontier Gate for another attempt."), Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
             }
             finally
