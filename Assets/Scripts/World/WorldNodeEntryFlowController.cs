@@ -51,7 +51,10 @@ namespace Survivalon.World
                 enterableNode.TownServiceContext,
                 enterableRegion.LocationIdentity,
                 enterableNode.BossRewardContent,
-                enterableNode.RegionMaterialYieldContent);
+                enterableNode.RegionMaterialYieldContent,
+                RegionMaterialRewardSupportResolver.Supports(
+                    enterableNode.NodeType,
+                    enterableRegion.ResourceCategory));
             return true;
         }
 

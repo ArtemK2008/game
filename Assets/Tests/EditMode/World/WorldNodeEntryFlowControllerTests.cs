@@ -66,6 +66,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(placeholderState.RegionMaterialYieldContent, Is.Not.Null);
             Assert.That(placeholderState.RegionMaterialYieldContent.RegionMaterialBonus, Is.EqualTo(1));
+            Assert.That(placeholderState.SupportsRegionMaterialRewards, Is.True);
             Assert.That(
                 placeholderState.CombatEncounter.PrimaryEnemyProfile,
                 Is.SameAs(CombatStandardEnemyProfileCatalog.EnemyUnit));
@@ -102,6 +103,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(placeholderState.BossRewardContent, Is.Null);
             Assert.That(placeholderState.RegionMaterialYieldContent, Is.Null);
+            Assert.That(placeholderState.SupportsRegionMaterialRewards, Is.False);
             Assert.That(
                 placeholderState.BossProgressionGate.UnlockedNodeId,
                 Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
@@ -160,6 +162,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(placeholderState.BossRewardContent, Is.Null);
             Assert.That(placeholderState.RegionMaterialYieldContent, Is.Null);
+            Assert.That(placeholderState.SupportsRegionMaterialRewards, Is.False);
         }
 
         [Test]

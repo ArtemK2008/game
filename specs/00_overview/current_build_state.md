@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 069**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, and **068a**.
+This summary reflects completed work through **Milestone 069**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, and **069a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -47,6 +47,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The shipped frontier farm node now also carries one explicit revisit-value content rule:
   - it surfaces `Revisit value: Region material yield +1` in the node placeholder summary
   - this keeps `Verdant Frontier` visibly useful even after deeper cavern progression is available
+  - invalid authored region-material-yield combinations are now rejected at world-graph validation, and revisit-value text is only shown when the entered node actually supports region-material rewards
 - `ServiceOrProgression` entry currently routes into one explicit town/service shell only when node content supplies a town-service context definition; otherwise it falls back to the generic placeholder node shell.
 
 ### Run lifecycle and post-run flow

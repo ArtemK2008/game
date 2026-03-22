@@ -94,7 +94,8 @@ namespace Survivalon.World
 
         private static string BuildRegionMaterialYieldLine(NodePlaceholderState placeholderState)
         {
-            if (placeholderState.RegionMaterialYieldContent == null)
+            if (placeholderState.RegionMaterialYieldContent == null ||
+                !placeholderState.SupportsRegionMaterialRewards)
             {
                 return string.Empty;
             }
