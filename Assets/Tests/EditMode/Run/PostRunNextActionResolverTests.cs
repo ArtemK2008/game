@@ -38,6 +38,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(nextActionState.RecommendedActionKind, Is.EqualTo(PostRunRecommendedActionKind.Replay));
             Assert.That(nextActionState.ReplayReasonKind, Is.EqualTo(PostRunReplayReasonKind.ContinueNodeProgress));
             Assert.That(nextActionState.HasForwardPushOpportunity, Is.False);
+            Assert.That(nextActionState.ForwardOpportunityKind, Is.EqualTo(PostRunForwardOpportunityKind.None));
             Assert.That(nextActionState.HasServiceOpportunity, Is.False);
         }
 
@@ -71,6 +72,7 @@ namespace Survivalon.Tests.EditMode.Run
 
             Assert.That(nextActionState.RecommendedActionKind, Is.EqualTo(PostRunRecommendedActionKind.ReturnToWorldPush));
             Assert.That(nextActionState.ForwardTargetDisplayName, Is.EqualTo("Cavern Gate"));
+            Assert.That(nextActionState.ForwardOpportunityKind, Is.EqualTo(PostRunForwardOpportunityKind.NewlyUnlockedPushTarget));
         }
 
         [Test]
@@ -109,6 +111,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(nextActionState.ServiceHubDisplayName, Is.EqualTo("Cavern Service Hub"));
             Assert.That(nextActionState.ServiceOpportunityKind, Is.EqualTo(PostRunServiceOpportunityKind.ReadyRefinement));
             Assert.That(nextActionState.ForwardTargetDisplayName, Is.EqualTo("Forest Farm"));
+            Assert.That(nextActionState.ForwardOpportunityKind, Is.EqualTo(PostRunForwardOpportunityKind.AvailablePushTarget));
         }
 
         [Test]
@@ -156,6 +159,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(baselineState.HasServiceOpportunity, Is.False);
             Assert.That(updatedState.RecommendedActionKind, Is.EqualTo(PostRunRecommendedActionKind.ReturnToWorldService));
             Assert.That(updatedState.ServiceOpportunityKind, Is.EqualTo(PostRunServiceOpportunityKind.ReadyRefinement));
+            Assert.That(updatedState.ForwardOpportunityKind, Is.EqualTo(PostRunForwardOpportunityKind.AvailablePushTarget));
         }
 
         private static PostRunStateController CreateController(
