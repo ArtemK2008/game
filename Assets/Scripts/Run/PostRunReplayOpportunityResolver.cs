@@ -1,4 +1,5 @@
 using System;
+using Survivalon.Core;
 
 namespace Survivalon.Run
 {
@@ -50,7 +51,7 @@ namespace Survivalon.Run
 
             foreach (RunMaterialReward reward in rewardPayload.MaterialRewards)
             {
-                if (reward.ResourceCategory == Core.ResourceCategory.RegionMaterial && reward.Amount > 0)
+                if (reward.ResourceCategory == ResourceCategory.RegionMaterial && reward.Amount > 0)
                 {
                     return true;
                 }
