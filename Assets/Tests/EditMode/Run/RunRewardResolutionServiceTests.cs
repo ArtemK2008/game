@@ -9,6 +9,9 @@ using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.Run
 {
+    /// <summary>
+    /// Проверяет, что runtime reward resolver сохраняет shipped поведение после выноса тюнинга в Data.
+    /// </summary>
     public sealed class RunRewardResolutionServiceTests
     {
         [Test]

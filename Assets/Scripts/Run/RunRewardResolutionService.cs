@@ -1,20 +1,17 @@
 using System;
 using Survivalon.Core;
+using Survivalon.Data.Rewards;
 using Survivalon.State.Persistence;
 using Survivalon.World;
 
 namespace Survivalon.Run
 {
+    /// <summary>
+    /// Собирает runtime reward payload из результата забега и authored reward-тюнинга.
+    /// </summary>
     public sealed class RunRewardResolutionService
     {
-        private static readonly RunMaterialReward[] SuccessfulClearMilestoneMaterialRewards =
-        {
-            new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
-        };
-        private static readonly RunMaterialReward[] SuccessfulBossMaterialRewards =
-        {
-            new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 2),
-        };
+        private static readonly RunRewardTuningDefinition RewardTuning = RunRewardTuningCatalog.Current;
 
         public RunRewardPayload Resolve(
             NodePlaceholderState nodeContext,
@@ -47,9 +44,7 @@ namespace Survivalon.Run
             return CreateRewardPayload(
                 ordinaryRewards,
                 Array.Empty<RunCurrencyReward>(),
-                shouldGrantMilestoneRewards
-                    ? SuccessfulClearMilestoneMaterialRewards
-                    : Array.Empty<RunMaterialReward>(),
+                ResolveMilestoneMaterialRewards(shouldGrantMilestoneRewards),
                 Array.Empty<RunCurrencyReward>(),
                 bossMaterialRewards);
         }
@@ -78,7 +73,7 @@ namespace Survivalon.Run
         {
             RunCurrencyReward[] currencyRewards =
             {
-                new RunCurrencyReward(ResourceCategory.SoftCurrency, 1),
+                CreateCurrencyReward(RewardTuning.OrdinaryCombatCurrencyReward),
             };
 
             if (!shouldGrantRegionMaterialReward)
@@ -88,9 +83,9 @@ namespace Survivalon.Run
 
             RunMaterialReward[] materialRewards =
             {
-                new RunMaterialReward(
-                    ResourceCategory.RegionMaterial,
-                    1 + progressionEffects.OrdinaryRegionMaterialRewardBonus + regionMaterialYieldBonus),
+                CreateMaterialReward(
+                    RewardTuning.OrdinaryCombatRegionMaterialReward,
+                    progressionEffects.OrdinaryRegionMaterialRewardBonus + regionMaterialYieldBonus),
             };
 
             return new RunRewardPayload(currencyRewards, materialRewards);
@@ -167,14 +162,29 @@ namespace Survivalon.Run
                 return Array.Empty<RunMaterialReward>();
             }
 
-            return new[]
+            RunMaterialReward[] bossMaterialRewards =
             {
-                new RunMaterialReward(
-                    ResourceCategory.PersistentProgressionMaterial,
-                    SuccessfulBossMaterialRewards[0].Amount +
-                        progressionEffects.BossProgressionMaterialRewardBonus +
+                CreateMaterialReward(
+                    RewardTuning.SuccessfulBossMaterialReward,
+                    progressionEffects.BossProgressionMaterialRewardBonus +
                         ResolveBossRewardContentBonus(nodeContext)),
             };
+
+            return bossMaterialRewards;
+        }
+
+        private static RunCurrencyReward CreateCurrencyReward(RewardAmountDefinition rewardDefinition)
+        {
+            return new RunCurrencyReward(rewardDefinition.ResourceCategory, rewardDefinition.Amount);
+        }
+
+        private static RunMaterialReward CreateMaterialReward(
+            RewardAmountDefinition rewardDefinition,
+            int additionalAmount = 0)
+        {
+            return new RunMaterialReward(
+                rewardDefinition.ResourceCategory,
+                rewardDefinition.Amount + additionalAmount);
         }
 
         private static int ResolveBossRewardContentBonus(NodePlaceholderState nodeContext)
@@ -194,6 +204,21 @@ namespace Survivalon.Run
             return resolutionState == RunResolutionState.Succeeded &&
                 nodeContext.CombatEncounter != null &&
                 nodeContext.CombatEncounter.EncounterType == Data.Combat.CombatEncounterType.Boss;
+        }
+
+        private static RunMaterialReward[] ResolveMilestoneMaterialRewards(bool shouldGrantMilestoneRewards)
+        {
+            if (!shouldGrantMilestoneRewards)
+            {
+                return Array.Empty<RunMaterialReward>();
+            }
+
+            RunMaterialReward[] milestoneMaterialRewards =
+            {
+                CreateMaterialReward(RewardTuning.SuccessfulClearMilestoneMaterialReward),
+            };
+
+            return milestoneMaterialRewards;
         }
     }
 }
