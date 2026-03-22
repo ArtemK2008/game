@@ -1,9 +1,10 @@
 using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Run;
+using Survivalon.Tests.EditMode.World;
 using Survivalon.World;
 
-namespace Survivalon.Tests.EditMode.World
+namespace Survivalon.Tests.EditMode.Run
 {
     public sealed class PostRunSummaryTextBuilderTests
     {

@@ -1,7 +1,6 @@
 using System;
-using Survivalon.Run;
 
-namespace Survivalon.World
+namespace Survivalon.Run
 {
     public static class PostRunNextActionTextBuilder
     {

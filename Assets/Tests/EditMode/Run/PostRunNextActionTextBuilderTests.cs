@@ -1,8 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Run;
-using Survivalon.World;
 
-namespace Survivalon.Tests.EditMode.World
+namespace Survivalon.Tests.EditMode.Run
 {
     public sealed class PostRunNextActionTextBuilderTests
     {
