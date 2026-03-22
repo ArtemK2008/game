@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using Survivalon.Combat;
 using Survivalon.Core;
+using Survivalon.Data.Combat;
+using Survivalon.Data.World;
 using Survivalon.Run;
 using Survivalon.World;
 
@@ -62,6 +64,28 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(summaryText, Does.Contain("Location: Verdant Frontier"));
             Assert.That(summaryText, Does.Contain("Reward focus: Region material farming"));
             Assert.That(summaryText, Does.Contain("Revisit value: Region material yield +1"));
+        }
+
+        [Test]
+        public void BuildSummaryText_ShouldHideRevisitValueWhenPlaceholderDoesNotSupportRegionMaterialRewards()
+        {
+            NodePlaceholderState invalidPlaceholderState = new NodePlaceholderState(
+                new NodeId("region_002_node_099"),
+                BootstrapWorldScenario.CavernRegionId,
+                NodeType.Combat,
+                NodeState.Available,
+                BootstrapWorldScenario.CavernServiceNodeId,
+                CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                locationIdentity: LocationIdentityCatalog.EchoCaverns,
+                regionMaterialYieldContent: new RegionMaterialYieldContentDefinition(1),
+                supportsRegionMaterialRewards: false);
+
+            string summaryText = NodePlaceholderScreenTextBuilder.BuildSummaryText(
+                invalidPlaceholderState,
+                RunLifecycleState.RunStart);
+
+            Assert.That(summaryText, Does.Contain("Location: Echo Caverns"));
+            Assert.That(summaryText, Does.Not.Contain("Revisit value:"));
         }
 
         [Test]

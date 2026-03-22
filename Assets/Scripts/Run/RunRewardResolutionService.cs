@@ -116,7 +116,9 @@ namespace Survivalon.Run
             {
                 if (region.RegionId == nodeContext.RegionId)
                 {
-                    return region.ResourceCategory == ResourceCategory.RegionMaterial;
+                    return RegionMaterialRewardSupportResolver.Supports(
+                        nodeContext.NodeType,
+                        region.ResourceCategory);
                 }
             }
 

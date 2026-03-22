@@ -19,7 +19,8 @@ namespace Survivalon.World
             TownServiceContextDefinition townServiceContext = null,
             LocationIdentityDefinition locationIdentity = null,
             BossRewardContentDefinition bossRewardContent = null,
-            RegionMaterialYieldContentDefinition regionMaterialYieldContent = null)
+            RegionMaterialYieldContentDefinition regionMaterialYieldContent = null,
+            bool supportsRegionMaterialRewards = false)
         {
             if (combatEncounter != null && nodeType != NodeType.Combat && nodeType != NodeType.BossOrGate)
             {
@@ -67,6 +68,7 @@ namespace Survivalon.World
             TownServiceContext = townServiceContext;
             BossRewardContent = bossRewardContent;
             RegionMaterialYieldContent = regionMaterialYieldContent;
+            SupportsRegionMaterialRewards = supportsRegionMaterialRewards;
         }
 
         public NodeId NodeId { get; }
@@ -92,6 +94,8 @@ namespace Survivalon.World
         public BossRewardContentDefinition BossRewardContent { get; }
 
         public RegionMaterialYieldContentDefinition RegionMaterialYieldContent { get; }
+
+        public bool SupportsRegionMaterialRewards { get; }
     }
 }
 

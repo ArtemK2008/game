@@ -47,7 +47,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeState.Available,
                 new NodeId("region_001_node_002"),
                 CombatStandardEncounterCatalog.EnemyUnitEncounter,
-                locationIdentity: LocationIdentityCatalog.VerdantFrontier);
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier,
+                supportsRegionMaterialRewards: true);
         }
 
         public static NodePlaceholderState CreateFrontierFarmPlaceholderState()
@@ -60,7 +61,8 @@ namespace Survivalon.Tests.EditMode.World
                 BootstrapWorldScenario.ForestPushNodeId,
                 CombatStandardEncounterCatalog.EnemyUnitEncounter,
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier,
-                regionMaterialYieldContent: FrontierFarmYieldContent);
+                regionMaterialYieldContent: FrontierFarmYieldContent,
+                supportsRegionMaterialRewards: true);
         }
 
         public static NodePlaceholderState CreateBossCombatPlaceholderState()
@@ -111,7 +113,8 @@ namespace Survivalon.Tests.EditMode.World
                 NodeState.InProgress,
                 new NodeId("region_001_node_001"),
                 CombatStandardEncounterCatalog.BulwarkRaiderEncounter,
-                locationIdentity: LocationIdentityCatalog.VerdantFrontier);
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier,
+                supportsRegionMaterialRewards: true);
         }
     }
 }

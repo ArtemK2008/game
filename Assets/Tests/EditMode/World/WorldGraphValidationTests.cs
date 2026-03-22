@@ -136,6 +136,32 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(exception.Message, Does.Contain("references missing region"));
         }
 
+        [Test]
+        public void ShouldThrowWhenRegionMaterialYieldContentIsAttachedToNonRegionMaterialRegion()
+        {
+            WorldNode node = new WorldNode(
+                new NodeId("region_002_node_001"),
+                new RegionId("region_002"),
+                NodeType.Combat,
+                NodeState.Available,
+                regionMaterialYieldContent: new RegionMaterialYieldContentDefinition(1));
+            WorldRegion region = new WorldRegion(
+                new RegionId("region_002"),
+                1,
+                node.NodeId,
+                new[] { node.NodeId },
+                ResourceCategory.PersistentProgressionMaterial,
+                "depths");
+
+            ArgumentException exception = Assert.Throws<ArgumentException>(
+                () => new WorldGraph(
+                    new[] { region },
+                    new[] { node },
+                    Array.Empty<WorldNodeConnection>()));
+
+            Assert.That(exception.Message, Does.Contain("region material yield content"));
+        }
+
         private static WorldNode CreateNode(string nodeIdValue, string regionIdValue, NodeState state)
         {
             return new WorldNode(

@@ -106,6 +106,13 @@ namespace Survivalon.World
                     throw new ArgumentException(
                         $"Node '{node.NodeId}' is not listed in region '{region.RegionId}'.");
                 }
+
+                if (node.RegionMaterialYieldContent != null &&
+                    !RegionMaterialRewardSupportResolver.Supports(node.NodeType, region.ResourceCategory))
+                {
+                    throw new ArgumentException(
+                        $"Node '{node.NodeId}' declares region material yield content, but region '{region.RegionId}' does not support region material rewards.");
+                }
             }
         }
 
