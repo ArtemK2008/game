@@ -38,6 +38,37 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldCreateStableWorldMapSectionSurfaces()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                Assert.That(FindRectTransform(hostObject, "Panel"), Is.Not.Null);
+                Assert.That(FindRectTransform(hostObject, "Title"), Is.Not.Null);
+                Assert.That(FindRectTransform(hostObject, "Summary"), Is.Not.Null);
+                Assert.That(FindRectTransform(hostObject, "CharacterSelectionSummary"), Is.Not.Null);
+                Assert.That(FindRectTransform(hostObject, "CharacterSelectionList"), Is.Not.Null);
+                Assert.That(FindRectTransform(hostObject, "BuildAssignmentSummary"), Is.Not.Null);
+                Assert.That(FindRectTransform(hostObject, "SkillPackageAssignmentList"), Is.Not.Null);
+                Assert.That(FindRectTransform(hostObject, "GearAssignmentList"), Is.Not.Null);
+                Assert.That(FindButton(hostObject, "EnterSelectedNodeButton"), Is.Not.Null);
+                Assert.That(FindScrollRect(hostObject, "NodeListScrollView"), Is.Not.Null);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldCreateVisibleCanvasAndInputSystemModule()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
