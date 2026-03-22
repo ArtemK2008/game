@@ -67,11 +67,13 @@ namespace Survivalon.Run
 
             return CreateOrdinaryCombatRewardPayload(
                 ShouldGrantRegionMaterialReward(nodeContext, worldGraph),
+                ResolveRegionMaterialYieldBonus(nodeContext),
                 progressionEffects);
         }
 
         private static RunRewardPayload CreateOrdinaryCombatRewardPayload(
             bool shouldGrantRegionMaterialReward,
+            int regionMaterialYieldBonus,
             AccountWideProgressionEffectState progressionEffects)
         {
             RunCurrencyReward[] currencyRewards =
@@ -88,7 +90,7 @@ namespace Survivalon.Run
             {
                 new RunMaterialReward(
                     ResourceCategory.RegionMaterial,
-                    1 + progressionEffects.OrdinaryRegionMaterialRewardBonus),
+                    1 + progressionEffects.OrdinaryRegionMaterialRewardBonus + regionMaterialYieldBonus),
             };
 
             return new RunRewardPayload(currencyRewards, materialRewards);
@@ -125,6 +127,16 @@ namespace Survivalon.Run
         {
             return progressResolution.HasValue &&
                 progressResolution.Value.NodeProgressUpdate.DidReachClearThreshold;
+        }
+
+        private static int ResolveRegionMaterialYieldBonus(NodePlaceholderState nodeContext)
+        {
+            if (nodeContext.RegionMaterialYieldContent == null)
+            {
+                return 0;
+            }
+
+            return nodeContext.RegionMaterialYieldContent.RegionMaterialBonus;
         }
 
         private static RunRewardPayload CreateRewardPayload(

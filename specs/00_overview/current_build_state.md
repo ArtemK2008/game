@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 068**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, and **068a**.
+This summary reflects completed work through **Milestone 069**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, and **068a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -44,6 +44,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Entering a selected node routes into a placeholder node screen through explicit node-entry flow logic.
 - The placeholder node screen now also surfaces the current location identity and reward focus for the entered content.
 - The placeholder node screen and live town/service shell now also surface the current location's enemy emphasis, keeping location identity visible beyond world-map labels.
+- The shipped frontier farm node now also carries one explicit revisit-value content rule:
+  - it surfaces `Revisit value: Region material yield +1` in the node placeholder summary
+  - this keeps `Verdant Frontier` visibly useful even after deeper cavern progression is available
 - `ServiceOrProgression` entry currently routes into one explicit town/service shell only when node content supplies a town-service context definition; otherwise it falls back to the generic placeholder node shell.
 
 ### Run lifecycle and post-run flow
@@ -173,10 +176,15 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### One region material category
 - The current economy model now has one live region material using `ResourceCategory.RegionMaterial`.
 - Successful standard combat runs in regions whose resource identity is `RegionMaterial` currently grant a small region-material reward through the structured run reward payload.
+- The shipped `Verdant Frontier` farm node now also grants one extra region material through node-owned content, so that run currently pays `Region material x2` before any purchased farm-yield project bonus.
 - A purchased farm-oriented account-wide upgrade can increase that ordinary region-material reward output on repeatable standard combat runs.
 - Granted region material is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
 - The current post-run summary aggregates the region-material reward alongside soft currency when both are granted.
 - Reward/source presentation is now location-aware in the shipped bootstrap content, so the current post-run flow names the reward source based on the entered location identity rather than showing only generic reward text.
+- In the current shipped loop, that means earlier frontier farming now has one explicit lasting-value path after deeper progression opens:
+  - replay the frontier farm node for higher region material
+  - refine region material into persistent progression material in town
+  - spend that persistent progression material on account-wide projects
 
 ### Ordinary vs milestone rewards
 - Ordinary run rewards currently remain small and repeatable: successful combat runs grant soft currency, and standard combat runs in region-material regions also grant region material.
@@ -312,6 +320,8 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The first shipped location identities are still bootstrap-seeded content data rather than authored external content assets.
 - The fallback location-identity seam still exists as a defensive default for missing world data, but current shipped bootstrap regions and their entered placeholder states are explicitly covered as authored identities rather than fallback-generated ones.
 - The first location-based differentiation layer is intentionally small and data-owned: location identity owns place flavor/emphasis/presentation data, while the current cavern gate's extra boss reward is carried by specific boss-node content rather than the whole location identity.
+- The first old-location relevance rule is intentionally just as narrow and data-owned:
+  - the frontier farm's extra region-material yield is carried by specific combat-node content rather than the whole location identity
 - The world map, node screen, town/service shell, post-run panel, and combat shell are runtime-generated placeholder UI.
 - Main menu flow is still a placeholder target rather than a real menu system.
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.

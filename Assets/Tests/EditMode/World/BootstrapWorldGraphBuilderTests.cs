@@ -47,6 +47,12 @@ namespace Survivalon.Tests.EditMode.World
                 worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).CombatEncounter,
                 Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).RegionMaterialYieldContent,
+                Is.Not.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).RegionMaterialYieldContent.RegionMaterialBonus,
+                Is.EqualTo(1));
+            Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).CombatEncounter,
                 Is.Null);
             Assert.That(
@@ -67,6 +73,18 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossRewardContent.PersistentProgressionMaterialBonus,
                 Is.EqualTo(1));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).RegionMaterialYieldContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestPushNodeId).RegionMaterialYieldContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).RegionMaterialYieldContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).RegionMaterialYieldContent,
+                Is.Null);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter.EncounterType,
                 Is.EqualTo(CombatEncounterType.Boss));

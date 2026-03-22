@@ -23,6 +23,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
 
                 Assert.That(ContainsText(hostObject, "Combat Shell: region_001_node_004"), Is.True);
+                Assert.That(ContainsText(hostObject, "Revisit value: Region material yield +1"), Is.True);
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
@@ -101,7 +102,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x1"), Is.True);
+                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x2"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward source: Frontier salvage"), Is.True);
                 Assert.That(ContainsText(hostObject, "Milestone rewards:"), Is.False);
                 Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock No"), Is.True);
@@ -134,7 +135,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(nodeState.UnlockProgress, Is.EqualTo(1));
                 Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
-                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(1));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
                 Assert.That(
                     storage.SavedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
                     Is.True);
@@ -202,13 +203,13 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x3"), Is.True);
                 Assert.That(ContainsText(hostObject, "Milestone rewards:"), Is.False);
 
                 ReturnToWorldMap(hostObject);
 
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
-                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(3));
                 Assert.That(
                     storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
                     Is.EqualTo(0));

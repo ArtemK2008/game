@@ -36,7 +36,8 @@ namespace Survivalon.World
                     BootstrapWorldScenario.ForestRegionId,
                     NodeType.Combat,
                     NodeState.Available,
-                    CombatStandardEncounterCatalog.EnemyUnitEncounter),
+                    CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                    regionMaterialYieldContent: new RegionMaterialYieldContentDefinition(1)),
                 new WorldNode(
                     BootstrapWorldScenario.CavernServiceNodeId,
                     BootstrapWorldScenario.CavernRegionId,

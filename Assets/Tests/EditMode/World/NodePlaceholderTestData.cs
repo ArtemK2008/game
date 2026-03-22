@@ -12,6 +12,8 @@ namespace Survivalon.Tests.EditMode.World
             new BossProgressionGateDefinition(BootstrapWorldScenario.CavernGateNodeId);
         private static readonly BossRewardContentDefinition CavernGateBossRewardContent =
             new BossRewardContentDefinition(1);
+        private static readonly RegionMaterialYieldContentDefinition FrontierFarmYieldContent =
+            new RegionMaterialYieldContentDefinition(1);
 
         public static NodePlaceholderState CreateServicePlaceholderState()
         {
@@ -46,6 +48,19 @@ namespace Survivalon.Tests.EditMode.World
                 new NodeId("region_001_node_002"),
                 CombatStandardEncounterCatalog.EnemyUnitEncounter,
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier);
+        }
+
+        public static NodePlaceholderState CreateFrontierFarmPlaceholderState()
+        {
+            return new NodePlaceholderState(
+                BootstrapWorldScenario.ForestFarmNodeId,
+                BootstrapWorldScenario.ForestRegionId,
+                NodeType.Combat,
+                NodeState.Available,
+                BootstrapWorldScenario.ForestPushNodeId,
+                CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier,
+                regionMaterialYieldContent: FrontierFarmYieldContent);
         }
 
         public static NodePlaceholderState CreateBossCombatPlaceholderState()
