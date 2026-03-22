@@ -35,6 +35,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward focus: Persistent progression gains"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward source: Cavern relic caches"), Is.True);
+                Assert.That(ContainsText(hostObject, "Enemy emphasis: Gate guardians"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progression hub"), Is.True);
                 Assert.That(ContainsText(hostObject, "Material power path:"), Is.True);
                 Assert.That(

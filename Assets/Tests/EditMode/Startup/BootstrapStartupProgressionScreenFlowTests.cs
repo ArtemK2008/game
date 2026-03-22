@@ -278,6 +278,55 @@ namespace Survivalon.Tests.EditMode.Startup
                 Object.DestroyImmediate(hostObject);
             }
         }
+
+        [Test]
+        public void ShouldGrantHigherBossProgressionRewardAtCavernGateThanForestGate()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
+                FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+                FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(hostObject);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_003_Button");
+                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss rewards: Persistent progression material x2"), Is.True);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_002_Button");
+                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
+                Assert.That(ContainsText(hostObject, "Reward source: Cavern relic caches"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss rewards: Persistent progression material x3"), Is.True);
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(6));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
     }
 }
 

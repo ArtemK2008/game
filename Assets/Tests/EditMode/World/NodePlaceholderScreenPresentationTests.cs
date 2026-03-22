@@ -27,6 +27,7 @@ namespace Survivalon.Tests.EditMode.World
                 "Location: Echo Caverns\n" +
                 "Region: region_002\n" +
                 "Reward focus: Persistent progression gains\n" +
+                "Enemy emphasis: Gate guardians\n" +
                 "Type: ServiceOrProgression\n" +
                 "Node state: Available\n" +
                 "Lifecycle: RunStart\n" +

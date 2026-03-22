@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 067**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, and **067a**.
+This summary reflects completed work through **Milestone 068**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, and **067a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -33,6 +33,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Verdant Frontier`
   - `Echo Caverns`
 - World regions/nodes now carry that location identity explicitly through node-entry state instead of relying only on raw region ids.
+- The shipped location identities now also carry small gameplay-facing emphasis data:
+  - `Verdant Frontier` is the region-material farming / raider-emphasis location
+  - `Echo Caverns` is the progression-focused / gate-guardian-emphasis location
 - Reachability supports forward movement and backtracking from current world context.
 - The world map shows node identity, node type, node state, current/selectable status, and a small summary of current context.
 - World-map node labels now surface the shipped location identity alongside node id so the current regions read as distinct places in the prototype flow.
@@ -40,6 +43,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The same placeholder world map now also exposes one minimal two-slot gear equip/unequip area for the currently selected character without changing the overall placeholder screen structure.
 - Entering a selected node routes into a placeholder node screen through explicit node-entry flow logic.
 - The placeholder node screen now also surfaces the current location identity and reward focus for the entered content.
+- The placeholder node screen and live town/service shell now also surface the current location's enemy emphasis, keeping location identity visible beyond world-map labels.
 - `ServiceOrProgression` entry currently routes into one explicit town/service shell only when node content supplies a town-service context definition; otherwise it falls back to the generic placeholder node shell.
 
 ### Run lifecycle and post-run flow
@@ -99,6 +103,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - forest entry and forest farm use `Enemy Unit`
   - forest push uses `Bulwark Raider`
   - current gate/boss nodes use the explicit `Gate Boss` encounter
+- That location split now has one small live gameplay difference beyond labels:
+  - `Echo Caverns` bosses grant `+1` extra persistent progression material compared with the same baseline boss reward in `Verdant Frontier`
+  - this makes the deeper shipped location more progression-focused while `Verdant Frontier` remains the main region-material farming location
 - The first shipped boss progression gate now exists in live bootstrap content:
   - defeating the forest `Gate Boss` unlocks `region_002_node_002` / `Cavern Gate`
   - that result is surfaced explicitly in post-run summary text from structured boss-gate unlock data, separate from ordinary route-unlock state
@@ -178,6 +185,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Successful boss defeat now also grants a separate boss reward bundle:
   - `Persistent progression material x2`
   - this is surfaced on its own compact `Boss rewards` line in the post-run summary so boss clears feel more important than ordinary clears without expanding into a broader loot screen
+- Location identity now also affects that boss bundle in shipped content:
+  - `Verdant Frontier` bosses keep the baseline `Persistent progression material x2`
+  - `Echo Caverns` bosses grant `Persistent progression material x3`
 
 ### One account-wide progression sink
 - The build now has one persistent account-wide upgrade sink stored in `PersistentProgressionState`.
@@ -301,6 +311,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The world graph, town-service context mapping, and initial persistent state are currently seeded by `BootstrapWorldMapFactory`.
 - The first shipped location identities are still bootstrap-seeded content data rather than authored external content assets.
 - The fallback location-identity seam still exists as a defensive default for missing world data, but current shipped bootstrap regions and their entered placeholder states are explicitly covered as authored identities rather than fallback-generated ones.
+- The first location-based differentiation layer is intentionally small and data-owned: one enemy-emphasis label plus one small boss-reward bonus on the location identity data, not a biome/faction system.
 - The world map, node screen, town/service shell, post-run panel, and combat shell are runtime-generated placeholder UI.
 - Main menu flow is still a placeholder target rather than a real menu system.
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.

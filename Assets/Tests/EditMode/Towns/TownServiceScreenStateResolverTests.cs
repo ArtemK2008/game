@@ -51,6 +51,7 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(screenState.LocationDisplayName, Is.EqualTo("Echo Caverns"));
             Assert.That(screenState.LocationRewardFocusDisplayName, Is.EqualTo("Persistent progression gains"));
             Assert.That(screenState.LocationRewardSourceDisplayName, Is.EqualTo("Cavern relic caches"));
+            Assert.That(screenState.LocationEnemyEmphasisDisplayName, Is.EqualTo("Gate guardians"));
             Assert.That(screenState.PersistentProgressionMaterialAmount, Is.EqualTo(1));
             Assert.That(screenState.RegionMaterialAmount, Is.EqualTo(4));
             Assert.That(screenState.MaterialPowerPath, Is.Not.Null);
