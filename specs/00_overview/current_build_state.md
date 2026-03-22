@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 072**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, and **072a**.
+This summary reflects completed work through **Milestone 073**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, and **072a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -72,6 +72,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Post-run shows a compact summary and allows replay, return to world, or stop session.
 - The post-run summary now presents rewards and progress changes in a more clearly grouped aggregated format.
 - The post-run summary now also shows a compact explicit boss-gate unlock line when a boss defeat opens new forward progression.
+- The post-run panel now also exposes one compact next-action guidance area that clarifies the current practical decision using existing actions only:
+  - replay the same node
+  - return to world to push forward
+  - return to world, then visit `Cavern Service Hub` for current upgrade/refinement opportunities
+  - stop safely after the resolved run
+- That next-action guidance uses friendly node/service names and refreshes from current world/progression/resource state, so the recommendation changes when forward paths or service opportunities change.
 - Ordinary route unlock state and boss-gate unlock state are now tracked separately in run results, so the summary no longer relies on one overloaded unlock flag.
 - Replay re-enters the same node cleanly.
 - Return/stop save a world-level safe resume context.
@@ -314,6 +320,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Milestone rewards are shown on a separate compact line when present, so clear-threshold runs feel distinct without expanding into a detailed reward panel.
 - The summary now also surfaces the current location identity and reward source for shipped content, making the region/material loop more legible in the MVP flow.
 - Progress changes are grouped into one readable line that distinguishes node progress gained this run from the current tracked total, while still surfacing persistent progression delta and route-unlock result.
+- A separate compact next-action block now makes the existing post-run buttons easier to read in practice by distinguishing:
+  - replay same node
+  - return to world to push
+  - return to world, then visit `Cavern Service Hub`
+  - safe stop
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.

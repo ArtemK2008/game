@@ -277,12 +277,12 @@ namespace Survivalon.Tests.EditMode.World
             AssertButtonState(hiddenState.StopSessionButton, "Stop Session", false);
 
             Assert.That(visibleState.IsVisible, Is.True);
-            AssertButtonState(visibleState.ReplayButton, "Replay Node", true);
-            AssertButtonState(visibleState.ReturnToWorldButton, "Return To World Map", true);
-            AssertButtonState(visibleState.StopSessionButton, "Stop Session", true);
+            AssertButtonState(visibleState.ReplayButton, "Replay Forest Farm", true);
+            AssertButtonState(visibleState.ReturnToWorldButton, "Return To World", true);
+            AssertButtonState(visibleState.StopSessionButton, "Stop Safely", true);
 
             Assert.That(noStopHandlerState.IsVisible, Is.True);
-            AssertButtonState(noStopHandlerState.StopSessionButton, "Stop Session Unavailable", false);
+            AssertButtonState(noStopHandlerState.StopSessionButton, "Stop Unavailable", false);
         }
 
         [Test]
@@ -323,16 +323,12 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(summaryText, Is.EqualTo(
                 "Run finished.\n" +
                 "Location: Verdant Frontier\n" +
-                "Node: region_001_node_004\n" +
+                "Node: Forest Farm\n" +
                 "Resolution: Succeeded\n" +
                 "Rewards gained: Soft currency x1, Region material x1\n" +
                 "Reward source: Frontier salvage\n" +
                 "Milestone rewards: Persistent progression material x1\n" +
-                "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes\n" +
-                "Next actions:\n" +
-                "- Replay: Yes\n" +
-                "- Return to world: Yes\n" +
-                "- Stop: Yes"));
+                "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock Yes\n"));
         }
 
         [Test]
@@ -399,7 +395,7 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Does.Contain("Progress changes: node not tracked; persistent +0; route unlock No"));
             Assert.That(summaryText, Does.Contain("Resolution: Failed"));
-            Assert.That(summaryText, Does.Contain("- Stop: No"));
+            Assert.That(summaryText, Does.Not.Contain("Next actions:"));
         }
 
         [Test]

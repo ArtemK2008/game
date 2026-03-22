@@ -46,6 +46,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(returnButton.interactable, Is.True);
                 Assert.That(stopButton.interactable, Is.True);
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
+                Assert.That(ContainsText(hostObject, "Recommended:"), Is.True);
+                Assert.That(ContainsText(hostObject, "Stop: Safe exit after this resolved run."), Is.True);
 
                 replayButton.onClick.Invoke();
 
@@ -115,6 +117,7 @@ namespace Survivalon.Tests.EditMode.World
                 ForceUiLayout(hostObject);
 
                 RectTransform postRunSummaryTextRect = FindRectTransform(hostObject, "PostRunSummary");
+                RectTransform postRunNextActionRect = FindRectTransform(hostObject, "PostRunNextActionSummary");
                 RectTransform replayButtonRect = FindRectTransform(hostObject, "ReplayNodeButton");
                 RectTransform returnButtonRect = FindRectTransform(hostObject, "ReturnToWorldMapButton");
                 RectTransform stopButtonRect = FindRectTransform(hostObject, "StopSessionButton");
@@ -125,6 +128,9 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(RectanglesOverlap(postRunSummaryTextRect, replayButtonRect), Is.False);
                 Assert.That(RectanglesOverlap(postRunSummaryTextRect, returnButtonRect), Is.False);
                 Assert.That(RectanglesOverlap(postRunSummaryTextRect, stopButtonRect), Is.False);
+                Assert.That(RectanglesOverlap(postRunNextActionRect, replayButtonRect), Is.False);
+                Assert.That(RectanglesOverlap(postRunNextActionRect, returnButtonRect), Is.False);
+                Assert.That(RectanglesOverlap(postRunNextActionRect, stopButtonRect), Is.False);
                 Assert.That(RectanglesOverlap(advanceButtonRect, postRunPanelRect), Is.False);
                 Assert.That(RectangleContains(mainPanelRect, advanceButtonRect), Is.True);
                 Assert.That(RectangleContains(mainPanelRect, postRunPanelRect), Is.True);

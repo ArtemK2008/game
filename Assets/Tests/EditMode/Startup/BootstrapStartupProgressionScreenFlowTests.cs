@@ -152,6 +152,12 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0; route unlock No"), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Recommended: Return to world, then visit Cavern Service Hub to spend or refine."),
+                    Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Return: Return to world, then push to Frontier Gate or visit Cavern Service Hub."),
+                    Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
@@ -254,6 +260,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss rewards: Persistent progression material x2"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss gate unlock: Cavern gate opened"), Is.True);
+                Assert.That(ContainsText(hostObject, "Recommended: Return to world, then push to Cavern Gate."), Is.True);
                 Assert.That(
                     ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock No"),
                     Is.True);
@@ -324,6 +331,10 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x2"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward source: Frontier salvage"), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Recommended: Return to world, then visit Cavern Service Hub to spend or refine."),
+                    Is.True);
+                Assert.That(ContainsText(hostObject, "Replay: Replay Forest Farm to keep pushing node progress."), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
