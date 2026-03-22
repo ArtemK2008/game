@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
-using Survivalon.State;
 
 namespace Survivalon.World
 {
@@ -11,40 +10,25 @@ namespace Survivalon.World
     {
         public static string BuildSummaryText(
             WorldMapWorldStateSummary worldStateSummary,
-            bool hasSelectedNode,
-            NodeId selectedNodeId,
-            SessionContextState sessionContext)
+            string selectedNodeDisplayName)
         {
             if (worldStateSummary == null)
             {
                 throw new ArgumentNullException(nameof(worldStateSummary));
             }
 
-            string selectedNodeLabel = hasSelectedNode ? selectedNodeId.Value : "none";
-            string recentNodeLabel = GetSessionNodeLabel(
-                sessionContext,
-                context => context.HasRecentNode,
-                context => context.RecentNodeId);
-            string recentPushTargetLabel = GetSessionNodeLabel(
-                sessionContext,
-                context => context.HasRecentPushTarget,
-                context => context.RecentPushTargetNodeId);
-            string lastSelectedNodeLabel = GetSessionNodeLabel(
-                sessionContext,
-                context => context.HasLastSelectedNode,
-                context => context.LastSelectedNodeId);
+            string selectedNodeLabel = string.IsNullOrWhiteSpace(selectedNodeDisplayName)
+                ? "none"
+                : selectedNodeDisplayName;
 
             return
-                $"Location: {worldStateSummary.CurrentLocationDisplayName} | Region: {worldStateSummary.CurrentRegionId.Value}\n" +
-                $"Current node: {worldStateSummary.CurrentNodeId.Value} ({worldStateSummary.CurrentNodeState}) | Selected: {selectedNodeLabel}\n" +
-                $"Reachable destinations: {worldStateSummary.SelectableDestinationCount} ({worldStateSummary.ForwardRouteNodeIds.Count} forward / {worldStateSummary.BacktrackRouteNodeIds.Count} backtrack / {worldStateSummary.ReplayableFarmNodeIds.Count} replayable-farm)\n" +
-                $"Forward routes: {BuildNodeListLabel(worldStateSummary.ForwardRouteNodeIds)}\n" +
-                $"Backtrack routes: {BuildNodeListLabel(worldStateSummary.BacktrackRouteNodeIds)} | Replayable farm nodes: {BuildNodeListLabel(worldStateSummary.ReplayableFarmNodeIds)}\n" +
-                $"Blocked links: {BuildNodeListLabel(worldStateSummary.BlockedLinkedNodeIds)}\n" +
-                $"Recent: {recentNodeLabel} | Push target: {recentPushTargetLabel} | Last selected: {lastSelectedNodeLabel}\n" +
-                "State legend: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked\n" +
-                "Status legend: Current = active anchor | Selectable = can enter now | Known = visible but not enterable\n" +
-                "Select a reachable node, then confirm entry to start the current node flow.";
+                $"Location: {worldStateSummary.CurrentLocationDisplayName}\n" +
+                $"Current: {worldStateSummary.CurrentNode.DisplayName} ({BuildNodeStateDisplayName(worldStateSummary.CurrentNodeState)}) | Selected: {selectedNodeLabel}\n" +
+                $"Paths now: {worldStateSummary.SelectableDestinationCount} enterable | {worldStateSummary.ForwardRouteNodes.Count} forward | {worldStateSummary.BacktrackRouteNodes.Count} backtrack | {worldStateSummary.ReplayableFarmNodes.Count} replayable | {worldStateSummary.BlockedLinkedNodes.Count} blocked\n" +
+                $"Forward: {BuildNodeListLabel(worldStateSummary.ForwardRouteNodes)}\n" +
+                $"Backtrack: {BuildNodeListLabel(worldStateSummary.BacktrackRouteNodes)} | Replayable: {BuildNodeListLabel(worldStateSummary.ReplayableFarmNodes)}\n" +
+                $"Blocked: {BuildNodeListLabel(worldStateSummary.BlockedLinkedNodes)}\n" +
+                "Node states: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked";
         }
 
         public static string BuildCharacterSelectionText(IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions)
@@ -157,8 +141,9 @@ namespace Survivalon.World
             }
 
             return
-                $"{nodeOption.LocationDisplayName} / {nodeOption.NodeId.Value}\n" +
-                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {nodeOption.NodeType} | State: {nodeOption.NodeState}\n" +
+                $"{nodeOption.NodeDisplayName}\n" +
+                $"{nodeOption.LocationDisplayName}\n" +
+                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {BuildNodeTypeDisplayName(nodeOption.NodeType)} | State: {BuildNodeStateDisplayName(nodeOption.NodeState)}\n" +
                 $"Status: {BuildAvailabilityLabel(nodeOption)}";
         }
 
@@ -206,6 +191,38 @@ namespace Survivalon.World
             return "Known";
         }
 
+        private static string BuildNodeTypeDisplayName(NodeType nodeType)
+        {
+            switch (nodeType)
+            {
+                case NodeType.Combat:
+                    return "Combat";
+                case NodeType.BossOrGate:
+                    return "Boss gate";
+                case NodeType.ServiceOrProgression:
+                    return "Service hub";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(nodeType), nodeType, "Unknown node type.");
+            }
+        }
+
+        private static string BuildNodeStateDisplayName(NodeState nodeState)
+        {
+            switch (nodeState)
+            {
+                case NodeState.Available:
+                    return "Available";
+                case NodeState.InProgress:
+                    return "In progress";
+                case NodeState.Cleared:
+                    return "Cleared";
+                case NodeState.Locked:
+                    return "Locked";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(nodeState), nodeState, "Unknown node state.");
+            }
+        }
+
         private static int CountOptionsForCategory(
             IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions,
             GearCategory gearCategory)
@@ -238,35 +255,22 @@ namespace Survivalon.World
             return "none";
         }
 
-        private static string GetSessionNodeLabel(
-            SessionContextState sessionContext,
-            Func<SessionContextState, bool> hasValue,
-            Func<SessionContextState, NodeId> selector)
+        private static string BuildNodeListLabel(IReadOnlyList<WorldMapNodeReferenceDisplayState> nodes)
         {
-            if (sessionContext == null || !hasValue(sessionContext))
+            if (nodes == null)
+            {
+                throw new ArgumentNullException(nameof(nodes));
+            }
+
+            if (nodes.Count == 0)
             {
                 return "none";
             }
 
-            return selector(sessionContext).Value;
-        }
-
-        private static string BuildNodeListLabel(IReadOnlyList<NodeId> nodeIds)
-        {
-            if (nodeIds == null)
+            string[] labels = new string[nodes.Count];
+            for (int index = 0; index < nodes.Count; index++)
             {
-                throw new ArgumentNullException(nameof(nodeIds));
-            }
-
-            if (nodeIds.Count == 0)
-            {
-                return "none";
-            }
-
-            string[] labels = new string[nodeIds.Count];
-            for (int index = 0; index < nodeIds.Count; index++)
-            {
-                labels[index] = nodeIds[index].Value;
+                labels[index] = nodes[index].DisplayName;
             }
 
             return string.Join(", ", labels);

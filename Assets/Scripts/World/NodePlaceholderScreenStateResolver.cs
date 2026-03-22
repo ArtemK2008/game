@@ -47,6 +47,16 @@ namespace Survivalon.World
                 (lifecycleState == RunLifecycleState.RunActive || lifecycleState == RunLifecycleState.RunResolved);
         }
 
+        public static bool ShouldUseCompactCombatHeader(NodePlaceholderState placeholderState)
+        {
+            if (placeholderState == null)
+            {
+                throw new ArgumentNullException(nameof(placeholderState));
+            }
+
+            return placeholderState.UsesCombatShell;
+        }
+
         public static NodePlaceholderScreenPostRunPanelState ResolvePostRunPanelState(
             RunLifecycleState lifecycleState,
             PostRunStateController postRunStateController,

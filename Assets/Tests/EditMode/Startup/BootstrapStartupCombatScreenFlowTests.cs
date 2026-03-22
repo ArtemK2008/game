@@ -22,16 +22,19 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
 
-                Assert.That(ContainsText(hostObject, "Run HUD"), Is.True);
-                Assert.That(ContainsText(hostObject, "Context: Verdant Frontier / region_001_node_004 (Combat)"), Is.True);
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "Encounter: Combat"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.False);
-                Assert.That(ContainsText(hostObject, "Revisit value: Region material yield +1"), Is.True);
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
-                Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."),
+                    Is.False);
                 Assert.That(FindButton(hostObject, "AdvanceRunLifecycleButton").interactable, Is.False);
             }
             finally
@@ -54,8 +57,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 ReturnToWorldMap(hostObject);
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
 
-                Assert.That(ContainsText(hostObject, "Run HUD"), Is.True);
-                Assert.That(ContainsText(hostObject, "Context: Verdant Frontier / region_001_node_002 (Combat)"), Is.True);
+                Assert.That(ContainsText(hostObject, "Raider Trail"), Is.True);
+                Assert.That(ContainsText(hostObject, "Verdant Frontier | Raider Trail"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Bulwark Raider 105 / 105"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress: 1 / 3 toward node clear"), Is.True);
@@ -83,6 +86,8 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
                 Assert.That(
                     ContainsText(hostObject, "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
@@ -98,6 +103,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
+                Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Striker 110 / 110 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 110 / 110 | ATK: 18"), Is.True);
@@ -152,7 +158,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
-                Assert.That(ContainsText(hostObject, "Recent: region_001_node_004"), Is.True);
+                Assert.That(ContainsText(hostObject, "Selected: none"), Is.True);
                 Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
                 Assert.That(nodeState.UnlockProgress, Is.EqualTo(1));
                 Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));

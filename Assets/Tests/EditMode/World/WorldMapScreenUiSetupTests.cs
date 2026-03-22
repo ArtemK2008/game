@@ -68,7 +68,6 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsReadableLocationSummary = false;
                 bool containsBlockedLinkSummary = false;
                 bool containsStateLegend = false;
-                bool containsRecentNodeSummary = false;
                 bool containsCharacterSelectionSummary = false;
                 bool containsAssignedPackageSummary = false;
                 bool containsPrimaryGearSummary = false;
@@ -82,29 +81,24 @@ namespace Survivalon.Tests.EditMode.World
                         containsStateLabel = true;
                     }
 
-                    if (label.text.Contains("Forward routes: region_001_node_004, region_002_node_001"))
+                    if (label.text.Contains("Forward: Cavern Service Hub, Forest Farm"))
                     {
                         containsForwardRouteSummary = true;
                     }
 
-                    if (label.text.Contains("Location: Verdant Frontier | Region: region_001"))
+                    if (label.text.Contains("Location: Verdant Frontier"))
                     {
                         containsReadableLocationSummary = true;
                     }
 
-                    if (label.text.Contains("Blocked links: region_001_node_003"))
+                    if (label.text.Contains("Blocked: Frontier Gate"))
                     {
                         containsBlockedLinkSummary = true;
                     }
 
-                    if (label.text.Contains("State legend: Available = enterable"))
+                    if (label.text.Contains("Node states: Available = enterable"))
                     {
                         containsStateLegend = true;
-                    }
-
-                    if (label.text.Contains("Recent: region_001_node_002"))
-                    {
-                        containsRecentNodeSummary = true;
                     }
 
                     if (label.text.Contains("Selected character: Vanguard"))
@@ -127,7 +121,7 @@ namespace Survivalon.Tests.EditMode.World
                         containsSupportGearSummary = true;
                     }
 
-                    if (label.text.Contains("Echo Caverns / region_002_node_001"))
+                    if (label.text.Contains("Cavern Service Hub"))
                     {
                         containsLocationIdentityLabel = true;
                     }
@@ -143,7 +137,6 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(containsReadableLocationSummary, Is.True);
                 Assert.That(containsBlockedLinkSummary, Is.True);
                 Assert.That(containsStateLegend, Is.True);
-                Assert.That(containsRecentNodeSummary, Is.True);
                 Assert.That(containsCharacterSelectionSummary, Is.True);
                 Assert.That(containsAssignedPackageSummary, Is.True);
                 Assert.That(containsPrimaryGearSummary, Is.True);

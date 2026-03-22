@@ -8,6 +8,7 @@ namespace Survivalon.Run
     {
         public RunHudState(
             string locationDisplayName,
+            string nodeDisplayName,
             NodeId nodeId,
             NodeType nodeType,
             string runStateDisplayName,
@@ -29,6 +30,13 @@ namespace Survivalon.Run
                 throw new ArgumentException(
                     "Location display name cannot be null or whitespace.",
                     nameof(locationDisplayName));
+            }
+
+            if (string.IsNullOrWhiteSpace(nodeDisplayName))
+            {
+                throw new ArgumentException(
+                    "Node display name cannot be null or whitespace.",
+                    nameof(nodeDisplayName));
             }
 
             if (string.IsNullOrWhiteSpace(runStateDisplayName))
@@ -162,6 +170,7 @@ namespace Survivalon.Run
             }
 
             LocationDisplayName = locationDisplayName;
+            NodeDisplayName = nodeDisplayName;
             NodeId = nodeId;
             NodeType = nodeType;
             RunStateDisplayName = runStateDisplayName;
@@ -180,6 +189,8 @@ namespace Survivalon.Run
         }
 
         public string LocationDisplayName { get; }
+
+        public string NodeDisplayName { get; }
 
         public NodeId NodeId { get; }
 

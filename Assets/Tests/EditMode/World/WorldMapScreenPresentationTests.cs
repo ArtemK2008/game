@@ -4,7 +4,6 @@ using UnityEngine;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
-using Survivalon.State;
 using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.World
@@ -17,55 +16,43 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 () => WorldMapScreenTextBuilder.BuildSummaryText(
                     null,
-                    hasSelectedNode: false,
-                    selectedNodeId: default,
-                    sessionContext: null),
+                    selectedNodeDisplayName: null),
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldStateSummary"));
         }
 
         [Test]
         public void BuildSummaryText_ShouldMatchExistingWorldMapSummary()
         {
-            SessionContextState sessionContext = new SessionContextState();
-            sessionContext.RecordSelection(new NodeId("region_001_node_004"), isForwardSelectable: true);
-            sessionContext.RecordReturnedToWorldContext(new NodeId("region_001_node_002"));
-
             string summaryText = WorldMapScreenTextBuilder.BuildSummaryText(
                 CreateWorldStateSummary(
                     "Verdant Frontier",
-                    "region_001",
-                    "region_001_node_002",
+                    CreateNodeReference("region_001_node_002", "Raider Trail"),
                     NodeState.InProgress,
                     selectableDestinationCount: 3,
                     new[]
                     {
-                        new NodeId("region_001_node_004"),
-                        new NodeId("region_002_node_001"),
+                        CreateNodeReference("region_002_node_001", "Cavern Service Hub"),
+                        CreateNodeReference("region_001_node_004", "Forest Farm"),
                     },
                     new[]
                     {
-                        new NodeId("region_001_node_001"),
+                        CreateNodeReference("region_001_node_001", "Frontier Entry"),
                     },
-                    System.Array.Empty<NodeId>(),
+                    System.Array.Empty<WorldMapNodeReferenceDisplayState>(),
                     new[]
                     {
-                        new NodeId("region_001_node_003"),
+                        CreateNodeReference("region_001_node_003", "Frontier Gate"),
                     }),
-                hasSelectedNode: true,
-                selectedNodeId: new NodeId("region_001_node_004"),
-                sessionContext: sessionContext);
+                "Forest Farm");
 
             Assert.That(summaryText, Is.EqualTo(
-                "Location: Verdant Frontier | Region: region_001\n" +
-                "Current node: region_001_node_002 (InProgress) | Selected: region_001_node_004\n" +
-                "Reachable destinations: 3 (2 forward / 1 backtrack / 0 replayable-farm)\n" +
-                "Forward routes: region_001_node_004, region_002_node_001\n" +
-                "Backtrack routes: region_001_node_001 | Replayable farm nodes: none\n" +
-                "Blocked links: region_001_node_003\n" +
-                "Recent: region_001_node_002 | Push target: region_001_node_004 | Last selected: region_001_node_004\n" +
-                "State legend: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked\n" +
-                "Status legend: Current = active anchor | Selectable = can enter now | Known = visible but not enterable\n" +
-                "Select a reachable node, then confirm entry to start the current node flow."));
+                "Location: Verdant Frontier\n" +
+                "Current: Raider Trail (In progress) | Selected: Forest Farm\n" +
+                "Paths now: 3 enterable | 2 forward | 1 backtrack | 0 replayable | 1 blocked\n" +
+                "Forward: Cavern Service Hub, Forest Farm\n" +
+                "Backtrack: Frontier Entry | Replayable: none\n" +
+                "Blocked: Frontier Gate\n" +
+                "Node states: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked"));
         }
 
         [Test]
@@ -74,30 +61,25 @@ namespace Survivalon.Tests.EditMode.World
             string summaryText = WorldMapScreenTextBuilder.BuildSummaryText(
                 CreateWorldStateSummary(
                     "Verdant Frontier",
-                    "region_001",
-                    "region_001_node_002",
+                    CreateNodeReference("region_001_node_002", "Raider Trail"),
                     NodeState.InProgress,
                     selectableDestinationCount: 1,
-                    System.Array.Empty<NodeId>(),
+                    System.Array.Empty<WorldMapNodeReferenceDisplayState>(),
                     new[]
                     {
-                        new NodeId("region_001_node_001"),
+                        CreateNodeReference("region_001_node_001", "Frontier Entry"),
                     },
-                    System.Array.Empty<NodeId>(),
-                    System.Array.Empty<NodeId>()),
-                hasSelectedNode: false,
-                selectedNodeId: default,
-                sessionContext: null);
+                    System.Array.Empty<WorldMapNodeReferenceDisplayState>(),
+                    System.Array.Empty<WorldMapNodeReferenceDisplayState>()),
+                selectedNodeDisplayName: null);
 
-            Assert.That(summaryText, Does.Contain("Location: Verdant Frontier | Region: region_001"));
-            Assert.That(summaryText, Does.Contain("Current node: region_001_node_002 (InProgress) | Selected: none"));
-            Assert.That(summaryText, Does.Contain("Reachable destinations: 1 (0 forward / 1 backtrack / 0 replayable-farm)"));
-            Assert.That(summaryText, Does.Contain("Forward routes: none"));
-            Assert.That(summaryText, Does.Contain("Backtrack routes: region_001_node_001 | Replayable farm nodes: none"));
-            Assert.That(summaryText, Does.Contain("Blocked links: none"));
-            Assert.That(summaryText, Does.Contain("Recent: none | Push target: none | Last selected: none"));
-            Assert.That(summaryText, Does.Contain("State legend: Available = enterable"));
-            Assert.That(summaryText, Does.Contain("Status legend: Current = active anchor"));
+            Assert.That(summaryText, Does.Contain("Location: Verdant Frontier"));
+            Assert.That(summaryText, Does.Contain("Current: Raider Trail (In progress) | Selected: none"));
+            Assert.That(summaryText, Does.Contain("Paths now: 1 enterable | 0 forward | 1 backtrack | 0 replayable | 0 blocked"));
+            Assert.That(summaryText, Does.Contain("Forward: none"));
+            Assert.That(summaryText, Does.Contain("Backtrack: Frontier Entry | Replayable: none"));
+            Assert.That(summaryText, Does.Contain("Blocked: none"));
+            Assert.That(summaryText, Does.Contain("Node states: Available = enterable"));
         }
 
         [Test]
@@ -227,11 +209,13 @@ namespace Survivalon.Tests.EditMode.World
                     isCurrentContext: false,
                     isSelected: false,
                     "Echo Caverns",
+                    "Cavern Service Hub",
                     WorldMapPathRole.ForwardRoute));
 
             Assert.That(labelText, Is.EqualTo(
-                "Echo Caverns / region_002_node_001\n" +
-                "Path: Forward route | Type: ServiceOrProgression | State: Available\n" +
+                "Cavern Service Hub\n" +
+                "Echo Caverns\n" +
+                "Path: Forward route | Type: Service hub | State: Available\n" +
                 "Status: Selectable"));
         }
 
@@ -297,19 +281,19 @@ namespace Survivalon.Tests.EditMode.World
             WorldMapScreenButtonState unavailableState = WorldMapScreenStateResolver.ResolveEntryButtonState(
                 hasNodeEntryHandler: false,
                 hasSelectedNode: true,
-                selectedNodeId: new NodeId("region_001_node_004"));
+                selectedNodeDisplayName: "Forest Farm");
             WorldMapScreenButtonState noSelectionState = WorldMapScreenStateResolver.ResolveEntryButtonState(
                 hasNodeEntryHandler: true,
                 hasSelectedNode: false,
-                selectedNodeId: default);
+                selectedNodeDisplayName: null);
             WorldMapScreenButtonState availableState = WorldMapScreenStateResolver.ResolveEntryButtonState(
                 hasNodeEntryHandler: true,
                 hasSelectedNode: true,
-                selectedNodeId: new NodeId("region_001_node_004"));
+                selectedNodeDisplayName: "Forest Farm");
 
             AssertButtonState(unavailableState, "Select a reachable node to enter", false);
             AssertButtonState(noSelectionState, "Select a reachable node to enter", false);
-            AssertButtonState(availableState, "Enter region_001_node_004", true);
+            AssertButtonState(availableState, "Enter Forest Farm", true);
         }
 
         [Test]
@@ -362,6 +346,7 @@ namespace Survivalon.Tests.EditMode.World
                 isCurrentContext,
                 isSelected,
                 "Verdant Frontier",
+                "Frontier Test Node",
                 isCurrentContext
                     ? WorldMapPathRole.CurrentContext
                     : isSelectable
@@ -371,25 +356,30 @@ namespace Survivalon.Tests.EditMode.World
 
         private static WorldMapWorldStateSummary CreateWorldStateSummary(
             string locationDisplayName,
-            string regionIdValue,
-            string currentNodeIdValue,
+            WorldMapNodeReferenceDisplayState currentNode,
             NodeState currentNodeState,
             int selectableDestinationCount,
-            IReadOnlyList<NodeId> forwardRouteNodeIds,
-            IReadOnlyList<NodeId> backtrackRouteNodeIds,
-            IReadOnlyList<NodeId> replayableFarmNodeIds,
-            IReadOnlyList<NodeId> blockedLinkedNodeIds)
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> forwardRouteNodes,
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> backtrackRouteNodes,
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> replayableFarmNodes,
+            IReadOnlyList<WorldMapNodeReferenceDisplayState> blockedLinkedNodes)
         {
             return new WorldMapWorldStateSummary(
                 locationDisplayName,
-                new RegionId(regionIdValue),
-                new NodeId(currentNodeIdValue),
+                currentNode,
                 currentNodeState,
                 selectableDestinationCount,
-                forwardRouteNodeIds,
-                backtrackRouteNodeIds,
-                replayableFarmNodeIds,
-                blockedLinkedNodeIds);
+                forwardRouteNodes,
+                backtrackRouteNodes,
+                replayableFarmNodes,
+                blockedLinkedNodes);
+        }
+
+        private static WorldMapNodeReferenceDisplayState CreateNodeReference(
+            string nodeIdValue,
+            string displayName)
+        {
+            return new WorldMapNodeReferenceDisplayState(new NodeId(nodeIdValue), displayName);
         }
     }
 }

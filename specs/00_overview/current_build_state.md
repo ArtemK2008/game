@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 072**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, and **070a**.
+This summary reflects completed work through **Milestone 072**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, and **072a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -37,8 +37,13 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Verdant Frontier` is the region-material farming / raider-emphasis location
   - `Echo Caverns` is the progression-focused / gate-guardian-emphasis location
 - Reachability supports forward movement and backtracking from current world context.
-- The world map shows node identity, node type, node state, current/selectable status, and a small summary of current context.
-- World-map node labels now surface the shipped location identity alongside node id so the current regions read as distinct places in the prototype flow.
+- The world map shows friendly node identity, node type, node state, current/selectable status, and a small summary of current context.
+- The shipped bootstrap nodes now carry authored friendly player-facing names, and the main world-map surfaces use those names instead of raw internal node ids:
+  - node button labels
+  - selected-node summary
+  - route/readability summary lines
+  - entry button text
+- World-map node labels now surface the shipped location identity alongside those friendly names so the current regions read as distinct places in the prototype flow.
 - The world map now also exposes one compact readable world-state summary:
   - current location identity and region
   - current node and current node state
@@ -105,6 +110,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### Combat foundation
 - Combat exists as a placeholder shell inside the current node/run flow rather than as a dedicated final combat scene.
+- Combat-capable node screens now keep a compact persistent run-context header visible during both the pending run-start upgrade choice and the later combat flow instead of repeating the larger generic node placeholder summary block in combat contexts.
 - The combat placeholder shell now also exposes one compact readable run HUD layer during active/resolved combat:
   - current location identity and node context
   - current auto-battle/run state, outcome, and elapsed combat time
@@ -152,6 +158,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - when the selected current package grants `Burst Strike`, run start now pauses for one small run-only choice before combat auto-starts
   - the current shipped choices are temporary run-only modifiers on `Burst Strike`: `Burst Tempo` (faster cadence for the current run) and `Burst Payload` (harder hit for the current run)
   - that run-start choice now appears through one compact readable choice panel with a clear header, short effect summaries, quick-pick hints, and one click target per option
+  - the readable choice copy is now resolved on the run/UI presentation side rather than being stored directly on the combat upgrade option data
   - that choice applies only to the current run and is not persisted into later runs or character/package state
 - Enemy hostility is explicit and can defeat the player.
 - Defeated entities become inactive and stop contributing to combat.

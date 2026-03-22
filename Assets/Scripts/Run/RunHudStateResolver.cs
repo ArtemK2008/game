@@ -41,6 +41,7 @@ namespace Survivalon.Run
 
             return new RunHudState(
                 nodeContext.LocationIdentity.DisplayName,
+                nodeContext.NodeDisplayName,
                 nodeContext.NodeId,
                 nodeContext.NodeType,
                 ResolveRunStateDisplayName(lifecycleState),

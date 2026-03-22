@@ -27,6 +27,7 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Is.EqualTo(
                 "Location: Echo Caverns\n" +
+                "Node: Cavern Service Hub\n" +
                 "Region: region_002\n" +
                 "Reward focus: Persistent progression gains\n" +
                 "Enemy emphasis: Gate guardians\n" +
@@ -62,6 +63,7 @@ namespace Survivalon.Tests.EditMode.World
                 RunLifecycleState.RunStart);
 
             Assert.That(summaryText, Does.Contain("Location: Verdant Frontier"));
+            Assert.That(summaryText, Does.Contain("Node: Forest Farm"));
             Assert.That(summaryText, Does.Contain("Reward focus: Region material farming"));
             Assert.That(summaryText, Does.Contain("Revisit value: Region material yield +1"));
         }
@@ -86,6 +88,25 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Does.Contain("Location: Echo Caverns"));
             Assert.That(summaryText, Does.Not.Contain("Revisit value:"));
+        }
+
+        [Test]
+        public void BuildTitleText_ShouldUseFriendlyNodeDisplayName()
+        {
+            Assert.That(
+                NodePlaceholderScreenTextBuilder.BuildTitleText(NodePlaceholderTestData.CreateFrontierFarmPlaceholderState()),
+                Is.EqualTo("Forest Farm"));
+        }
+
+        [Test]
+        public void BuildCombatContextSummaryText_ShouldStayCompactForCombatNodes()
+        {
+            string summaryText = NodePlaceholderScreenTextBuilder.BuildCombatContextSummaryText(
+                NodePlaceholderTestData.CreateCombatPlaceholderState());
+
+            Assert.That(summaryText, Is.EqualTo(
+                "Location: Verdant Frontier\n" +
+                "Encounter: Combat"));
         }
 
         [Test]
@@ -272,6 +293,19 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(NodePlaceholderScreenStateResolver.ShouldShowCombatShell(RunLifecycleState.RunActive, true), Is.True);
             Assert.That(NodePlaceholderScreenStateResolver.ShouldShowCombatShell(RunLifecycleState.RunResolved, true), Is.True);
             Assert.That(NodePlaceholderScreenStateResolver.ShouldShowCombatShell(RunLifecycleState.PostRun, true), Is.False);
+        }
+
+        [Test]
+        public void ShouldUseCompactCombatHeader_ShouldMatchCombatCapability()
+        {
+            Assert.That(
+                NodePlaceholderScreenStateResolver.ShouldUseCompactCombatHeader(
+                    NodePlaceholderTestData.CreateCombatPlaceholderState()),
+                Is.True);
+            Assert.That(
+                NodePlaceholderScreenStateResolver.ShouldUseCompactCombatHeader(
+                    NodePlaceholderTestData.CreateServicePlaceholderState()),
+                Is.False);
         }
 
         [Test]

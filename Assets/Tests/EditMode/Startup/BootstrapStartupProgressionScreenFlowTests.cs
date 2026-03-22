@@ -201,7 +201,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(clearedFarmNodeButton.interactable, Is.True);
                 Assert.That(clearedFarmNodeLabel, Is.Not.Null);
                 Assert.That(clearedFarmNodeLabel.text, Does.Contain("State: Cleared"));
-                Assert.That(ContainsText(hostObject, "Current node: region_002_node_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub"), Is.True);
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
                 AdvanceToPostRun(hostObject);
@@ -316,9 +316,9 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
 
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
-                Assert.That(ContainsText(hostObject, "Reward focus: Region material farming"), Is.True);
-                Assert.That(ContainsText(hostObject, "Revisit value: Region material yield +1"), Is.True);
+                Assert.That(ContainsText(hostObject, "Encounter: Combat"), Is.True);
 
                 AdvanceToPostRun(hostObject);
 
@@ -328,7 +328,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
-                Assert.That(ContainsText(hostObject, "Recent: region_001_node_004"), Is.True);
+                Assert.That(ContainsText(hostObject, "Selected: none"), Is.True);
                 Assert.That(
                     storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
                     Is.EqualTo(regionMaterialBeforeFarm + 2));

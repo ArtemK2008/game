@@ -6,6 +6,14 @@ namespace Survivalon.Run
 {
     public sealed class RunTimeSkillUpgradeChoiceStateResolver
     {
+        private readonly RunTimeSkillUpgradeChoicePresentationCatalog presentationCatalog;
+
+        public RunTimeSkillUpgradeChoiceStateResolver(
+            RunTimeSkillUpgradeChoicePresentationCatalog presentationCatalog = null)
+        {
+            this.presentationCatalog = presentationCatalog ?? new RunTimeSkillUpgradeChoicePresentationCatalog();
+        }
+
         public RunTimeSkillUpgradeChoiceState Resolve(
             IReadOnlyList<CombatRunTimeSkillUpgradeOption> upgradeOptions)
         {
@@ -21,11 +29,13 @@ namespace Survivalon.Run
             for (int index = 0; index < upgradeOptions.Count; index++)
             {
                 CombatRunTimeSkillUpgradeOption upgradeOption = upgradeOptions[index];
+                RunTimeSkillUpgradeChoicePresentationDefinition presentation =
+                    presentationCatalog.Resolve(upgradeOption.UpgradeId);
                 optionStates.Add(new RunTimeSkillUpgradeChoiceOptionState(
                     upgradeOption.UpgradeId,
                     upgradeOption.DisplayName,
                     upgradeOption.Description,
-                    upgradeOption.SelectionHint));
+                    presentation.SelectionHint));
             }
 
             return new RunTimeSkillUpgradeChoiceState(
@@ -34,7 +44,7 @@ namespace Survivalon.Run
                 optionStates);
         }
 
-        private static string ResolveSourceSkillDisplayName(
+        private string ResolveSourceSkillDisplayName(
             IReadOnlyList<CombatRunTimeSkillUpgradeOption> upgradeOptions)
         {
             if (upgradeOptions.Count == 0)
@@ -42,7 +52,8 @@ namespace Survivalon.Run
                 return null;
             }
 
-            string sourceSkillDisplayName = upgradeOptions[0].SourceSkillDisplayName;
+            string sourceSkillDisplayName = ResolveSourceSkillDisplayName(
+                presentationCatalog.Resolve(upgradeOptions[0].UpgradeId));
             if (string.IsNullOrWhiteSpace(sourceSkillDisplayName))
             {
                 return null;
@@ -50,9 +61,11 @@ namespace Survivalon.Run
 
             for (int index = 1; index < upgradeOptions.Count; index++)
             {
+                RunTimeSkillUpgradeChoicePresentationDefinition presentation =
+                    presentationCatalog.Resolve(upgradeOptions[index].UpgradeId);
                 if (!string.Equals(
                     sourceSkillDisplayName,
-                    upgradeOptions[index].SourceSkillDisplayName,
+                    ResolveSourceSkillDisplayName(presentation),
                     StringComparison.Ordinal))
                 {
                     return null;
@@ -67,6 +80,14 @@ namespace Survivalon.Run
             return string.IsNullOrWhiteSpace(sourceSkillDisplayName)
                 ? "Choose 1 upgrade before auto-battle starts. This choice affects the current run only."
                 : $"Choose 1 {sourceSkillDisplayName} upgrade before auto-battle starts. This choice lasts for the current run only.";
+        }
+
+        private static string ResolveSourceSkillDisplayName(
+            RunTimeSkillUpgradeChoicePresentationDefinition presentation)
+        {
+            return string.IsNullOrWhiteSpace(presentation.SourceSkillDisplayName)
+                ? null
+                : presentation.SourceSkillDisplayName;
         }
     }
 }

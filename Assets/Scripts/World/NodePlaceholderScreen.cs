@@ -13,6 +13,8 @@ namespace Survivalon.World
         private Text titleText;
         private Text summaryText;
         private Text statusText;
+        private LayoutElement summaryLayoutElement;
+        private LayoutElement statusLayoutElement;
         private GameObject runTimeSkillUpgradePanelObject;
         private Text runTimeSkillUpgradeText;
         private RectTransform runTimeSkillUpgradeContainer;
@@ -73,16 +75,27 @@ namespace Survivalon.World
         {
             SyncPostRunStateController();
             NodePlaceholderState placeholderState = runLifecycleController.NodeContext;
-            titleText.text = $"Run Shell: {placeholderState.NodeId.Value}";
-            summaryText.text = NodePlaceholderScreenTextBuilder.BuildSummaryText(
-                placeholderState,
-                runLifecycleController.CurrentState,
-                runLifecycleController.HasRunResult ? runLifecycleController.RunResult : null);
-            statusText.text = NodePlaceholderScreenTextBuilder.BuildStatusText(
-                placeholderState,
-                runLifecycleController.CurrentState,
-                runLifecycleController.HasCombatEncounterState ? runLifecycleController.CombatEncounterState : null,
-                runLifecycleController.RequiresRunTimeSkillUpgradeChoice);
+            bool usesCompactCombatHeader = NodePlaceholderScreenStateResolver.ShouldUseCompactCombatHeader(placeholderState);
+            titleText.text = NodePlaceholderScreenTextBuilder.BuildTitleText(placeholderState);
+            summaryText.text = usesCompactCombatHeader
+                ? NodePlaceholderScreenTextBuilder.BuildCombatContextSummaryText(placeholderState)
+                : NodePlaceholderScreenTextBuilder.BuildSummaryText(
+                    placeholderState,
+                    runLifecycleController.CurrentState,
+                    runLifecycleController.HasRunResult ? runLifecycleController.RunResult : null);
+            summaryLayoutElement.minHeight = usesCompactCombatHeader ? 54f : 148f;
+            summaryLayoutElement.preferredHeight = usesCompactCombatHeader ? 54f : 148f;
+            statusText.gameObject.SetActive(!usesCompactCombatHeader);
+            statusLayoutElement.minHeight = usesCompactCombatHeader ? 0f : 80f;
+            statusLayoutElement.preferredHeight = usesCompactCombatHeader ? 0f : 80f;
+            if (!usesCompactCombatHeader)
+            {
+                statusText.text = NodePlaceholderScreenTextBuilder.BuildStatusText(
+                    placeholderState,
+                    runLifecycleController.CurrentState,
+                    runLifecycleController.HasCombatEncounterState ? runLifecycleController.CombatEncounterState : null,
+                    runLifecycleController.RequiresRunTimeSkillUpgradeChoice);
+            }
             RefreshRunTimeSkillUpgradePanel();
             RefreshCombatShellView();
             RefreshAdvanceButton();
@@ -238,7 +251,7 @@ namespace Survivalon.World
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.90f, 0.90f, 0.94f, 1f));
-            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 148f);
+            summaryLayoutElement = RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, 148f);
 
             statusText = RuntimeUiSupport.CreateText(
                 panelObject.transform,
@@ -248,7 +261,7 @@ namespace Survivalon.World
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.78f, 0.82f, 0.90f, 1f));
-            RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 80f);
+            statusLayoutElement = RuntimeUiSupport.AddLayoutElement(statusText.gameObject, 80f);
 
             runTimeSkillUpgradePanelObject = new GameObject(
                 "RunTimeSkillUpgradePanel",
@@ -561,7 +574,7 @@ namespace Survivalon.World
                 persistentContext?.PersistentWorldState);
             combatShellView.Show(
                 runLifecycleController.CombatEncounterState,
-                title: "Run HUD",
+                title: RunHudTextBuilder.BuildContextTitle(runHudState),
                 summary: RunHudTextBuilder.BuildSummaryText(runHudState));
         }
 

@@ -30,12 +30,16 @@ namespace Survivalon.Tests.EditMode.World
                 Text advanceButtonText = advanceRunLifecycleButton.GetComponentInChildren<Text>(true);
                 Assert.That(advanceButtonText.text, Is.EqualTo("Combat Auto-Running"));
 
-                Assert.That(ContainsText(hostObject, "Run HUD"), Is.True);
-                Assert.That(ContainsText(hostObject, "Context: Verdant Frontier / region_001_node_004 (Combat)"), Is.True);
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "Encounter: Combat"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
-                Assert.That(ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."),
+                    Is.False);
                 Assert.That(FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").gameObject.activeSelf, Is.False);
                 Assert.That(
                     TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton"),
@@ -76,9 +80,9 @@ namespace Survivalon.Tests.EditMode.World
                 Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
                 Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Choose Run Upgrade"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
-                Assert.That(
-                    ContainsText(hostObject, "Combat shell initialized. Choose a run-only skill upgrade to start automatic combat."),
-                    Is.True);
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "Encounter: Combat"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
                 Assert.That(
                     ContainsText(hostObject, "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
@@ -129,7 +133,7 @@ namespace Survivalon.Tests.EditMode.World
 
                 Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run HUD"), Is.True);
+                Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Striker 110 / 110 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
@@ -240,7 +244,8 @@ namespace Survivalon.Tests.EditMode.World
 
                 Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
 
-                Assert.That(ContainsText(hostObject, "Post-run summary is active. Replay, return to the world map, or stop the session."), Is.True);
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
                 Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Run Lifecycle Complete"));

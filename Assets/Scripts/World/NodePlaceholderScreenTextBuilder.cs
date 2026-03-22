@@ -7,6 +7,28 @@ namespace Survivalon.World
 {
     public static class NodePlaceholderScreenTextBuilder
     {
+        public static string BuildTitleText(NodePlaceholderState placeholderState)
+        {
+            if (placeholderState == null)
+            {
+                throw new ArgumentNullException(nameof(placeholderState));
+            }
+
+            return placeholderState.NodeDisplayName;
+        }
+
+        public static string BuildCombatContextSummaryText(NodePlaceholderState placeholderState)
+        {
+            if (placeholderState == null)
+            {
+                throw new ArgumentNullException(nameof(placeholderState));
+            }
+
+            return
+                $"Location: {placeholderState.LocationIdentity.DisplayName}\n" +
+                $"Encounter: {BuildNodeTypeDisplayName(placeholderState.NodeType)}";
+        }
+
         public static string BuildSummaryText(
             NodePlaceholderState placeholderState,
             RunLifecycleState lifecycleState,
@@ -19,6 +41,7 @@ namespace Survivalon.World
 
             string summary =
                 $"Location: {placeholderState.LocationIdentity.DisplayName}\n" +
+                $"Node: {placeholderState.NodeDisplayName}\n" +
                 $"Region: {placeholderState.RegionId.Value}\n" +
                 $"Reward focus: {placeholderState.LocationIdentity.RewardFocusDisplayName}\n" +
                 $"Enemy emphasis: {placeholderState.LocationIdentity.EnemyEmphasisDisplayName}\n" +
@@ -87,6 +110,21 @@ namespace Survivalon.World
             }
 
             return $"Revisit value: Region material yield +{placeholderState.RegionMaterialYieldContent.RegionMaterialBonus}\n";
+        }
+
+        private static string BuildNodeTypeDisplayName(NodeType nodeType)
+        {
+            switch (nodeType)
+            {
+                case NodeType.Combat:
+                    return "Combat";
+                case NodeType.BossOrGate:
+                    return "Boss gate";
+                case NodeType.ServiceOrProgression:
+                    return "Service hub";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(nodeType), nodeType, "Unknown node type.");
+            }
         }
     }
 }

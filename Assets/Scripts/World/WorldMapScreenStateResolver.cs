@@ -9,13 +9,15 @@ namespace Survivalon.World
         public static WorldMapScreenButtonState ResolveEntryButtonState(
             bool hasNodeEntryHandler,
             bool hasSelectedNode,
-            NodeId selectedNodeId)
+            string selectedNodeDisplayName)
         {
             bool canEnterSelection = hasNodeEntryHandler && hasSelectedNode;
 
             return new WorldMapScreenButtonState(
                 canEnterSelection
-                    ? $"Enter {selectedNodeId.Value}"
+                    ? string.IsNullOrWhiteSpace(selectedNodeDisplayName)
+                        ? "Enter selected node"
+                        : $"Enter {selectedNodeDisplayName}"
                     : "Select a reachable node to enter",
                 canEnterSelection);
         }

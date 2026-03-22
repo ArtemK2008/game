@@ -39,6 +39,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(entered, Is.True);
             Assert.That(placeholderState, Is.Not.Null);
             Assert.That(placeholderState.NodeId, Is.EqualTo(selectedNodeId));
+            Assert.That(placeholderState.NodeDisplayName, Is.EqualTo("Cavern Service Hub"));
             Assert.That(placeholderState.LocationIdentity.DisplayName, Is.EqualTo("Echo Caverns"));
             Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Gate guardians"));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
@@ -60,6 +61,7 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(entered, Is.True);
             Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.NodeDisplayName, Is.EqualTo("Forest Farm"));
             Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.VerdantFrontier));
             Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Frontier raiders"));
@@ -92,6 +94,7 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(entered, Is.True);
             Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.NodeDisplayName, Is.EqualTo("Frontier Gate"));
             Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
             Assert.That(placeholderState.CombatEncounter.EncounterType, Is.EqualTo(CombatEncounterType.Boss));
             Assert.That(
@@ -135,6 +138,7 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(entered, Is.True);
             Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.NodeDisplayName, Is.EqualTo("Cavern Gate"));
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.EchoCaverns));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(placeholderState.BossRewardContent, Is.Not.Null);

@@ -87,8 +87,8 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(0));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(1));
-                Assert.That(ContainsText(hostObject, "Run Shell: region_002_node_001"), Is.True);
-                Assert.That(ContainsText(hostObject, "Cavern Service Hub"), Is.False);
+                Assert.That(ContainsText(hostObject, "Cavern Service Hub"), Is.True);
+                Assert.That(ContainsText(hostObject, "Reward focus: Persistent progression gains"), Is.True);
             }
             finally
             {
