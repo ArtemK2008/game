@@ -48,6 +48,9 @@ namespace Survivalon.Tests.EditMode.Towns
                 gameState);
 
             Assert.That(screenState.ServiceContext.DisplayName, Is.EqualTo("Cavern Service Hub"));
+            Assert.That(screenState.LocationDisplayName, Is.EqualTo("Echo Caverns"));
+            Assert.That(screenState.LocationRewardFocusDisplayName, Is.EqualTo("Persistent progression gains"));
+            Assert.That(screenState.LocationRewardSourceDisplayName, Is.EqualTo("Cavern relic caches"));
             Assert.That(screenState.PersistentProgressionMaterialAmount, Is.EqualTo(1));
             Assert.That(screenState.RegionMaterialAmount, Is.EqualTo(4));
             Assert.That(screenState.MaterialPowerPath, Is.Not.Null);

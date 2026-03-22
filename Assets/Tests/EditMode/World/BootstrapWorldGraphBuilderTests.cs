@@ -73,6 +73,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(forestRegion.ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
             Assert.That(forestRegion.DifficultyBand, Is.EqualTo("frontier"));
             Assert.That(forestRegion.LocationIdentity, Is.SameAs(LocationIdentityCatalog.VerdantFrontier));
+            Assert.That(forestRegion.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(forestRegion.LocationIdentity.DisplayName, Is.EqualTo("Verdant Frontier"));
             Assert.That(forestRegion.LocationIdentity.RewardSourceDisplayName, Is.EqualTo("Frontier salvage"));
             Assert.That(forestRegion.NodeIds, Is.EqualTo(new[]
@@ -88,6 +89,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(cavernRegion.ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
             Assert.That(cavernRegion.DifficultyBand, Is.EqualTo("depths"));
             Assert.That(cavernRegion.LocationIdentity, Is.SameAs(LocationIdentityCatalog.EchoCaverns));
+            Assert.That(cavernRegion.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(cavernRegion.LocationIdentity.DisplayName, Is.EqualTo("Echo Caverns"));
             Assert.That(cavernRegion.LocationIdentity.RewardSourceDisplayName, Is.EqualTo("Cavern relic caches"));
             Assert.That(cavernRegion.NodeIds, Is.EqualTo(new[]

@@ -8,7 +8,8 @@ namespace Survivalon.Data.World
             string locationIdentityId,
             string displayName,
             string rewardSourceDisplayName,
-            string rewardFocusDisplayName)
+            string rewardFocusDisplayName,
+            bool isFallbackIdentity = false)
         {
             if (string.IsNullOrWhiteSpace(locationIdentityId))
             {
@@ -38,6 +39,7 @@ namespace Survivalon.Data.World
             DisplayName = displayName;
             RewardSourceDisplayName = rewardSourceDisplayName;
             RewardFocusDisplayName = rewardFocusDisplayName;
+            IsFallbackIdentity = isFallbackIdentity;
         }
 
         public string LocationIdentityId { get; }
@@ -47,5 +49,7 @@ namespace Survivalon.Data.World
         public string RewardSourceDisplayName { get; }
 
         public string RewardFocusDisplayName { get; }
+
+        public bool IsFallbackIdentity { get; }
     }
 }

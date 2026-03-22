@@ -19,6 +19,9 @@ namespace Survivalon.Towns
 
             return
                 $"Service context: {screenState.ServiceContext.DisplayName}\n" +
+                $"Location: {screenState.LocationDisplayName}\n" +
+                $"Reward focus: {screenState.LocationRewardFocusDisplayName}\n" +
+                $"Reward source: {screenState.LocationRewardSourceDisplayName}\n" +
                 $"Region: {screenState.RegionId.Value}\n" +
                 $"Node: {screenState.NodeId.Value}\n" +
                 $"Entered from: {screenState.OriginNodeId.Value}\n" +
