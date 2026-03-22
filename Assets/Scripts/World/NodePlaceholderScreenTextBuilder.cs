@@ -23,6 +23,7 @@ namespace Survivalon.World
                 $"Region: {placeholderState.RegionId.Value}\n" +
                 $"Reward focus: {placeholderState.LocationIdentity.RewardFocusDisplayName}\n" +
                 $"Enemy emphasis: {placeholderState.LocationIdentity.EnemyEmphasisDisplayName}\n" +
+                BuildRegionMaterialYieldLine(placeholderState) +
                 $"Type: {placeholderState.NodeType}\n" +
                 $"Node state: {placeholderState.NodeState}\n" +
                 $"Lifecycle: {lifecycleState}\n" +
@@ -89,6 +90,16 @@ namespace Survivalon.World
             return
                 "Run-only skill choice\n" +
                 $"Choose 1 upgrade before combat auto-starts. Options: {upgradeOptions.Count}";
+        }
+
+        private static string BuildRegionMaterialYieldLine(NodePlaceholderState placeholderState)
+        {
+            if (placeholderState.RegionMaterialYieldContent == null)
+            {
+                return string.Empty;
+            }
+
+            return $"Revisit value: Region material yield +{placeholderState.RegionMaterialYieldContent.RegionMaterialBonus}\n";
         }
     }
 }

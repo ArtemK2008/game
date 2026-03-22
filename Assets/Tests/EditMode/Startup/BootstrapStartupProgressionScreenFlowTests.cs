@@ -280,6 +280,66 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldKeepVerdantFrontierFarmUsefulAfterCavernGateOpens()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
+                FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+                FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(hostObject);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_003_Button");
+                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                int regionMaterialBeforeFarm = storage.SavedGameState.ResourceBalances.GetAmount(
+                    ResourceCategory.RegionMaterial);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "Reward focus: Region material farming"), Is.True);
+                Assert.That(ContainsText(hostObject, "Revisit value: Region material yield +1"), Is.True);
+
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Reward source: Frontier salvage"), Is.True);
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Recent node: region_001_node_004"), Is.True);
+                Assert.That(
+                    storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
+                    Is.EqualTo(regionMaterialBeforeFarm + 2));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldGrantHigherBossProgressionRewardAtCavernGateThanForestGate()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");

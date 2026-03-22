@@ -53,6 +53,18 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void BuildSummaryText_ShouldShowFrontierFarmRevisitValueWhenPresent()
+        {
+            string summaryText = NodePlaceholderScreenTextBuilder.BuildSummaryText(
+                NodePlaceholderTestData.CreateFrontierFarmPlaceholderState(),
+                RunLifecycleState.RunStart);
+
+            Assert.That(summaryText, Does.Contain("Location: Verdant Frontier"));
+            Assert.That(summaryText, Does.Contain("Reward focus: Region material farming"));
+            Assert.That(summaryText, Does.Contain("Revisit value: Region material yield +1"));
+        }
+
+        [Test]
         public void BuildStatusText_ShouldMatchNonCombatLifecycleTexts()
         {
             NodePlaceholderState serviceState = NodePlaceholderTestData.CreateServicePlaceholderState();

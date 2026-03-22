@@ -34,6 +34,26 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldGrantHigherRegionMaterialRewardForFrontierFarmNode()
+        {
+            RunRewardResolutionService service = new RunRewardResolutionService();
+
+            RunRewardPayload rewardPayload = service.Resolve(
+                NodePlaceholderTestData.CreateFrontierFarmPlaceholderState(),
+                RunResolutionState.Succeeded,
+                BootstrapWorldTestData.CreateWorldGraph());
+
+            Assert.That(rewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.CurrencyRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.SoftCurrency));
+            Assert.That(rewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(rewardPayload.MaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.MaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
+            Assert.That(rewardPayload.MaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(rewardPayload.BossMaterialRewards, Is.Empty);
+        }
+
+        [Test]
         public void ShouldReturnEmptyPayloadForFailedCombatRun()
         {
             RunRewardResolutionService service = new RunRewardResolutionService();
