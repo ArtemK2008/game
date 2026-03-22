@@ -61,6 +61,27 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldApplyBossMaterialRewardToPersistentBalances()
+        {
+            RunRewardGrantService service = new RunRewardGrantService();
+            ResourceBalancesState resourceBalances = new ResourceBalancesState();
+            RunRewardPayload rewardPayload = new RunRewardPayload(
+                System.Array.Empty<RunCurrencyReward>(),
+                System.Array.Empty<RunMaterialReward>(),
+                System.Array.Empty<RunCurrencyReward>(),
+                System.Array.Empty<RunMaterialReward>(),
+                System.Array.Empty<RunCurrencyReward>(),
+                new[]
+                {
+                    new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 2),
+                });
+
+            service.Grant(resourceBalances, rewardPayload);
+
+            Assert.That(resourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(2));
+        }
+
+        [Test]
         public void ShouldLeaveBalancesUnchangedWhenRewardPayloadIsEmpty()
         {
             RunRewardGrantService service = new RunRewardGrantService();

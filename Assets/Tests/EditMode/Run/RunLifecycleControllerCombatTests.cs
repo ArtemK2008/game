@@ -181,6 +181,8 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.RunResult.RewardPayload.MaterialRewards[0].Amount, Is.EqualTo(1));
             Assert.That(controller.RunResult.RewardPayload.MilestoneCurrencyRewards, Is.Empty);
             Assert.That(controller.RunResult.RewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(controller.RunResult.RewardPayload.BossCurrencyRewards, Is.Empty);
+            Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards, Is.Empty);
             Assert.That(controller.RunResult.NodeProgressDelta, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(1));
             Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
@@ -243,6 +245,34 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.RunResult.NodeProgressValue, Is.EqualTo(0));
             Assert.That(controller.RunResult.NodeProgressThreshold, Is.EqualTo(3));
             Assert.That(resourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ShouldGrantBossRewardBundleWhenBossCombatIsWon()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(gameState));
+
+            RunLifecycleControllerTestData.RunToPostRun(controller);
+
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(controller.RunResult.RewardPayload.CurrencyRewards, Has.Count.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.MaterialRewards, Is.Empty);
+            Assert.That(controller.RunResult.RewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(controller.RunResult.RewardPayload.BossCurrencyRewards, Is.Empty);
+            Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
+            Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
+            Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(2));
         }
 
         [Test]

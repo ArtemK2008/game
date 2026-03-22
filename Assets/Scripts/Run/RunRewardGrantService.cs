@@ -22,6 +22,8 @@ namespace Survivalon.Run
             GrantMaterialRewards(resourceBalances, rewardPayload.MaterialRewards);
             GrantCurrencyRewards(resourceBalances, rewardPayload.MilestoneCurrencyRewards);
             GrantMaterialRewards(resourceBalances, rewardPayload.MilestoneMaterialRewards);
+            GrantCurrencyRewards(resourceBalances, rewardPayload.BossCurrencyRewards);
+            GrantMaterialRewards(resourceBalances, rewardPayload.BossMaterialRewards);
         }
 
         private static void GrantCurrencyRewards(

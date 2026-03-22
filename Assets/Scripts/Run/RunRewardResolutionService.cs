@@ -11,6 +11,10 @@ namespace Survivalon.Run
         {
             new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1),
         };
+        private static readonly RunMaterialReward[] SuccessfulBossMaterialRewards =
+        {
+            new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 2),
+        };
 
         public RunRewardPayload Resolve(
             NodePlaceholderState nodeContext,
@@ -29,17 +33,22 @@ namespace Survivalon.Run
                 resolutionState,
                 worldGraph,
                 progressionEffects);
+            RunMaterialReward[] bossMaterialRewards = ResolveBossMaterialRewards(nodeContext, resolutionState);
+            bool shouldGrantMilestoneRewards = ShouldGrantMilestoneRewards(progressResolution);
 
-            if (!ShouldGrantMilestoneRewards(progressResolution))
+            if (!shouldGrantMilestoneRewards && bossMaterialRewards.Length == 0)
             {
                 return ordinaryRewards;
             }
 
-            return new RunRewardPayload(
-                ordinaryRewards.CurrencyRewards,
-                ordinaryRewards.MaterialRewards,
+            return CreateRewardPayload(
+                ordinaryRewards,
                 Array.Empty<RunCurrencyReward>(),
-                SuccessfulClearMilestoneMaterialRewards);
+                shouldGrantMilestoneRewards
+                    ? SuccessfulClearMilestoneMaterialRewards
+                    : Array.Empty<RunMaterialReward>(),
+                Array.Empty<RunCurrencyReward>(),
+                bossMaterialRewards);
         }
 
         private static RunRewardPayload ResolveOrdinaryRewards(
@@ -113,6 +122,43 @@ namespace Survivalon.Run
         {
             return progressResolution.HasValue &&
                 progressResolution.Value.NodeProgressUpdate.DidReachClearThreshold;
+        }
+
+        private static RunRewardPayload CreateRewardPayload(
+            RunRewardPayload ordinaryRewards,
+            RunCurrencyReward[] milestoneCurrencyRewards,
+            RunMaterialReward[] milestoneMaterialRewards,
+            RunCurrencyReward[] bossCurrencyRewards,
+            RunMaterialReward[] bossMaterialRewards)
+        {
+            return new RunRewardPayload(
+                ordinaryRewards.CurrencyRewards,
+                ordinaryRewards.MaterialRewards,
+                milestoneCurrencyRewards,
+                milestoneMaterialRewards,
+                bossCurrencyRewards,
+                bossMaterialRewards);
+        }
+
+        private static RunMaterialReward[] ResolveBossMaterialRewards(
+            NodePlaceholderState nodeContext,
+            RunResolutionState resolutionState)
+        {
+            if (!ShouldGrantBossRewards(nodeContext, resolutionState))
+            {
+                return Array.Empty<RunMaterialReward>();
+            }
+
+            return SuccessfulBossMaterialRewards;
+        }
+
+        private static bool ShouldGrantBossRewards(
+            NodePlaceholderState nodeContext,
+            RunResolutionState resolutionState)
+        {
+            return resolutionState == RunResolutionState.Succeeded &&
+                nodeContext.CombatEncounter != null &&
+                nodeContext.CombatEncounter.EncounterType == Data.Combat.CombatEncounterType.Boss;
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Survivalon.World
                 $"Node: {runResult.NodeId.Value}\n" +
                 $"Resolution: {runResult.ResolutionState}\n" +
                 $"Rewards gained: {BuildRewardSummary(runResult.RewardPayload)}\n" +
+                BuildBossRewardLine(runResult.RewardPayload) +
                 BuildMilestoneRewardLine(runResult.RewardPayload) +
                 $"Progress changes: {BuildProgressSummary(runResult)}\n" +
                 BuildBossProgressionGateLine(runResult) +
@@ -61,6 +62,21 @@ namespace Survivalon.World
             }
 
             return $"Milestone rewards: {BuildRewardListSummary(rewardPayload.MilestoneCurrencyRewards, rewardPayload.MilestoneMaterialRewards)}\n";
+        }
+
+        private static string BuildBossRewardLine(RunRewardPayload rewardPayload)
+        {
+            if (rewardPayload == null)
+            {
+                throw new ArgumentNullException(nameof(rewardPayload));
+            }
+
+            if (!rewardPayload.HasBossRewards)
+            {
+                return string.Empty;
+            }
+
+            return $"Boss rewards: {BuildRewardListSummary(rewardPayload.BossCurrencyRewards, rewardPayload.BossMaterialRewards)}\n";
         }
 
         private static string BuildRewardListSummary(

@@ -10,11 +10,15 @@ namespace Survivalon.Run
             Array.Empty<RunCurrencyReward>(),
             Array.Empty<RunMaterialReward>(),
             Array.Empty<RunCurrencyReward>(),
+            Array.Empty<RunMaterialReward>(),
+            Array.Empty<RunCurrencyReward>(),
             Array.Empty<RunMaterialReward>());
         private readonly ReadOnlyCollection<RunCurrencyReward> currencyRewards;
         private readonly ReadOnlyCollection<RunMaterialReward> materialRewards;
         private readonly ReadOnlyCollection<RunCurrencyReward> milestoneCurrencyRewards;
         private readonly ReadOnlyCollection<RunMaterialReward> milestoneMaterialRewards;
+        private readonly ReadOnlyCollection<RunCurrencyReward> bossCurrencyRewards;
+        private readonly ReadOnlyCollection<RunMaterialReward> bossMaterialRewards;
 
         public RunRewardPayload(
             IEnumerable<RunCurrencyReward> currencyRewards,
@@ -22,6 +26,8 @@ namespace Survivalon.Run
             : this(
                 currencyRewards,
                 materialRewards,
+                Array.Empty<RunCurrencyReward>(),
+                Array.Empty<RunMaterialReward>(),
                 Array.Empty<RunCurrencyReward>(),
                 Array.Empty<RunMaterialReward>())
         {
@@ -32,6 +38,23 @@ namespace Survivalon.Run
             IEnumerable<RunMaterialReward> materialRewards,
             IEnumerable<RunCurrencyReward> milestoneCurrencyRewards,
             IEnumerable<RunMaterialReward> milestoneMaterialRewards)
+            : this(
+                currencyRewards,
+                materialRewards,
+                milestoneCurrencyRewards,
+                milestoneMaterialRewards,
+                Array.Empty<RunCurrencyReward>(),
+                Array.Empty<RunMaterialReward>())
+        {
+        }
+
+        public RunRewardPayload(
+            IEnumerable<RunCurrencyReward> currencyRewards,
+            IEnumerable<RunMaterialReward> materialRewards,
+            IEnumerable<RunCurrencyReward> milestoneCurrencyRewards,
+            IEnumerable<RunMaterialReward> milestoneMaterialRewards,
+            IEnumerable<RunCurrencyReward> bossCurrencyRewards,
+            IEnumerable<RunMaterialReward> bossMaterialRewards)
         {
             if (currencyRewards == null)
             {
@@ -53,10 +76,22 @@ namespace Survivalon.Run
                 throw new ArgumentNullException(nameof(milestoneMaterialRewards));
             }
 
+            if (bossCurrencyRewards == null)
+            {
+                throw new ArgumentNullException(nameof(bossCurrencyRewards));
+            }
+
+            if (bossMaterialRewards == null)
+            {
+                throw new ArgumentNullException(nameof(bossMaterialRewards));
+            }
+
             this.currencyRewards = Array.AsReadOnly(CopyRewards(currencyRewards));
             this.materialRewards = Array.AsReadOnly(CopyRewards(materialRewards));
             this.milestoneCurrencyRewards = Array.AsReadOnly(CopyRewards(milestoneCurrencyRewards));
             this.milestoneMaterialRewards = Array.AsReadOnly(CopyRewards(milestoneMaterialRewards));
+            this.bossCurrencyRewards = Array.AsReadOnly(CopyRewards(bossCurrencyRewards));
+            this.bossMaterialRewards = Array.AsReadOnly(CopyRewards(bossMaterialRewards));
         }
 
         public static RunRewardPayload Empty => EmptyInstance;
@@ -68,6 +103,10 @@ namespace Survivalon.Run
         public IReadOnlyList<RunCurrencyReward> MilestoneCurrencyRewards => milestoneCurrencyRewards;
 
         public IReadOnlyList<RunMaterialReward> MilestoneMaterialRewards => milestoneMaterialRewards;
+
+        public IReadOnlyList<RunCurrencyReward> BossCurrencyRewards => bossCurrencyRewards;
+
+        public IReadOnlyList<RunMaterialReward> BossMaterialRewards => bossMaterialRewards;
 
         public bool HasCurrencyRewards => currencyRewards.Count > 0;
 
@@ -81,7 +120,13 @@ namespace Survivalon.Run
 
         public bool HasMilestoneRewards => HasMilestoneCurrencyRewards || HasMilestoneMaterialRewards;
 
-        public bool HasRewards => HasOrdinaryRewards || HasMilestoneRewards;
+        public bool HasBossCurrencyRewards => bossCurrencyRewards.Count > 0;
+
+        public bool HasBossMaterialRewards => bossMaterialRewards.Count > 0;
+
+        public bool HasBossRewards => HasBossCurrencyRewards || HasBossMaterialRewards;
+
+        public bool HasRewards => HasOrdinaryRewards || HasMilestoneRewards || HasBossRewards;
 
         private static TReward[] CopyRewards<TReward>(IEnumerable<TReward> rewards)
         {

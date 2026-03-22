@@ -124,6 +124,45 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void ShouldShowBossRewardsOnSeparateLineWhenPresent()
+        {
+            RunResult runResult = new RunResult(
+                BootstrapWorldScenario.ForestGateNodeId,
+                RunResolutionState.Succeeded,
+                new RunRewardPayload(
+                    new[]
+                    {
+                        new RunCurrencyReward(ResourceCategory.SoftCurrency, 1),
+                    },
+                    System.Array.Empty<RunMaterialReward>(),
+                    System.Array.Empty<RunCurrencyReward>(),
+                    System.Array.Empty<RunMaterialReward>(),
+                    System.Array.Empty<RunCurrencyReward>(),
+                    new[]
+                    {
+                        new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 2),
+                    }),
+                1,
+                1,
+                3,
+                0,
+                false,
+                new RunNextActionContext(
+                    canReplayNode: true,
+                    canChooseAnotherNode: true,
+                    canStopSession: true));
+            PostRunStateController postRunStateController = new PostRunStateController(
+                NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
+                runResult);
+
+            string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
+
+            Assert.That(summaryText, Does.Contain("Rewards gained: Soft currency x1"));
+            Assert.That(summaryText, Does.Contain("Boss rewards: Persistent progression material x2"));
+            Assert.That(summaryText, Does.Not.Contain("Milestone rewards:"));
+        }
+
+        [Test]
         public void ShouldRejectMissingPostRunStateController()
         {
             Assert.That(

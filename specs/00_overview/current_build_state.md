@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 059**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, and **059a**.
+This summary reflects completed work through **Milestone 060**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, and **059a**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -64,6 +64,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - defeating the forest `Gate Boss` unlocks `region_002_node_002` / `Cavern Gate`
   - that result is surfaced explicitly in post-run summary text from structured boss-gate unlock data, separate from ordinary route-unlock state
   - the unlocked `Cavern Gate` becomes reachable on return to the world map through the existing bootstrap route graph
+  - successful boss defeat now also grants a distinct boss reward bundle using `Persistent progression material x2`, separate from both ordinary rewards and clear-threshold milestone rewards
 
 ### Auto-battle / hostility / no-manual-combat loop
 - Combat uses deterministic auto-targeting.
@@ -134,6 +135,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Ordinary run rewards currently remain small and repeatable: successful combat runs grant soft currency, and standard combat runs in region-material regions also grant region material.
 - A tracked node reaching its clear threshold now grants a distinct milestone reward using `ResourceCategory.PersistentProgressionMaterial`.
 - That milestone reward is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
+- Successful boss defeat now also grants a separate boss reward bundle:
+  - `Persistent progression material x2`
+  - this is surfaced on its own compact `Boss rewards` line in the post-run summary so boss clears feel more important than ordinary clears without expanding into a broader loot screen
 
 ### One account-wide progression sink
 - The build now has one persistent account-wide upgrade sink stored in `PersistentProgressionState`.
@@ -242,7 +246,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current auto-triggered active skill layer is still interpreted through small hardcoded resolver paths for the single shipped active skill, `Burst Strike`.
 - Standard enemy and boss variety are still intentionally small: one faster baseline standard enemy, one slower sturdier push-oriented standard enemy variant, and one explicit gate-boss profile/encounter currently exist, while broader enemy rosters and faction/content variety are still deferred.
 - Standard-enemy encounter/profile data and boss encounter/profile data now live in separate small catalogs, while current encounter content remains bootstrap-seeded.
-- Boss/gate node progress behavior is still intentionally temporary beyond the new forest-gate unlock result; boss defeat now opens the next gate target, but boss reward differentiation and broader boss clear semantics are still deferred.
+- Boss/gate node progress behavior is still intentionally temporary beyond the new forest-gate unlock result; boss defeat now opens the next gate target and grants one small differentiated boss reward bundle, but broader boss clear semantics and richer boss reward systems are still deferred.
 
 ## Source note
 This file is derived from the milestone notes in `specs/milestone/` plus the current codebase entry flow. It should be updated after each completed milestone so it remains the compact source for current implemented build state.

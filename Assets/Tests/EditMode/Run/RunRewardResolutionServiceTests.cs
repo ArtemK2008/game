@@ -26,6 +26,8 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(rewardPayload.MaterialRewards[0].Amount, Is.EqualTo(1));
             Assert.That(rewardPayload.MilestoneCurrencyRewards, Is.Empty);
             Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(rewardPayload.BossCurrencyRewards, Is.Empty);
+            Assert.That(rewardPayload.BossMaterialRewards, Is.Empty);
         }
 
         [Test]
@@ -41,7 +43,7 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
-        public void ShouldGrantOnlySoftCurrencyForSuccessfulBossCombatRun()
+        public void ShouldGrantBossRewardBundleForSuccessfulBossCombatRun()
         {
             RunRewardResolutionService service = new RunRewardResolutionService();
 
@@ -54,6 +56,10 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(rewardPayload.CurrencyRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.SoftCurrency));
             Assert.That(rewardPayload.CurrencyRewards[0].Amount, Is.EqualTo(1));
             Assert.That(rewardPayload.MaterialRewards, Is.Empty);
+            Assert.That(rewardPayload.BossCurrencyRewards, Is.Empty);
+            Assert.That(rewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.BossMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
             Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
         }
 
@@ -77,6 +83,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(rewardPayload.MaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
             Assert.That(rewardPayload.MaterialRewards[0].Amount, Is.EqualTo(2));
             Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
+            Assert.That(rewardPayload.BossMaterialRewards, Is.Empty);
         }
 
         [Test]
@@ -110,6 +117,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(rewardPayload.MilestoneMaterialRewards, Has.Count.EqualTo(1));
             Assert.That(rewardPayload.MilestoneMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
             Assert.That(rewardPayload.MilestoneMaterialRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(rewardPayload.BossMaterialRewards, Is.Empty);
         }
 
         [Test]
@@ -138,6 +146,7 @@ namespace Survivalon.Tests.EditMode.Run
                 rewardPayload.MilestoneMaterialRewards[0].ResourceCategory,
                 Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
             Assert.That(rewardPayload.MilestoneMaterialRewards[0].Amount, Is.EqualTo(1));
+            Assert.That(rewardPayload.BossMaterialRewards, Is.Empty);
         }
 
         private static RunProgressResolution CreateClearThresholdProgressResolution(bool didUnlockRoute)
