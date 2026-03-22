@@ -32,7 +32,7 @@ namespace Survivalon.Tests.EditMode.State
             sessionContext.RecordSelection(pushNodeId, true);
             sessionContext.RecordNodeEntry(pushNodeId);
             sessionContext.RecordSelection(revisitNodeId, false);
-            sessionContext.RecordRunReturned(pushNodeId);
+            sessionContext.RecordReturnedToWorldContext(pushNodeId);
 
             Assert.That(sessionContext.HasLastSelectedNode, Is.True);
             Assert.That(sessionContext.LastSelectedNodeId, Is.EqualTo(revisitNodeId));

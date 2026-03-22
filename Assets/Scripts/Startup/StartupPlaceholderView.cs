@@ -113,7 +113,7 @@ namespace Survivalon.Startup
             {
                 case StartupEntryTarget.MainMenuPlaceholder:
                     return
-                        "Session stopped at a safe post-run point.\n" +
+                        "Session stopped at a safe world or service point.\n" +
                         "This placeholder stands in for the future main menu/system flow.\n" +
                         "You can close the session here or resume world flow later.";
                 case StartupEntryTarget.WorldViewPlaceholder:

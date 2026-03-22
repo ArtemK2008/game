@@ -46,7 +46,8 @@ namespace Survivalon.World
                 worldNodeStateResolver.ResolveNodeState(worldGraph, worldState, enterableNode.NodeId),
                 originNodeId,
                 enterableNode.CombatEncounter,
-                enterableNode.BossProgressionGate);
+                enterableNode.BossProgressionGate,
+                enterableNode.TownServiceContext);
             return true;
         }
 

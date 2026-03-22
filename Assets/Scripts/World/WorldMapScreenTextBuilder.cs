@@ -63,7 +63,7 @@ namespace Survivalon.World
                 $"Selectable destinations: {selectableCount}\n" +
                 $"Forward route options: {forwardSelectableNodeCount} ({routeChoiceLabel})\n" +
                 $"Selected node: {selectedNodeLabel}\n" +
-                "Select a reachable node, then confirm entry to start the placeholder node flow.";
+                "Select a reachable node, then confirm entry to start the current node flow.";
         }
 
         public static string BuildCharacterSelectionText(IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions)

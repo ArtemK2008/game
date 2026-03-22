@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Towns;
 
 namespace Survivalon.World
 {
@@ -35,7 +36,12 @@ namespace Survivalon.World
                     NodeType.Combat,
                     NodeState.Available,
                     CombatStandardEncounterCatalog.EnemyUnitEncounter),
-                new WorldNode(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.ServiceOrProgression, NodeState.Available),
+                new WorldNode(
+                    BootstrapWorldScenario.CavernServiceNodeId,
+                    BootstrapWorldScenario.CavernRegionId,
+                    NodeType.ServiceOrProgression,
+                    NodeState.Available,
+                    townServiceContext: TownServiceContextCatalog.CavernServiceHub),
                 new WorldNode(
                     BootstrapWorldScenario.CavernGateNodeId,
                     BootstrapWorldScenario.CavernRegionId,
