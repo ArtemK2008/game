@@ -2,10 +2,12 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Survivalon.Core;
-using Survivalon.World;
 
 namespace Survivalon.Combat
 {
+    /// <summary>
+    /// Рисует компактный placeholder-вид боя для активного run HUD и карточек сущностей.
+    /// </summary>
     public sealed class CombatShellView : MonoBehaviour
     {
         public const float PreferredHeight = 304f;

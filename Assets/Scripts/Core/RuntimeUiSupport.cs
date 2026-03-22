@@ -4,8 +4,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
-namespace Survivalon.World
+namespace Survivalon.Core
 {
+    /// <summary>
+    /// Общий helper для сборки и базовой настройки runtime UI в placeholder-экранах.
+    /// </summary>
     public static class RuntimeUiSupport
     {
         public static void EnsureInputSystemEventSystem()

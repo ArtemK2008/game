@@ -7,6 +7,9 @@ using Survivalon.Run;
 
 namespace Survivalon.World
 {
+    /// <summary>
+    /// Показывает placeholder-экран узла и связывает run, combat и post-run панели.
+    /// </summary>
     public sealed class NodePlaceholderScreen : MonoBehaviour
     {
         private Canvas canvas;

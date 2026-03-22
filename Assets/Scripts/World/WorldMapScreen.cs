@@ -10,6 +10,9 @@ using Survivalon.State.Persistence;
 
 namespace Survivalon.World
 {
+    /// <summary>
+    /// Показывает placeholder-карту мира и связывает экран с world-map контроллером и build controls.
+    /// </summary>
     public sealed class WorldMapScreen : MonoBehaviour
     {
         private const float SummaryPreferredHeight = 214f;
