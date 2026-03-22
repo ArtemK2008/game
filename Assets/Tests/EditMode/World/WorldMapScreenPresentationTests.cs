@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using Survivalon.Core;
@@ -11,17 +12,15 @@ namespace Survivalon.Tests.EditMode.World
     public sealed class WorldMapScreenPresentationTests
     {
         [Test]
-        public void BuildSummaryText_ShouldRejectMissingNodeOptions()
+        public void BuildSummaryText_ShouldRejectMissingWorldStateSummary()
         {
             Assert.That(
                 () => WorldMapScreenTextBuilder.BuildSummaryText(
                     null,
                     hasSelectedNode: false,
                     selectedNodeId: default,
-                    sessionContext: null,
-                    hasForwardRouteChoice: false,
-                    forwardSelectableNodeCount: 0),
-                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeOptions"));
+                    sessionContext: null),
+                Throws.ArgumentNullException.With.Property("ParamName").EqualTo("worldStateSummary"));
         }
 
         [Test]
@@ -32,26 +31,39 @@ namespace Survivalon.Tests.EditMode.World
             sessionContext.RecordReturnedToWorldContext(new NodeId("region_001_node_002"));
 
             string summaryText = WorldMapScreenTextBuilder.BuildSummaryText(
-                new[]
-                {
-                    CreateNodeOption("region_001_node_002", NodeState.InProgress, isSelectable: false, isCurrentContext: true, isSelected: false),
-                    CreateNodeOption("region_001_node_004", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: true),
-                    CreateNodeOption("region_002_node_001", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: false),
-                },
+                CreateWorldStateSummary(
+                    "Verdant Frontier",
+                    "region_001",
+                    "region_001_node_002",
+                    NodeState.InProgress,
+                    selectableDestinationCount: 3,
+                    new[]
+                    {
+                        new NodeId("region_001_node_004"),
+                        new NodeId("region_002_node_001"),
+                    },
+                    new[]
+                    {
+                        new NodeId("region_001_node_001"),
+                    },
+                    new[]
+                    {
+                        new NodeId("region_001_node_003"),
+                    }),
                 hasSelectedNode: true,
                 selectedNodeId: new NodeId("region_001_node_004"),
-                sessionContext: sessionContext,
-                hasForwardRouteChoice: true,
-                forwardSelectableNodeCount: 2);
+                sessionContext: sessionContext);
 
             Assert.That(summaryText, Is.EqualTo(
-                "Current node: region_001_node_002\n" +
-                "Recent node: region_001_node_002\n" +
-                "Recent push target: region_001_node_004\n" +
-                "Last selected node: region_001_node_004\n" +
-                "Selectable destinations: 2\n" +
-                "Forward route options: 2 (Branch choice available)\n" +
-                "Selected node: region_001_node_004\n" +
+                "Location: Verdant Frontier | Region: region_001\n" +
+                "Current node: region_001_node_002 (InProgress) | Selected: region_001_node_004\n" +
+                "Reachable destinations: 3 (2 forward / 1 backtrack-farm)\n" +
+                "Forward routes: region_001_node_004, region_002_node_001\n" +
+                "Backtrack / farm: region_001_node_001\n" +
+                "Blocked links: region_001_node_003\n" +
+                "Recent: region_001_node_002 | Push target: region_001_node_004 | Last selected: region_001_node_004\n" +
+                "State legend: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked\n" +
+                "Status legend: Current = active anchor | Selectable = can enter now | Known = visible but not enterable\n" +
                 "Select a reachable node, then confirm entry to start the current node flow."));
         }
 
@@ -59,21 +71,31 @@ namespace Survivalon.Tests.EditMode.World
         public void BuildSummaryText_ShouldShowFallbackLabelsWithoutSelectionOrSessionContext()
         {
             string summaryText = WorldMapScreenTextBuilder.BuildSummaryText(
-                new[]
-                {
-                    CreateNodeOption("region_001_node_002", NodeState.InProgress, isSelectable: false, isCurrentContext: true, isSelected: false),
-                },
+                CreateWorldStateSummary(
+                    "Verdant Frontier",
+                    "region_001",
+                    "region_001_node_002",
+                    NodeState.InProgress,
+                    selectableDestinationCount: 1,
+                    System.Array.Empty<NodeId>(),
+                    new[]
+                    {
+                        new NodeId("region_001_node_001"),
+                    },
+                    System.Array.Empty<NodeId>()),
                 hasSelectedNode: false,
                 selectedNodeId: default,
-                sessionContext: null,
-                hasForwardRouteChoice: false,
-                forwardSelectableNodeCount: 1);
+                sessionContext: null);
 
-            Assert.That(summaryText, Does.Contain("Recent node: none"));
-            Assert.That(summaryText, Does.Contain("Recent push target: none"));
-            Assert.That(summaryText, Does.Contain("Last selected node: none"));
-            Assert.That(summaryText, Does.Contain("Selected node: none"));
-            Assert.That(summaryText, Does.Contain("Forward route options: 1 (Single forward route)"));
+            Assert.That(summaryText, Does.Contain("Location: Verdant Frontier | Region: region_001"));
+            Assert.That(summaryText, Does.Contain("Current node: region_001_node_002 (InProgress) | Selected: none"));
+            Assert.That(summaryText, Does.Contain("Reachable destinations: 1 (0 forward / 1 backtrack-farm)"));
+            Assert.That(summaryText, Does.Contain("Forward routes: none"));
+            Assert.That(summaryText, Does.Contain("Backtrack / farm: region_001_node_001"));
+            Assert.That(summaryText, Does.Contain("Blocked links: none"));
+            Assert.That(summaryText, Does.Contain("Recent: none | Push target: none | Last selected: none"));
+            Assert.That(summaryText, Does.Contain("State legend: Available = enterable"));
+            Assert.That(summaryText, Does.Contain("Status legend: Current = active anchor"));
         }
 
         [Test]
@@ -202,11 +224,13 @@ namespace Survivalon.Tests.EditMode.World
                     isSelectable: true,
                     isCurrentContext: false,
                     isSelected: false,
-                    "Echo Caverns"));
+                    "Echo Caverns",
+                    WorldMapPathRole.ForwardRoute));
 
             Assert.That(labelText, Is.EqualTo(
                 "Echo Caverns / region_002_node_001\n" +
-                "Type: ServiceOrProgression | State: Available | Selectable"));
+                "Path: Forward route | Type: ServiceOrProgression | State: Available\n" +
+                "Status: Selectable"));
         }
 
         [Test]
@@ -335,7 +359,33 @@ namespace Survivalon.Tests.EditMode.World
                 isSelectable,
                 isCurrentContext,
                 isSelected,
-                "Verdant Frontier");
+                "Verdant Frontier",
+                isCurrentContext
+                    ? WorldMapPathRole.CurrentContext
+                    : isSelectable
+                        ? WorldMapPathRole.ForwardRoute
+                        : WorldMapPathRole.BlockedPath);
+        }
+
+        private static WorldMapWorldStateSummary CreateWorldStateSummary(
+            string locationDisplayName,
+            string regionIdValue,
+            string currentNodeIdValue,
+            NodeState currentNodeState,
+            int selectableDestinationCount,
+            IReadOnlyList<NodeId> forwardRouteNodeIds,
+            IReadOnlyList<NodeId> backtrackOrFarmNodeIds,
+            IReadOnlyList<NodeId> blockedLinkedNodeIds)
+        {
+            return new WorldMapWorldStateSummary(
+                locationDisplayName,
+                new RegionId(regionIdValue),
+                new NodeId(currentNodeIdValue),
+                currentNodeState,
+                selectableDestinationCount,
+                forwardRouteNodeIds,
+                backtrackOrFarmNodeIds,
+                blockedLinkedNodeIds);
         }
     }
 }

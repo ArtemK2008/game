@@ -88,8 +88,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
-                Assert.That(ContainsText(hostObject, "Recent node: region_002_node_001"), Is.True);
-                Assert.That(ContainsText(hostObject, "Recent push target: region_002_node_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Recent: region_002_node_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Push target: region_002_node_001"), Is.True);
             }
             finally
             {
@@ -122,6 +122,29 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(storage.HasSavedState, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldShowReadableWorldStateSummaryOnInitialWorldMap()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier | Region: region_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Current node: region_001_node_002 (InProgress) | Selected: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Forward routes: region_001_node_004, region_002_node_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Backtrack / farm: region_001_node_001"), Is.True);
+                Assert.That(ContainsText(hostObject, "Blocked links: region_001_node_003"), Is.True);
+                Assert.That(ContainsText(hostObject, "State legend: Available = enterable"), Is.True);
             }
             finally
             {

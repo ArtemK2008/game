@@ -12,7 +12,8 @@ namespace Survivalon.World
             bool isSelectable,
             bool isCurrentContext,
             bool isSelected,
-            string locationDisplayName = null)
+            string locationDisplayName = null,
+            WorldMapPathRole pathRole = WorldMapPathRole.BlockedPath)
         {
             NodeId = nodeId;
             RegionId = regionId;
@@ -24,6 +25,7 @@ namespace Survivalon.World
             LocationDisplayName = string.IsNullOrWhiteSpace(locationDisplayName)
                 ? regionId.Value
                 : locationDisplayName;
+            PathRole = pathRole;
         }
 
         public NodeId NodeId { get; }
@@ -41,6 +43,8 @@ namespace Survivalon.World
         public bool IsSelected { get; }
 
         public string LocationDisplayName { get; }
+
+        public WorldMapPathRole PathRole { get; }
     }
 }
 
