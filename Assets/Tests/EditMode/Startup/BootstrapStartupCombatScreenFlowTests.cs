@@ -1,9 +1,12 @@
 using NUnit.Framework;
+using Survivalon.Characters;
 using UnityEngine;
 using Survivalon.Combat;
 using Survivalon.Core;
 using Survivalon.Data.Progression;
+using Survivalon.Startup;
 using Survivalon.State.Persistence;
+using Survivalon.Towns;
 using Survivalon.World;
 using Survivalon.Tests.EditMode.World;
 
@@ -267,11 +270,66 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 CreateAndInitializeBootstrap(secondHostObject, storage);
 
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(secondHostObject), Is.EqualTo(0));
                 Assert.That(CountActiveComponents<WorldMapScreen>(secondHostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(secondHostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<TownServiceScreen>(secondHostObject), Is.EqualTo(0));
                 Assert.That(ContainsText(secondHostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Current: Forest Farm (In progress) | Selected: none"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Run finished."), Is.False);
+                Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(firstHostObject);
+                Object.DestroyImmediate(secondHostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldNotResumeTemporaryRunOnlyUpgradeChoiceAfterRestartLoad()
+        {
+            GameObject firstHostObject = new GameObject("BootstrapStartupHost_First");
+            GameObject secondHostObject = new GameObject("BootstrapStartupHost_Second");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+
+            Assert.That(selectionService.TrySelectCharacter(seededGameState, "character_striker"), Is.True);
+            storage.Seed(seededGameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(firstHostObject, storage);
+
+                EnterNodeFromWorldMap(firstHostObject, "region_001_node_004_Button");
+                Assert.That(ContainsText(firstHostObject, "Run-only skill choice"), Is.True);
+                FindButton(
+                    firstHostObject,
+                    $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton")
+                    .onClick.Invoke();
+                Assert.That(ContainsText(firstHostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(storage.SaveCallCount, Is.EqualTo(0));
+
+                CreateAndInitializeBootstrap(secondHostObject, storage);
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(secondHostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<WorldMapScreen>(secondHostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(secondHostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<TownServiceScreen>(secondHostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(secondHostObject, "Selected character: Striker"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.False);
+                Assert.That(ContainsText(secondHostObject, "Run finished."), Is.False);
+
+                EnterNodeFromWorldMap(secondHostObject, "region_001_node_004_Button");
+
+                Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.True);
+                Assert.That(
+                    ContainsText(
+                        secondHostObject,
+                        "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
+                    Is.True);
+                Assert.That(ContainsText(secondHostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.False);
             }
             finally
             {
