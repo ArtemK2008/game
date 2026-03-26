@@ -371,6 +371,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ## Source note
 This file is derived from the milestone notes in `specs/milestone/` plus the current codebase entry flow. It should be updated after each completed milestone so it remains the compact source for current implemented build state.
+- Milestone navigation and note-writing aids now live in `specs/milestone/status_index.md` and `specs/01_workflow/milestone_note_template.md`.
 - Shared cross-domain identifiers and category types are now physically grouped under `Assets/Scripts/Core/`, with matching EditMode ownership tests under `Assets/Tests/EditMode/Core/`.
 - The shared runtime UI helper used by the placeholder startup, world, combat, and town screens now also lives under `Assets/Scripts/Core/`, with focused EditMode smoke coverage under `Assets/Tests/EditMode/Core/`.
 - The character slice now keeps authored/static character content under `Assets/Scripts/Data/Characters/`, while runtime character services, runtime option models, and their direct EditMode tests live under `Assets/Scripts/Characters/` and `Assets/Tests/EditMode/Characters/`.
