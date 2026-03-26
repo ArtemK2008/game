@@ -27,7 +27,9 @@ When docs overlap, use this precedence:
 - `08_interface/` — UX, menus, settings, persistence/offline flow
 - `09_presentation/` — visual style and sound/music
 - `10_art/` — gameplay-facing art production rules, asset pipeline specs, sprite/animation delivery contracts
-- `milestone/` — short records of completed implementation steps
+- `milestone/` — numbered milestone notes, suffix follow-up notes, and the milestone status index
+- `milestone/refactors/` — behavior-preserving refactor milestone notes
+- `milestone/docs/` — docs-only milestone notes
 
 ---
 
@@ -36,13 +38,13 @@ For any task:
 1. Read the directly relevant spec.
 2. Read its foundational dependencies if needed.
 3. Implement only the current small milestone.
-4. Add a milestone file in `specs/milestone/`.
+4. Add the milestone file in the appropriate location under `specs/milestone/`.
 5. Stage all project-related created/changed files with `git add`.
 6. Do not commit; the user commits manually.
 
 When a task depends on art assets, also read the relevant files in `10_art/` together with the gameplay-facing spec they support.
 Open questions are not permission to invent behavior during implementation; surface the gap or conflict instead.
-Use `specs/milestone/status_index.md` to find the current next numbered target and milestone classifications.
+Use `specs/milestone/status_index.md` to find the current next numbered target, milestone classifications, and the milestone-note folder split.
 Use `specs/01_workflow/milestone_note_template.md` when writing a new milestone note.
 
 ---

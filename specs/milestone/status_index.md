@@ -4,6 +4,11 @@ Current next implementation target: Milestone 074
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
+Folder split:
+- numbered milestone notes and suffix follow-up notes live in `specs/milestone/`
+- refactor notes live in `specs/milestone/refactors/`
+- docs-only notes live in `specs/milestone/docs/`
+
 ## Legend
 Type:
 - `feature`: planned implementation milestone that changes delivered scope
@@ -144,3 +149,4 @@ refactor07 | refactor | Shared enum/display-name formatting | completed | shared
 id | type | title | status | depends on / note
 docs01 | follow-up | Milestone navigation and workflow cleanup | completed | docs-only navigation aid
 docs02 | follow-up | Milestone note normalization and index cleanup | completed | docs-only normalization pass
+docs04 | follow-up | Separate refactor and docs notes from milestone history | completed | docs-only organization cleanup
