@@ -59,7 +59,12 @@ namespace Survivalon.Tests.EditMode.World
         {
             WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
             PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
-            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+            SessionContextState sessionContext = new SessionContextState();
+            sessionContext.OfferReturnToWorldReentry(new NodeId("region_001_node_002"));
+            WorldMapScreenController controller = new WorldMapScreenController(
+                worldGraph,
+                worldState,
+                sessionContext: sessionContext);
 
             bool hasQuickRepeatNode = controller.TryGetQuickRepeatNode(
                 out NodeId quickRepeatNodeId,
@@ -70,6 +75,28 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(quickRepeatNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
             Assert.That(quickRepeatNodeDisplayName, Is.EqualTo("Raider Trail"));
             Assert.That(quickRepeatNodeType, Is.EqualTo(NodeType.Combat));
+        }
+
+        [Test]
+        public void ShouldNotResolveQuickRepeatNodeWithoutExplicitReturnToWorldOffer()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            SessionContextState sessionContext = new SessionContextState();
+            WorldMapScreenController controller = new WorldMapScreenController(
+                worldGraph,
+                worldState,
+                sessionContext: sessionContext);
+
+            bool hasQuickRepeatNode = controller.TryGetQuickRepeatNode(
+                out NodeId quickRepeatNodeId,
+                out string quickRepeatNodeDisplayName,
+                out NodeType quickRepeatNodeType);
+
+            Assert.That(hasQuickRepeatNode, Is.False);
+            Assert.That(quickRepeatNodeId, Is.EqualTo(default(NodeId)));
+            Assert.That(quickRepeatNodeDisplayName, Is.Null);
+            Assert.That(quickRepeatNodeType, Is.EqualTo(default(NodeType)));
         }
 
         [Test]

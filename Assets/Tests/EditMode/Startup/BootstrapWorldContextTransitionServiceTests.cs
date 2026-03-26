@@ -26,6 +26,8 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(entryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
             Assert.That(sessionContext.HasRecentNode, Is.True);
             Assert.That(sessionContext.RecentNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            Assert.That(sessionContext.HasReturnToWorldReentryOffer, Is.True);
+            Assert.That(sessionContext.ReturnToWorldReentryNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
             Assert.That(storage.SavedGameState, Is.Not.Null);
             Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
             Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
@@ -50,6 +52,7 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(entryTarget, Is.EqualTo(StartupEntryTarget.MainMenuPlaceholder));
             Assert.That(sessionContext.HasRecentNode, Is.True);
             Assert.That(sessionContext.RecentNodeId, Is.EqualTo(new NodeId("region_001_node_004")));
+            Assert.That(sessionContext.HasReturnToWorldReentryOffer, Is.False);
             Assert.That(storage.SavedGameState, Is.Not.Null);
             Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
             Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_001_node_004")));

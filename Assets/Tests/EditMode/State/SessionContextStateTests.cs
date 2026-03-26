@@ -41,6 +41,33 @@ namespace Survivalon.Tests.EditMode.State
             Assert.That(sessionContext.HasRecentPushTarget, Is.True);
             Assert.That(sessionContext.RecentPushTargetNodeId, Is.EqualTo(pushNodeId));
         }
+
+        [Test]
+        public void ShouldOfferAndConsumeReturnToWorldReentryWithoutChangingOrdinarySeedBehavior()
+        {
+            PersistentWorldState worldState = new PersistentWorldState();
+            NodeId currentNodeId = new NodeId("region_001_node_002");
+            NodeId offeredNodeId = new NodeId("region_001_node_004");
+            SessionContextState sessionContext = new SessionContextState();
+
+            worldState.SetCurrentNode(currentNodeId);
+
+            sessionContext.SeedFromWorldState(worldState);
+
+            Assert.That(sessionContext.HasReturnToWorldReentryOffer, Is.False);
+            Assert.That(sessionContext.RecentNodeId, Is.EqualTo(currentNodeId));
+
+            sessionContext.OfferReturnToWorldReentry(offeredNodeId);
+
+            Assert.That(sessionContext.HasReturnToWorldReentryOffer, Is.True);
+            Assert.That(sessionContext.ReturnToWorldReentryNodeId, Is.EqualTo(offeredNodeId));
+            Assert.That(sessionContext.RecentNodeId, Is.EqualTo(offeredNodeId));
+
+            sessionContext.RecordNodeEntry(offeredNodeId);
+
+            Assert.That(sessionContext.HasReturnToWorldReentryOffer, Is.False);
+            Assert.That(sessionContext.RecentNodeId, Is.EqualTo(offeredNodeId));
+        }
     }
 }
 

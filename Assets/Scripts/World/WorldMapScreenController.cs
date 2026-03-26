@@ -123,7 +123,23 @@ namespace Survivalon.World
 
         public bool TryGetQuickRepeatNode(out NodeId nodeId, out string nodeDisplayName, out NodeType nodeType)
         {
+            if (sessionContext == null || !sessionContext.HasReturnToWorldReentryOffer)
+            {
+                nodeId = default;
+                nodeDisplayName = null;
+                nodeType = default;
+                return false;
+            }
+
             NodeId currentContextNodeId = ResolveCurrentContextNodeId();
+            if (sessionContext.ReturnToWorldReentryNodeId != currentContextNodeId)
+            {
+                nodeId = default;
+                nodeDisplayName = null;
+                nodeType = default;
+                return false;
+            }
+
             NodeState currentContextNodeState = worldNodeStateResolver.ResolveNodeState(
                 worldGraph,
                 worldState,
