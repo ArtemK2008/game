@@ -4,12 +4,12 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 073**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, and **refactor06b**.
+This summary reflects completed work through **Milestone 074**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
 
-From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. At post-run, the player can replay the node, return to the world map, or stop the session. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. The current cavern service node now opens a distinct town/service shell instead of the generic node placeholder, while broader non-combat content remains placeholder-level.
+From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. Entering that resolved post-run boundary now autosaves the durable run outcome before the player chooses replay, return to world, or stop. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. The current cavern service node now opens a distinct town/service shell instead of the generic node placeholder, while broader non-combat content remains placeholder-level.
 
 Manual actions currently required:
 - select a node on the world map
@@ -24,7 +24,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### Bootstrap / startup flow
 - The project launches through `BootstrapScene` and `BootstrapStartup`.
 - Startup resolves into a world-map safe context or a main-menu placeholder target.
-- Safe-stop persistence exists for resolved world-level context; startup can reload that safe context.
+- Safe-stop persistence exists for resolved world-level context, and resolved post-run now also autosaves into that same safe resume path before the player leaves the post-run screen.
 - The startup/bootstrap runtime flow is now grouped under a dedicated `Startup` domain folder/namespace for clearer ownership and navigation.
 
 ### World map and node entry
@@ -80,8 +80,13 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - That next-action guidance uses friendly node/service names and refreshes from current world/progression/resource state, so the recommendation changes when forward paths or service opportunities change.
 - The post-run recommendation logic now also keeps push-target resolution and service-hub opportunity resolution separate, so utility/service nodes are not treated as forward push targets, including the boss-unlock shortcut path.
 - Ordinary route unlock state and boss-gate unlock state are now tracked separately in run results, so the summary no longer relies on one overloaded unlock flag.
+- Entering the resolved post-run boundary now also persists the already-applied durable run outcome immediately:
+  - world node state, node progress, and unlock changes
+  - persistent resources and progression balances
+  - persistent character/build/loadout state already carried by game state
+  - safe resume context for returning to a world-level screen later
 - Replay re-enters the same node cleanly.
-- Return/stop save a world-level safe resume context.
+- Return/stop still save a world-level safe resume context after the player leaves post-run.
 
 ### Town / service shell
 - The current build now has one explicit town-equivalent service context:
@@ -202,7 +207,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### Basic soft currency
 - The current economy model now has one live soft currency using `ResourceCategory.SoftCurrency`.
 - Successful combat-compatible runs currently grant a small soft-currency reward through the structured run reward payload.
-- Granted soft currency is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
+- Granted soft currency is applied into persistent resource balances during run resolution and is now autosaved as soon as the resolved post-run boundary is entered, before any later return-to-world or stop action.
 - The current post-run summary now surfaces the granted soft-currency reward in readable aggregated form.
 - A minimal domain spending path exists through persistent resource balances, so soft currency can be added, spent, and rejected cleanly on overspend.
 
@@ -211,7 +216,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Successful standard combat runs in regions whose resource identity is `RegionMaterial` currently grant a small region-material reward through the structured run reward payload.
 - The shipped `Verdant Frontier` farm node now also grants one extra region material through node-owned content, so that run currently pays `Region material x2` before any purchased farm-yield project bonus.
 - A purchased farm-oriented account-wide upgrade can increase that ordinary region-material reward output on repeatable standard combat runs.
-- Granted region material is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
+- Granted region material is applied into persistent resource balances during run resolution and is now autosaved as soon as the resolved post-run boundary is entered, before any later return-to-world or stop action.
 - The current post-run summary aggregates the region-material reward alongside soft currency when both are granted.
 - Reward/source presentation is now location-aware in the shipped bootstrap content, so the current post-run flow names the reward source based on the entered location identity rather than showing only generic reward text.
 - In the current shipped loop, that means earlier frontier farming now has one explicit lasting-value path after deeper progression opens:
@@ -222,7 +227,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### Ordinary vs milestone rewards
 - Ordinary run rewards currently remain small and repeatable: successful combat runs grant soft currency, and standard combat runs in region-material regions also grant region material.
 - A tracked node reaching its clear threshold now grants a distinct milestone reward using `ResourceCategory.PersistentProgressionMaterial`.
-- That milestone reward is applied into persistent resource balances during run resolution and is saved through the existing resolved world-context persistence boundary when the player returns to world or stops the session.
+- That milestone reward is applied into persistent resource balances during run resolution and is now autosaved as soon as the resolved post-run boundary is entered, before any later return-to-world or stop action.
 - Successful boss defeat now also grants a separate boss reward bundle:
   - `Persistent progression material x2`
   - this is surfaced on its own compact `Boss rewards` line in the post-run summary so boss clears feel more important than ordinary clears without expanding into a broader loot screen

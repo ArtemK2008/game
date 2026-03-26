@@ -32,6 +32,16 @@ namespace Survivalon.Startup
             return StartupEntryTarget.MainMenuPlaceholder;
         }
 
+        public void PersistResolvedPostRunBoundary(PersistentGameState gameState)
+        {
+            if (gameState == null)
+            {
+                throw new ArgumentNullException(nameof(gameState));
+            }
+
+            persistenceService.SaveResolvedWorldContext(gameState);
+        }
+
         private void RecordAndPersist(
             PersistentGameState gameState,
             SessionContextState sessionContext,

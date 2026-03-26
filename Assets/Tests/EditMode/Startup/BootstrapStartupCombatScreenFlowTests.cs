@@ -149,6 +149,44 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldAutosaveResolvedRunStateWhenEnteringPostRunBeforeReturnOrStop()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                Assert.That(storage.SaveCallCount, Is.EqualTo(0));
+
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(storage.SaveCallCount, Is.EqualTo(1));
+                Assert.That(storage.SavedGameState, Is.Not.Null);
+                Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
+                Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
+                Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_001_node_004")));
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
+                Assert.That(nodeState.UnlockProgress, Is.EqualTo(1));
+                Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
+                Assert.That(
+                    storage.SavedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
+                    Is.True);
+                Assert.That(characterState.ProgressionRank, Is.EqualTo(1));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldReturnToWorldMapAfterAutoResolvedCombatRun()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
@@ -177,6 +215,68 @@ namespace Survivalon.Tests.EditMode.Startup
             finally
             {
                 Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldKeepReplayFlowWorkingAfterResolvedPostRunAutosave()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(storage.SaveCallCount, Is.EqualTo(1));
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+                Assert.That(storage.SaveCallCount, Is.EqualTo(1));
+
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(storage.SaveCallCount, Is.EqualTo(2));
+                Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
+                Assert.That(nodeState.UnlockProgress, Is.EqualTo(2));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(2));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(4));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldResumeToWorldMapFromResolvedPostRunAutosaveInsteadOfReopeningRunState()
+        {
+            GameObject firstHostObject = new GameObject("BootstrapStartupHost_First");
+            GameObject secondHostObject = new GameObject("BootstrapStartupHost_Second");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(firstHostObject, storage);
+
+                EnterNodeFromWorldMap(firstHostObject, "region_001_node_004_Button");
+                AdvanceToPostRun(firstHostObject);
+
+                Assert.That(storage.SaveCallCount, Is.EqualTo(1));
+
+                CreateAndInitializeBootstrap(secondHostObject, storage);
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(secondHostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(secondHostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(secondHostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Current: Forest Farm (In progress) | Selected: none"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Run finished."), Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(firstHostObject);
+                Object.DestroyImmediate(secondHostObject);
             }
         }
 

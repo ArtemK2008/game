@@ -55,6 +55,26 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_001_node_004")));
         }
 
+        [Test]
+        public void ShouldPersistResolvedPostRunBoundaryWithoutChangingEntryTargetFlow()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.WorldState.SetCurrentNode(new NodeId("region_001_node_004"));
+            gameState.WorldState.SetLastSafeNode(new NodeId("region_001_node_002"));
+            gameState.ResourceBalances.Add(ResourceCategory.SoftCurrency, 2);
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            BootstrapWorldContextTransitionService transitionService = new BootstrapWorldContextTransitionService(
+                new SafeResumePersistenceService(storage));
+
+            transitionService.PersistResolvedPostRunBoundary(gameState);
+
+            Assert.That(storage.SavedGameState, Is.Not.Null);
+            Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
+            Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
+            Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_001_node_004")));
+            Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(2));
+        }
+
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
         {
             public PersistentGameState SavedGameState { get; private set; }
