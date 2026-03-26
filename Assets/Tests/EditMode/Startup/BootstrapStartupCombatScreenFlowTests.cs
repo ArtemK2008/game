@@ -316,9 +316,10 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<TownServiceScreen>(secondHostObject), Is.EqualTo(0));
                 Assert.That(ContainsText(secondHostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Current: Forest Farm (In progress) | Selected: none"), Is.True);
+                Assert.That(FindButton(secondHostObject, "EnterSelectedNodeButton").interactable, Is.False);
                 Assert.That(
                     FindButton(secondHostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
-                    Is.EqualTo("Replay Forest Farm"));
+                    Is.EqualTo("Select a reachable node to enter"));
                 Assert.That(ContainsText(secondHostObject, "Run finished."), Is.False);
                 Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.False);
                 Assert.That(

@@ -19,7 +19,7 @@ namespace Survivalon.Startup
             SessionContextState sessionContext,
             NodeId contextNodeId)
         {
-            RecordAndPersist(gameState, sessionContext, contextNodeId);
+            RecordAndPersist(gameState, sessionContext, contextNodeId, offerReturnToWorldReentry: true);
             return StartupEntryTarget.WorldViewPlaceholder;
         }
 
@@ -28,7 +28,7 @@ namespace Survivalon.Startup
             SessionContextState sessionContext,
             NodeId contextNodeId)
         {
-            RecordAndPersist(gameState, sessionContext, contextNodeId);
+            RecordAndPersist(gameState, sessionContext, contextNodeId, offerReturnToWorldReentry: false);
             return StartupEntryTarget.MainMenuPlaceholder;
         }
 
@@ -45,7 +45,8 @@ namespace Survivalon.Startup
         private void RecordAndPersist(
             PersistentGameState gameState,
             SessionContextState sessionContext,
-            NodeId contextNodeId)
+            NodeId contextNodeId,
+            bool offerReturnToWorldReentry)
         {
             if (gameState == null)
             {
@@ -57,7 +58,16 @@ namespace Survivalon.Startup
                 throw new ArgumentNullException(nameof(sessionContext));
             }
 
-            sessionContext.RecordReturnedToWorldContext(contextNodeId);
+            if (offerReturnToWorldReentry)
+            {
+                sessionContext.OfferReturnToWorldReentry(contextNodeId);
+            }
+            else
+            {
+                sessionContext.RecordReturnedToWorldContext(contextNodeId);
+                sessionContext.ConsumeReturnToWorldReentryOffer();
+            }
+
             persistenceService.SaveResolvedWorldContext(gameState);
         }
     }

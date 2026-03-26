@@ -139,6 +139,7 @@ id | type | title | status | depends on / note
 073a | follow-up | Cleanup post-run next-action recommendation boundaries | completed | after 073
 073b | follow-up | Cleanup post-run next-action strict push targets | completed | after 073
 077a | follow-up | Cleanup offline-progress compatibility boundaries | completed | after 077
+078a | follow-up | Tighten low-friction replay offer boundary | completed | after 078
 
 ## Refactor Milestones
 id | type | title | status | depends on / note

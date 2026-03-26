@@ -164,6 +164,7 @@ namespace Survivalon.World
 
             if (screenController.TryGetSelectedNodeId(out NodeId selectedNodeId))
             {
+                screenController.SessionContext?.ConsumeReturnToWorldReentryOffer();
                 onNodeEntryRequested(selectedNodeId);
                 return;
             }
@@ -173,6 +174,7 @@ namespace Survivalon.World
                 return;
             }
 
+            screenController.SessionContext?.ConsumeReturnToWorldReentryOffer();
             onNodeEntryRequested(quickRepeatNodeId);
         }
 

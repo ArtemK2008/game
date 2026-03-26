@@ -9,6 +9,7 @@ namespace Survivalon.State
         private string recentNodeIdValue = string.Empty;
         private string recentPushTargetNodeIdValue = string.Empty;
         private string lastSelectedNodeIdValue = string.Empty;
+        private string returnToWorldReentryNodeIdValue = string.Empty;
 
         public bool HasRecentNode => !string.IsNullOrWhiteSpace(recentNodeIdValue);
 
@@ -21,6 +22,10 @@ namespace Survivalon.State
         public bool HasLastSelectedNode => !string.IsNullOrWhiteSpace(lastSelectedNodeIdValue);
 
         public NodeId LastSelectedNodeId => new NodeId(lastSelectedNodeIdValue);
+
+        public bool HasReturnToWorldReentryOffer => !string.IsNullOrWhiteSpace(returnToWorldReentryNodeIdValue);
+
+        public NodeId ReturnToWorldReentryNodeId => new NodeId(returnToWorldReentryNodeIdValue);
 
         public void SeedFromWorldState(PersistentWorldState worldState)
         {
@@ -58,11 +63,23 @@ namespace Survivalon.State
         public void RecordNodeEntry(NodeId nodeId)
         {
             recentNodeIdValue = nodeId.Value;
+            ConsumeReturnToWorldReentryOffer();
         }
 
         public void RecordReturnedToWorldContext(NodeId nodeId)
         {
             recentNodeIdValue = nodeId.Value;
+        }
+
+        public void OfferReturnToWorldReentry(NodeId nodeId)
+        {
+            recentNodeIdValue = nodeId.Value;
+            returnToWorldReentryNodeIdValue = nodeId.Value;
+        }
+
+        public void ConsumeReturnToWorldReentryOffer()
+        {
+            returnToWorldReentryNodeIdValue = string.Empty;
         }
     }
 }

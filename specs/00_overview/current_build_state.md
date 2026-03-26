@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 078**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 078**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -12,8 +12,8 @@ On startup, the bootstrap scene loads a persisted game state if one exists, othe
 From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. Entering that resolved post-run boundary now autosaves the durable run outcome before the player chooses replay, return to world, or stop. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. The current cavern service node now opens a distinct town/service shell instead of the generic node placeholder, while broader non-combat content remains placeholder-level.
 
 Manual actions currently required:
-- select a new node on the world map when not using the current-context quick replay/return action
-- confirm node entry or use the current-context quick replay/return button from the world map
+- select a new node on the world map when no explicit return-to-world quick replay/return action is being offered
+- confirm node entry or use the temporary quick replay/return button when it is offered immediately after returning to the world map
 - choose one run-only skill upgrade before combat auto-starts when the selected current package exposes that choice
 - choose a post-run action after resolution
 
@@ -55,10 +55,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current node and current node state
   - forward routes, true backtrack routes, replayable farm nodes, and blocked linked paths from the current context
   - compact state/status legends so the placeholder node list reads more clearly at a glance
-- The same world-map entry action now also supports one low-friction current-context repeat path:
-  - when no new node is selected, the existing entry button becomes a one-click `Replay <current combat node>` or `Return to <current service node>` action
-  - this allows repeated farming or service re-entry without reselecting the same current safe-context node from the list
-  - selecting a different reachable node still overrides that shortcut and uses the normal `Enter <selected node>` flow
+- The same world-map entry action now also supports one low-friction repeat path only after an explicit in-session return to the world map:
+  - after `post-run -> return to world` or `town/service -> return to world`, the existing entry button temporarily becomes a one-click `Replay <current combat node>` or `Return to <current service node>` action
+  - ordinary startup/load into the world map, safe resume, and first world-map entry do not show that shortcut
+  - selecting a different reachable node still overrides that temporary shortcut and uses the normal `Enter <selected node>` flow
 - World-map reachability/path-role projection is now rebuilt from the current world state each refresh instead of relying on constructor-time cached access sets, so reused world-map controllers cannot go stale after world-state changes.
 - World-map node labels now also carry a small path-role line:
   - `Current anchor`
@@ -96,9 +96,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - persistent character/build/loadout state already carried by game state
   - safe resume context for returning to a world-level screen later
 - Replay re-enters the same node cleanly.
-- The world map now also supports low-friction repeat-node chaining after returning from a resolved run:
-  - after returning to the world map, the current safe-context node can be re-entered immediately through the existing entry button without reselecting it
-  - this works for both combat farming loops and the current service-hub return flow
+- The world map now also supports low-friction repeat-node chaining only on immediate explicit returns to the world map:
+  - after returning from resolved post-run or from the current service shell, the current safe-context node can be re-entered immediately through the existing entry button without reselecting it
+  - ordinary restart/load into the world map does not restore that temporary shortcut, so safe resume still lands in a clean normal world-map state
 - Return/stop still save a world-level safe resume context after the player leaves post-run.
 
 ### Town / service shell

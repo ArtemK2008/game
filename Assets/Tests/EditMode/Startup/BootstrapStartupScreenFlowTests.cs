@@ -152,6 +152,10 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Backtrack: Frontier Entry | Replayable: none"), Is.True);
                 Assert.That(ContainsText(hostObject, "Blocked: Frontier Gate"), Is.True);
                 Assert.That(ContainsText(hostObject, "Node states: Available = enterable"), Is.True);
+                Assert.That(FindButton(hostObject, "EnterSelectedNodeButton").interactable, Is.False);
+                Assert.That(
+                    FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Select a reachable node to enter"));
             }
             finally
             {
@@ -187,6 +191,36 @@ namespace Survivalon.Tests.EditMode.Startup
             finally
             {
                 Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldNotShowQuickReturnShortcutAfterRestartLoadFromTownServiceWorldSave()
+        {
+            GameObject firstHostObject = new GameObject("BootstrapStartupHost_First");
+            GameObject secondHostObject = new GameObject("BootstrapStartupHost_Second");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(firstHostObject, storage);
+
+                EnterNodeFromWorldMap(firstHostObject, "region_002_node_001_Button");
+                FindButton(firstHostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                CreateAndInitializeBootstrap(secondHostObject, storage);
+
+                Button entryButton = FindButton(secondHostObject, "EnterSelectedNodeButton");
+                Assert.That(entryButton.interactable, Is.False);
+                Assert.That(
+                    entryButton.GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Select a reachable node to enter"));
+                Assert.That(ContainsText(secondHostObject, "Current: Cavern Service Hub (Available) | Selected: none"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(firstHostObject);
+                Object.DestroyImmediate(secondHostObject);
             }
         }
 
