@@ -33,21 +33,39 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
             Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
             Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
-            Assert.That(storage.SavedGameState.OfflineProgressCompatibilityState.IsEligibleForOfflineProgress, Is.True);
+            Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
             Assert.That(
-                storage.SavedGameState.OfflineProgressCompatibilityState.LastStableSaveUnixTimeSeconds,
+                storage.SavedGameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds,
                 Is.EqualTo(expectedTimestamp.ToUnixTimeSeconds()));
             Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(4));
             Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
 
             PersistentGameState loadedGameState = service.LoadOrCreate(CreateGameState("region_001_node_001", "region_001_node_001"));
 
-            Assert.That(loadedGameState.OfflineProgressCompatibilityState.IsEligibleForOfflineProgress, Is.True);
+            Assert.That(loadedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
             Assert.That(
-                loadedGameState.OfflineProgressCompatibilityState.LastStableSaveUnixTimeSeconds,
+                loadedGameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds,
                 Is.EqualTo(expectedTimestamp.ToUnixTimeSeconds()));
             Assert.That(loadedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(4));
             Assert.That(loadedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
+        }
+
+        [Test]
+        public void ShouldNotStampOfflineProgressStableSaveAnchorWhenOnlyLoadingFallbackState()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
+            PersistentGameState fallbackState = CreateGameState("region_002_node_001", "region_001_node_002");
+            fallbackState.ResourceBalances.Add(ResourceCategory.SoftCurrency, 7);
+            fallbackState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+
+            PersistentGameState loadedGameState = service.LoadOrCreate(fallbackState);
+
+            Assert.That(loadedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.False);
+            Assert.That(loadedGameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds, Is.EqualTo(0));
+            Assert.That(loadedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(7));
+            Assert.That(loadedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(3));
+            Assert.That(storage.HasSavedState, Is.False);
         }
 
         [Test]

@@ -42,7 +42,7 @@ namespace Survivalon.State.Persistence
             PersistentGameState snapshot = CloneGameState(gameState);
             NodeId resumeNodeId = ResolveResumeNodeId(snapshot.WorldState);
             snapshot.SafeResumeState.MarkWorldMap(resumeNodeId);
-            snapshot.OfflineProgressCompatibilityState.MarkEligibleStableContext(
+            snapshot.OfflineProgressStableSaveAnchorState.StampStableSaveAnchor(
                 utcNowProvider().ToUnixTimeSeconds());
             storage.Save(snapshot);
         }

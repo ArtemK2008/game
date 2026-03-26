@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 077**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 077**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -29,7 +29,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Safe resume is currently constrained to one clear world-map safe context on restart/load, even when the last autosave came from resolved post-run or town/service persistence; unresolved run state and temporary run-only upgrade choice state do not reopen on resume.
 - Stable resolved world/service save points now also stamp one future-facing offline-progress compatibility anchor:
   - a persisted UTC save timestamp
-  - a persisted stable-context eligibility marker for later offline-progress calculation
+  - a persisted stable-save anchor marker for later offline-progress calculation
 - Offline rewards, offline claim flow, and background simulation are still disabled; the new metadata does not change current player-facing behavior.
 - The startup/bootstrap runtime flow is now grouped under a dedicated `Startup` domain folder/namespace for clearer ownership and navigation.
 

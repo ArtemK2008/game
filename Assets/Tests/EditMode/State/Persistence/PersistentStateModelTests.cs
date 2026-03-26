@@ -189,15 +189,27 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         }
 
         [Test]
-        public void ShouldInitializeOfflineProgressCompatibilityStateWhenMissingFromOlderSerializedData()
+        public void ShouldInitializeOfflineProgressStableSaveAnchorStateWhenMissingFromOlderSerializedData()
         {
             PersistentGameState gameState = JsonUtility.FromJson<PersistentGameState>(
                 "{\"worldState\":{},\"progressionState\":{},\"resourceBalances\":{},\"characterStates\":[],\"ownedGearIds\":[],\"safeResumeState\":{}}");
 
             Assert.That(gameState, Is.Not.Null);
-            Assert.That(gameState.OfflineProgressCompatibilityState, Is.Not.Null);
-            Assert.That(gameState.OfflineProgressCompatibilityState.IsEligibleForOfflineProgress, Is.False);
-            Assert.That(gameState.OfflineProgressCompatibilityState.LastStableSaveUnixTimeSeconds, Is.EqualTo(0));
+            Assert.That(gameState.OfflineProgressStableSaveAnchorState, Is.Not.Null);
+            Assert.That(gameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.False);
+            Assert.That(gameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ShouldLoadLegacyOfflineProgressCompatibilityFieldIntoStableSaveAnchorState()
+        {
+            PersistentGameState gameState = JsonUtility.FromJson<PersistentGameState>(
+                "{\"worldState\":{},\"progressionState\":{},\"resourceBalances\":{},\"characterStates\":[],\"ownedGearIds\":[],\"safeResumeState\":{},\"offlineProgressCompatibilityState\":{\"isEligibleForOfflineProgress\":true,\"lastStableSaveUnixTimeSeconds\":12345}}");
+
+            Assert.That(gameState, Is.Not.Null);
+            Assert.That(gameState.OfflineProgressStableSaveAnchorState, Is.Not.Null);
+            Assert.That(gameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
+            Assert.That(gameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds, Is.EqualTo(12345));
         }
     }
 }
