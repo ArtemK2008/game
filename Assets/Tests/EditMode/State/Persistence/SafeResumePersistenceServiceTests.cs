@@ -1,9 +1,13 @@
 using NUnit.Framework;
+using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.Data.Progression;
+using Survivalon.Run;
 using Survivalon.State.Persistence;
+using Survivalon.Tests.EditMode.Run;
+using Survivalon.Tests.EditMode.World;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
@@ -154,6 +158,28 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(strikerState.IsActive, Is.True);
             Assert.That(strikerState.ProgressionRank, Is.EqualTo(1));
             Assert.That(strikerState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
+        }
+
+        [Test]
+        public void ShouldKeepRunOnlySkillUpgradeChoiceTemporaryAfterSaveLoad()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+
+            service.SaveResolvedWorldContext(gameState);
+
+            PersistentGameState loadedGameState = service.LoadOrCreate(BootstrapWorldTestData.CreateGameState());
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(loadedGameState));
+
+            Assert.That(controller.RunTimeSkillUpgradeOptions.Count, Is.EqualTo(2));
+            Assert.That(controller.RequiresRunTimeSkillUpgradeChoice, Is.True);
+            Assert.That(controller.TryStartAutomaticFlow(), Is.False);
         }
 
         private static PersistentGameState CreateGameState(string currentNodeIdValue, string lastSafeNodeIdValue)

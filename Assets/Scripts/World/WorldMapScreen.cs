@@ -28,13 +28,15 @@ namespace Survivalon.World
         private PlayableCharacterSelectionService characterSelectionService;
         private PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService;
         private PlayableCharacterGearAssignmentService gearAssignmentService;
+        private WorldMapBuildPreparationInteractionService buildPreparationInteractionService;
 
         public void Show(
             WorldGraph worldGraph,
             PersistentWorldState worldState,
             Action<NodeId> nodeEntryRequested = null,
             SessionContextState sessionContext = null,
-            PersistentGameState gameState = null)
+            PersistentGameState gameState = null,
+            WorldMapBuildPreparationInteractionService buildPreparationInteractionService = null)
         {
             if (worldGraph == null)
             {
@@ -56,6 +58,13 @@ namespace Survivalon.World
             gearAssignmentService = gameState == null
                 ? null
                 : new PlayableCharacterGearAssignmentService(characterSelectionService);
+            this.buildPreparationInteractionService = buildPreparationInteractionService ?? (
+                gameState == null
+                    ? null
+                    : new WorldMapBuildPreparationInteractionService(
+                        characterSelectionService: characterSelectionService,
+                        skillPackageAssignmentService: skillPackageAssignmentService,
+                        gearAssignmentService: gearAssignmentService));
             gameObject.name = "WorldMapScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
@@ -93,12 +102,12 @@ namespace Survivalon.World
 
         private void HandleCharacterSelection(string characterId)
         {
-            if (characterSelectionService == null || gameState == null)
+            if (buildPreparationInteractionService == null || gameState == null)
             {
                 return;
             }
 
-            if (!characterSelectionService.TrySelectCharacter(gameState, characterId))
+            if (!buildPreparationInteractionService.TrySelectCharacter(gameState, characterId))
             {
                 return;
             }
@@ -109,12 +118,12 @@ namespace Survivalon.World
 
         private void HandleSkillPackageAssignment(string skillPackageId)
         {
-            if (skillPackageAssignmentService == null || gameState == null)
+            if (buildPreparationInteractionService == null || gameState == null)
             {
                 return;
             }
 
-            if (!skillPackageAssignmentService.TryAssignSelectedCharacterSkillPackage(gameState, skillPackageId))
+            if (!buildPreparationInteractionService.TryAssignSkillPackage(gameState, skillPackageId))
             {
                 return;
             }
@@ -125,14 +134,14 @@ namespace Survivalon.World
 
         private void HandleGearAssignment(PlayableCharacterGearAssignmentOption gearAssignmentOption)
         {
-            if (gearAssignmentOption == null || gearAssignmentService == null || gameState == null)
+            if (gearAssignmentOption == null || buildPreparationInteractionService == null || gameState == null)
             {
                 return;
             }
 
             bool changed = gearAssignmentOption.IsEquipped
-                ? gearAssignmentService.TryClearSelectedCharacterGear(gameState, gearAssignmentOption.GearCategory)
-                : gearAssignmentService.TryAssignSelectedCharacterGear(gameState, gearAssignmentOption.GearId);
+                ? buildPreparationInteractionService.TryClearGear(gameState, gearAssignmentOption.GearCategory)
+                : buildPreparationInteractionService.TryAssignGear(gameState, gearAssignmentOption.GearId);
             if (!changed)
             {
                 return;

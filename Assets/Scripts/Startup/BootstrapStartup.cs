@@ -54,7 +54,8 @@ namespace Survivalon.Startup
                 gameState.WorldState,
                 HandleNodeEntryRequested,
                 sessionContext,
-                gameState);
+                gameState,
+                new WorldMapBuildPreparationInteractionService(persistenceService));
         }
 
         private void ShowNodePlaceholder(NodePlaceholderState placeholderState)
