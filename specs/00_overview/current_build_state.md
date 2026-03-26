@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 074**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 075**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -25,6 +25,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The project launches through `BootstrapScene` and `BootstrapStartup`.
 - Startup resolves into a world-map safe context or a main-menu placeholder target.
 - Safe-stop persistence exists for resolved world-level context, and resolved post-run now also autosaves into that same safe resume path before the player leaves the post-run screen.
+- The same safe-resume persistence path now also preserves the current selected character, per-character package assignment, per-character equipped primary/support gear, and owned gear state cleanly across restart/load flows after world-map or town/service build-prep changes.
 - The startup/bootstrap runtime flow is now grouped under a dedicated `Startup` domain folder/namespace for clearer ownership and navigation.
 
 ### World map and node entry
@@ -272,7 +273,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current world map also now exposes one minimal build-facing skill-package assignment placeholder:
   - the selected character's currently assigned package is shown next to the existing character-selection area
   - only valid package choices for the currently selected character are shown
-  - changing the package updates that character's persistent `skillPackageId`, and future run entry uses the assigned package instead of only the profile default
+  - changing the package updates that character's persistent `skillPackageId`, persists immediately, and future run entry uses the assigned package instead of only the profile default
 - The current town/service shell now exposes the same selected-character skill-package assignment through a second safe-context MVP interaction surface, while still using the same persistent assignment rules and selected-character state.
 - Run entry now resolves the current selected persistent playable character into the player-side combat baseline instead of relying only on an anonymous hardcoded player concept.
 - The current player combat identity and base stats come from that character-backed baseline, and existing account-wide progression effects continue to layer on top of it before combat begins.
@@ -308,7 +309,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current world map now exposes one minimal gear equip placeholder area for the selected character:
   - it shows the currently equipped `PrimaryCombat` and `SecondarySupport` gear
   - it allows equipping or unequipping the shipped starter items before future runs
-  - the change is persistent and follows the currently selected character
+  - the change now persists immediately, survives restart/load, and follows the currently selected character
 - The current town/service shell now also exposes the same selected-character primary/support gear equip state and allows equipping or unequipping those shipped starter items before future runs through the same persistent loadout seam.
 - Current startup/bootstrap normalization now validates persisted equipped-gear entries against:
   - owned gear state
