@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Survivalon.Characters;
 using Survivalon.Core;
@@ -20,9 +21,11 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         public void ShouldPersistResolvedWorldLevelContext()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
-            SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
+            DateTimeOffset expectedTimestamp = new DateTimeOffset(2026, 3, 26, 20, 0, 0, TimeSpan.Zero);
+            SafeResumePersistenceService service = new SafeResumePersistenceService(storage, () => expectedTimestamp);
             PersistentGameState gameState = CreateGameState("region_002_node_001", "region_001_node_002");
             gameState.ResourceBalances.Add(ResourceCategory.SoftCurrency, 4);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 2);
 
             service.SaveResolvedWorldContext(gameState);
 
@@ -30,7 +33,21 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
             Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
             Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            Assert.That(storage.SavedGameState.OfflineProgressCompatibilityState.IsEligibleForOfflineProgress, Is.True);
+            Assert.That(
+                storage.SavedGameState.OfflineProgressCompatibilityState.LastStableSaveUnixTimeSeconds,
+                Is.EqualTo(expectedTimestamp.ToUnixTimeSeconds()));
             Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(4));
+            Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
+
+            PersistentGameState loadedGameState = service.LoadOrCreate(CreateGameState("region_001_node_001", "region_001_node_001"));
+
+            Assert.That(loadedGameState.OfflineProgressCompatibilityState.IsEligibleForOfflineProgress, Is.True);
+            Assert.That(
+                loadedGameState.OfflineProgressCompatibilityState.LastStableSaveUnixTimeSeconds,
+                Is.EqualTo(expectedTimestamp.ToUnixTimeSeconds()));
+            Assert.That(loadedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(4));
+            Assert.That(loadedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(2));
         }
 
         [Test]

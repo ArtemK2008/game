@@ -7,10 +7,14 @@ namespace Survivalon.State.Persistence
     public sealed class SafeResumePersistenceService
     {
         private readonly IPersistentGameStateStorage storage;
+        private readonly Func<DateTimeOffset> utcNowProvider;
 
-        public SafeResumePersistenceService(IPersistentGameStateStorage storage)
+        public SafeResumePersistenceService(
+            IPersistentGameStateStorage storage,
+            Func<DateTimeOffset> utcNowProvider = null)
         {
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            this.utcNowProvider = utcNowProvider ?? (() => DateTimeOffset.UtcNow);
         }
 
         public PersistentGameState LoadOrCreate(PersistentGameState fallbackState)
@@ -38,6 +42,8 @@ namespace Survivalon.State.Persistence
             PersistentGameState snapshot = CloneGameState(gameState);
             NodeId resumeNodeId = ResolveResumeNodeId(snapshot.WorldState);
             snapshot.SafeResumeState.MarkWorldMap(resumeNodeId);
+            snapshot.OfflineProgressCompatibilityState.MarkEligibleStableContext(
+                utcNowProvider().ToUnixTimeSeconds());
             storage.Save(snapshot);
         }
 

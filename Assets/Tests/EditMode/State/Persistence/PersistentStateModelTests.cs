@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.State.Persistence;
+using UnityEngine;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
@@ -185,6 +186,18 @@ namespace Survivalon.Tests.EditMode.State.Persistence
 
             Assert.That(spent, Is.False);
             Assert.That(resourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(2));
+        }
+
+        [Test]
+        public void ShouldInitializeOfflineProgressCompatibilityStateWhenMissingFromOlderSerializedData()
+        {
+            PersistentGameState gameState = JsonUtility.FromJson<PersistentGameState>(
+                "{\"worldState\":{},\"progressionState\":{},\"resourceBalances\":{},\"characterStates\":[],\"ownedGearIds\":[],\"safeResumeState\":{}}");
+
+            Assert.That(gameState, Is.Not.Null);
+            Assert.That(gameState.OfflineProgressCompatibilityState, Is.Not.Null);
+            Assert.That(gameState.OfflineProgressCompatibilityState.IsEligibleForOfflineProgress, Is.False);
+            Assert.That(gameState.OfflineProgressCompatibilityState.LastStableSaveUnixTimeSeconds, Is.EqualTo(0));
         }
     }
 }
