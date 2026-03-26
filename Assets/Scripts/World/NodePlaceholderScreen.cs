@@ -44,13 +44,15 @@ namespace Survivalon.World
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
         private Action<RunResult> onStopSessionRequested;
+        private Action onResolvedPostRunBoundaryReached;
 
         public void Show(
             WorldGraph worldGraph,
             NodePlaceholderState placeholderState,
             Action<RunResult> returnToWorldRequested,
             Action<RunResult> stopSessionRequested = null,
-            RunPersistentContext persistentContext = null)
+            RunPersistentContext persistentContext = null,
+            Action resolvedPostRunBoundaryReached = null)
         {
             if (worldGraph == null)
             {
@@ -68,6 +70,7 @@ namespace Survivalon.World
             postRunStateController = null;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
+            onResolvedPostRunBoundaryReached = resolvedPostRunBoundaryReached;
             gameObject.name = "NodePlaceholderScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
@@ -638,6 +641,7 @@ namespace Survivalon.World
             postRunStateController = new PostRunStateController(
                 runLifecycleController.NodeContext,
                 runLifecycleController.RunResult);
+            onResolvedPostRunBoundaryReached?.Invoke();
         }
 
         private void RefreshPostRunSummaryPanel()

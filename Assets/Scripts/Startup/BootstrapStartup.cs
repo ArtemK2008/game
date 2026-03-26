@@ -70,7 +70,8 @@ namespace Survivalon.Startup
                 placeholderState,
                 HandleReturnToWorldRequested,
                 HandleStopSessionRequested,
-                RunPersistentContext.FromGameState(gameState));
+                RunPersistentContext.FromGameState(gameState),
+                HandleResolvedPostRunBoundaryReached);
         }
 
         private void ShowTownServiceScreen(NodePlaceholderState placeholderState)
@@ -138,6 +139,11 @@ namespace Survivalon.Startup
                 runResult.NodeId);
             Debug.Log($"Stopping session from post-run state after {runResult.ResolutionState} on {runResult.NodeId}.");
             ShowStartupEntryTarget(entryTarget);
+        }
+
+        private void HandleResolvedPostRunBoundaryReached()
+        {
+            worldContextTransitionService.PersistResolvedPostRunBoundary(gameState);
         }
 
         private void HandleTownServiceReturnRequested(NodeId nodeId)

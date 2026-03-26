@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 074
+Current next implementation target: Milestone 075
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -99,6 +99,7 @@ id | type | title | status | depends on / note
 071 | feature | Implement readable run HUD baseline | completed | phase 17
 072 | feature | Implement upgrade choice UI | completed | phase 17
 073 | feature | Improve post-run next-action clarity | completed | phase 17
+074 | feature | Implement autosave at resolved post-run boundary | completed | phase 18
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note
