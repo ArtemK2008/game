@@ -25,7 +25,7 @@ This counts as a project-style powerup mechanic because it:
 - Extended `RunRewardResolutionService` so successful boss rewards now apply that resolved bonus on top of the current boss reward bundle.
 - Kept the town/service screen structure unchanged while making the new project visible automatically through the existing progression section.
 
-## Behavior
+## Behavior Change
 - Ordinary route/node unlock progression is unchanged.
 - Existing combat baseline and ordinary reward behavior are unchanged unless the new project is purchased and the run is a successful boss clear.
 - After purchase:
@@ -38,7 +38,7 @@ This counts as a project-style powerup mechanic because it:
   - `Farm Yield Project`
   - `Boss Salvage Project`
 
-## SRP notes
+## SRP Notes
 - Purchase policy remains in `AccountWideProgressionBoardService`.
 - Account-wide project definition data remains in the progression definition/catalog classes.
 - Gameplay effect resolution remains in the existing effect-resolution and reward-resolution seams.
@@ -64,7 +64,7 @@ This counts as a project-style powerup mechanic because it:
   - `Logs/m064_editmode_results.xml`
   - `Logs/m064_editmode.log`
 
-## Intentionally left out
+## Out Of Scope
 - Milestone 065 or later powerup-system expansion
 - project chains
 - new currencies

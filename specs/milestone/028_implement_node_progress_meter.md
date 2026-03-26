@@ -24,7 +24,7 @@
 - Updated `NodePlaceholderScreenUiTests` and `BootstrapStartupScreenFlowTests` to verify node progress appears in the current placeholder flow and persists across repeat runs/return-to-world flow.
 - Updated `PostRunStateControllerTests` for the extended `RunResult` shape.
 
-## Intentionally Left Out
+## Out Of Scope
 - Dedicated boss clear semantics
 - Dedicated gate-opening semantics
 - Route unlock application

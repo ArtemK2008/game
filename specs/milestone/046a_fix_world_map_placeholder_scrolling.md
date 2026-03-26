@@ -26,7 +26,7 @@
   - overflowing node content becomes reachable by scrolling the viewport
   - the existing world-map controls still render and behave correctly
 
-## Intentionally Left Out
+## Out Of Scope
 - Any redesign of the placeholder world map
 - Scrollbars, polish animation, or visual cleanup beyond the usability fix
 - Changes to world-map behavior, node flow, or character-selection behavior

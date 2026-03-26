@@ -51,7 +51,7 @@
   - the current boss placeholder encounter fails on `Vanguard` and succeeds on `Striker`
 - Updated `SafeResumePersistenceServiceTests` to verify two-character persistent state survives resolved-world snapshot saving.
 
-## Intentionally Left Out
+## Out Of Scope
 - Any third character
 - A dedicated character-selection screen
 - Character portraits, animation, audio, or other external character assets

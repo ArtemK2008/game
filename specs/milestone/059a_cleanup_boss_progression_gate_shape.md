@@ -13,7 +13,7 @@
 - `BossProgressionGateUnlockService` now returns structured boss-gate unlock data instead of summary text.
 - `PostRunSummaryTextBuilder` now builds the readable boss-gate line from structured domain data in the presentation layer.
 
-## Behavior
+## Behavior Change
 - Gameplay behavior is unchanged.
 - Defeating the forest `Gate Boss` still unlocks `region_002_node_002` / `Cavern Gate`.
 - `Cavern Gate` still becomes reachable on return to the world map.
@@ -45,7 +45,7 @@
   - `Logs/m059a_editmode_results.xml`
   - `Logs/m059a_editmode.log`
 
-## Intentionally Left Out
+## Out Of Scope
 - Milestone 060 boss reward differentiation
 - broader boss reward bundles
 - boss-specific ability systems

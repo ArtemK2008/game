@@ -20,7 +20,7 @@
   - `CombatEntityState` now snapshots passive skills while skipping null entries
   - `CombatPassiveSkillEffectResolver` also safely skips null entries defensively
 
-## Behavior
+## Behavior Change
 - No gameplay behavior changed.
 - `Striker` still receives `Relentless Assault` from the current skill package.
 - `Vanguard` still has no passive skills.
@@ -41,7 +41,7 @@
 - Updated `CombatEntityStateTests` to verify null passive entries are skipped safely during combat-entity construction.
 - Existing combat execution and encounter-flow tests remain in place to protect behavior.
 
-## Intentionally Left Out
+## Out Of Scope
 - Any new passive skills
 - Any new gameplay behavior
 - Any active-skill or loadout work

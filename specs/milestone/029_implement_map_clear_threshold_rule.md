@@ -18,7 +18,7 @@
   - the world map reflects the cleared node state through the existing UI flow
 - Failed-run non-clear coverage remains in the existing node-progress and lifecycle tests.
 
-## Intentionally Deferred
+## Out Of Scope
 - Unlocking connected nodes or routes
 - Branch unlock logic
 - Reward/economy expansion

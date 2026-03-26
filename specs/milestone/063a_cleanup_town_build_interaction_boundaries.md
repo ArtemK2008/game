@@ -17,7 +17,7 @@ Tighten the town/service build-preparation interaction seam so it depends on sma
 - Kept immediate persistence behavior unchanged after successful build changes.
 - Added focused coverage locking the public interaction seam away from the presentation option model.
 
-## Behavior
+## Behavior Change
 - No player-facing behavior changed.
 - `Cavern Service Hub` still allows:
   - progression purchases
@@ -27,7 +27,7 @@ Tighten the town/service build-preparation interaction seam so it depends on sma
   - return-to-world and stop-session actions
 - The world map still keeps its existing build-preparation controls.
 
-## SRP notes
+## SRP Notes
 - SRP improved.
 - `TownServiceBuildPreparationInteractionService` now owns only town-side build interaction orchestration over domain-friendly commands.
 - `TownServiceScreen` remains the only town build class that knows about presentation option objects.
@@ -45,7 +45,7 @@ Tighten the town/service build-preparation interaction seam so it depends on sma
   - `Logs/m063a_editmode_results.xml`
   - `Logs/m063a_editmode.log`
 
-## Intentionally left out
+## Out Of Scope
 - No new town/service features
 - No new build systems
 - No Milestone 064+ work

@@ -22,7 +22,7 @@ Make the existing persistent account-wide progression sink usable from the curre
   - saves the updated game state immediately
   - refreshes the town shell progression summary and button states in place
 
-## Behavior
+## Behavior Change
 - `Cavern Service Hub` remains a distinct non-combat service context.
 - The service shell now supports a short progression interaction loop:
   - enter service hub
@@ -35,7 +35,7 @@ Make the existing persistent account-wide progression sink usable from the curre
 - Return-to-world and stop-session behavior remain unchanged.
 - Existing downstream progression effects still apply to future combat and reward outcomes through the existing progression-effect seams.
 
-## SRP notes
+## SRP Notes
 - `TownServiceScreen` remains UI wiring/layout only.
 - `TownServiceScreenStateResolver` still resolves service-shell view state from persistent state.
 - `TownServiceScreenTextBuilder` still formats readable summary text only.
@@ -54,7 +54,7 @@ Make the existing persistent account-wide progression sink usable from the curre
   - `Logs/m062_editmode_results.xml`
   - `Logs/m062_editmode.log`
 
-## Intentionally left out
+## Out Of Scope
 - Milestone 063 or later town/build expansion
 - moving gear/package editing off the world map
 - broader town navigation, NPC systems, or multi-building service structure

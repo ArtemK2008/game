@@ -26,7 +26,7 @@
   - null guard behavior
 - Updated `SafeResumePersistenceServiceTests` to verify purchased account-wide upgrade state and its resolved applied effect survive the existing safe persistence boundary.
 
-## Intentionally Left Out
+## Out Of Scope
 - Runtime combat integration of the new account-wide effect
 - Additional upgrade entries or a broader upgrade board
 - Dedicated town/service UI access to the sink

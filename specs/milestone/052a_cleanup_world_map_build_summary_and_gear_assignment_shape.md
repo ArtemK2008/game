@@ -14,7 +14,7 @@
   - the selected character's equipped state for `PrimaryCombat`
 - Added focused test coverage that proves primary-gear equip state remains character-specific across selection changes.
 
-## Behavior
+## Behavior Change
 - No gameplay behavior changed.
 - The same one shipped `PrimaryCombat` item, `Training Blade`, remains the only current owned/equippable option.
 - The world-map placeholder still shows the same build summary and the same equip or unequip control.

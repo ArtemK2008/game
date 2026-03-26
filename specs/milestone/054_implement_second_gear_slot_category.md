@@ -14,7 +14,7 @@
 - Kept the current world-map build area compact by reusing the existing placeholder gear row and build summary instead of adding a new screen.
 - Updated startup/persistence normalization so both shipped starter gear ids are present in owned gear data and both categories survive save/load safely.
 
-## Behavior
+## Behavior Change
 - Gameplay changed only in the intended 054 way.
 - The build now has exactly two live gear categories, not a broader multi-slot inventory system.
 - The currently selected character can equip:
@@ -43,7 +43,7 @@
   - end-to-end run-result difference from the support slot
 - Updated world-map placeholder UI tests so they verify both gear buttons exist, both slots can be equipped/unequipped, and the scrollable node-list viewport remains usable after the extra build control is present.
 
-## Intentionally Left Out
+## Out Of Scope
 - more than two live gear categories
 - additional support-slot items
 - loot flow or inventory browsing

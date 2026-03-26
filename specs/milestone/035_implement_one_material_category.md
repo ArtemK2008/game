@@ -17,7 +17,7 @@
 - Updated `BootstrapStartupCombatScreenFlowTests` to verify the material reward appears in the post-run summary and persists after returning to the world map.
 - Updated `NodePlaceholderScreenPresentationTests` to verify reward-summary formatting with both soft currency and region material.
 
-## Intentionally Left Out
+## Out Of Scope
 - Material spending/sinks
 - Persistent progression material rewards
 - Broader region-by-region material differentiation

@@ -17,7 +17,7 @@
 - Kept the existing boss/gate placeholder behavior intact through the same resolver seam.
 - Wired the existing forest push combat node into the new `Bulwark Raider` profile so current shipped content can actually encounter the new enemy type.
 
-## Behavior
+## Behavior Change
 - Gameplay changed only in the intended 055 way.
 - Standard combat now has two shipped enemy profiles:
   - `Enemy Unit`
@@ -44,7 +44,7 @@
 - Added run-flow coverage proving the push-node enemy now resolves more slowly than the farm-node enemy because of its higher durability.
 - Added startup-flow coverage proving current shipped world-map content can actually enter the `Bulwark Raider` encounter.
 
-## Intentionally Left Out
+## Out Of Scope
 - broader enemy faction systems
 - more than one additional standard enemy profile
 - new boss content

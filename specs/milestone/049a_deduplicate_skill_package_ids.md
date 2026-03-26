@@ -15,7 +15,7 @@
   - `PlayableCharacterSkillPackageCatalog`
 - Updated directly related EditMode tests that compare or construct those ids so they now reference the shared constants instead of repeating raw literals.
 
-## Behavior
+## Behavior Change
 - No gameplay behavior changed.
 - No UI behavior changed.
 - No package-option behavior changed.
@@ -30,7 +30,7 @@
 - Added `PlayableCharacterSkillPackageIdsTests` to lock the current shipped package ids to stable expected values.
 - Updated directly related runtime-behavior tests to use the shared constants while preserving their existing behavior coverage.
 
-## Intentionally Left Out
+## Out Of Scope
 - No new package system abstraction
 - No value-object hierarchy for package ids
 - No gameplay/UI follow-up beyond the string deduplication cleanup

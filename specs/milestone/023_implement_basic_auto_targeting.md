@@ -18,7 +18,7 @@
 - Updated `CombatEncounterResolverTests` to verify the resolver rejects invalid combat advance when no active target exists.
 - Existing combat resolver tests continued to verify timed attacks, mitigation, defeat, and outcome behavior after the target-selection extraction.
 
-## Intentionally Left Out
+## Out Of Scope
 - Random target choice
 - Threat, aggro, or role-priority targeting
 - Multi-enemy or multi-target combat selection

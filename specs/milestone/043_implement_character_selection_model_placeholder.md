@@ -36,7 +36,7 @@
   - the character-selection button is present
   - pressing the current character button keeps the persistent active character valid
 
-## Intentionally Left Out
+## Out Of Scope
 - A second playable character
 - Character selection beyond the current placeholder world-map surface
 - Character-specific progression trees

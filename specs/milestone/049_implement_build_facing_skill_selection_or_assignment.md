@@ -43,7 +43,7 @@
   - switching character selection refreshes the visible valid package set
   - pressing a package button updates persistent assignment state and placeholder text
 
-## Intentionally Left Out
+## Out Of Scope
 - A dedicated skill screen
 - Drag/drop loadouts or inventory-style skill management
 - More than one additional package option

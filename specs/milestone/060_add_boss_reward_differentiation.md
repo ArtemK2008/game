@@ -15,7 +15,7 @@
 - `PostRunSummaryTextBuilder` now shows a compact separate line for boss rewards:
   - `Boss rewards: Persistent progression material x2`
 
-## Behavior
+## Behavior Change
 - Successful standard combat still grants the current ordinary reward baseline:
   - `Soft currency x1`
   - region material when the node qualifies for it
@@ -49,7 +49,7 @@
   - `Logs/m060_editmode_results.xml`
   - `Logs/m060_editmode.log`
 
-## Intentionally Left Out
+## Out Of Scope
 - Milestone 061 or later loot expansion work
 - new currencies
 - boss-specific loot tables

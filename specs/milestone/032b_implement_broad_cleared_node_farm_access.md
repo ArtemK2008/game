@@ -28,7 +28,7 @@
   - resolve and return cleanly
   - preserve cleared state and unlocked route state
 
-## Intentionally Left Out
+## Out Of Scope
 - Reward or economy expansion for farming
 - Any redesign of world graph structure or route rules
 - Boss/gate redesign beyond the current shared placeholder behavior

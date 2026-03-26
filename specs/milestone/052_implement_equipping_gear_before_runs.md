@@ -17,7 +17,7 @@
   - one equip/unequip button for `Training Blade`
 - Kept the current world-map placeholder scroll viewport usable after the extra build row by compacting the fixed summary heights instead of redesigning the screen.
 
-## Behavior
+## Behavior Change
 - The selected character can now equip or unequip `Training Blade` before runs from the current world-map placeholder.
 - That equip state is persistent between runs and survives the existing save/load/bootstrap normalization path.
 - The gear assignment follows the currently selected character.
@@ -36,7 +36,7 @@
 - Updated startup/persistent-character initialization tests to verify valid equipped primary gear survives initialization/load.
 - Updated run-context coverage so the selected character's equipped gear reaches run context through the new assignment service path without changing combat baseline.
 
-## Intentionally Left Out
+## Out Of Scope
 - gear combat/stat effects
 - additional gear items or categories
 - inventory browsing

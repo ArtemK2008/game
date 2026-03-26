@@ -16,7 +16,7 @@
 - Post-run summary output now includes a compact explicit line when a boss gate opens:
   - `Boss gate unlock: Cavern gate opened`
 
-## Behavior
+## Behavior Change
 - Ordinary combat-node clears still use the existing kill-progress threshold rule to unlock directly connected next nodes.
 - Boss defeat is now more meaningful than an ordinary standard-node success:
   - the forest `Gate Boss` can unlock a new deeper reachable target before the placeholder boss node reaches its current tracked-progress threshold
@@ -50,7 +50,7 @@
   - `Logs/m059_editmode_results.xml`
   - `Logs/m059_editmode.log`
 
-## Intentionally Left Out
+## Out Of Scope
 - Milestone 060 boss reward differentiation
 - broader boss reward bundles
 - boss-specific ability systems

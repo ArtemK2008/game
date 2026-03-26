@@ -25,7 +25,7 @@
   - passes the selected temporary skill override into combat context creation
 - `NodePlaceholderScreen` now shows a small placeholder run-start choice panel only when that temporary choice exists, then auto-starts combat immediately after the player picks one option.
 
-## Behavior
+## Behavior Change
 - The new choice is **run-only**.
 - It does **not** persist into character state, package assignment, replayed future runs, or account-wide progression.
 - Current persistent package assignment still works exactly as before:
@@ -59,7 +59,7 @@
   - combat auto-start resumes after choosing one option
   - replay requires the temporary run-time choice again
 
-## Intentionally Left Out
+## Out Of Scope
 - Broader in-run upgrade pools
 - More than one temporary choice event per run
 - In-run upgrade drafting/chains

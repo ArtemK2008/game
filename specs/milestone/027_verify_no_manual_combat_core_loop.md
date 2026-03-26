@@ -27,7 +27,7 @@
 
 No manual movement, manual attack input, or manual combat-step button presses are required during combat itself.
 
-## Intentionally Left Out
+## Out Of Scope
 - Movement systems
 - Manual combat actions
 - Advanced AI or targeting heuristics

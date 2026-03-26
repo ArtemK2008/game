@@ -23,7 +23,7 @@
   - invalid setup rejection
 - Updated lifecycle and UI tests to cover combat encounter state, auto-resolution, and resolved combat shell output.
 
-## Intentionally Left Out
+## Out Of Scope
 - Multi-target combat
 - Movement or positioning
 - Skills, crit, status effects, penetration, or advanced AI

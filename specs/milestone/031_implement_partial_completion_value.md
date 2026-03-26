@@ -1,19 +1,24 @@
 # Milestone 031 - Implement Partial Completion Value
 
-## Spec Result
+## Goal
+- Confirm whether the current MVP actually exposes any meaningful partial-completion value case without inventing broader combat or reward systems.
+
+## Delivered
 - The specs allow partial completion value structurally:
   - failed or incomplete runs may still matter if they produce persistent map progress, rewards, or account growth
   - standard combat-map progress remains kill-driven
 - In the current implemented MVP, combat is still deterministic 1v1 with one hostile enemy per run.
 - Because node progress is kill-driven and the single enemy kill also resolves the run as success, the current MVP does **not** expose a failed or incomplete combat case that can grant partial node progress without inventing broader combat or reward systems.
-
-## Delivered
 - Kept the existing progress rule unchanged:
   - successful combat runs that defeat the enemy still grant `+1` node progress
   - failed combat runs still grant `0` node progress
   - clear-at-threshold and next-node unlock behavior remain unchanged
 - Treated this milestone as a verification/tightening milestone instead of inventing unsupported partial-value behavior.
 - Updated the current build snapshot to state the real MVP boundary explicitly.
+
+## Behavior Change
+- No gameplay behavior changed.
+- Failed or incomplete combat runs still grant `0` node progress and do not create route unlocks in the current MVP.
 
 ## Tests
 - Updated `RunLifecycleControllerTests` to verify:
@@ -27,7 +32,7 @@
   - `Route unlock changed: No`
 - Existing successful-progress, clear-threshold, and next-node unlock tests remain the proof that the success path still works exactly as before.
 
-## Intentionally Deferred
+## Out Of Scope
 - Multi-enemy combat cases where a failed run could still have meaningful kill output
 - Reward-based partial completion value
 - Early-exit partial completion rules

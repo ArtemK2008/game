@@ -22,7 +22,7 @@
   - horizontal alignment remains stable after a `Refresh()` triggered by node selection
   - vertical scrolling still exposes overflowing lower node buttons
 
-## Intentionally Left Out
+## Out Of Scope
 - Any redesign of the placeholder world map
 - Additional polish such as custom scrollbars or visual styling work
 - Changes to world-map behavior, flow, or interaction logic

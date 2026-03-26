@@ -20,7 +20,7 @@
   - resolved combat state reflects the defeated side as inactive
 - Updated `NodePlaceholderScreenUiTests` to verify the combat shell text shows the defeated enemy as `Alive: No | Act: No`.
 
-## Intentionally Left Out
+## Out Of Scope
 - Loot or reward resolution
 - Multi-enemy encounter management
 - Corpse, animation, VFX, or cleanup presentation systems

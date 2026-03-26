@@ -25,7 +25,7 @@
 - Updated `RunLifecycleControllerCombatTests` to verify the new push-oriented upgrade visibly changes future combat outcomes by flipping the current boss/gate combat result from failure to success.
 - Updated `SafeResumePersistenceServiceTests` to verify both account-wide upgrades persist and resolve after the normal safe save boundary.
 
-## Intentionally Left Out
+## Out Of Scope
 - Any farm-oriented upgrade from Milestone 041
 - Additional account-wide upgrade entries beyond the one new push-oriented upgrade
 - Dedicated town/service UI access to the progression sink
