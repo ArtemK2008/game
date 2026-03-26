@@ -285,19 +285,44 @@ namespace Survivalon.Tests.EditMode.World
             WorldMapScreenButtonState unavailableState = WorldMapScreenStateResolver.ResolveEntryButtonState(
                 hasNodeEntryHandler: false,
                 hasSelectedNode: true,
-                selectedNodeDisplayName: "Forest Farm");
+                selectedNodeDisplayName: "Forest Farm",
+                hasQuickRepeatNode: false,
+                quickRepeatNodeDisplayName: null,
+                quickRepeatNodeType: default);
             WorldMapScreenButtonState noSelectionState = WorldMapScreenStateResolver.ResolveEntryButtonState(
                 hasNodeEntryHandler: true,
                 hasSelectedNode: false,
-                selectedNodeDisplayName: null);
+                selectedNodeDisplayName: null,
+                hasQuickRepeatNode: false,
+                quickRepeatNodeDisplayName: null,
+                quickRepeatNodeType: default);
             WorldMapScreenButtonState availableState = WorldMapScreenStateResolver.ResolveEntryButtonState(
                 hasNodeEntryHandler: true,
                 hasSelectedNode: true,
-                selectedNodeDisplayName: "Forest Farm");
+                selectedNodeDisplayName: "Forest Farm",
+                hasQuickRepeatNode: true,
+                quickRepeatNodeDisplayName: "Raider Trail",
+                quickRepeatNodeType: NodeType.Combat);
+            WorldMapScreenButtonState quickReplayState = WorldMapScreenStateResolver.ResolveEntryButtonState(
+                hasNodeEntryHandler: true,
+                hasSelectedNode: false,
+                selectedNodeDisplayName: null,
+                hasQuickRepeatNode: true,
+                quickRepeatNodeDisplayName: "Forest Farm",
+                quickRepeatNodeType: NodeType.Combat);
+            WorldMapScreenButtonState quickReturnState = WorldMapScreenStateResolver.ResolveEntryButtonState(
+                hasNodeEntryHandler: true,
+                hasSelectedNode: false,
+                selectedNodeDisplayName: null,
+                hasQuickRepeatNode: true,
+                quickRepeatNodeDisplayName: "Cavern Service Hub",
+                quickRepeatNodeType: NodeType.ServiceOrProgression);
 
             AssertButtonState(unavailableState, "Select a reachable node to enter", false);
             AssertButtonState(noSelectionState, "Select a reachable node to enter", false);
             AssertButtonState(availableState, "Enter Forest Farm", true);
+            AssertButtonState(quickReplayState, "Replay Forest Farm", true);
+            AssertButtonState(quickReturnState, "Return to Cavern Service Hub", true);
         }
 
         [Test]

@@ -3,6 +3,7 @@ using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.Startup;
 using UnityEngine;
+using UnityEngine.UI;
 using Survivalon.Core;
 using Survivalon.State.Persistence;
 using Survivalon.Towns;
@@ -151,6 +152,37 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Backtrack: Frontier Entry | Replayable: none"), Is.True);
                 Assert.That(ContainsText(hostObject, "Blocked: Frontier Gate"), Is.True);
                 Assert.That(ContainsText(hostObject, "Node states: Available = enterable"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldAllowQuickReturnToTownServiceFromWorldMapWithoutReselectingNode()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Button entryButton = FindButton(hostObject, "EnterSelectedNodeButton");
+                Assert.That(entryButton.interactable, Is.True);
+                Assert.That(
+                    entryButton.GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Return to Cavern Service Hub"));
+
+                entryButton.onClick.Invoke();
+
+                Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(hostObject, "Cavern Service Hub"), Is.True);
             }
             finally
             {

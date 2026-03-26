@@ -177,14 +177,29 @@ namespace Survivalon.Tests.EditMode.World
             WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
 
             bool enteredLockedNode = controller.TryEnterNode(new NodeId("region_001_node_003"), out NodePlaceholderState lockedNodeState);
-            bool enteredCurrentNode = controller.TryEnterNode(new NodeId("region_001_node_002"), out NodePlaceholderState currentNodeState);
 
             Assert.That(enteredLockedNode, Is.False);
-            Assert.That(enteredCurrentNode, Is.False);
             Assert.That(lockedNodeState, Is.Null);
-            Assert.That(currentNodeState, Is.Null);
             Assert.That(worldState.CurrentNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
             Assert.That(worldState.LastSafeNodeId, Is.EqualTo(new NodeId("region_001_node_001")));
+        }
+
+        [Test]
+        public void ShouldAllowReenteringCurrentContextNodeForLowFrictionReplay()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+            NodeId currentNodeId = new NodeId("region_001_node_002");
+
+            bool entered = controller.TryEnterNode(currentNodeId, out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.NodeId, Is.EqualTo(currentNodeId));
+            Assert.That(placeholderState.OriginNodeId, Is.EqualTo(currentNodeId));
+            Assert.That(worldState.CurrentNodeId, Is.EqualTo(currentNodeId));
+            Assert.That(worldState.LastSafeNodeId, Is.EqualTo(currentNodeId));
         }
 
         [Test]
