@@ -10,8 +10,8 @@
     - `specs/00_overview/current_build_state.md`
 - Then read only the directly relevant spec files for the requested milestone.
 - Use `specs/00_overview/current_build_state.md` as the primary compact reference for what is already implemented.
-- Use `specs/milestone/status_index.md` first when you need the current next numbered target or milestone classification before opening individual milestone notes.
-- Use `specs/milestone/*.md` as historical detail when recent implementation context is needed.
+- Use `specs/milestone/status_index.md` first when you need the current next numbered target, milestone classification, or milestone-note folder split before opening individual milestone notes.
+- Use `specs/milestone/`, `specs/milestone/refactors/`, and `specs/milestone/docs/` as historical detail when recent implementation context is needed.
 - If specs conflict, surface the conflict instead of guessing.
 - If specs, milestone notes, and current code appear inconsistent, surface the inconsistency instead of guessing.
 
@@ -24,7 +24,7 @@
 - If the requested milestone depends on missing prerequisite infrastructure or missing assets, stop and say exactly what is missing.
 - Stage all project-related created/changed files with `git add`.
 - Do not create commits; the user commits manually.
-- Add a milestone note in `specs/milestone/` after completion.
+- Add the milestone note in the appropriate location under `specs/milestone/` after completion.
 
 ## Code quality and refactoring rules
 - Follow `specs/01_workflow/code_style.md` strictly.
@@ -73,7 +73,7 @@
 ## Implementation snapshot upkeep
 - After completing each milestone, update `specs/00_overview/current_build_state.md` in addition to creating the milestone note in `specs/milestone/`.
 - Treat `specs/00_overview/current_build_state.md` as the compact snapshot of the build’s current behavior.
-- Treat `specs/milestone/*.md` as detailed historical notes for each milestone.
+- Treat `specs/milestone/`, `specs/milestone/refactors/`, and `specs/milestone/docs/` as the detailed historical note locations for milestone work.
 - When a milestone changes current behavior, reflect that behavior in `current_build_state.md`.
 - When a milestone only adds historical detail but does not change current behavior, keep the `current_build_state.md` edit minimal.
 - Keep `current_build_state.md` concise:
