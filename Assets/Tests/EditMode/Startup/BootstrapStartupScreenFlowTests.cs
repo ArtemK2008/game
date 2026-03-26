@@ -64,6 +64,10 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
                 Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+                Assert.That(storage.SavedGameState.OfflineProgressCompatibilityState.IsEligibleForOfflineProgress, Is.True);
+                Assert.That(
+                    storage.SavedGameState.OfflineProgressCompatibilityState.LastStableSaveUnixTimeSeconds,
+                    Is.GreaterThan(0));
                 Assert.That(
                     storage.SavedGameState.ProgressionState.TryGetEntry(
                         "account_wide_combat_baseline_project",

@@ -25,6 +25,10 @@ namespace Survivalon.State.Persistence
         [SerializeField]
         private PersistentSafeResumeState safeResumeState = new PersistentSafeResumeState();
 
+        [SerializeField]
+        private PersistentOfflineProgressCompatibilityState offlineProgressCompatibilityState =
+            new PersistentOfflineProgressCompatibilityState();
+
         private List<string> OwnedGearIdsInternal => ownedGearIds ??= new List<string>();
 
         public PersistentWorldState WorldState => worldState;
@@ -38,6 +42,9 @@ namespace Survivalon.State.Persistence
         public IReadOnlyList<string> OwnedGearIds => OwnedGearIdsInternal;
 
         public PersistentSafeResumeState SafeResumeState => safeResumeState;
+
+        public PersistentOfflineProgressCompatibilityState OfflineProgressCompatibilityState =>
+            offlineProgressCompatibilityState ??= new PersistentOfflineProgressCompatibilityState();
 
         public void AddCharacterState(PersistentCharacterState characterState)
         {
