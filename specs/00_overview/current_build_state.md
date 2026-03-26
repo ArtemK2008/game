@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 075**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 076**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -26,6 +26,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Startup resolves into a world-map safe context or a main-menu placeholder target.
 - Safe-stop persistence exists for resolved world-level context, and resolved post-run now also autosaves into that same safe resume path before the player leaves the post-run screen.
 - The same safe-resume persistence path now also preserves the current selected character, per-character package assignment, per-character equipped primary/support gear, and owned gear state cleanly across restart/load flows after world-map or town/service build-prep changes.
+- Safe resume is currently constrained to one clear world-map safe context on restart/load, even when the last autosave came from resolved post-run or town/service persistence; unresolved run state and temporary run-only upgrade choice state do not reopen on resume.
 - The startup/bootstrap runtime flow is now grouped under a dedicated `Startup` domain folder/namespace for clearer ownership and navigation.
 
 ### World map and node entry

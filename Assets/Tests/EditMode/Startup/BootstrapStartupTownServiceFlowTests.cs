@@ -271,12 +271,18 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 CreateAndInitializeBootstrap(secondHostObject, storage);
 
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(secondHostObject), Is.EqualTo(0));
                 Assert.That(CountActiveComponents<WorldMapScreen>(secondHostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(secondHostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<TownServiceScreen>(secondHostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(secondHostObject, "Location: Echo Caverns"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Current: Cavern Service Hub (Available) | Selected: none"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Selected character: Vanguard"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Assigned package: Burst Drill"), Is.True);
                 Assert.That(
                     ContainsText(secondHostObject, "Primary gear: Training Blade | Support gear: Guard Charm"),
                     Is.True);
+                Assert.That(ContainsText(secondHostObject, "Run finished."), Is.False);
 
                 EnterNodeFromWorldMap(secondHostObject, "region_002_node_001_Button");
 

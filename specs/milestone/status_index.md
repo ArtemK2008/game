@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 076
+Current next implementation target: Milestone 077
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -101,6 +101,7 @@ id | type | title | status | depends on / note
 073 | feature | Improve post-run next-action clarity | completed | phase 17
 074 | feature | Implement autosave at resolved post-run boundary | completed | phase 18
 075 | feature | Persist build/character/gear state cleanly | completed | phase 18
+076 | acceptance | Validate safe resume flow | completed | phase 18
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note
