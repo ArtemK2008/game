@@ -8,6 +8,10 @@ This folder is the source of truth for project decisions.
 
 Use these specs before implementing any feature.
 If multiple specs apply, align them instead of guessing.
+When docs overlap, use this precedence:
+1. the directly relevant spec files in `specs/`
+2. `specs/00_overview/current_build_state.md` for the compact current-state snapshot
+3. `specs/milestone/` notes for implementation history and recent detail
 
 ---
 
@@ -37,6 +41,9 @@ For any task:
 6. Do not commit; the user commits manually.
 
 When a task depends on art assets, also read the relevant files in `10_art/` together with the gameplay-facing spec they support.
+Open questions are not permission to invent behavior during implementation; surface the gap or conflict instead.
+Use `specs/milestone/status_index.md` to find the current next numbered target and milestone classifications.
+Use `specs/01_workflow/milestone_note_template.md` when writing a new milestone note.
 
 ---
 

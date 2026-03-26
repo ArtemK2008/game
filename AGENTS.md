@@ -10,6 +10,7 @@
     - `specs/00_overview/current_build_state.md`
 - Then read only the directly relevant spec files for the requested milestone.
 - Use `specs/00_overview/current_build_state.md` as the primary compact reference for what is already implemented.
+- Use `specs/milestone/status_index.md` first when you need the current next numbered target or milestone classification before opening individual milestone notes.
 - Use `specs/milestone/*.md` as historical detail when recent implementation context is needed.
 - If specs conflict, surface the conflict instead of guessing.
 - If specs, milestone notes, and current code appear inconsistent, surface the inconsistency instead of guessing.
@@ -100,3 +101,4 @@ Rules:
 - Never claim tests passed if compile check failed.
 - Always report the exact log/result file paths used.
 - Prefer this script-based workflow over ad hoc Unity commands.
+- See `specs/01_workflow/unity_verification_notes.md` for the helper-artifact caveat and fallback reporting expectations.
