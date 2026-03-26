@@ -20,7 +20,7 @@
   - `CombatBossPlaceholderProfileCatalog`
 - Added one tiny future-facing behavior seam on enemy profiles through `CombatEnemyBehaviorType` so later enemy behavior differences have an explicit ownership slot without changing runtime combat logic yet.
 
-## Behavior
+## Behavior Change
 - Gameplay behavior is unchanged.
 - Current farm node, push node, and boss/gate placeholder encounters still resolve to the same enemy profiles and produce the same current combat results.
 - World-map flow, run flow, rewards, progression, and UI behavior remain unchanged.
@@ -41,7 +41,7 @@
   - missing encounter content is rejected explicitly for combat nodes
   - the tiny enemy behavior-type seam is exposed on the shipped profiles
 
-## Intentionally Left Out
+## Out Of Scope
 - any broader authored encounter-data system
 - enemy abilities or AI systems
 - broader faction/content pipelines

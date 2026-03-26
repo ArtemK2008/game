@@ -23,7 +23,7 @@
 - Updated `NodePlaceholderScreenPresentationTests` to verify the grouped reward/progress summary through `PostRunSummaryTextBuilder` directly.
 - Updated `BootstrapStartupCombatScreenFlowTests` to verify the real post-run screen now shows the grouped aggregated reward/progress summary after a combat run.
 
-## Intentionally Left Out
+## Out Of Scope
 - Detailed inventory or reward-history screens
 - Reward rarity or milestone differentiation
 - Spending UI

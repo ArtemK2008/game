@@ -27,7 +27,7 @@ This adds clear value because it lets repeatable region-material gains feed back
   - invoked with one button
   - refreshed immediately after a successful conversion
 
-## Behavior
+## Behavior Change
 - `Cavern Service Hub` still remains the only shipped town/service shell.
 - Existing direct project purchasing still works there.
 - Existing build-preparation editing still works there.
@@ -39,7 +39,7 @@ This adds clear value because it lets repeatable region-material gains feed back
   - the service screen refreshes immediately
 - If the player has fewer than `3` region material, the conversion remains visible but unavailable.
 
-## SRP notes
+## SRP Notes
 - SRP stayed clean in the touched area.
 - Conversion rule/data ownership lives in the small town conversion definition/catalog seam.
 - Persistent resource mutation and persistence handoff live in `TownServiceConversionInteractionService`.
@@ -64,7 +64,7 @@ This adds clear value because it lets repeatable region-material gains feed back
   - `Logs/m065_editmode_results.xml`
   - `Logs/m065_editmode.log`
 
-## Intentionally left out
+## Out Of Scope
 - No Milestone 066+ work
 - No broader crafting/refinement system
 - No recipe list, tabs, timers, or queueing

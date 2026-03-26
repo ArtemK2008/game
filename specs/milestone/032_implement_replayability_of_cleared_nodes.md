@@ -20,7 +20,7 @@
   - re-enter the cleared node
   - confirm the cleared state persists and unlock state is not corrupted on return
 
-## Intentionally Left Out
+## Out Of Scope
 - New reward or economy outputs for farming cleared nodes
 - Advanced farm-mode UX or automation
 - Boss/gate replay semantics beyond the current shared placeholder rule

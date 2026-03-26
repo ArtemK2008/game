@@ -21,7 +21,7 @@
   - selected run-only upgrade
 - `NodePlaceholderScreen` no longer uses a fixed `132f` run-time upgrade panel height; the placeholder panel now sizes from content through layout components.
 
-## Behavior
+## Behavior Change
 - Gameplay behavior remains unchanged from Milestone 050:
   - packages still determine whether `Burst Strike` is present
   - run start still pauses for one run-only choice when `Burst Strike` is present
@@ -47,7 +47,7 @@
   - the selected run-only upgrade remains separate from the base triggered active skill
   - the placeholder upgrade panel still shows readable choices and sizes from content without a fixed layout element
 
-## Intentionally Left Out
+## Out Of Scope
 - Additional run-time upgrades
 - Broader in-run upgrade chains
 - Cooldown UI, mana systems, cast bars, or broader combat UI redesign

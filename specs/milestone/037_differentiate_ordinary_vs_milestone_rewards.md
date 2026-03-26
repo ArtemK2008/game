@@ -19,7 +19,7 @@
 - Updated run-lifecycle progression tests to verify a real clear-threshold run grants persistent progression material and persists it into resource balances.
 - Updated post-run summary tests and world-flow tests to verify milestone rewards appear distinctly in the summary while ordinary runs remain unchanged.
 
-## Intentionally Left Out
+## Out Of Scope
 - Boss-specific or map-depth-specific milestone reward tiers
 - Broader milestone reward bundles
 - Spending or sink behavior for persistent progression material

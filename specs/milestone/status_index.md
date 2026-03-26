@@ -46,12 +46,12 @@ id | type | title | status | depends on / note
 023 | feature | Implement basic auto-targeting | completed | phase 5
 024 | feature | Implement basic auto-attack loop | completed | phase 5
 025 | feature | Implement basic enemy hostility behavior | completed | phase 5
-026 | feature | Implement movement if movement exists in MVP | completed | phase 5
+026 | acceptance | Implement movement if movement exists in MVP | completed | phase 5
 027 | acceptance | Verify no-manual-combat core loop | completed | phase 5
 028 | feature | Implement node progress meter | completed | phase 6
 029 | feature | Implement map clear threshold rule | completed | phase 6
 030 | feature | Implement next-node unlock rule | completed | phase 6
-031 | feature | Implement partial completion value | completed | phase 6
+031 | acceptance | Implement partial completion value | completed | phase 6
 032 | feature | Implement replayability of cleared nodes | completed | phase 6
 033 | feature | Implement reward payload model | completed | phase 7
 034 | feature | Implement basic soft currency | completed | phase 7
@@ -77,7 +77,7 @@ id | type | title | status | depends on / note
 054 | feature | Implement second gear slot category | completed | phase 11
 055 | feature | Implement standard enemy data variety | completed | phase 12
 056 | feature | Implement enemy profile differences in combat | completed | phase 12
-057 | feature | Map enemy profiles to nodes/locations | completed | phase 12
+057 | acceptance | Map enemy profiles to nodes/locations | completed | phase 12
 058 | feature | Implement boss entity/encounter model | completed | phase 13
 059 | feature | Connect boss to progression gate | completed | phase 13
 060 | feature | Add boss reward differentiation | completed | phase 13
@@ -97,10 +97,10 @@ id | type | title | status | depends on / note
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note
-013-audit | acceptance | Phase 0-2 cleanup and audit | completed | after 013
+013a | acceptance | Phase 0-2 cleanup and audit | completed | after 013
 032b | follow-up | Implement broad cleared-node farm access | completed | after 032
-038-followup | follow-up | Clarify account-wide progression purchase API | completed | after 038
-039-followup | follow-up | Reduce run persistent context parameter growth | completed | after 039
+038a | follow-up | Clarify account-wide progression purchase API | completed | after 038
+039a | follow-up | Reduce run persistent context parameter growth | completed | after 039
 042b | follow-up | Extract startup domain structure | completed | after 042
 042c | follow-up | Move core types into core domain folders | completed | after 042
 042d | follow-up | Reorganize EditMode tests into domain folders | completed | after 042
@@ -143,3 +143,4 @@ refactor07 | refactor | Shared enum/display-name formatting | completed | shared
 ## Docs / Workflow Notes
 id | type | title | status | depends on / note
 docs01 | follow-up | Milestone navigation and workflow cleanup | completed | docs-only navigation aid
+docs02 | follow-up | Milestone note normalization and index cleanup | completed | docs-only normalization pass

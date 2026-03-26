@@ -28,7 +28,7 @@
 - No code-side runtime blur cause was identified in the placeholder world-map UI path.
 - No font, sprite, or other UI asset changes were made for this follow-up.
 
-## Intentionally Left Out
+## Out Of Scope
 - Any redesign of the world-map placeholder
 - Broader UI polish or visual cleanup
 - Any Milestone 050 or later work

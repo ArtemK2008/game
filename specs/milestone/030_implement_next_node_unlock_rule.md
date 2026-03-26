@@ -25,7 +25,7 @@
   - return to the world map
   - see the newly unlocked next node as `Available` and selectable
 
-## Intentionally Deferred
+## Out Of Scope
 - Advanced branch unlock rules
 - Dedicated gate semantics beyond the current shared placeholder rule
 - Reward/economy expansion

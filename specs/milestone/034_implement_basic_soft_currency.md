@@ -16,7 +16,7 @@
   - saved game-state snapshots preserve the updated balance
   - soft-currency spend succeeds when affordable and fails cleanly when overspent
 
-## Intentionally Left Out
+## Out Of Scope
 - Region/material reward granting
 - Broad reward-balance tuning
 - Soft-currency spending UI

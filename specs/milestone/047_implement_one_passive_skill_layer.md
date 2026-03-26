@@ -45,7 +45,7 @@
   - `Vanguard` enters with no passive skills
   - `Striker` enters with the resolved passive skill attached
 
-## Intentionally Left Out
+## Out Of Scope
 - More than one passive skill
 - Active/castable skills
 - Cooldown systems or skill UI

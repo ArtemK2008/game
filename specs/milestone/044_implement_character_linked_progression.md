@@ -31,7 +31,7 @@
   - the resolved-world save path persists granted character progression rank
   - replay after a successful run uses the stronger selected character baseline
 
-## Intentionally Left Out
+## Out Of Scope
 - Character progression spend UI or a dedicated character-progression screen
 - Additional character progression axes beyond the one simple rank-based health bonus
 - Character-specific talent trees or specialization paths

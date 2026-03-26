@@ -16,7 +16,7 @@
   - the purchased upgrade produces a visible survivability improvement in future combat runs
 - Updated `BootstrapStartupCombatScreenFlowTests` to verify the purchased upgrade affects real runtime combat entry and replay flow through the existing bootstrap/world/node screen path.
 
-## Intentionally Left Out
+## Out Of Scope
 - Additional account-wide upgrade entries
 - Combat integration for any future progression-sink effects beyond the current max-health bonus
 - Dedicated town/service UI access to the progression sink

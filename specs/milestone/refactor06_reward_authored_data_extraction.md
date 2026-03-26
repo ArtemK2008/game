@@ -29,7 +29,7 @@
   - owns runtime reward application flow
 - node-specific and boss-specific reward modifiers still stay with world content where they belong
 
-## Behavior check
+## Behavior Change check
 - reward values stayed unchanged
 - ordinary region material and boss bonuses still layer exactly as before
 - no persistence, UI, or gameplay flow changed

@@ -21,7 +21,7 @@
   - post-run return/stop transitions
   - combat and progression startup flow
 
-## Intentionally Left Unchanged
+## Out Of Scope
 - Root-level core identifiers and enums such as `NodeId`, `RegionId`, and reward/resource categories
 - World, run, combat, and persistence namespaces outside the startup slice
 - Assembly-definition layout

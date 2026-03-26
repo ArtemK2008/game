@@ -20,7 +20,7 @@
 - The shipped gate node mapping now uses the explicit `Gate Boss` encounter model instead of a boss/gate placeholder encounter.
 - `CombatEnemyProfileResolver` now resolves the primary hostile profile from the encounter definition without needing any standard-only assumptions.
 
-## Behavior
+## Behavior Change
 - Current shipped gameplay remains on the same combat foundation:
   - one player entity versus one hostile entity
   - deterministic auto-targeting
@@ -45,7 +45,7 @@
 - Updated world-graph and node-entry tests to prove bootstrap boss nodes carry boss encounter content.
 - Updated combat/run tests to prove the gate node still enters the existing 1v1 shell with the explicit boss model and expected hostile stats.
 
-## Intentionally Left Out
+## Out Of Scope
 - boss ability systems
 - boss-specific AI behavior
 - broader boss encounter pipelines

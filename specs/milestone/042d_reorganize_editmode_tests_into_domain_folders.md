@@ -76,7 +76,7 @@
 - A developer can navigate from a runtime domain folder to the matching test folder without scanning a large flat EditMode directory.
 - The remaining flat-root EditMode files are now the smaller set of intentionally deferred exceptions instead of the default layout.
 
-## Intentionally Left Unchanged
+## Out Of Scope
 - Test namespaces
 - Runtime namespaces
 - `RuntimeAssemblySmokeTests`

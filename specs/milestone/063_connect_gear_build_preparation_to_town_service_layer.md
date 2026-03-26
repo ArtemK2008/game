@@ -24,7 +24,7 @@ Make the current town/service shell usable as a short safe-context build-prepara
   - save the updated game state immediately
   - refresh the visible town-service build summary and button labels in place
 
-## Behavior
+## Behavior Change
 - `Cavern Service Hub` remains a distinct non-combat service context.
 - The service shell now supports a short build-preparation interaction loop:
   - enter service hub
@@ -35,7 +35,7 @@ Make the current town/service shell usable as a short safe-context build-prepara
 - The world map keeps its existing build controls for now; town build preparation is an additional safe-context access point, not a replacement screen.
 - Progression purchasing, return-to-world, and stop-session behavior remain unchanged.
 
-## SRP notes
+## SRP Notes
 - `TownServiceScreen` remains UI wiring/layout only.
 - `TownServiceScreenStateResolver` still resolves presentation state from persistent game state.
 - `TownServiceScreenTextBuilder` still formats display text only.
@@ -53,7 +53,7 @@ Make the current town/service shell usable as a short safe-context build-prepara
   - `Logs/m063_editmode_results.xml`
   - `Logs/m063_editmode.log`
 
-## Intentionally left out
+## Out Of Scope
 - Milestone 064 or later town/service expansion
 - moving world-map build controls out of the current MVP flow
 - new gear categories, new package options, or new progression systems

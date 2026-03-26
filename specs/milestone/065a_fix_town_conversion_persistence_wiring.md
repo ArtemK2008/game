@@ -25,13 +25,13 @@ Fix the missing live persistence injection risk in the town conversion flow and 
   - conversion triggered exactly one save
   - persisted stored balances changed only after that save
 
-## Behavior
+## Behavior Change
 - No player-facing behavior changed.
 - `Cavern Service Hub` still shows the same conversion and town sections.
 - Successful `Region material x3 -> Persistent progression material x1` conversion still refreshes immediately and now has explicit real startup persistence wiring behind it.
 - Existing progression purchase, build-prep, return, and stop flows remain unchanged.
 
-## SRP notes
+## SRP Notes
 - SRP improved in the touched area.
 - `BootstrapStartup` now only performs the dependency injection it should have performed already.
 - `TownServiceConversionInteractionService` remains the owner of town conversion orchestration and immediate persistence handoff.
@@ -55,7 +55,7 @@ Fix the missing live persistence injection risk in the town conversion flow and 
   - `Logs/m065a_editmode_results.xml`
   - `Logs/m065a_editmode.log`
 
-## Intentionally left out
+## Out Of Scope
 - No Milestone 066+ work
 - No town UI expansion
 - No conversion recipe expansion

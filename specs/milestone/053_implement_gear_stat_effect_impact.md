@@ -16,7 +16,7 @@
   - no inventory/loot system expansion
 - Renamed the world-map build-summary helper from `BuildBuildAssignmentText(...)` to `BuildAssignmentText(...)` and updated the direct callers/tests.
 
-## Behavior
+## Behavior Change
 - Gameplay changed only in the intended 053 way.
 - Unequipped characters keep their previous combat baseline.
 - Equipping `Training Blade` increases the selected character's future run-entry attack power by `+2`.
@@ -37,7 +37,7 @@
 - Added end-to-end run-flow coverage proving equipped `Training Blade` shortens standard combat while unequipped baseline behavior remains intact.
 - Updated world-map presentation coverage to follow the cleaner build-summary helper name.
 
-## Intentionally Left Out
+## Out Of Scope
 - additional gear items
 - additional gear categories
 - gear-driven skill modification

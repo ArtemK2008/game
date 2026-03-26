@@ -22,7 +22,7 @@
 - The shared safe-return service was renamed and generalized from post-run-only use to world-context use:
   - `BootstrapPostRunTransitionService` -> `BootstrapWorldContextTransitionService`
 
-## Behavior
+## Behavior Change
 - Entering `region_002_node_001` now opens a distinct town/service screen.
 - That screen is clearly non-combat:
   - no combat shell
@@ -63,7 +63,7 @@
   - `Logs/m061_editmode_results.xml`
   - `Logs/m061_editmode.log`
 
-## Intentionally Left Out
+## Out Of Scope
 - Milestone 062 or later service interaction expansion
 - interactive progression-board purchasing inside the service shell
 - moving package/gear assignment off the world map

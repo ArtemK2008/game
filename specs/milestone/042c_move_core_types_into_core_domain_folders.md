@@ -25,7 +25,7 @@
 - No new behavior tests were needed because this was a behavior-preserving folder-placement refactor.
 - Existing EditMode coverage remained in place and was validated through the batch EditMode run.
 
-## Intentionally Left Unchanged
+## Out Of Scope
 - Runtime namespaces for the moved core types
 - Other domain test files still sitting at the EditMode root
 - Broader runtime domain moves for `World`, `Run`, `State`, `Combat`, and `Data`

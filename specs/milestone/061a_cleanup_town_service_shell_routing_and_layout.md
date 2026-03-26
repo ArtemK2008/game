@@ -10,7 +10,7 @@ Tighten the MVP town/service shell shape after Milestone 061 without expanding t
 - `TownServiceScreenTextBuilder` no longer owns hardcoded account-wide upgrade display-name mapping.
 - Account-wide upgrade display names now come from `AccountWideProgressionUpgradeDefinition` data and flow through `TownServiceProgressionOptionState` into presentation formatting.
 
-## Behavior
+## Behavior Change
 - Current shipped behavior is preserved:
   - `Cavern Service Hub` still opens the town/service shell
   - combat nodes still use the existing combat/run flow

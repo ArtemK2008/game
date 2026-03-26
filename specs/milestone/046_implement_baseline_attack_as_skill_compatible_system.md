@@ -46,7 +46,7 @@
   - combat entities now expose the baseline attack definition
   - combat shell setup resolves the expected baseline attack metadata into both combat entities
 
-## Intentionally Left Out
+## Out Of Scope
 - Passive skill effects
 - Additional active skills
 - Skill cooldown UI or casting UI

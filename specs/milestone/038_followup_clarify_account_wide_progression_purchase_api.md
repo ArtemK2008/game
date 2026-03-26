@@ -15,7 +15,7 @@
   - already-purchased upgrades are not buyable
   - insufficient resources are not buyable
 
-## Intentionally Left Out
+## Out Of Scope
 - Any Milestone 039 combat integration
 - Additional upgrade entries
 - UI or service-layer access changes

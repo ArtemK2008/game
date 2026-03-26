@@ -16,7 +16,7 @@
 - Added a small structural authored-vs-fallback flag to `LocationIdentityDefinition`.
 - Kept the fallback identity seam in place for safety, but made authored bootstrap content tests assert that shipped forest/cavern regions and entered node states are not fallback identities.
 
-## Behavior
+## Behavior Change
 - Player-visible gameplay is unchanged except for the intended service-screen clarity improvement.
 - `Verdant Frontier` and `Echo Caverns` remain the two shipped location identities.
 - World map, node placeholder, and post-run location-aware presentation continue to work.

@@ -29,7 +29,7 @@
 - Updated `CombatEntityStateTests` to verify the farm-oriented upgrade does not incorrectly change combat baseline stats.
 - Updated `SafeResumePersistenceServiceTests` to verify all purchased account-wide upgrades persist and resolve after the normal safe save boundary.
 
-## Intentionally Left Out
+## Out Of Scope
 - Any automation-comfort upgrade path
 - Additional farm-oriented upgrade entries beyond the one new reward-efficiency upgrade
 - Dedicated town/service UI access to the progression sink

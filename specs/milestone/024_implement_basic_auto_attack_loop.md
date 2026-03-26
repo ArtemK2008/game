@@ -15,7 +15,7 @@
 - Updated `NodePlaceholderScreenUiTests` to verify combat-node UI shows auto-running behavior and that combat can reach post-run without manual advance clicks.
 - Updated `BootstrapStartupScreenFlowTests` so the real node-entry flow drives automatic combat progression correctly.
 
-## Intentionally Left Out
+## Out Of Scope
 - Manual player attack input
 - Pause, speed, or time-scale controls
 - Multi-entity combat auto-loops

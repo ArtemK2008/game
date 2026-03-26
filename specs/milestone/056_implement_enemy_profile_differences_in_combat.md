@@ -18,7 +18,7 @@
   - farm combat node keeps `Enemy Unit`
   - forest push combat node keeps `Bulwark Raider`
 
-## Behavior
+## Behavior Change
 - Gameplay changed only in the intended 056 way.
 - The two shipped standard enemies now create different combat pressure in practice:
   - `Enemy Unit` threatens the player sooner through faster repeated attacks
@@ -44,7 +44,7 @@
   - `Bulwark Raider` still creates stronger full-fight attrition through a longer sturdier encounter
 - Updated startup-flow coverage so the push-node placeholder still surfaces the current `Bulwark Raider` combat card text.
 
-## Intentionally Left Out
+## Out Of Scope
 - enemy-specific skills or special attacks
 - broader faction or enemy-family systems
 - reward/loot differentiation by enemy

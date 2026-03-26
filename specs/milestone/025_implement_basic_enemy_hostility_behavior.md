@@ -14,7 +14,7 @@
 - Added `CombatAutoAdvanceLoopTests.ShouldResolveAutoAdvancedBossCombatAsFailedWhenHostileEnemyWins` to verify hostile enemies can defeat the player through the normal auto-combat loop.
 - Updated `NodePlaceholderScreenUiTests` to verify the combat shell shows explicit hostile targeting and that the player loses health automatically during combat.
 
-## Intentionally Left Out
+## Out Of Scope
 - Advanced AI or behavior trees
 - Aggro, threat, or priority systems
 - Movement/pathing changes

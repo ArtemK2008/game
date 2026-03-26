@@ -21,7 +21,7 @@
 - Updated `RunResultFactoryTests` to verify the default run result still carries an empty structured payload.
 - Updated `RunLifecycleControllerTests` to verify the current run flow still produces a valid structured reward payload.
 
-## Intentionally Left Out
+## Out Of Scope
 - Actual reward generation values
 - Soft-currency granting
 - Material granting

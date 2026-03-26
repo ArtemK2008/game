@@ -50,7 +50,7 @@
   - `Vanguard` still has no active skill on combat entry
   - future run entry still uses the selected playable character without regressing existing passive/baseline behavior
 
-## Intentionally Left Out
+## Out Of Scope
 - Additional active skills
 - Manual/castable skills
 - Cooldown UI, cast bars, or mana/resource systems

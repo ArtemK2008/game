@@ -18,7 +18,7 @@
 - Updated replay and combat lifecycle tests to pass the grouped persistent context instead of the previous parallel parameter lists.
 - Kept the existing Milestone 039 combat-outcome coverage intact.
 
-## Intentionally Left Out
+## Out Of Scope
 - Any new progression behavior
 - Additional run-context grouping outside the touched Milestone 039 flow
 - Milestone 040 and later work

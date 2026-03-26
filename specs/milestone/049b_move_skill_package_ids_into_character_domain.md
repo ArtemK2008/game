@@ -14,7 +14,7 @@
 - Updated the directly related runtime/test references and the small guard test to use the new location.
 - Kept the class name and constant values unchanged.
 
-## Behavior
+## Behavior Change
 - No gameplay behavior changed.
 - No UI behavior changed.
 - No package-option behavior changed.
@@ -30,7 +30,7 @@
 - Preserved the existing guard test coverage for the shared package-id source.
 - Updated only the directly related runtime/test references needed for the new namespace/path.
 
-## Intentionally Left Out
+## Out Of Scope
 - No new package abstraction
 - No redesign of the assignment or combat package systems
 - No Milestone 050 work

@@ -33,7 +33,7 @@
 - Updated `CombatShellPresentationTests` so combat-shell summary/card expectations reflect the named playable character.
 - Updated `SafeResumePersistenceServiceTests` to verify persistent playable character state survives resolved-world save snapshots.
 
-## Intentionally Left Out
+## Out Of Scope
 - Character selection UI
 - A second playable character
 - Character-specific progression trees

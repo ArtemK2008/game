@@ -21,7 +21,7 @@
 - `PersistentPlayableCharacterInitializer` now delegates gear-state initialization to that focused gear initializer after ensuring the shipped playable-character state exists.
 - `PersistentCharacterState.LoadoutState`, `PersistentLoadoutState`, and `PersistentGameState.OwnedGearIds` are now null-safe for the touched gear persistence path.
 
-## Behavior
+## Behavior Change
 - Gameplay behavior is unchanged in this milestone.
 - Characters still start with no gear equipped in the bootstrap state.
 - The build now persistently owns one starter primary-gear item and preserves valid equipped-gear data through bootstrap/save-load/safe-resume paths.
@@ -41,7 +41,7 @@
 - Updated startup and safe-resume tests to verify starter gear ownership and equipped-gear persistence through the current save/load path.
 - Updated persistent playable-character initialization tests to verify default bootstrap gear state stays valid and empty-equipped by default.
 
-## Intentionally Left Out
+## Out Of Scope
 - gear equip/assignment UI and flow
 - gear combat/stat effects
 - gear loot acquisition

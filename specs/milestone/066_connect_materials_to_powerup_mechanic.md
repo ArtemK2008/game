@@ -53,7 +53,7 @@ Make the already-shipped farming-materials -> refinement -> project loop explici
   - `Logs/m066_editmode_results.xml`
   - `Logs/m066_editmode.log`
 
-## Intentionally left out
+## Out Of Scope
 - No new refinement recipes
 - No new currencies
 - No new project tree or chained research flow
