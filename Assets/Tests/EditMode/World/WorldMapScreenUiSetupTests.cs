@@ -69,6 +69,34 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldEnableEntryButtonAsQuickRepeatForCurrentContextWhenNoSelectionExists()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState,
+                    nodeEntryRequested: _ => { });
+
+                Button entryButton = FindButton(hostObject, "EnterSelectedNodeButton");
+                Text entryButtonLabel = entryButton.GetComponentInChildren<Text>(true);
+
+                Assert.That(entryButton.interactable, Is.True);
+                Assert.That(entryButtonLabel, Is.Not.Null);
+                Assert.That(entryButtonLabel.text, Is.EqualTo("Replay Raider Trail"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldCreateVisibleCanvasAndInputSystemModule()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
@@ -230,6 +258,41 @@ namespace Survivalon.Tests.EditMode.World
 
                 Assert.That(wasInvoked, Is.True);
                 Assert.That(enteredNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldInvokeNodeEntryCallbackForQuickRepeatWhenNothingIsSelected()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            bool wasInvoked = false;
+            NodeId enteredNodeId = default;
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    nodeEntryRequested: nodeId =>
+                    {
+                        wasInvoked = true;
+                        enteredNodeId = nodeId;
+                    },
+                    gameState: gameState);
+
+                Button entryButton = FindButton(hostObject, "EnterSelectedNodeButton");
+                Assert.That(entryButton.interactable, Is.True);
+
+                entryButton.onClick.Invoke();
+
+                Assert.That(wasInvoked, Is.True);
+                Assert.That(enteredNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
             }
             finally
             {

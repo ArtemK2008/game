@@ -121,6 +121,28 @@ namespace Survivalon.World
             return false;
         }
 
+        public bool TryGetQuickRepeatNode(out NodeId nodeId, out string nodeDisplayName, out NodeType nodeType)
+        {
+            NodeId currentContextNodeId = ResolveCurrentContextNodeId();
+            NodeState currentContextNodeState = worldNodeStateResolver.ResolveNodeState(
+                worldGraph,
+                worldState,
+                currentContextNodeId);
+            if (currentContextNodeState == NodeState.Locked)
+            {
+                nodeId = default;
+                nodeDisplayName = null;
+                nodeType = default;
+                return false;
+            }
+
+            WorldNode currentContextNode = worldGraph.GetNode(currentContextNodeId);
+            nodeId = currentContextNodeId;
+            nodeDisplayName = worldNodeDisplayNameResolver.Resolve(currentContextNode);
+            nodeType = currentContextNode.NodeType;
+            return true;
+        }
+
         public IReadOnlyList<NodeId> GetForwardSelectableNodeIds()
         {
             List<NodeId> nodeIds = new List<NodeId>(BuildAccessState().ForwardSelectableNodeIds);

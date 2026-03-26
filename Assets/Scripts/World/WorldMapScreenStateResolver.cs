@@ -9,17 +9,47 @@ namespace Survivalon.World
         public static WorldMapScreenButtonState ResolveEntryButtonState(
             bool hasNodeEntryHandler,
             bool hasSelectedNode,
-            string selectedNodeDisplayName)
+            string selectedNodeDisplayName,
+            bool hasQuickRepeatNode,
+            string quickRepeatNodeDisplayName,
+            NodeType quickRepeatNodeType)
         {
             bool canEnterSelection = hasNodeEntryHandler && hasSelectedNode;
+            bool canQuickRepeatNode = hasNodeEntryHandler && !hasSelectedNode && hasQuickRepeatNode;
 
             return new WorldMapScreenButtonState(
                 canEnterSelection
                     ? string.IsNullOrWhiteSpace(selectedNodeDisplayName)
                         ? "Enter selected node"
                         : $"Enter {selectedNodeDisplayName}"
+                    : canQuickRepeatNode
+                        ? BuildQuickRepeatButtonLabel(quickRepeatNodeDisplayName, quickRepeatNodeType)
                     : "Select a reachable node to enter",
-                canEnterSelection);
+                canEnterSelection || canQuickRepeatNode);
+        }
+
+        private static string BuildQuickRepeatButtonLabel(string quickRepeatNodeDisplayName, NodeType quickRepeatNodeType)
+        {
+            if (string.IsNullOrWhiteSpace(quickRepeatNodeDisplayName))
+            {
+                throw new ArgumentException(
+                    "Quick-repeat node display name cannot be null or whitespace.",
+                    nameof(quickRepeatNodeDisplayName));
+            }
+
+            switch (quickRepeatNodeType)
+            {
+                case NodeType.Combat:
+                case NodeType.BossOrGate:
+                    return $"Replay {quickRepeatNodeDisplayName}";
+                case NodeType.ServiceOrProgression:
+                    return $"Return to {quickRepeatNodeDisplayName}";
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        nameof(quickRepeatNodeType),
+                        quickRepeatNodeType,
+                        "Unknown quick-repeat node type.");
+            }
         }
 
         public static Color ResolveNodeColor(WorldMapNodeOption nodeOption)

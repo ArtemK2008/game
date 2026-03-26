@@ -29,6 +29,10 @@ namespace Survivalon.World
         private PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService;
         private PlayableCharacterGearAssignmentService gearAssignmentService;
         private WorldMapBuildPreparationInteractionService buildPreparationInteractionService;
+        private bool hasQuickRepeatNode;
+        private NodeId quickRepeatNodeId;
+        private string quickRepeatNodeDisplayName;
+        private NodeType quickRepeatNodeType;
 
         public void Show(
             WorldGraph worldGraph,
@@ -158,12 +162,18 @@ namespace Survivalon.World
                 return;
             }
 
-            if (!screenController.TryGetSelectedNodeId(out NodeId selectedNodeId))
+            if (screenController.TryGetSelectedNodeId(out NodeId selectedNodeId))
+            {
+                onNodeEntryRequested(selectedNodeId);
+                return;
+            }
+
+            if (!hasQuickRepeatNode)
             {
                 return;
             }
 
-            onNodeEntryRequested(selectedNodeId);
+            onNodeEntryRequested(quickRepeatNodeId);
         }
 
         private void EnsureUi()
@@ -317,12 +327,19 @@ namespace Survivalon.World
         private void RefreshEntryButton()
         {
             bool hasSelectedNode = screenController.TryGetSelectedNodeId(out _);
+            hasQuickRepeatNode = screenController.TryGetQuickRepeatNode(
+                out quickRepeatNodeId,
+                out quickRepeatNodeDisplayName,
+                out quickRepeatNodeType);
             WorldMapScreenButtonState buttonState = WorldMapScreenStateResolver.ResolveEntryButtonState(
                 onNodeEntryRequested != null,
                 hasSelectedNode,
                 hasSelectedNode
                     ? screenController.ResolveSelectedNodeDisplayName()
-                    : null);
+                    : null,
+                hasQuickRepeatNode,
+                quickRepeatNodeDisplayName,
+                quickRepeatNodeType);
 
             entryActionSectionView.Refresh(buttonState);
         }

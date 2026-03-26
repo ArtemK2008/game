@@ -55,6 +55,24 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void ShouldResolveQuickRepeatNodeFromCurrentWorldContext()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(worldGraph, worldState);
+
+            bool hasQuickRepeatNode = controller.TryGetQuickRepeatNode(
+                out NodeId quickRepeatNodeId,
+                out string quickRepeatNodeDisplayName,
+                out NodeType quickRepeatNodeType);
+
+            Assert.That(hasQuickRepeatNode, Is.True);
+            Assert.That(quickRepeatNodeId, Is.EqualTo(new NodeId("region_001_node_002")));
+            Assert.That(quickRepeatNodeDisplayName, Is.EqualTo("Raider Trail"));
+            Assert.That(quickRepeatNodeType, Is.EqualTo(NodeType.Combat));
+        }
+
+        [Test]
         public void ShouldRejectSelectingLockedOrUnreachableNodes()
         {
             WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();

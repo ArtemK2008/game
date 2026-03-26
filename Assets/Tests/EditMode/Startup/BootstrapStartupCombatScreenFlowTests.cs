@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Characters;
 using UnityEngine;
+using UnityEngine.UI;
 using Survivalon.Combat;
 using Survivalon.Core;
 using Survivalon.Data.Progression;
@@ -209,6 +210,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
                 Assert.That(ContainsText(hostObject, "Selected: none"), Is.True);
+                Assert.That(
+                    FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Replay Forest Farm"));
                 Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
                 Assert.That(nodeState.UnlockProgress, Is.EqualTo(1));
                 Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
@@ -218,6 +222,38 @@ namespace Survivalon.Tests.EditMode.Startup
                     storage.SavedGameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState characterState),
                     Is.True);
                 Assert.That(characterState.ProgressionRank, Is.EqualTo(1));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldQuickReplayRecentCombatNodeFromWorldMapWithoutReselectingIt()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                ReturnToWorldMap(hostObject);
+
+                Button quickReplayButton = FindButton(hostObject, "EnterSelectedNodeButton");
+                Assert.That(quickReplayButton.interactable, Is.True);
+                Assert.That(
+                    quickReplayButton.GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Replay Forest Farm"));
+
+                quickReplayButton.onClick.Invoke();
+
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
             }
             finally
             {
@@ -280,6 +316,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<TownServiceScreen>(secondHostObject), Is.EqualTo(0));
                 Assert.That(ContainsText(secondHostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Current: Forest Farm (In progress) | Selected: none"), Is.True);
+                Assert.That(
+                    FindButton(secondHostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Replay Forest Farm"));
                 Assert.That(ContainsText(secondHostObject, "Run finished."), Is.False);
                 Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.False);
                 Assert.That(

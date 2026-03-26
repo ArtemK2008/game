@@ -28,13 +28,13 @@ namespace Survivalon.World
 
         public bool TryEnterNode(NodeId nodeId, out NodePlaceholderState placeholderState)
         {
-            if (!worldNodeAccessResolver.TryGetEnterableNode(worldGraph, worldState, nodeId, out WorldNode enterableNode))
+            NodeId originNodeId = ResolveCurrentContextNodeId();
+            if (!TryResolveRequestedNode(nodeId, originNodeId, out WorldNode enterableNode))
             {
                 placeholderState = null;
                 return false;
             }
 
-            NodeId originNodeId = ResolveCurrentContextNodeId();
             WorldRegion enterableRegion = worldGraph.GetRegion(enterableNode.RegionId);
             worldState.SetCurrentNode(enterableNode.NodeId);
             worldState.SetLastSafeNode(originNodeId);
@@ -57,6 +57,24 @@ namespace Survivalon.World
                     enterableRegion.ResourceCategory),
                 enterableNode.DisplayName);
             return true;
+        }
+
+        private bool TryResolveRequestedNode(NodeId requestedNodeId, NodeId originNodeId, out WorldNode enterableNode)
+        {
+            if (requestedNodeId == originNodeId)
+            {
+                NodeState currentNodeState = worldNodeStateResolver.ResolveNodeState(
+                    worldGraph,
+                    worldState,
+                    requestedNodeId);
+                if (currentNodeState != NodeState.Locked)
+                {
+                    enterableNode = worldGraph.GetNode(requestedNodeId);
+                    return true;
+                }
+            }
+
+            return worldNodeAccessResolver.TryGetEnterableNode(worldGraph, worldState, requestedNodeId, out enterableNode);
         }
 
         private IEnumerable<NodeId> BuildUpdatedReachableNodes(NodeId originNodeId)
