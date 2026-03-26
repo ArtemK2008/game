@@ -173,9 +173,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
                 Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_001_node_004")));
-                Assert.That(storage.SavedGameState.OfflineProgressCompatibilityState.IsEligibleForOfflineProgress, Is.True);
+                Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
                 Assert.That(
-                    storage.SavedGameState.OfflineProgressCompatibilityState.LastStableSaveUnixTimeSeconds,
+                    storage.SavedGameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds,
                     Is.GreaterThan(0));
                 Assert.That(storage.SavedGameState.WorldState.TryGetNodeState(new NodeId("region_001_node_004"), out PersistentNodeState nodeState), Is.True);
                 Assert.That(nodeState.UnlockProgress, Is.EqualTo(1));
@@ -282,6 +282,12 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(secondHostObject, "Current: Forest Farm (In progress) | Selected: none"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Run finished."), Is.False);
                 Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.False);
+                Assert.That(
+                    storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency),
+                    Is.EqualTo(1));
+                Assert.That(
+                    storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
+                    Is.EqualTo(2));
             }
             finally
             {

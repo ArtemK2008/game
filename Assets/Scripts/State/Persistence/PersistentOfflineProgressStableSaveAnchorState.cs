@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Survivalon.State.Persistence
 {
     [Serializable]
-    public sealed class PersistentOfflineProgressCompatibilityState
+    public sealed class PersistentOfflineProgressStableSaveAnchorState
     {
         [SerializeField]
         private bool isEligibleForOfflineProgress;
@@ -12,11 +12,11 @@ namespace Survivalon.State.Persistence
         [SerializeField]
         private long lastStableSaveUnixTimeSeconds;
 
-        public bool IsEligibleForOfflineProgress => isEligibleForOfflineProgress;
+        public bool HasStableSaveAnchor => isEligibleForOfflineProgress;
 
         public long LastStableSaveUnixTimeSeconds => lastStableSaveUnixTimeSeconds;
 
-        public void MarkEligibleStableContext(long unixTimeSeconds)
+        public void StampStableSaveAnchor(long unixTimeSeconds)
         {
             if (unixTimeSeconds < 0)
             {

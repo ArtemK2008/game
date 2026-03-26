@@ -137,6 +137,7 @@ id | type | title | status | depends on / note
 072a | follow-up | Clean up run-choice presentation boundaries and world-map readability | completed | after 072
 073a | follow-up | Cleanup post-run next-action recommendation boundaries | completed | after 073
 073b | follow-up | Cleanup post-run next-action strict push targets | completed | after 073
+077a | follow-up | Cleanup offline-progress compatibility boundaries | completed | after 077
 
 ## Refactor Milestones
 id | type | title | status | depends on / note
