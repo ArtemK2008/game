@@ -9,6 +9,7 @@ namespace Survivalon.Data.Progression
         PushOffenseProject = 1,
         FarmYieldProject = 2,
         BossSalvageProject = 3,
+        FarmReplayProject = 4,
     }
 }
 

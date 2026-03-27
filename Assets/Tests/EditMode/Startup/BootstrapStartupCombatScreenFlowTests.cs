@@ -445,6 +445,65 @@ namespace Survivalon.Tests.EditMode.Startup
                 Object.DestroyImmediate(hostObject);
             }
         }
+
+        [Test]
+        public void ShouldRestoreToWorldMapAndShowFarmReplayShortcutWhenFarmReplayProjectIsPurchasedForFarmReadyCurrentNode()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState gameState = CreateFarmReadyReplaySavedGameState();
+
+            storage.Seed(gameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "Current: Forest Farm (Cleared) | Selected: none"), Is.True);
+
+                Button entryButton = FindButton(hostObject, "EnterSelectedNodeButton");
+                Assert.That(entryButton.interactable, Is.True);
+                Assert.That(
+                    entryButton.GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Replay Forest Farm"));
+
+                entryButton.onClick.Invoke();
+
+                Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        private static PersistentGameState CreateFarmReadyReplaySavedGameState()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            AccountWideProgressionBoardService boardService = new AccountWideProgressionBoardService();
+            NodeId farmNodeId = new NodeId("region_001_node_004");
+            PersistentNodeState farmNodeState = gameState.WorldState.GetOrAddNodeState(
+                farmNodeId,
+                unlockThreshold: 3,
+                initialState: NodeState.Available);
+
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 3);
+            Assert.That(
+                boardService.TryPurchase(gameState, AccountWideUpgradeId.FarmReplayProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            farmNodeState.ApplyUnlockProgress(3);
+            gameState.WorldState.SetCurrentNode(farmNodeId);
+            gameState.WorldState.SetLastSafeNode(farmNodeId);
+            gameState.SafeResumeState.MarkWorldMap(farmNodeId);
+            return gameState;
+        }
     }
 }
 

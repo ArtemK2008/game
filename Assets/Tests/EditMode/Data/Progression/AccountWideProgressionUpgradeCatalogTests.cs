@@ -12,7 +12,7 @@ namespace Survivalon.Tests.EditMode.Data.Progression
         [Test]
         public void ShouldExposeAllShippedAccountWideUpgradeDefinitions()
         {
-            Assert.That(AccountWideProgressionUpgradeCatalog.All.Count, Is.EqualTo(4));
+            Assert.That(AccountWideProgressionUpgradeCatalog.All.Count, Is.EqualTo(5));
             Assert.That(
                 AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.CombatBaselineProject).DisplayName,
                 Is.EqualTo("Combat Baseline Project"));
@@ -25,6 +25,9 @@ namespace Survivalon.Tests.EditMode.Data.Progression
             Assert.That(
                 AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.BossSalvageProject).DisplayName,
                 Is.EqualTo("Boss Salvage Project"));
+            Assert.That(
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.FarmReplayProject).DisplayName,
+                Is.EqualTo("Farm Replay Project"));
         }
 
         [Test]
@@ -39,6 +42,22 @@ namespace Survivalon.Tests.EditMode.Data.Progression
             Assert.That(upgradeDefinition.PlayerMaxHealthBonus, Is.EqualTo(0));
             Assert.That(upgradeDefinition.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(upgradeDefinition.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(upgradeDefinition.EnablesFarmReadyQuickReplayShortcut, Is.False);
+        }
+
+        [Test]
+        public void ShouldKeepFarmReplayProjectStaticCostAndComfortFlagValues()
+        {
+            AccountWideProgressionUpgradeDefinition upgradeDefinition =
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.FarmReplayProject);
+
+            Assert.That(upgradeDefinition.CostResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(upgradeDefinition.CostAmount, Is.EqualTo(3));
+            Assert.That(upgradeDefinition.PlayerMaxHealthBonus, Is.EqualTo(0));
+            Assert.That(upgradeDefinition.PlayerAttackPowerBonus, Is.EqualTo(0));
+            Assert.That(upgradeDefinition.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(upgradeDefinition.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(upgradeDefinition.EnablesFarmReadyQuickReplayShortcut, Is.True);
         }
     }
 }

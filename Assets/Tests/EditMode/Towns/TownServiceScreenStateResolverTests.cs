@@ -76,7 +76,7 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(screenState.AssignedSkillPackageDisplayName, Is.EqualTo("Burst Drill"));
             Assert.That(screenState.PrimaryGearDisplayName, Is.EqualTo("Training Blade"));
             Assert.That(screenState.SupportGearDisplayName, Is.EqualTo("Guard Charm"));
-            Assert.That(screenState.ProgressionOptions.Count, Is.EqualTo(4));
+            Assert.That(screenState.ProgressionOptions.Count, Is.EqualTo(5));
             Assert.That(screenState.ProgressionOptions[0].UpgradeId, Is.EqualTo(AccountWideUpgradeId.CombatBaselineProject));
             Assert.That(screenState.ProgressionOptions[0].UpgradeDisplayName, Is.EqualTo("Combat Baseline Project"));
             Assert.That(screenState.ProgressionOptions[0].IsPurchased, Is.True);
@@ -93,6 +93,10 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(screenState.ProgressionOptions[3].UpgradeDisplayName, Is.EqualTo("Boss Salvage Project"));
             Assert.That(screenState.ProgressionOptions[3].IsPurchased, Is.False);
             Assert.That(screenState.ProgressionOptions[3].IsAffordable, Is.False);
+            Assert.That(screenState.ProgressionOptions[4].UpgradeId, Is.EqualTo(AccountWideUpgradeId.FarmReplayProject));
+            Assert.That(screenState.ProgressionOptions[4].UpgradeDisplayName, Is.EqualTo("Farm Replay Project"));
+            Assert.That(screenState.ProgressionOptions[4].IsPurchased, Is.False);
+            Assert.That(screenState.ProgressionOptions[4].IsAffordable, Is.False);
             Assert.That(screenState.ConversionOptions.Count, Is.EqualTo(1));
             Assert.That(
                 screenState.ConversionOptions[0].ConversionId,

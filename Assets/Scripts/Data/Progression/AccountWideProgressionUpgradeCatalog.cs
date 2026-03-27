@@ -50,12 +50,25 @@ namespace Survivalon.Data.Progression
                 playerAttackPowerBonus: 0,
                 ordinaryRegionMaterialRewardBonus: 0,
                 bossProgressionMaterialRewardBonus: 1);
+        private static readonly AccountWideProgressionUpgradeDefinition FarmReplayProject =
+            new AccountWideProgressionUpgradeDefinition(
+                AccountWideUpgradeId.FarmReplayProject,
+                "Farm Replay Project",
+                "account_wide_farm_replay_project",
+                ResourceCategory.PersistentProgressionMaterial,
+                costAmount: 3,
+                playerMaxHealthBonus: 0,
+                playerAttackPowerBonus: 0,
+                ordinaryRegionMaterialRewardBonus: 0,
+                bossProgressionMaterialRewardBonus: 0,
+                enablesFarmReadyQuickReplayShortcut: true);
         private static readonly AccountWideProgressionUpgradeDefinition[] AllDefinitions =
         {
             CombatBaselineProject,
             PushOffenseProject,
             FarmYieldProject,
             BossSalvageProject,
+            FarmReplayProject,
         };
 
         public static IReadOnlyList<AccountWideProgressionUpgradeDefinition> All => AllDefinitions;
@@ -72,6 +85,8 @@ namespace Survivalon.Data.Progression
                     return FarmYieldProject;
                 case AccountWideUpgradeId.BossSalvageProject:
                     return BossSalvageProject;
+                case AccountWideUpgradeId.FarmReplayProject:
+                    return FarmReplayProject;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(upgradeId), upgradeId, "Unknown account-wide upgrade id.");
             }

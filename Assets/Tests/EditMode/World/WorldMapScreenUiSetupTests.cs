@@ -8,6 +8,7 @@ using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
+using Survivalon.Data.Progression;
 using Survivalon.State;
 using Survivalon.State.Persistence;
 using Survivalon.World;
@@ -143,6 +144,64 @@ namespace Survivalon.Tests.EditMode.World
                     gameState: gameState);
 
                 Assert.That(ContainsText(hostObject, "State: Cleared | Farm-ready"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldEnableReplayShortcutForFarmReadyCurrentCombatNodeWhenFarmReplayProjectIsPurchased()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = CreateFarmReadyReplayGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    gameState.WorldState,
+                    gameState: gameState,
+                    nodeEntryRequested: _ => { });
+
+                Button entryButton = FindButton(hostObject, "EnterSelectedNodeButton");
+                Text entryButtonLabel = entryButton.GetComponentInChildren<Text>(true);
+
+                Assert.That(entryButton.interactable, Is.True);
+                Assert.That(entryButtonLabel, Is.Not.Null);
+                Assert.That(entryButtonLabel.text, Is.EqualTo("Replay Forest Farm"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldPreferSelectedNodeEntryOverFarmReplayShortcutWhenAnotherReachableNodeIsSelected()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = CreateFarmReadyReplayGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    gameState.WorldState,
+                    gameState: gameState,
+                    nodeEntryRequested: _ => { });
+
+                FindButton(hostObject, "region_002_node_001_Button").onClick.Invoke();
+
+                Button entryButton = FindButton(hostObject, "EnterSelectedNodeButton");
+                Text entryButtonLabel = entryButton.GetComponentInChildren<Text>(true);
+
+                Assert.That(entryButton.interactable, Is.True);
+                Assert.That(entryButtonLabel, Is.Not.Null);
+                Assert.That(entryButtonLabel.text, Is.EqualTo("Enter Cavern Service Hub"));
             }
             finally
             {
@@ -845,6 +904,30 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(childRect.xMin, Is.GreaterThanOrEqualTo(viewportRect.xMin - 1f));
             Assert.That(childRect.xMax, Is.LessThanOrEqualTo(viewportRect.xMax + 1f));
+        }
+
+        private static PersistentGameState CreateFarmReadyReplayGameState()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            AccountWideProgressionBoardService progressionBoardService = new AccountWideProgressionBoardService();
+            NodeId farmNodeId = new NodeId("region_001_node_004");
+            PersistentNodeState farmNodeState = gameState.WorldState.GetOrAddNodeState(
+                farmNodeId,
+                unlockThreshold: 3,
+                initialState: NodeState.Available);
+
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 3);
+            Assert.That(
+                progressionBoardService.TryPurchase(gameState, AccountWideUpgradeId.FarmReplayProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            farmNodeState.ApplyUnlockProgress(3);
+            gameState.WorldState.SetCurrentNode(farmNodeId);
+            gameState.WorldState.SetLastSafeNode(farmNodeId);
+            gameState.WorldState.ReplaceReachableNodes(new[]
+            {
+                new NodeId("region_002_node_001"),
+            });
+            return gameState;
         }
 
         private static WorldGraph CreateOverflowWorldGraph(int nodeCount)
