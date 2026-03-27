@@ -20,6 +20,7 @@ namespace Survivalon.Run
         private readonly RunRewardResolutionService runRewardResolutionService;
         private readonly RunRewardGrantService runRewardGrantService;
         private readonly PlayableCharacterProgressionService playableCharacterProgressionService;
+        private readonly RunTimeSkillUpgradeAutoPickResolver runTimeSkillUpgradeAutoPickResolver;
         private readonly IReadOnlyList<CombatRunTimeSkillUpgradeOption> runTimeSkillUpgradeOptions;
         private RunLifecycleState currentState;
         private CombatRunTimeSkillUpgradeOption selectedRunTimeSkillUpgradeOption;
@@ -40,7 +41,8 @@ namespace Survivalon.Run
             RunRewardGrantService runRewardGrantService = null,
             AccountWideProgressionEffectResolver accountWideProgressionEffectResolver = null,
             PlayableCharacterProgressionService playableCharacterProgressionService = null,
-            PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver = null)
+            PlayableCharacterCombatSkillResolver playableCharacterCombatSkillResolver = null,
+            RunTimeSkillUpgradeAutoPickResolver runTimeSkillUpgradeAutoPickResolver = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
             this.worldGraph = worldGraph;
@@ -59,6 +61,8 @@ namespace Survivalon.Run
             this.runRewardGrantService = runRewardGrantService ?? new RunRewardGrantService();
             this.playableCharacterProgressionService =
                 playableCharacterProgressionService ?? new PlayableCharacterProgressionService();
+            this.runTimeSkillUpgradeAutoPickResolver =
+                runTimeSkillUpgradeAutoPickResolver ?? new RunTimeSkillUpgradeAutoPickResolver();
             currentState = RunLifecycleState.RunStart;
             runTimeSkillUpgradeOptions = ResolveRunTimeSkillUpgradeOptions();
         }
@@ -280,7 +284,8 @@ namespace Survivalon.Run
                 return;
             }
 
-            selectedRunTimeSkillUpgradeOption = runTimeSkillUpgradeOptions[0];
+            selectedRunTimeSkillUpgradeOption =
+                runTimeSkillUpgradeAutoPickResolver.ResolveAutomaticFlowSelection(runTimeSkillUpgradeOptions);
         }
 
         private IReadOnlyList<CombatRunTimeSkillUpgradeOption> ResolveRunTimeSkillUpgradeOptions()
