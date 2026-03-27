@@ -146,7 +146,7 @@ namespace Survivalon.World
             return
                 $"{nodeOption.NodeDisplayName}\n" +
                 $"{nodeOption.LocationDisplayName}\n" +
-                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {PlayerFacingCoreLabelFormatter.FormatNodeType(nodeOption.NodeType)} | State: {PlayerFacingCoreLabelFormatter.FormatNodeState(nodeOption.NodeState)}\n" +
+                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {PlayerFacingCoreLabelFormatter.FormatNodeType(nodeOption.NodeType)} | State: {PlayerFacingCoreLabelFormatter.FormatNodeState(nodeOption.NodeState)}{BuildFarmReadySuffix(nodeOption)}\n" +
                 $"Status: {BuildAvailabilityLabel(nodeOption)}";
         }
 
@@ -192,6 +192,11 @@ namespace Survivalon.World
             }
 
             return "Known";
+        }
+
+        private static string BuildFarmReadySuffix(WorldMapNodeOption nodeOption)
+        {
+            return nodeOption.IsFarmReady ? " | Farm-ready" : string.Empty;
         }
 
         private static int CountOptionsForCategory(

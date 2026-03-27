@@ -14,7 +14,8 @@ namespace Survivalon.World
             bool isSelected,
             string locationDisplayName = null,
             string nodeDisplayName = null,
-            WorldMapPathRole pathRole = WorldMapPathRole.BlockedPath)
+            WorldMapPathRole pathRole = WorldMapPathRole.BlockedPath,
+            bool isFarmReady = false)
         {
             NodeId = nodeId;
             RegionId = regionId;
@@ -30,6 +31,7 @@ namespace Survivalon.World
                 ? nodeId.Value
                 : nodeDisplayName;
             PathRole = pathRole;
+            IsFarmReady = isFarmReady;
         }
 
         public NodeId NodeId { get; }
@@ -51,6 +53,8 @@ namespace Survivalon.World
         public string NodeDisplayName { get; }
 
         public WorldMapPathRole PathRole { get; }
+
+        public bool IsFarmReady { get; }
     }
 }
 

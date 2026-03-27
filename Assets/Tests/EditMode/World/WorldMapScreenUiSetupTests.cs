@@ -129,6 +129,28 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldDisplayFarmReadyMarkerForCompletedCombatContent()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    WorldFlowTestData.CreateFarmAccessGraph(),
+                    WorldFlowTestData.CreateFarmAccessWorldState(),
+                    gameState: gameState);
+
+                Assert.That(ContainsText(hostObject, "State: Cleared | Farm-ready"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldCreateVisibleCanvasAndInputSystemModule()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");

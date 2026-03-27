@@ -18,7 +18,7 @@ namespace Survivalon.Tests.EditMode.World
 
             IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
 
-            AssertNodeOption(nodeOptions, new NodeId("region_001_node_001"), true, false, false, WorldMapPathRole.BacktrackRoute);
+            AssertNodeOption(nodeOptions, new NodeId("region_001_node_001"), true, false, false, WorldMapPathRole.BacktrackRoute, true);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_002"), false, true, false, WorldMapPathRole.CurrentContext);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_003"), false, false, false, WorldMapPathRole.BlockedPath);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_004"), true, false, false, WorldMapPathRole.ForwardRoute);
@@ -146,7 +146,7 @@ namespace Survivalon.Tests.EditMode.World
             IReadOnlyList<WorldMapNodeOption> nodeOptions = controller.BuildNodeOptions();
 
             AssertNodeOption(nodeOptions, new NodeId("node_reachable"), true, false, false, WorldMapPathRole.ForwardRoute);
-            AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false, WorldMapPathRole.ReplayableFarmNode);
+            AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false, WorldMapPathRole.ReplayableFarmNode, true);
             AssertNodeOption(nodeOptions, new NodeId("node_unreachable_available"), false, false, false, WorldMapPathRole.BlockedPath);
             AssertNodeOption(nodeOptions, new NodeId("node_locked"), false, false, false, WorldMapPathRole.BlockedPath);
         }
@@ -172,7 +172,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(controller.ForwardSelectableNodeCount, Is.EqualTo(0));
             AssertNodeOption(nodeOptions, new NodeId("node_current"), true, false, false, WorldMapPathRole.BacktrackRoute);
             AssertNodeOption(nodeOptions, new NodeId("node_reachable"), false, true, false, WorldMapPathRole.CurrentContext);
-            AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false, WorldMapPathRole.ReplayableFarmNode);
+            AssertNodeOption(nodeOptions, new NodeId("node_cleared_farm"), true, false, false, WorldMapPathRole.ReplayableFarmNode, true);
             Assert.That(summary.CurrentNode.NodeId, Is.EqualTo(new NodeId("node_reachable")));
             Assert.That(summary.ForwardRouteNodes, Is.Empty);
             Assert.That(ExtractNodeIds(summary.BacktrackRouteNodes), Is.EqualTo(new[] { new NodeId("node_current") }));
@@ -185,7 +185,8 @@ namespace Survivalon.Tests.EditMode.World
             bool isSelectable,
             bool isCurrentContext,
             bool isSelected,
-            WorldMapPathRole pathRole)
+            WorldMapPathRole pathRole,
+            bool isFarmReady = false)
         {
             foreach (WorldMapNodeOption nodeOption in nodeOptions)
             {
@@ -194,10 +195,11 @@ namespace Survivalon.Tests.EditMode.World
                     continue;
                 }
 
-                Assert.That(nodeOption.IsSelectable, Is.EqualTo(isSelectable));
-                Assert.That(nodeOption.IsCurrentContext, Is.EqualTo(isCurrentContext));
-                Assert.That(nodeOption.IsSelected, Is.EqualTo(isSelected));
-                Assert.That(nodeOption.PathRole, Is.EqualTo(pathRole));
+                Assert.That(nodeOption.IsSelectable, Is.EqualTo(isSelectable), $"Selectable mismatch for {nodeId}.");
+                Assert.That(nodeOption.IsCurrentContext, Is.EqualTo(isCurrentContext), $"Current-context mismatch for {nodeId}.");
+                Assert.That(nodeOption.IsSelected, Is.EqualTo(isSelected), $"Selected mismatch for {nodeId}.");
+                Assert.That(nodeOption.PathRole, Is.EqualTo(pathRole), $"Path-role mismatch for {nodeId}.");
+                Assert.That(nodeOption.IsFarmReady, Is.EqualTo(isFarmReady), $"Farm-ready mismatch for {nodeId}.");
                 return;
             }
 

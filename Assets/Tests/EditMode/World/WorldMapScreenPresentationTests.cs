@@ -224,6 +224,30 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void BuildNodeLabel_ShouldShowFarmReadyMarkerForCompletedCombatContent()
+        {
+            string labelText = WorldMapScreenTextBuilder.BuildNodeLabel(
+                new WorldMapNodeOption(
+                    new NodeId("region_001_node_004"),
+                    new RegionId("region_001"),
+                    NodeType.Combat,
+                    NodeState.Cleared,
+                    isSelectable: true,
+                    isCurrentContext: false,
+                    isSelected: false,
+                    "Verdant Frontier",
+                    "Forest Farm",
+                    WorldMapPathRole.ReplayableFarmNode,
+                    isFarmReady: true));
+
+            Assert.That(labelText, Is.EqualTo(
+                "Forest Farm\n" +
+                "Verdant Frontier\n" +
+                "Path: Replayable farm node | Type: Combat | State: Cleared | Farm-ready\n" +
+                "Status: Selectable"));
+        }
+
+        [Test]
         public void BuildNodeLabel_ShouldRejectMissingNodeOption()
         {
             Assert.That(

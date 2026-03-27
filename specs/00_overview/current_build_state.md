@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 079**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 080**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -54,6 +54,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current node and current node state
   - forward routes, true backtrack routes, replayable farm nodes, and blocked linked paths from the current context
   - compact state/status legends so the placeholder node list reads more clearly at a glance
+- The world-map node list now also marks one small derived `Farm-ready` content state:
+  - completed ordinary combat nodes are marked as `Farm-ready`
+  - boss/gate and service/progression nodes are not marked farm-ready by this rule
+  - the rule is derived from current node type plus persistent completed state rather than a new authored farming taxonomy
 - The same world-map entry action now also supports one low-friction repeat path only after an explicit in-session return to the world map:
   - after `post-run -> return to world` or `town/service -> return to world`, the existing entry button temporarily becomes a one-click `Replay <current combat node>` or `Return to <current service node>` action
   - ordinary startup/load into the world map, safe resume, and first world-map entry do not show that shortcut
