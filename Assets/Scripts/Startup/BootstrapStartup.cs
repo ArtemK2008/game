@@ -12,6 +12,8 @@ namespace Survivalon.Startup
 {
     public sealed class BootstrapStartup : MonoBehaviour
     {
+        private static readonly AccountWideProgressionEffectResolver ProgressionEffectResolver =
+            new AccountWideProgressionEffectResolver();
         private WorldGraph worldGraph;
         private PersistentGameState gameState;
         private WorldNodeEntryFlowController nodeEntryFlowController;
@@ -55,6 +57,7 @@ namespace Survivalon.Startup
                 HandleNodeEntryRequested,
                 sessionContext,
                 gameState,
+                ResolveWorldMapProgressionEffects(),
                 new WorldMapBuildPreparationInteractionService(persistenceService));
         }
 
@@ -253,6 +256,11 @@ namespace Survivalon.Startup
         private T FindOptionalScreen<T>() where T : Component
         {
             return GetComponentInChildren<T>(true);
+        }
+
+        private AccountWideProgressionEffectState ResolveWorldMapProgressionEffects()
+        {
+            return ProgressionEffectResolver.Resolve(gameState.ProgressionState);
         }
 
         private static IPersistentGameStateStorage CreateDefaultPersistenceStorage()

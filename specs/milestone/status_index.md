@@ -144,6 +144,7 @@ id | type | title | status | depends on / note
 077a | follow-up | Cleanup offline-progress compatibility boundaries | completed | after 077
 078a | follow-up | Tighten low-friction replay offer boundary | completed | after 078
 079a | follow-up | Cleanup auto-pick policy boundary | completed | after 079
+081a | follow-up | Cleanup automation comfort upgrade boundaries | completed | after 081
 
 ## Refactor Milestones
 id | type | title | status | depends on / note

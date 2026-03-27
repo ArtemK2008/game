@@ -164,6 +164,7 @@ namespace Survivalon.Tests.EditMode.World
                     BootstrapWorldTestData.CreateWorldGraph(),
                     gameState.WorldState,
                     gameState: gameState,
+                    progressionEffects: ResolveProgressionEffects(gameState),
                     nodeEntryRequested: _ => { });
 
                 Button entryButton = FindButton(hostObject, "EnterSelectedNodeButton");
@@ -192,6 +193,7 @@ namespace Survivalon.Tests.EditMode.World
                     BootstrapWorldTestData.CreateWorldGraph(),
                     gameState.WorldState,
                     gameState: gameState,
+                    progressionEffects: ResolveProgressionEffects(gameState),
                     nodeEntryRequested: _ => { });
 
                 FindButton(hostObject, "region_002_node_001_Button").onClick.Invoke();
@@ -928,6 +930,11 @@ namespace Survivalon.Tests.EditMode.World
                 new NodeId("region_002_node_001"),
             });
             return gameState;
+        }
+
+        private static AccountWideProgressionEffectState ResolveProgressionEffects(PersistentGameState gameState)
+        {
+            return new AccountWideProgressionEffectResolver().Resolve(gameState.ProgressionState);
         }
 
         private static WorldGraph CreateOverflowWorldGraph(int nodeCount)
