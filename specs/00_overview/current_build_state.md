@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 083**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 084**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -355,10 +355,15 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
 - Ordinary reward output stays grouped into one readable reward line rather than a noisy detailed breakdown.
-- Milestone rewards are shown on a separate compact line when present, so clear-threshold runs feel distinct without expanding into a detailed reward panel.
-- Boss-earned gear rewards are now shown on their own compact line when present, so the new deterministic gear-loot path stays readable without redesigning the current summary panel.
+- The same post-run summary now separates reward/result spikes more explicitly into dedicated lines:
+  - ordinary rewards
+  - clear-threshold spike rewards
+  - boss spike rewards
+  - boss gear rewards
+  - unlock outcomes
+- Route unlock state is no longer folded into the generic progress line; unlock outcomes now read as a separate post-run result moment instead.
 - The summary now also surfaces the current location identity and reward source for shipped content, making the region/material loop more legible in the MVP flow.
-- Progress changes are grouped into one readable line that distinguishes node progress gained this run from the current tracked total, while still surfacing persistent progression delta and route-unlock result.
+- Progress changes are grouped into one readable line that distinguishes node progress gained this run from the current tracked total while still surfacing persistent progression delta.
 - A separate compact next-action block now makes the existing post-run buttons easier to read in practice by distinguishing:
   - replay same node
   - return to world to push
