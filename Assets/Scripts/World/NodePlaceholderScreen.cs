@@ -84,9 +84,8 @@ namespace Survivalon.World
             SyncPostRunStateController();
             NodePlaceholderState placeholderState = runLifecycleController.NodeContext;
             bool usesCompactCombatHeader = NodePlaceholderScreenStateResolver.ShouldUseCompactCombatHeader(placeholderState);
-            float compactSummaryHeight = placeholderState.NodeType == NodeType.BossOrGate
-                ? 82f
-                : 54f;
+            float compactSummaryHeight = NodePlaceholderScreenStateResolver.ResolveCompactCombatHeaderSummaryHeight(
+                placeholderState);
             titleText.text = NodePlaceholderScreenTextBuilder.BuildTitleText(placeholderState);
             summaryText.text = usesCompactCombatHeader
                 ? NodePlaceholderScreenTextBuilder.BuildCombatContextSummaryText(placeholderState)

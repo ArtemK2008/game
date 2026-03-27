@@ -57,6 +57,21 @@ namespace Survivalon.World
             return placeholderState.UsesCombatShell;
         }
 
+        public static float ResolveCompactCombatHeaderSummaryHeight(NodePlaceholderState placeholderState)
+        {
+            if (placeholderState == null)
+            {
+                throw new ArgumentNullException(nameof(placeholderState));
+            }
+
+            BossEncounterPresentationState bossPresentationState =
+                BossEncounterPresentationStateResolver.Resolve(placeholderState);
+
+            return bossPresentationState.HasStakesSummary
+                ? 82f
+                : 54f;
+        }
+
         public static NodePlaceholderScreenPostRunPanelState ResolvePostRunPanelState(
             RunLifecycleState lifecycleState,
             PostRunStateController postRunStateController,
