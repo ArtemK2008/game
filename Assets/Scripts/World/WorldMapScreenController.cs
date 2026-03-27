@@ -13,6 +13,7 @@ namespace Survivalon.World
         private readonly NodeReachabilityResolver nodeReachabilityResolver;
         private readonly WorldNodeAccessResolver worldNodeAccessResolver;
         private readonly WorldNodeStateResolver worldNodeStateResolver;
+        private readonly WorldNodeFarmReadinessResolver worldNodeFarmReadinessResolver;
         private readonly WorldMapWorldStateSummaryResolver worldStateSummaryResolver;
         private readonly WorldNodeDisplayNameResolver worldNodeDisplayNameResolver;
         private readonly SessionContextState sessionContext;
@@ -26,12 +27,15 @@ namespace Survivalon.World
             NodeReachabilityResolver nodeReachabilityResolver = null,
             SessionContextState sessionContext = null,
             WorldNodeAccessResolver worldNodeAccessResolver = null,
-            WorldNodeStateResolver worldNodeStateResolver = null)
+            WorldNodeStateResolver worldNodeStateResolver = null,
+            WorldNodeFarmReadinessResolver worldNodeFarmReadinessResolver = null)
         {
             this.worldGraph = worldGraph ?? throw new ArgumentNullException(nameof(worldGraph));
             this.worldState = worldState ?? throw new ArgumentNullException(nameof(worldState));
             this.nodeReachabilityResolver = nodeReachabilityResolver ?? new NodeReachabilityResolver();
             this.worldNodeStateResolver = worldNodeStateResolver ?? new WorldNodeStateResolver();
+            this.worldNodeFarmReadinessResolver = worldNodeFarmReadinessResolver
+                ?? new WorldNodeFarmReadinessResolver(this.worldNodeStateResolver);
             this.worldNodeAccessResolver = worldNodeAccessResolver
                 ?? new WorldNodeAccessResolver(this.nodeReachabilityResolver, this.worldNodeStateResolver);
             worldNodeDisplayNameResolver = new WorldNodeDisplayNameResolver();
@@ -76,7 +80,8 @@ namespace Survivalon.World
                     hasSelectedNode && node.NodeId == selectedNodeId,
                     region.LocationIdentity.DisplayName,
                     worldNodeDisplayNameResolver.Resolve(node),
-                    ResolvePathRole(node.NodeId, currentContextNodeId, accessState)));
+                    ResolvePathRole(node.NodeId, currentContextNodeId, accessState),
+                    worldNodeFarmReadinessResolver.IsFarmReady(worldGraph, worldState, node.NodeId)));
             }
 
             return nodeOptions;

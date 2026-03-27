@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 080
+Current next implementation target: Milestone 081
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -105,6 +105,7 @@ id | type | title | status | depends on / note
 077 | feature | Add minimal offline-progress compatibility hooks | completed | phase 18
 078 | feature | Implement low-friction replay flow | completed | phase 19
 079 | feature | Implement auto-pick baseline if desired | completed | phase 19
+080 | feature | Mark or detect farm-ready content | completed | phase 19
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note
