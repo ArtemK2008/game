@@ -12,7 +12,8 @@ namespace Survivalon.State.Persistence
                 playerMaxHealthBonus,
                 playerAttackPowerBonus,
                 ordinaryRegionMaterialRewardBonus,
-                bossProgressionMaterialRewardBonus: 0)
+                bossProgressionMaterialRewardBonus: 0,
+                enablesFarmReadyQuickReplayShortcut: false)
         {
         }
 
@@ -21,6 +22,21 @@ namespace Survivalon.State.Persistence
             int playerAttackPowerBonus,
             int ordinaryRegionMaterialRewardBonus,
             int bossProgressionMaterialRewardBonus)
+            : this(
+                playerMaxHealthBonus,
+                playerAttackPowerBonus,
+                ordinaryRegionMaterialRewardBonus,
+                bossProgressionMaterialRewardBonus,
+                enablesFarmReadyQuickReplayShortcut: false)
+        {
+        }
+
+        public AccountWideProgressionEffectState(
+            int playerMaxHealthBonus,
+            int playerAttackPowerBonus,
+            int ordinaryRegionMaterialRewardBonus,
+            int bossProgressionMaterialRewardBonus,
+            bool enablesFarmReadyQuickReplayShortcut)
         {
             if (playerMaxHealthBonus < 0)
             {
@@ -50,6 +66,7 @@ namespace Survivalon.State.Persistence
             PlayerAttackPowerBonus = playerAttackPowerBonus;
             OrdinaryRegionMaterialRewardBonus = ordinaryRegionMaterialRewardBonus;
             BossProgressionMaterialRewardBonus = bossProgressionMaterialRewardBonus;
+            EnablesFarmReadyQuickReplayShortcut = enablesFarmReadyQuickReplayShortcut;
         }
 
         public int PlayerMaxHealthBonus { get; }
@@ -59,6 +76,8 @@ namespace Survivalon.State.Persistence
         public int OrdinaryRegionMaterialRewardBonus { get; }
 
         public int BossProgressionMaterialRewardBonus { get; }
+
+        public bool EnablesFarmReadyQuickReplayShortcut { get; }
     }
 }
 

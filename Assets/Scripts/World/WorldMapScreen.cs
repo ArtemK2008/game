@@ -52,7 +52,14 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(worldState));
             }
 
-            screenController = new WorldMapScreenController(worldGraph, worldState, sessionContext: sessionContext);
+            AccountWideProgressionEffectState progressionEffects = gameState == null
+                ? default(AccountWideProgressionEffectState)
+                : new AccountWideProgressionEffectResolver().Resolve(gameState.ProgressionState);
+            screenController = new WorldMapScreenController(
+                worldGraph,
+                worldState,
+                sessionContext: sessionContext,
+                progressionEffects: progressionEffects);
             onNodeEntryRequested = nodeEntryRequested;
             this.gameState = gameState;
             characterSelectionService = gameState == null ? null : new PlayableCharacterSelectionService();

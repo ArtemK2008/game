@@ -89,6 +89,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(TryFindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "PushOffenseProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton"), Is.Not.Null);
+                Assert.That(TryFindButton(hostObject, "FarmReplayProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "RegionMaterialRefinement_ConversionButton"), Is.Not.Null);
                 Assert.That(
                     TryFindButton(

@@ -78,6 +78,32 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void ShouldResolveQuickRepeatNodeForFarmReadyCurrentCombatNodeWhenFarmReplayComfortIsPurchased()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = CreateFarmReadyCurrentCombatWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(
+                worldGraph,
+                worldState,
+                progressionEffects: new AccountWideProgressionEffectState(
+                    0,
+                    0,
+                    0,
+                    0,
+                    enablesFarmReadyQuickReplayShortcut: true));
+
+            bool hasQuickRepeatNode = controller.TryGetQuickRepeatNode(
+                out NodeId quickRepeatNodeId,
+                out string quickRepeatNodeDisplayName,
+                out NodeType quickRepeatNodeType);
+
+            Assert.That(hasQuickRepeatNode, Is.True);
+            Assert.That(quickRepeatNodeId, Is.EqualTo(new NodeId("region_001_node_004")));
+            Assert.That(quickRepeatNodeDisplayName, Is.EqualTo("Forest Farm"));
+            Assert.That(quickRepeatNodeType, Is.EqualTo(NodeType.Combat));
+        }
+
+        [Test]
         public void ShouldNotResolveQuickRepeatNodeWithoutExplicitReturnToWorldOffer()
         {
             WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
@@ -87,6 +113,84 @@ namespace Survivalon.Tests.EditMode.World
                 worldGraph,
                 worldState,
                 sessionContext: sessionContext);
+
+            bool hasQuickRepeatNode = controller.TryGetQuickRepeatNode(
+                out NodeId quickRepeatNodeId,
+                out string quickRepeatNodeDisplayName,
+                out NodeType quickRepeatNodeType);
+
+            Assert.That(hasQuickRepeatNode, Is.False);
+            Assert.That(quickRepeatNodeId, Is.EqualTo(default(NodeId)));
+            Assert.That(quickRepeatNodeDisplayName, Is.Null);
+            Assert.That(quickRepeatNodeType, Is.EqualTo(default(NodeType)));
+        }
+
+        [Test]
+        public void ShouldNotResolveQuickRepeatNodeForUnclearedPushCombatNodeWhenFarmReplayComfortIsPurchased()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(
+                worldGraph,
+                worldState,
+                progressionEffects: new AccountWideProgressionEffectState(
+                    0,
+                    0,
+                    0,
+                    0,
+                    enablesFarmReadyQuickReplayShortcut: true));
+
+            bool hasQuickRepeatNode = controller.TryGetQuickRepeatNode(
+                out NodeId quickRepeatNodeId,
+                out string quickRepeatNodeDisplayName,
+                out NodeType quickRepeatNodeType);
+
+            Assert.That(hasQuickRepeatNode, Is.False);
+            Assert.That(quickRepeatNodeId, Is.EqualTo(default(NodeId)));
+            Assert.That(quickRepeatNodeDisplayName, Is.Null);
+            Assert.That(quickRepeatNodeType, Is.EqualTo(default(NodeType)));
+        }
+
+        [Test]
+        public void ShouldNotResolveQuickRepeatNodeForBossCurrentContextWhenFarmReplayComfortIsPurchased()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = CreateBossCurrentContextWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(
+                worldGraph,
+                worldState,
+                progressionEffects: new AccountWideProgressionEffectState(
+                    0,
+                    0,
+                    0,
+                    0,
+                    enablesFarmReadyQuickReplayShortcut: true));
+
+            bool hasQuickRepeatNode = controller.TryGetQuickRepeatNode(
+                out NodeId quickRepeatNodeId,
+                out string quickRepeatNodeDisplayName,
+                out NodeType quickRepeatNodeType);
+
+            Assert.That(hasQuickRepeatNode, Is.False);
+            Assert.That(quickRepeatNodeId, Is.EqualTo(default(NodeId)));
+            Assert.That(quickRepeatNodeDisplayName, Is.Null);
+            Assert.That(quickRepeatNodeType, Is.EqualTo(default(NodeType)));
+        }
+
+        [Test]
+        public void ShouldNotResolveQuickRepeatNodeForServiceCurrentContextWhenFarmReplayComfortIsPurchased()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = CreateServiceCurrentContextWorldState();
+            WorldMapScreenController controller = new WorldMapScreenController(
+                worldGraph,
+                worldState,
+                progressionEffects: new AccountWideProgressionEffectState(
+                    0,
+                    0,
+                    0,
+                    0,
+                    enablesFarmReadyQuickReplayShortcut: true));
 
             bool hasQuickRepeatNode = controller.TryGetQuickRepeatNode(
                 out NodeId quickRepeatNodeId,
@@ -235,6 +339,45 @@ namespace Survivalon.Tests.EditMode.World
             }
 
             return nodeIds;
+        }
+
+        private static PersistentWorldState CreateFarmReadyCurrentCombatWorldState()
+        {
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            NodeId farmNodeId = new NodeId("region_001_node_004");
+            PersistentNodeState farmNodeState = worldState.GetOrAddNodeState(
+                farmNodeId,
+                unlockThreshold: 3,
+                initialState: NodeState.Available);
+
+            farmNodeState.ApplyUnlockProgress(3);
+            worldState.SetCurrentNode(farmNodeId);
+            worldState.SetLastSafeNode(farmNodeId);
+            return worldState;
+        }
+
+        private static PersistentWorldState CreateBossCurrentContextWorldState()
+        {
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            NodeId bossNodeId = new NodeId("region_001_node_003");
+
+            worldState.GetOrAddNodeState(
+                bossNodeId,
+                unlockThreshold: 3,
+                initialState: NodeState.Available);
+            worldState.SetCurrentNode(bossNodeId);
+            worldState.SetLastSafeNode(bossNodeId);
+            return worldState;
+        }
+
+        private static PersistentWorldState CreateServiceCurrentContextWorldState()
+        {
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            NodeId serviceNodeId = new NodeId("region_002_node_001");
+
+            worldState.SetCurrentNode(serviceNodeId);
+            worldState.SetLastSafeNode(serviceNodeId);
+            return worldState;
         }
 
     }

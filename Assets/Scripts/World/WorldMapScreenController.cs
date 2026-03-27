@@ -17,6 +17,7 @@ namespace Survivalon.World
         private readonly WorldMapWorldStateSummaryResolver worldStateSummaryResolver;
         private readonly WorldNodeDisplayNameResolver worldNodeDisplayNameResolver;
         private readonly SessionContextState sessionContext;
+        private readonly AccountWideProgressionEffectState progressionEffects;
         private readonly Dictionary<RegionId, int> regionOrderById;
         private bool hasSelectedNode;
         private NodeId selectedNodeId;
@@ -28,7 +29,8 @@ namespace Survivalon.World
             SessionContextState sessionContext = null,
             WorldNodeAccessResolver worldNodeAccessResolver = null,
             WorldNodeStateResolver worldNodeStateResolver = null,
-            WorldNodeFarmReadinessResolver worldNodeFarmReadinessResolver = null)
+            WorldNodeFarmReadinessResolver worldNodeFarmReadinessResolver = null,
+            AccountWideProgressionEffectState progressionEffects = default)
         {
             this.worldGraph = worldGraph ?? throw new ArgumentNullException(nameof(worldGraph));
             this.worldState = worldState ?? throw new ArgumentNullException(nameof(worldState));
@@ -43,6 +45,7 @@ namespace Survivalon.World
                 this.worldNodeStateResolver,
                 worldNodeDisplayNameResolver);
             this.sessionContext = sessionContext;
+            this.progressionEffects = progressionEffects;
             regionOrderById = CreateRegionOrderLookup(worldGraph);
             this.sessionContext?.SeedFromWorldState(worldState);
         }
@@ -128,6 +131,27 @@ namespace Survivalon.World
 
         public bool TryGetQuickRepeatNode(out NodeId nodeId, out string nodeDisplayName, out NodeType nodeType)
         {
+            if (TryResolveQuickRepeatNodeFromReturnOffer(out nodeId, out nodeDisplayName, out nodeType))
+            {
+                return true;
+            }
+
+            if (TryResolveQuickRepeatNodeFromFarmReplayUpgrade(out nodeId, out nodeDisplayName, out nodeType))
+            {
+                return true;
+            }
+
+            nodeId = default;
+            nodeDisplayName = null;
+            nodeType = default;
+            return false;
+        }
+
+        private bool TryResolveQuickRepeatNodeFromReturnOffer(
+            out NodeId nodeId,
+            out string nodeDisplayName,
+            out NodeType nodeType)
+        {
             if (sessionContext == null || !sessionContext.HasReturnToWorldReentryOffer)
             {
                 nodeId = default;
@@ -145,6 +169,49 @@ namespace Survivalon.World
                 return false;
             }
 
+            return TryResolveCurrentContextQuickRepeatNode(out nodeId, out nodeDisplayName, out nodeType);
+        }
+
+        private bool TryResolveQuickRepeatNodeFromFarmReplayUpgrade(
+            out NodeId nodeId,
+            out string nodeDisplayName,
+            out NodeType nodeType)
+        {
+            if (!progressionEffects.EnablesFarmReadyQuickReplayShortcut)
+            {
+                nodeId = default;
+                nodeDisplayName = null;
+                nodeType = default;
+                return false;
+            }
+
+            NodeId currentContextNodeId = ResolveCurrentContextNodeId();
+            WorldNode currentContextNode = worldGraph.GetNode(currentContextNodeId);
+            if (currentContextNode.NodeType != NodeType.Combat)
+            {
+                nodeId = default;
+                nodeDisplayName = null;
+                nodeType = default;
+                return false;
+            }
+
+            if (!worldNodeFarmReadinessResolver.IsFarmReady(worldGraph, worldState, currentContextNodeId))
+            {
+                nodeId = default;
+                nodeDisplayName = null;
+                nodeType = default;
+                return false;
+            }
+
+            return TryResolveCurrentContextQuickRepeatNode(out nodeId, out nodeDisplayName, out nodeType);
+        }
+
+        private bool TryResolveCurrentContextQuickRepeatNode(
+            out NodeId nodeId,
+            out string nodeDisplayName,
+            out NodeType nodeType)
+        {
+            NodeId currentContextNodeId = ResolveCurrentContextNodeId();
             NodeState currentContextNodeState = worldNodeStateResolver.ResolveNodeState(
                 worldGraph,
                 worldState,

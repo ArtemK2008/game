@@ -27,7 +27,8 @@ namespace Survivalon.Data.Progression
                 playerMaxHealthBonus,
                 playerAttackPowerBonus,
                 ordinaryRegionMaterialRewardBonus,
-                bossProgressionMaterialRewardBonus: 0)
+                bossProgressionMaterialRewardBonus: 0,
+                enablesFarmReadyQuickReplayShortcut: false)
         {
         }
 
@@ -41,6 +42,31 @@ namespace Survivalon.Data.Progression
             int playerAttackPowerBonus,
             int ordinaryRegionMaterialRewardBonus,
             int bossProgressionMaterialRewardBonus)
+            : this(
+                upgradeId,
+                displayName,
+                progressionId,
+                costResourceCategory,
+                costAmount,
+                playerMaxHealthBonus,
+                playerAttackPowerBonus,
+                ordinaryRegionMaterialRewardBonus,
+                bossProgressionMaterialRewardBonus,
+                enablesFarmReadyQuickReplayShortcut: false)
+        {
+        }
+
+        public AccountWideProgressionUpgradeDefinition(
+            AccountWideUpgradeId upgradeId,
+            string displayName,
+            string progressionId,
+            ResourceCategory costResourceCategory,
+            int costAmount,
+            int playerMaxHealthBonus,
+            int playerAttackPowerBonus,
+            int ordinaryRegionMaterialRewardBonus,
+            int bossProgressionMaterialRewardBonus,
+            bool enablesFarmReadyQuickReplayShortcut)
         {
             if (string.IsNullOrWhiteSpace(displayName))
             {
@@ -91,6 +117,7 @@ namespace Survivalon.Data.Progression
             PlayerAttackPowerBonus = playerAttackPowerBonus;
             OrdinaryRegionMaterialRewardBonus = ordinaryRegionMaterialRewardBonus;
             BossProgressionMaterialRewardBonus = bossProgressionMaterialRewardBonus;
+            EnablesFarmReadyQuickReplayShortcut = enablesFarmReadyQuickReplayShortcut;
         }
 
         public AccountWideUpgradeId UpgradeId { get; }
@@ -112,6 +139,8 @@ namespace Survivalon.Data.Progression
         public int OrdinaryRegionMaterialRewardBonus { get; }
 
         public int BossProgressionMaterialRewardBonus { get; }
+
+        public bool EnablesFarmReadyQuickReplayShortcut { get; }
     }
 }
 

@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 080**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 081**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -12,8 +12,8 @@ On startup, the bootstrap scene loads a persisted game state if one exists, othe
 From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. Entering that resolved post-run boundary now autosaves the durable run outcome before the player chooses replay, return to world, or stop. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. The current cavern service node now opens a distinct town/service shell instead of the generic node placeholder, while broader non-combat content remains placeholder-level.
 
 Manual actions currently required:
-- select a new node on the world map when no explicit return-to-world quick replay/return action is being offered
-- confirm node entry or use the temporary quick replay/return button when it is offered immediately after returning to the world map
+- select a new node on the world map when neither the temporary return-to-world shortcut nor the purchased farm-replay comfort upgrade exposes a replay shortcut
+- confirm node entry or use the currently available replay/return shortcut when one is being offered
 - choose a post-run action after resolution
 
 Manual movement, manual attacks, and manual combat stepping are not required in the current combat loop.
@@ -62,6 +62,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - after `post-run -> return to world` or `town/service -> return to world`, the existing entry button temporarily becomes a one-click `Replay <current combat node>` or `Return to <current service node>` action
   - ordinary startup/load into the world map, safe resume, and first world-map entry do not show that shortcut
   - selecting a different reachable node still overrides that temporary shortcut and uses the normal `Enter <selected node>` flow
+- One new purchased farming-comfort project can now extend that same replay shortcut in a narrowly farm-specific way:
+  - when `Farm Replay Project` is purchased, the world map may show `Replay <current node>` for the current node even without the temporary return-to-world offer
+  - this applies only to ordinary combat content that is already `Farm-ready`
+  - it does not apply to uncleared push nodes, boss/gate nodes, or service/progression nodes
+  - selecting a different reachable node still overrides the shortcut and uses the normal `Enter <selected node>` flow
 - World-map reachability/path-role projection is now rebuilt from the current world state each refresh instead of relying on constructor-time cached access sets, so reused world-map controllers cannot go stale after world-state changes.
 - World-map node labels now also carry a small path-role line:
   - `Current anchor`
@@ -253,7 +258,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### One account-wide progression sink
 - The build now has one persistent account-wide upgrade sink stored in `PersistentProgressionState`.
-- It currently contains four small upgrades/projects that consume `ResourceCategory.PersistentProgressionMaterial` and permanently record account-wide benefits in persistent data.
+- It currently contains five small upgrades/projects that consume `ResourceCategory.PersistentProgressionMaterial` and permanently record account-wide benefits in persistent data.
 - Purchased upgrade state persists through the normal saved game-state flow and resolves into a small account-wide effect model that now feeds both player combat baseline stats and ordinary reward efficiency before future runs start.
 - The current account-wide upgrades increase player max health, player attack power, and ordinary region-material reward output in future runs, without changing enemy baseline stats or milestone reward amounts.
 - The new push-oriented offense upgrade helps harder combat more directly by increasing player-side baseline damage enough to visibly improve tougher future encounters.
@@ -263,6 +268,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - it consumes persistent progression material through the same town/service progression sink
   - once purchased, successful future boss clears grant `+1` extra persistent progression material in the existing boss reward bundle
   - this gives the current prototype one persistent project mechanic that is clearly separate from direct node unlock progression
+- The same progression sink now also includes one explicit farming-comfort project:
+  - `Farm Replay Project`
+  - it consumes `Persistent progression material x3`
+  - once purchased, the world map can keep showing the existing `Replay <current node>` shortcut for the current node even without a temporary return-to-world offer, but only when the current node is already `Farm-ready`
+  - this is a farming comfort improvement only, not unattended automation: it does not add auto-repeat loops, does not affect push-only uncleared nodes, and does not apply to boss/service content
 - The town/service shell now exposes that sink as the current live purchase surface:
   - affordable projects can be bought directly from `Cavern Service Hub`
   - purchases spend persistent progression material and persist immediately
