@@ -39,6 +39,9 @@ namespace Survivalon.Run
                     out progressGoalDisplayName);
             }
 
+            BossEncounterPresentationState bossPresentationState =
+                BossEncounterPresentationStateResolver.Resolve(nodeContext);
+
             return new RunHudState(
                 nodeContext.LocationIdentity.DisplayName,
                 nodeContext.NodeDisplayName,
@@ -56,7 +59,13 @@ namespace Survivalon.Run
                 hasTrackedProgressContext,
                 currentProgress,
                 progressThreshold,
-                progressGoalDisplayName);
+                progressGoalDisplayName,
+                bossPresentationState.IsBossEncounter
+                    ? bossPresentationState.EncounterDisplayName
+                    : null,
+                bossPresentationState.HasStakesSummary
+                    ? bossPresentationState.StakesSummary
+                    : null);
         }
 
         private static string ResolveRunStateDisplayName(RunLifecycleState lifecycleState)

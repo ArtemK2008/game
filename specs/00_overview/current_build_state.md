@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 084**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 085**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -158,6 +158,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The build now also has one explicit boss encounter model:
   - `Gate Boss` is the first shipped gate-boss encounter and uses the same current 1v1 deterministic auto-battle foundation as other encounters
   - boss encounter content is modeled explicitly through separate boss encounter/profile data instead of reusing only standard-enemy encounter assumptions
+  - the active boss node header and compact combat HUD now surface boss readability more explicitly through a small boss-presentation seam:
+    - the run HUD title changes to `Boss encounter | <location> | <node>`
+    - the live combat summary shows the boss role tag, currently `Gate boss`
+    - the same flow now also shows compact boss stakes such as `Gate clear`, `Boss rewards`, and `Gear reward` when those outcomes are attached to the current boss node
 - Current shipped combat-node enemy selection now comes from small bootstrap encounter-content data attached at node entry rather than hardcoded node-id branching inside the combat resolver.
 - The initial shipped node/location mapping remains intentionally small and bootstrap-seeded:
   - forest entry and forest farm use `Enemy Unit`

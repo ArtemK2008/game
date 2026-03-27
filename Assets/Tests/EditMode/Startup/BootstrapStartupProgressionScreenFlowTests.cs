@@ -254,6 +254,12 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_003_Button");
+
+                Assert.That(ContainsText(hostObject, "Frontier Gate"), Is.True);
+                Assert.That(ContainsText(hostObject, "Encounter: Gate boss"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss stakes: Gate clear, Boss rewards, Gear reward"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss encounter | Verdant Frontier | Frontier Gate"), Is.True);
+
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);

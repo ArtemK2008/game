@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 085
+Current next implementation target: Milestone 086
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -110,6 +110,7 @@ id | type | title | status | depends on / note
 082 | feature | Implement gear-as-loot acquisition | completed | phase 20
 083 | acceptance | Implement basic duplicate/conversion handling if needed | completed | phase 20
 084 | feature | Implement milestone reward presentation polish | completed | phase 20
+085 | feature | Expand boss readability and structure | completed | phase 21
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

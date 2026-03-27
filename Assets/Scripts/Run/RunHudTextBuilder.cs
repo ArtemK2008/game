@@ -11,7 +11,9 @@ namespace Survivalon.Run
                 throw new ArgumentNullException(nameof(runHudState));
             }
 
-            return $"{runHudState.LocationDisplayName} | {runHudState.NodeDisplayName}";
+            return runHudState.HasBossEncounterPresentation
+                ? $"Boss encounter | {runHudState.LocationDisplayName} | {runHudState.NodeDisplayName}"
+                : $"{runHudState.LocationDisplayName} | {runHudState.NodeDisplayName}";
         }
 
         public static string BuildSummaryText(RunHudState runHudState)
@@ -26,6 +28,11 @@ namespace Survivalon.Run
                 $"Health: {runHudState.PlayerDisplayName} {FormatValue(runHudState.PlayerCurrentHealth)} / {FormatValue(runHudState.PlayerMaxHealth)} | " +
                 $"{runHudState.EnemyDisplayName} {FormatValue(runHudState.EnemyCurrentHealth)} / {FormatValue(runHudState.EnemyMaxHealth)}";
 
+            if (runHudState.HasBossEncounterPresentation)
+            {
+                summaryText += "\n" + BuildBossEncounterSummaryLine(runHudState);
+            }
+
             if (!runHudState.HasTrackedProgressContext)
             {
                 return summaryText;
@@ -34,6 +41,17 @@ namespace Survivalon.Run
             return summaryText +
                 "\n" +
                 $"Progress: {runHudState.CurrentProgress} / {runHudState.ProgressThreshold} toward {runHudState.ProgressGoalDisplayName}";
+        }
+
+        private static string BuildBossEncounterSummaryLine(RunHudState runHudState)
+        {
+            string bossSummaryLine = $"Boss role: {runHudState.BossEncounterDisplayName}";
+            if (!runHudState.HasBossStakeSummary)
+            {
+                return bossSummaryLine;
+            }
+
+            return bossSummaryLine + $" | Stakes: {runHudState.BossStakeSummary}";
         }
 
         private static string FormatValue(float value)

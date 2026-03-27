@@ -27,9 +27,18 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(placeholderState));
             }
 
-            return
+            BossEncounterPresentationState bossPresentationState =
+                BossEncounterPresentationStateResolver.Resolve(placeholderState);
+            string encounterDisplayName = bossPresentationState.IsBossEncounter
+                ? bossPresentationState.EncounterDisplayName
+                : PlayerFacingCoreLabelFormatter.FormatNodeType(placeholderState.NodeType);
+            string summaryText =
                 $"Location: {placeholderState.LocationIdentity.DisplayName}\n" +
-                $"Encounter: {PlayerFacingCoreLabelFormatter.FormatNodeType(placeholderState.NodeType)}";
+                $"Encounter: {encounterDisplayName}";
+
+            return bossPresentationState.HasStakesSummary
+                ? summaryText + "\n" + $"Boss stakes: {bossPresentationState.StakesSummary}"
+                : summaryText;
         }
 
         public static string BuildSummaryText(

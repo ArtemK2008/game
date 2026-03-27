@@ -84,6 +84,9 @@ namespace Survivalon.World
             SyncPostRunStateController();
             NodePlaceholderState placeholderState = runLifecycleController.NodeContext;
             bool usesCompactCombatHeader = NodePlaceholderScreenStateResolver.ShouldUseCompactCombatHeader(placeholderState);
+            float compactSummaryHeight = placeholderState.NodeType == NodeType.BossOrGate
+                ? 82f
+                : 54f;
             titleText.text = NodePlaceholderScreenTextBuilder.BuildTitleText(placeholderState);
             summaryText.text = usesCompactCombatHeader
                 ? NodePlaceholderScreenTextBuilder.BuildCombatContextSummaryText(placeholderState)
@@ -91,8 +94,8 @@ namespace Survivalon.World
                     placeholderState,
                     runLifecycleController.CurrentState,
                     runLifecycleController.HasRunResult ? runLifecycleController.RunResult : null);
-            summaryLayoutElement.minHeight = usesCompactCombatHeader ? 54f : 148f;
-            summaryLayoutElement.preferredHeight = usesCompactCombatHeader ? 54f : 148f;
+            summaryLayoutElement.minHeight = usesCompactCombatHeader ? compactSummaryHeight : 148f;
+            summaryLayoutElement.preferredHeight = usesCompactCombatHeader ? compactSummaryHeight : 148f;
             statusText.gameObject.SetActive(!usesCompactCombatHeader);
             statusLayoutElement.minHeight = usesCompactCombatHeader ? 0f : 80f;
             statusLayoutElement.preferredHeight = usesCompactCombatHeader ? 0f : 80f;

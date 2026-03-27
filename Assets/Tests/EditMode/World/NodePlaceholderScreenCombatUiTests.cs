@@ -293,6 +293,14 @@ namespace Survivalon.Tests.EditMode.World
                     runResult => { },
                     new RunPersistentContext(persistentWorldState: worldState));
 
+                Assert.That(ContainsText(hostObject, "Frontier Gate"), Is.True);
+                Assert.That(ContainsText(hostObject, "Encounter: Gate boss"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss stakes: Gate clear, Boss rewards, Gear reward"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss encounter | Verdant Frontier | Frontier Gate"), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Boss role: Gate boss | Stakes: Gate clear, Boss rewards, Gear reward"),
+                    Is.True);
+
                 AutoAdvanceCombat(hostObject, 64, 0.25f);
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
