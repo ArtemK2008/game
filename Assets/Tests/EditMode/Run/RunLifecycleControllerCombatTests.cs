@@ -284,6 +284,32 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
+        public void ShouldKeepBossRewardUsefulWhenEarnedBossGearIsAlreadyOwned()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+            gameState.EnsureOwnedGearId(GearIds.GatebreakerBlade);
+            int ownedGearCountBeforeRun = gameState.OwnedGearIds.Count;
+
+            RunLifecycleController controller = new RunLifecycleController(
+                RunLifecycleControllerTestData.CreateBossCombatNodeState(),
+                persistentContext: RunPersistentContext.FromGameState(gameState));
+
+            RunLifecycleControllerTestData.RunToPostRun(controller);
+
+            Assert.That(controller.RunResult.ResolutionState, Is.EqualTo(RunResolutionState.Succeeded));
+            Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
+            Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(controller.RunResult.RewardPayload.BossGearRewards, Is.Empty);
+            Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(2));
+            Assert.That(gameState.OwnedGearIds, Has.Count.EqualTo(ownedGearCountBeforeRun));
+            Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.GatebreakerBlade));
+        }
+
+        [Test]
         public void ShouldIncreaseFutureBossRewardBundleWhenBossSalvageProjectIsPurchased()
         {
             PersistentGameState baselineGameState = BootstrapWorldTestData.CreateGameState();
