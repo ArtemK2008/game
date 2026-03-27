@@ -127,10 +127,11 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Ordinary rewards: Soft currency x1, Region material x2"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward source: Frontier salvage"), Is.True);
-                Assert.That(ContainsText(hostObject, "Milestone rewards:"), Is.False);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0; route unlock No"), Is.True);
+                Assert.That(ContainsText(hostObject, "Clear spike rewards:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Unlock outcomes:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0"), Is.True);
                 Assert.That(ContainsText(hostObject, "Recommended: Replay Forest Farm to keep pushing node progress."), Is.True);
                 Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
@@ -429,8 +430,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Rewards gained: Soft currency x1, Region material x3"), Is.True);
-                Assert.That(ContainsText(hostObject, "Milestone rewards:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Ordinary rewards: Soft currency x1, Region material x3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Clear spike rewards:"), Is.False);
 
                 ReturnToWorldMap(hostObject);
 

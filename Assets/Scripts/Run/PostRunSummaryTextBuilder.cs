@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Survivalon.Core;
-using Survivalon.World;
-
 namespace Survivalon.Run
 {
     /// <summary>
@@ -10,6 +6,9 @@ namespace Survivalon.Run
     /// </summary>
     public static class PostRunSummaryTextBuilder
     {
+        private static readonly PostRunResultPresentationStateResolver PresentationStateResolver =
+            new PostRunResultPresentationStateResolver();
+
         public static string Build(PostRunStateController postRunStateController, RunResult runResult)
         {
             if (postRunStateController == null)
@@ -22,173 +21,31 @@ namespace Survivalon.Run
                 throw new ArgumentNullException(nameof(runResult));
             }
 
+            PostRunResultPresentationState presentationState =
+                PresentationStateResolver.Resolve(postRunStateController, runResult);
+
             return
                 "Run finished.\n" +
                 $"Location: {postRunStateController.NodeContext.LocationIdentity.DisplayName}\n" +
                 $"Node: {postRunStateController.NodeContext.NodeDisplayName}\n" +
                 $"Resolution: {runResult.ResolutionState}\n" +
-                $"Rewards gained: {BuildRewardSummary(runResult.RewardPayload)}\n" +
-                BuildRewardSourceLine(postRunStateController, runResult) +
-                BuildBossRewardLine(runResult.RewardPayload) +
-                BuildGearRewardLine(runResult.RewardPayload) +
-                BuildMilestoneRewardLine(runResult.RewardPayload) +
-                $"Progress changes: {BuildProgressSummary(runResult)}\n" +
-                BuildBossProgressionGateLine(runResult);
+                $"Ordinary rewards: {presentationState.OrdinaryRewardSummary}\n" +
+                BuildOptionalLine("Reward source", presentationState.RewardSourceSummary) +
+                BuildOptionalLine("Clear spike rewards", presentationState.ClearSpikeRewardSummary) +
+                BuildOptionalLine("Boss spike rewards", presentationState.BossSpikeRewardSummary) +
+                BuildOptionalLine("Boss gear rewards", presentationState.BossGearRewardSummary) +
+                BuildOptionalLine("Unlock outcomes", presentationState.UnlockOutcomeSummary) +
+                $"Progress changes: {presentationState.ProgressSummary}\n";
         }
 
-        private static string BuildRewardSummary(RunRewardPayload rewardPayload)
+        private static string BuildOptionalLine(string label, string summary)
         {
-            if (rewardPayload == null)
-            {
-                throw new ArgumentNullException(nameof(rewardPayload));
-            }
-
-            if (!rewardPayload.HasOrdinaryRewards)
-            {
-                return "None";
-            }
-
-            return BuildRewardListSummary(rewardPayload.CurrencyRewards, rewardPayload.MaterialRewards);
-        }
-
-        private static string BuildRewardSourceLine(
-            PostRunStateController postRunStateController,
-            RunResult runResult)
-        {
-            if (postRunStateController == null)
-            {
-                throw new ArgumentNullException(nameof(postRunStateController));
-            }
-
-            if (runResult == null)
-            {
-                throw new ArgumentNullException(nameof(runResult));
-            }
-
-            if (!runResult.RewardPayload.HasRewards)
+            if (string.IsNullOrWhiteSpace(summary))
             {
                 return string.Empty;
             }
 
-            return $"Reward source: {postRunStateController.NodeContext.LocationIdentity.RewardSourceDisplayName}\n";
-        }
-
-        private static string BuildMilestoneRewardLine(RunRewardPayload rewardPayload)
-        {
-            if (rewardPayload == null)
-            {
-                throw new ArgumentNullException(nameof(rewardPayload));
-            }
-
-            if (!rewardPayload.HasMilestoneRewards)
-            {
-                return string.Empty;
-            }
-
-            return $"Milestone rewards: {BuildRewardListSummary(rewardPayload.MilestoneCurrencyRewards, rewardPayload.MilestoneMaterialRewards)}\n";
-        }
-
-        private static string BuildBossRewardLine(RunRewardPayload rewardPayload)
-        {
-            if (rewardPayload == null)
-            {
-                throw new ArgumentNullException(nameof(rewardPayload));
-            }
-
-            if (!rewardPayload.HasBossRewards)
-            {
-                return string.Empty;
-            }
-
-            return $"Boss rewards: {BuildRewardListSummary(rewardPayload.BossCurrencyRewards, rewardPayload.BossMaterialRewards)}\n";
-        }
-
-        private static string BuildGearRewardLine(RunRewardPayload rewardPayload)
-        {
-            if (rewardPayload == null)
-            {
-                throw new ArgumentNullException(nameof(rewardPayload));
-            }
-
-            if (!rewardPayload.HasBossGearRewards)
-            {
-                return string.Empty;
-            }
-
-            List<string> gearRewardSummaries = new List<string>();
-            for (int index = 0; index < rewardPayload.BossGearRewards.Count; index++)
-            {
-                gearRewardSummaries.Add(rewardPayload.BossGearRewards[index].DisplayName);
-            }
-
-            return $"Gear rewards: {string.Join(", ", gearRewardSummaries)}\n";
-        }
-
-        private static string BuildRewardListSummary(
-            IReadOnlyList<RunCurrencyReward> currencyRewards,
-            IReadOnlyList<RunMaterialReward> materialRewards)
-        {
-            List<string> rewardSummaries = new List<string>();
-
-            foreach (RunCurrencyReward currencyReward in currencyRewards)
-            {
-                rewardSummaries.Add($"{PlayerFacingCoreLabelFormatter.FormatResourceCategory(currencyReward.ResourceCategory)} x{currencyReward.Amount}");
-            }
-
-            foreach (RunMaterialReward materialReward in materialRewards)
-            {
-                rewardSummaries.Add($"{PlayerFacingCoreLabelFormatter.FormatResourceCategory(materialReward.ResourceCategory)} x{materialReward.Amount}");
-            }
-
-            return string.Join(", ", rewardSummaries);
-        }
-
-        private static string BuildProgressSummary(RunResult runResult)
-        {
-            if (runResult == null)
-            {
-                throw new ArgumentNullException(nameof(runResult));
-            }
-
-            string nodeProgressSummary = runResult.HasTrackedNodeProgress
-                ? $"node +{runResult.NodeProgressDelta} this run; tracked total {runResult.NodeProgressValue} / {runResult.NodeProgressThreshold}"
-                : "node not tracked";
-
-            return
-                $"{nodeProgressSummary}; " +
-                $"persistent +{runResult.PersistentProgressionDelta}; " +
-                $"route unlock {FormatYesNo(runResult.DidUnlockRoute)}";
-        }
-
-        private static string BuildBossProgressionGateLine(RunResult runResult)
-        {
-            if (runResult == null)
-            {
-                throw new ArgumentNullException(nameof(runResult));
-            }
-
-            if (!runResult.HasBossProgressionGateUnlock ||
-                !runResult.BossProgressionGateUnlock.TryGetUnlockedNodeId(out NodeId unlockedNodeId))
-            {
-                return string.Empty;
-            }
-
-            return $"Boss gate unlock: {BuildBossProgressionGateSummary(unlockedNodeId)}\n";
-        }
-
-        private static string BuildBossProgressionGateSummary(NodeId unlockedNodeId)
-        {
-            if (unlockedNodeId == BootstrapWorldScenario.CavernGateNodeId)
-            {
-                return "Cavern gate opened";
-            }
-
-            return $"{unlockedNodeId.Value} unlocked";
-        }
-
-        private static string FormatYesNo(bool value)
-        {
-            return value ? "Yes" : "No";
+            return $"{label}: {summary}\n";
         }
     }
 }
