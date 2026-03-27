@@ -23,7 +23,9 @@ namespace Survivalon.Run
             bool hasTrackedProgressContext,
             int currentProgress,
             int progressThreshold,
-            string progressGoalDisplayName)
+            string progressGoalDisplayName,
+            string bossEncounterDisplayName = null,
+            string bossStakeSummary = null)
         {
             if (string.IsNullOrWhiteSpace(locationDisplayName))
             {
@@ -169,6 +171,14 @@ namespace Survivalon.Run
                     nameof(progressGoalDisplayName));
             }
 
+            if (!string.IsNullOrWhiteSpace(bossStakeSummary) &&
+                string.IsNullOrWhiteSpace(bossEncounterDisplayName))
+            {
+                throw new ArgumentException(
+                    "Boss stakes require a boss encounter display name.",
+                    nameof(bossStakeSummary));
+            }
+
             LocationDisplayName = locationDisplayName;
             NodeDisplayName = nodeDisplayName;
             NodeId = nodeId;
@@ -186,6 +196,8 @@ namespace Survivalon.Run
             CurrentProgress = currentProgress;
             ProgressThreshold = progressThreshold;
             ProgressGoalDisplayName = progressGoalDisplayName;
+            BossEncounterDisplayName = bossEncounterDisplayName;
+            BossStakeSummary = bossStakeSummary;
         }
 
         public string LocationDisplayName { get; }
@@ -221,5 +233,13 @@ namespace Survivalon.Run
         public int ProgressThreshold { get; }
 
         public string ProgressGoalDisplayName { get; }
+
+        public string BossEncounterDisplayName { get; }
+
+        public string BossStakeSummary { get; }
+
+        public bool HasBossEncounterPresentation => !string.IsNullOrWhiteSpace(BossEncounterDisplayName);
+
+        public bool HasBossStakeSummary => !string.IsNullOrWhiteSpace(BossStakeSummary);
     }
 }
