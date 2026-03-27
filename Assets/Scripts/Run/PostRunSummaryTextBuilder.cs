@@ -30,6 +30,7 @@ namespace Survivalon.Run
                 $"Rewards gained: {BuildRewardSummary(runResult.RewardPayload)}\n" +
                 BuildRewardSourceLine(postRunStateController, runResult) +
                 BuildBossRewardLine(runResult.RewardPayload) +
+                BuildGearRewardLine(runResult.RewardPayload) +
                 BuildMilestoneRewardLine(runResult.RewardPayload) +
                 $"Progress changes: {BuildProgressSummary(runResult)}\n" +
                 BuildBossProgressionGateLine(runResult);
@@ -100,6 +101,27 @@ namespace Survivalon.Run
             }
 
             return $"Boss rewards: {BuildRewardListSummary(rewardPayload.BossCurrencyRewards, rewardPayload.BossMaterialRewards)}\n";
+        }
+
+        private static string BuildGearRewardLine(RunRewardPayload rewardPayload)
+        {
+            if (rewardPayload == null)
+            {
+                throw new ArgumentNullException(nameof(rewardPayload));
+            }
+
+            if (!rewardPayload.HasBossGearRewards)
+            {
+                return string.Empty;
+            }
+
+            List<string> gearRewardSummaries = new List<string>();
+            for (int index = 0; index < rewardPayload.BossGearRewards.Count; index++)
+            {
+                gearRewardSummaries.Add(rewardPayload.BossGearRewards[index].DisplayName);
+            }
+
+            return $"Gear rewards: {string.Join(", ", gearRewardSummaries)}\n";
         }
 
         private static string BuildRewardListSummary(

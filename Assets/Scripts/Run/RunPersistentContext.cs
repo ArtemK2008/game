@@ -15,13 +15,15 @@ namespace Survivalon.Run
             ResourceBalancesState resourceBalancesState = null,
             PersistentProgressionState persistentProgressionState = null,
             PlayableCharacterProfile playableCharacter = null,
-            PersistentCharacterState playableCharacterState = null)
+            PersistentCharacterState playableCharacterState = null,
+            PersistentGameState persistentGameState = null)
         {
             PersistentWorldState = persistentWorldState;
             ResourceBalancesState = resourceBalancesState;
             PersistentProgressionState = persistentProgressionState;
             PlayableCharacter = playableCharacter;
             PlayableCharacterState = playableCharacterState;
+            PersistentGameState = persistentGameState;
         }
 
         public PersistentWorldState PersistentWorldState { get; }
@@ -33,6 +35,8 @@ namespace Survivalon.Run
         public PlayableCharacterProfile PlayableCharacter { get; }
 
         public PersistentCharacterState PlayableCharacterState { get; }
+
+        public PersistentGameState PersistentGameState { get; }
 
         public static RunPersistentContext FromGameState(PersistentGameState gameState)
         {
@@ -50,7 +54,8 @@ namespace Survivalon.Run
                 gameState.ResourceBalances,
                 gameState.ProgressionState,
                 playableCharacter,
-                playableCharacterState);
+                playableCharacterState,
+                gameState);
         }
     }
 }

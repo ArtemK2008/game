@@ -19,6 +19,7 @@ namespace Survivalon.Run
         private readonly ReadOnlyCollection<RunMaterialReward> milestoneMaterialRewards;
         private readonly ReadOnlyCollection<RunCurrencyReward> bossCurrencyRewards;
         private readonly ReadOnlyCollection<RunMaterialReward> bossMaterialRewards;
+        private readonly ReadOnlyCollection<RunGearReward> bossGearRewards;
 
         public RunRewardPayload(
             IEnumerable<RunCurrencyReward> currencyRewards,
@@ -54,7 +55,8 @@ namespace Survivalon.Run
             IEnumerable<RunCurrencyReward> milestoneCurrencyRewards,
             IEnumerable<RunMaterialReward> milestoneMaterialRewards,
             IEnumerable<RunCurrencyReward> bossCurrencyRewards,
-            IEnumerable<RunMaterialReward> bossMaterialRewards)
+            IEnumerable<RunMaterialReward> bossMaterialRewards,
+            IEnumerable<RunGearReward> bossGearRewards = null)
         {
             if (currencyRewards == null)
             {
@@ -86,12 +88,14 @@ namespace Survivalon.Run
                 throw new ArgumentNullException(nameof(bossMaterialRewards));
             }
 
+            bossGearRewards ??= Array.Empty<RunGearReward>();
             this.currencyRewards = Array.AsReadOnly(CopyRewards(currencyRewards));
             this.materialRewards = Array.AsReadOnly(CopyRewards(materialRewards));
             this.milestoneCurrencyRewards = Array.AsReadOnly(CopyRewards(milestoneCurrencyRewards));
             this.milestoneMaterialRewards = Array.AsReadOnly(CopyRewards(milestoneMaterialRewards));
             this.bossCurrencyRewards = Array.AsReadOnly(CopyRewards(bossCurrencyRewards));
             this.bossMaterialRewards = Array.AsReadOnly(CopyRewards(bossMaterialRewards));
+            this.bossGearRewards = Array.AsReadOnly(CopyRewards(bossGearRewards));
         }
 
         public static RunRewardPayload Empty => EmptyInstance;
@@ -107,6 +111,8 @@ namespace Survivalon.Run
         public IReadOnlyList<RunCurrencyReward> BossCurrencyRewards => bossCurrencyRewards;
 
         public IReadOnlyList<RunMaterialReward> BossMaterialRewards => bossMaterialRewards;
+
+        public IReadOnlyList<RunGearReward> BossGearRewards => bossGearRewards;
 
         public bool HasCurrencyRewards => currencyRewards.Count > 0;
 
@@ -124,7 +130,9 @@ namespace Survivalon.Run
 
         public bool HasBossMaterialRewards => bossMaterialRewards.Count > 0;
 
-        public bool HasBossRewards => HasBossCurrencyRewards || HasBossMaterialRewards;
+        public bool HasBossGearRewards => bossGearRewards.Count > 0;
+
+        public bool HasBossRewards => HasBossCurrencyRewards || HasBossMaterialRewards || HasBossGearRewards;
 
         public bool HasRewards => HasOrdinaryRewards || HasMilestoneRewards || HasBossRewards;
 

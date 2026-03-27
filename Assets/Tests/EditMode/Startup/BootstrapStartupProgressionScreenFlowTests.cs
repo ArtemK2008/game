@@ -257,6 +257,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss rewards: Persistent progression material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Gear rewards: Gatebreaker Blade"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss gate unlock: Cavern gate opened"), Is.True);
                 Assert.That(ContainsText(hostObject, "Recommended: Return to world, then push to Cavern Gate."), Is.True);
                 Assert.That(
@@ -281,6 +282,63 @@ namespace Survivalon.Tests.EditMode.Startup
             finally
             {
                 Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldGrantSaveLoadAndLaterEquipGatebreakerBladeFromForestGateBossReward()
+        {
+            GameObject firstHostObject = new GameObject("BootstrapStartupHost_First");
+            GameObject secondHostObject = new GameObject("BootstrapStartupHost_Second");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(firstHostObject, storage);
+
+                FindButton(firstHostObject, "character_striker_CharacterButton").onClick.Invoke();
+                FindButton(firstHostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+                FindButton(firstHostObject, $"{GearIds.GuardCharm}_GearButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(firstHostObject, "region_002_node_001_Button");
+                ReturnToWorldMap(firstHostObject);
+
+                EnterNodeFromWorldMap(firstHostObject, "region_001_node_002_Button");
+                AdvanceToPostRun(firstHostObject);
+                FindButton(firstHostObject, "ReplayNodeButton").onClick.Invoke();
+                AdvanceToPostRun(firstHostObject);
+                FindButton(firstHostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                EnterNodeFromWorldMap(firstHostObject, "region_001_node_003_Button");
+                AdvanceToPostRun(firstHostObject);
+                FindButton(firstHostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Assert.That(storage.SavedGameState.OwnedGearIds, Does.Contain(GearIds.GatebreakerBlade));
+
+                CreateAndInitializeBootstrap(secondHostObject, storage);
+
+                Assert.That(ContainsText(secondHostObject, "Selected character: Striker"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Primary gear: Training Blade | Support gear: Guard Charm"), Is.True);
+
+                Button gatebreakerButton = FindButton(secondHostObject, $"{GearIds.GatebreakerBlade}_GearButton");
+                Assert.That(gatebreakerButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Equip: Gatebreaker Blade"));
+
+                gatebreakerButton.onClick.Invoke();
+
+                Assert.That(
+                    storage.SavedGameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState),
+                    Is.True);
+                Assert.That(
+                    strikerState.LoadoutState.TryGetEquippedGearState(
+                        GearCategory.PrimaryCombat,
+                        out EquippedGearState equippedPrimaryGearState),
+                    Is.True);
+                Assert.That(equippedPrimaryGearState.GearId, Is.EqualTo(GearIds.GatebreakerBlade));
+            }
+            finally
+            {
+                Object.DestroyImmediate(firstHostObject);
+                Object.DestroyImmediate(secondHostObject);
             }
         }
 

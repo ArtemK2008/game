@@ -1,5 +1,6 @@
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Gear;
 using Survivalon.Data.Towns;
 using Survivalon.Data.World;
 using Survivalon.World;
@@ -10,6 +11,8 @@ namespace Survivalon.Tests.EditMode.World
     {
         private static readonly BossProgressionGateDefinition ForestGateProgressionGate =
             new BossProgressionGateDefinition(BootstrapWorldScenario.CavernGateNodeId);
+        private static readonly BossRewardContentDefinition ForestGateBossRewardContent =
+            new BossRewardContentDefinition(0, GearIds.GatebreakerBlade);
         private static readonly BossRewardContentDefinition CavernGateBossRewardContent =
             new BossRewardContentDefinition(1);
         private static readonly RegionMaterialYieldContentDefinition FrontierFarmYieldContent =
@@ -80,6 +83,7 @@ namespace Survivalon.Tests.EditMode.World
                 CombatBossEncounterCatalog.GateBossEncounter,
                 ForestGateProgressionGate,
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier,
+                bossRewardContent: ForestGateBossRewardContent,
                 nodeDisplayName: "Frontier Gate");
         }
 
@@ -94,6 +98,7 @@ namespace Survivalon.Tests.EditMode.World
                 CombatBossEncounterCatalog.GateBossEncounter,
                 ForestGateProgressionGate,
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier,
+                bossRewardContent: ForestGateBossRewardContent,
                 nodeDisplayName: "Frontier Gate");
         }
 

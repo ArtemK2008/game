@@ -6,6 +6,12 @@ namespace Survivalon.State.Persistence
 {
     public sealed class PersistentGearStateInitializer
     {
+        private static readonly string[] StarterOwnedGearIds =
+        {
+            GearIds.TrainingBlade,
+            GearIds.GuardCharm,
+        };
+
         public void EnsureInitialized(PersistentGameState gameState)
         {
             if (gameState == null)
@@ -37,9 +43,9 @@ namespace Survivalon.State.Persistence
                 }
             }
 
-            for (int index = 0; index < GearCatalog.All.Count; index++)
+            for (int index = 0; index < StarterOwnedGearIds.Length; index++)
             {
-                string shippedGearId = GearCatalog.All[index].GearId;
+                string shippedGearId = StarterOwnedGearIds[index];
                 if (seenGearIds.Add(shippedGearId))
                 {
                     normalizedOwnedGearIds.Add(shippedGearId);

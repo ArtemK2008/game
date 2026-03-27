@@ -24,6 +24,18 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         }
 
         [Test]
+        public void ShouldNotAutoGrantEarnedBossGearDuringInitialization()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            PersistentGearStateInitializer initializer = new PersistentGearStateInitializer();
+
+            initializer.EnsureInitialized(gameState);
+
+            Assert.That(gameState.OwnedGearIds, Does.Not.Contain(GearIds.GatebreakerBlade));
+            Assert.That(gameState.OwnedGearIds, Has.Count.EqualTo(2));
+        }
+
+        [Test]
         public void ShouldNormalizeEquippedGearAgainstOwnershipAndCurrentShippedCategories()
         {
             PersistentGameState gameState = new PersistentGameState();

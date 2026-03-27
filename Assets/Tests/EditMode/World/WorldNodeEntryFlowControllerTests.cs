@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Gear;
 using Survivalon.Data.World;
 using Survivalon.State.Persistence;
 using Survivalon.World;
@@ -104,7 +105,9 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.VerdantFrontier));
             Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Frontier raiders"));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
-            Assert.That(placeholderState.BossRewardContent, Is.Null);
+            Assert.That(placeholderState.BossRewardContent, Is.Not.Null);
+            Assert.That(placeholderState.BossRewardContent.PersistentProgressionMaterialBonus, Is.EqualTo(0));
+            Assert.That(placeholderState.BossRewardContent.GearRewardId, Is.EqualTo(GearIds.GatebreakerBlade));
             Assert.That(placeholderState.RegionMaterialYieldContent, Is.Null);
             Assert.That(placeholderState.SupportsRegionMaterialRewards, Is.False);
             Assert.That(
@@ -143,6 +146,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(placeholderState.BossRewardContent, Is.Not.Null);
             Assert.That(placeholderState.BossRewardContent.PersistentProgressionMaterialBonus, Is.EqualTo(1));
+            Assert.That(placeholderState.BossRewardContent.GearRewardId, Is.Null);
         }
 
         [Test]
