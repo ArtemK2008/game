@@ -28,6 +28,26 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldResolveGatebreakerBladeAttackPowerBonusWhenEquipped()
+        {
+            PersistentCharacterState characterState = new PersistentCharacterState(
+                "character_vanguard",
+                isUnlocked: true,
+                isSelectable: true,
+                isActive: true,
+                loadoutState: new PersistentLoadoutState(
+                    equippedGearStates: new[]
+                    {
+                        new EquippedGearState(GearIds.GatebreakerBlade, GearCategory.PrimaryCombat),
+                    }));
+            PlayableCharacterGearCombatEffectResolver resolver = new PlayableCharacterGearCombatEffectResolver();
+
+            float attackPowerBonus = resolver.ResolveAttackPowerBonus(characterState);
+
+            Assert.That(attackPowerBonus, Is.EqualTo(4f));
+        }
+
+        [Test]
         public void ShouldResolveGuardCharmMaxHealthBonusWhenEquipped()
         {
             PersistentCharacterState characterState = new PersistentCharacterState(

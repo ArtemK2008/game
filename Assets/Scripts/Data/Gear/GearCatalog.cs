@@ -10,6 +10,11 @@ namespace Survivalon.Data.Gear
             "Training Blade",
             GearCategory.PrimaryCombat,
             attackPowerBonus: 2f);
+        private static readonly GearProfile GatebreakerBladeProfile = new GearProfile(
+            GearIds.GatebreakerBlade,
+            "Gatebreaker Blade",
+            GearCategory.PrimaryCombat,
+            attackPowerBonus: 4f);
         private static readonly GearProfile GuardCharmProfile = new GearProfile(
             GearIds.GuardCharm,
             "Guard Charm",
@@ -18,10 +23,13 @@ namespace Survivalon.Data.Gear
         private static readonly IReadOnlyList<GearProfile> AllProfiles = Array.AsReadOnly(new[]
         {
             TrainingBladeProfile,
+            GatebreakerBladeProfile,
             GuardCharmProfile,
         });
 
         public static GearProfile TrainingBlade => TrainingBladeProfile;
+
+        public static GearProfile GatebreakerBlade => GatebreakerBladeProfile;
 
         public static GearProfile GuardCharm => GuardCharmProfile;
 

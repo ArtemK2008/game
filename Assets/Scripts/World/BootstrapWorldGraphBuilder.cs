@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Gear;
 using Survivalon.Data.Towns;
 using Survivalon.Data.World;
 
@@ -33,6 +34,9 @@ namespace Survivalon.World
                     NodeState.Locked,
                     CombatBossEncounterCatalog.GateBossEncounter,
                     new BossProgressionGateDefinition(BootstrapWorldScenario.CavernGateNodeId),
+                    bossRewardContent: new BossRewardContentDefinition(
+                        persistentProgressionMaterialBonus: 0,
+                        gearRewardId: GearIds.GatebreakerBlade),
                     displayName: "Frontier Gate"),
                 new WorldNode(
                     BootstrapWorldScenario.ForestFarmNodeId,

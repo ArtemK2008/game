@@ -236,9 +236,14 @@ namespace Survivalon.Run
                 resolutionState,
                 worldGraph,
                 progressResolution,
-                progressionEffects);
+                progressionEffects,
+                persistentContext?.PersistentGameState?.OwnedGearIds);
 
-            if (persistentContext?.ResourceBalancesState != null)
+            if (persistentContext?.PersistentGameState != null)
+            {
+                runRewardGrantService.Grant(persistentContext.PersistentGameState, rewardPayload);
+            }
+            else if (persistentContext?.ResourceBalancesState != null)
             {
                 runRewardGrantService.Grant(persistentContext.ResourceBalancesState, rewardPayload);
             }

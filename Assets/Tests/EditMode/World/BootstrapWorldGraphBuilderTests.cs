@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Gear;
 using Survivalon.Data.Towns;
 using Survivalon.Data.World;
 using Survivalon.World;
@@ -51,7 +52,13 @@ namespace Survivalon.Tests.EditMode.World
                 Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossRewardContent,
-                Is.Null);
+                Is.Not.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossRewardContent.PersistentProgressionMaterialBonus,
+                Is.EqualTo(0));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).BossRewardContent.GearRewardId,
+                Is.EqualTo(GearIds.GatebreakerBlade));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestFarmNodeId).CombatEncounter,
                 Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
@@ -91,6 +98,9 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossRewardContent.PersistentProgressionMaterialBonus,
                 Is.EqualTo(1));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossRewardContent.GearRewardId,
+                Is.Null);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).RegionMaterialYieldContent,
                 Is.Null);

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Data.Combat;
+using Survivalon.Data.Gear;
 using Survivalon.Data.World;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
@@ -86,6 +87,9 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(rewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
             Assert.That(rewardPayload.BossMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
             Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(rewardPayload.BossGearRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.BossGearRewards[0].GearId, Is.EqualTo(GearIds.GatebreakerBlade));
+            Assert.That(rewardPayload.BossGearRewards[0].DisplayName, Is.EqualTo("Gatebreaker Blade"));
             Assert.That(rewardPayload.MilestoneMaterialRewards, Is.Empty);
         }
 
@@ -133,6 +137,23 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(rewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
             Assert.That(rewardPayload.BossMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
             Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(rewardPayload.BossGearRewards, Is.Empty);
+        }
+
+        [Test]
+        public void ShouldNotGrantDuplicateBossGearRewardWhenItIsAlreadyOwned()
+        {
+            RunRewardResolutionService service = new RunRewardResolutionService();
+
+            RunRewardPayload rewardPayload = service.Resolve(
+                NodePlaceholderTestData.CreateBossCombatPlaceholderState(),
+                RunResolutionState.Succeeded,
+                BootstrapWorldTestData.CreateWorldGraph(),
+                ownedGearIds: new[] { GearIds.TrainingBlade, GearIds.GuardCharm, GearIds.GatebreakerBlade });
+
+            Assert.That(rewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
+            Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(rewardPayload.BossGearRewards, Is.Empty);
         }
 
         [Test]

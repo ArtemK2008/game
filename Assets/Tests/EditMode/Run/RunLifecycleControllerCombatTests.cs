@@ -275,9 +275,12 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
             Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards[0].ResourceCategory, Is.EqualTo(ResourceCategory.PersistentProgressionMaterial));
             Assert.That(controller.RunResult.RewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
+            Assert.That(controller.RunResult.RewardPayload.BossGearRewards, Has.Count.EqualTo(1));
+            Assert.That(controller.RunResult.RewardPayload.BossGearRewards[0].GearId, Is.EqualTo(GearIds.GatebreakerBlade));
             Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(1));
             Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
             Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(2));
+            Assert.That(gameState.OwnedGearIds, Does.Contain(GearIds.GatebreakerBlade));
         }
 
         [Test]

@@ -18,7 +18,8 @@ namespace Survivalon.Run
             RunResolutionState resolutionState,
             WorldGraph worldGraph = null,
             RunProgressResolution? progressResolution = null,
-            AccountWideProgressionEffectState progressionEffects = default)
+            AccountWideProgressionEffectState progressionEffects = default,
+            System.Collections.Generic.IReadOnlyList<string> ownedGearIds = null)
         {
             if (nodeContext == null)
             {
@@ -34,9 +35,13 @@ namespace Survivalon.Run
                 nodeContext,
                 resolutionState,
                 progressionEffects);
+            RunGearReward[] bossGearRewards = ResolveBossGearRewards(
+                nodeContext,
+                resolutionState,
+                ownedGearIds);
             bool shouldGrantMilestoneRewards = ShouldGrantMilestoneRewards(progressResolution);
 
-            if (!shouldGrantMilestoneRewards && bossMaterialRewards.Length == 0)
+            if (!shouldGrantMilestoneRewards && bossMaterialRewards.Length == 0 && bossGearRewards.Length == 0)
             {
                 return ordinaryRewards;
             }
@@ -46,7 +51,8 @@ namespace Survivalon.Run
                 Array.Empty<RunCurrencyReward>(),
                 ResolveMilestoneMaterialRewards(shouldGrantMilestoneRewards),
                 Array.Empty<RunCurrencyReward>(),
-                bossMaterialRewards);
+                bossMaterialRewards,
+                bossGearRewards);
         }
 
         private static RunRewardPayload ResolveOrdinaryRewards(
@@ -141,7 +147,8 @@ namespace Survivalon.Run
             RunCurrencyReward[] milestoneCurrencyRewards,
             RunMaterialReward[] milestoneMaterialRewards,
             RunCurrencyReward[] bossCurrencyRewards,
-            RunMaterialReward[] bossMaterialRewards)
+            RunMaterialReward[] bossMaterialRewards,
+            RunGearReward[] bossGearRewards)
         {
             return new RunRewardPayload(
                 ordinaryRewards.CurrencyRewards,
@@ -149,7 +156,8 @@ namespace Survivalon.Run
                 milestoneCurrencyRewards,
                 milestoneMaterialRewards,
                 bossCurrencyRewards,
-                bossMaterialRewards);
+                bossMaterialRewards,
+                bossGearRewards);
         }
 
         private static RunMaterialReward[] ResolveBossMaterialRewards(
@@ -171,6 +179,30 @@ namespace Survivalon.Run
             };
 
             return bossMaterialRewards;
+        }
+
+        private static RunGearReward[] ResolveBossGearRewards(
+            NodePlaceholderState nodeContext,
+            RunResolutionState resolutionState,
+            System.Collections.Generic.IReadOnlyList<string> ownedGearIds)
+        {
+            if (!ShouldGrantBossRewards(nodeContext, resolutionState))
+            {
+                return Array.Empty<RunGearReward>();
+            }
+
+            string rewardedGearId = nodeContext.BossRewardContent?.GearRewardId;
+            if (string.IsNullOrWhiteSpace(rewardedGearId) || OwnsGearId(ownedGearIds, rewardedGearId))
+            {
+                return Array.Empty<RunGearReward>();
+            }
+
+            RunGearReward[] bossGearRewards =
+            {
+                new RunGearReward(rewardedGearId),
+            };
+
+            return bossGearRewards;
         }
 
         private static RunCurrencyReward CreateCurrencyReward(RewardAmountDefinition rewardDefinition)
@@ -204,6 +236,26 @@ namespace Survivalon.Run
             return resolutionState == RunResolutionState.Succeeded &&
                 nodeContext.CombatEncounter != null &&
                 nodeContext.CombatEncounter.EncounterType == Data.Combat.CombatEncounterType.Boss;
+        }
+
+        private static bool OwnsGearId(
+            System.Collections.Generic.IReadOnlyList<string> ownedGearIds,
+            string gearId)
+        {
+            if (ownedGearIds == null)
+            {
+                return false;
+            }
+
+            for (int index = 0; index < ownedGearIds.Count; index++)
+            {
+                if (ownedGearIds[index] == gearId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static RunMaterialReward[] ResolveMilestoneMaterialRewards(bool shouldGrantMilestoneRewards)

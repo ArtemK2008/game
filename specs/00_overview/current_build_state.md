@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 081**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 082**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -171,6 +171,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - that result is surfaced explicitly in post-run summary text from structured boss-gate unlock data, separate from ordinary route-unlock state
   - the unlocked `Cavern Gate` becomes reachable on return to the world map through the existing bootstrap route graph
   - successful boss defeat now also grants a distinct boss reward bundle using `Persistent progression material x2`, separate from both ordinary rewards and clear-threshold milestone rewards
+  - the same forest gate boss now also grants one deterministic earned gear reward, `Gatebreaker Blade`, when that gear is not already owned
 
 ### Auto-battle / hostility / no-manual-combat loop
 - Combat uses deterministic auto-targeting.
@@ -326,10 +327,14 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The build now has two live persistent gear categories:
   - `PrimaryCombat`
   - `SecondarySupport`
-- Two shipped starter gear items currently exist in the code-driven gear catalog:
+- Two shipped starter-owned gear items currently exist in the code-driven gear catalog:
   - `gear_primary_training_blade` / `Training Blade`
-- `gear_secondary_guard_charm` / `Guard Charm`
-- Persistent game state now carries account-owned gear ids, and startup/bootstrap normalization ensures the starter gear is present in owned gear data.
+  - `gear_secondary_guard_charm` / `Guard Charm`
+- One additional deterministic earned gear item now also exists in the live gear catalog:
+  - `gear_primary_gatebreaker_blade` / `Gatebreaker Blade`
+  - it is granted from the forest gate boss reward path when not already owned
+  - duplicate clears do not create duplicate owned-gear entries
+- Persistent game state now carries account-owned gear ids, and startup/bootstrap normalization ensures the starter gear is present in owned gear data while preserving earned gear ownership across save/load.
 - Each persistent playable character already carries a `PersistentLoadoutState` with equipped-gear entries by category.
 - The current world map now exposes one minimal gear equip placeholder area for the selected character:
   - it shows the currently equipped `PrimaryCombat` and `SecondarySupport` gear
@@ -344,12 +349,14 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The current default bootstrap state still starts with no gear equipped on the shipped characters.
 - The selected character's persistent loadout data now flows into run context and now affects future combat through two small live gear effects.
 - The shipped `Training Blade` currently grants a flat `+2` attack-power bonus when equipped, which improves the selected character's future combat output and shortens ordinary autobattle runs without redesigning the current combat model.
+- The shipped earned `Gatebreaker Blade` currently grants a flat `+4` attack-power bonus when equipped, giving the first controlled gear-loot reward a small readable combat payoff without adding a broader item system.
 - The shipped `Guard Charm` currently grants a flat `+40` max-health bonus when equipped, which improves the selected character's future survivability and leaves standard-run outcomes with higher remaining health without redesigning the current combat model.
 
 ### Post-run reward summary UI
 - The current post-run panel surfaces run rewards, progress changes, and next actions in a compact aggregated text summary.
 - Ordinary reward output stays grouped into one readable reward line rather than a noisy detailed breakdown.
 - Milestone rewards are shown on a separate compact line when present, so clear-threshold runs feel distinct without expanding into a detailed reward panel.
+- Boss-earned gear rewards are now shown on their own compact line when present, so the new deterministic gear-loot path stays readable without redesigning the current summary panel.
 - The summary now also surfaces the current location identity and reward source for shipped content, making the region/material loop more legible in the MVP flow.
 - Progress changes are grouped into one readable line that distinguishes node progress gained this run from the current tracked total, while still surfacing persistent progression delta and route-unlock result.
 - A separate compact next-action block now makes the existing post-run buttons easier to read in practice by distinguishing:
@@ -372,7 +379,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Character-linked progression now exists only as a simple rank-like max-health bonus; broader character trees, multiple progression axes, and dedicated character progression UI are still deferred.
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - The first run-time skill choice now exists only as a minimal run-only upgrade seam for current `Burst Strike` users; the shipped baseline auto-picks `Burst Tempo`, while broader in-run upgrade pools, repeated level-up chains, manual choice depth, and upgrade UI depth are still deferred.
-- Gear now exists for two categories with a minimal pre-run equip/unequip placeholder and two simple live stat effects; broader gear UI, gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
+- Gear now exists for two categories with a minimal pre-run equip/unequip placeholder, one deterministic boss-earned acquisition path, and three simple live stat effects; broader gear UI, random/broader gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
 - The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, one fixed region-material refinement action, selected-character build preparation, and return/stop actions, but not a full service interaction suite.
 
 ## Not implemented yet
