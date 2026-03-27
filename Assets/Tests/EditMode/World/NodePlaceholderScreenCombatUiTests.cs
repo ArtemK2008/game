@@ -44,6 +44,9 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(
                     ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."),
                     Is.False);
+                Assert.That(
+                    FindRectTransform(hostObject, "Summary").GetComponent<LayoutElement>().preferredHeight,
+                    Is.EqualTo(54f));
                 Assert.That(FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").gameObject.activeSelf, Is.False);
                 Assert.That(
                     TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton"),
@@ -300,6 +303,9 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(
                     ContainsText(hostObject, "Boss role: Gate boss | Stakes: Gate clear, Boss rewards, Gear reward"),
                     Is.True);
+                Assert.That(
+                    FindRectTransform(hostObject, "Summary").GetComponent<LayoutElement>().preferredHeight,
+                    Is.EqualTo(82f));
 
                 AutoAdvanceCombat(hostObject, 64, 0.25f);
 
