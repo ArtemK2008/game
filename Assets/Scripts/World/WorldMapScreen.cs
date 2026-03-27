@@ -40,6 +40,7 @@ namespace Survivalon.World
             Action<NodeId> nodeEntryRequested = null,
             SessionContextState sessionContext = null,
             PersistentGameState gameState = null,
+            AccountWideProgressionEffectState progressionEffects = default,
             WorldMapBuildPreparationInteractionService buildPreparationInteractionService = null)
         {
             if (worldGraph == null)
@@ -52,9 +53,6 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(worldState));
             }
 
-            AccountWideProgressionEffectState progressionEffects = gameState == null
-                ? default(AccountWideProgressionEffectState)
-                : new AccountWideProgressionEffectResolver().Resolve(gameState.ProgressionState);
             screenController = new WorldMapScreenController(
                 worldGraph,
                 worldState,
