@@ -2,7 +2,6 @@ using NUnit.Framework;
 using Survivalon.Characters;
 using UnityEngine;
 using UnityEngine.UI;
-using Survivalon.Combat;
 using Survivalon.Core;
 using Survivalon.Data.Progression;
 using Survivalon.Startup;
@@ -96,20 +95,10 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
                 Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.False);
                 Assert.That(
                     ContainsText(hostObject, "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
-                    Is.True);
-                Assert.That(
-                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton")
-                        .GetComponentInChildren<UnityEngine.UI.Text>(true).text,
-                    Does.Contain("Best for: Steadier burst pressure."));
-                Assert.That(
-                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton")
-                        .GetComponentInChildren<UnityEngine.UI.Text>(true).text,
-                    Does.Contain("Best for: Bigger damage spikes."));
-                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
-
+                    Is.False);
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
@@ -353,11 +342,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 CreateAndInitializeBootstrap(firstHostObject, storage);
 
                 EnterNodeFromWorldMap(firstHostObject, "region_001_node_004_Button");
-                Assert.That(ContainsText(firstHostObject, "Run-only skill choice"), Is.True);
-                FindButton(
-                    firstHostObject,
-                    $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton")
-                    .onClick.Invoke();
+                Assert.That(ContainsText(firstHostObject, "Run-only skill choice"), Is.False);
                 Assert.That(ContainsText(firstHostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(storage.SaveCallCount, Is.EqualTo(0));
 
@@ -373,13 +358,13 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 EnterNodeFromWorldMap(secondHostObject, "region_001_node_004_Button");
 
-                Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.False);
                 Assert.That(
                     ContainsText(
                         secondHostObject,
                         "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
-                    Is.True);
-                Assert.That(ContainsText(secondHostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.False);
+                    Is.False);
+                Assert.That(ContainsText(secondHostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
             }
             finally
             {

@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using Survivalon.Combat;
 using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
@@ -214,7 +215,10 @@ namespace Survivalon.Tests.EditMode.State.Persistence
 
             Assert.That(controller.RunTimeSkillUpgradeOptions.Count, Is.EqualTo(2));
             Assert.That(controller.RequiresRunTimeSkillUpgradeChoice, Is.True);
-            Assert.That(controller.TryStartAutomaticFlow(), Is.False);
+            Assert.That(controller.TryStartAutomaticFlow(), Is.True);
+            Assert.That(
+                controller.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
         }
 
         private static PersistentGameState CreateGameState(string currentNodeIdValue, string lastSafeNodeIdValue)

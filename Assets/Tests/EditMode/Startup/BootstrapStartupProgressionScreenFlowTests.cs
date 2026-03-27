@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
-using Survivalon.Combat;
 using Survivalon.Core;
 using Survivalon.Data.Gear;
 using Survivalon.State.Persistence;
@@ -254,7 +253,6 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_003_Button");
-                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
@@ -310,7 +308,6 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_003_Button");
-                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
@@ -374,7 +371,6 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_003_Button");
-                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
@@ -382,7 +378,6 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_002_Button");
-                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);

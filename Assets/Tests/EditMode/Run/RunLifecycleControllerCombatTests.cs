@@ -487,10 +487,6 @@ namespace Survivalon.Tests.EditMode.Run
 
             Assert.That(controller.RequiresRunTimeSkillUpgradeChoice, Is.True);
             Assert.That(controller.RunTimeSkillUpgradeOptions.Count, Is.EqualTo(2));
-            Assert.That(controller.TryStartAutomaticFlow(), Is.False);
-            Assert.That(
-                controller.TrySelectRunTimeSkillUpgrade(CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId),
-                Is.True);
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
 
             Assert.That(persistentContext.PlayableCharacter, Is.Not.Null);
@@ -526,9 +522,6 @@ namespace Survivalon.Tests.EditMode.Run
                 persistentContext: persistentContext);
 
             Assert.That(controller.RequiresRunTimeSkillUpgradeChoice, Is.True);
-            Assert.That(
-                controller.TrySelectRunTimeSkillUpgrade(CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId),
-                Is.True);
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
 
             Assert.That(persistentContext.PlayableCharacter.CharacterId, Is.EqualTo("character_vanguard"));
@@ -536,12 +529,12 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
             Assert.That(
                 controller.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
-                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstPayload));
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
             Assert.That(controller.CombatContext.PlayerEntity.PassiveSkills, Is.Empty);
         }
 
         [Test]
-        public void ShouldNotPersistRunTimeSkillUpgradeChoiceAcrossNewRunControllers()
+        public void ShouldKeepAutoPickedRunTimeSkillUpgradeRunOnlyAcrossNewRunControllers()
         {
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
             PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
@@ -551,14 +544,11 @@ namespace Survivalon.Tests.EditMode.Run
                 RunLifecycleControllerTestData.CreateCombatNodeState(),
                 persistentContext: firstPersistentContext);
 
-            Assert.That(
-                firstController.TrySelectRunTimeSkillUpgrade(CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId),
-                Is.True);
             Assert.That(firstController.TryStartAutomaticFlow(), Is.True);
             Assert.That(firstController.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
             Assert.That(
                 firstController.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
-                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstPayload));
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
 
             RunPersistentContext secondPersistentContext = RunPersistentContext.FromGameState(gameState);
             RunLifecycleController secondController = new RunLifecycleController(
@@ -566,7 +556,10 @@ namespace Survivalon.Tests.EditMode.Run
                 persistentContext: secondPersistentContext);
 
             Assert.That(secondController.RequiresRunTimeSkillUpgradeChoice, Is.True);
-            Assert.That(secondController.TryStartAutomaticFlow(), Is.False);
+            Assert.That(secondController.TryStartAutomaticFlow(), Is.True);
+            Assert.That(
+                secondController.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
             Assert.That(secondPersistentContext.PlayableCharacterState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.StrikerDefault));
         }
 

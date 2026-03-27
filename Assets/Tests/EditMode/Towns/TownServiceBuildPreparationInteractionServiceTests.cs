@@ -166,11 +166,11 @@ namespace Survivalon.Tests.EditMode.Towns
                 persistentContext: persistentContext);
 
             Assert.That(controller.RequiresRunTimeSkillUpgradeChoice, Is.True);
-            Assert.That(
-                controller.TrySelectRunTimeSkillUpgrade(CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId),
-                Is.True);
             Assert.That(controller.TryStartAutomaticFlow(), Is.True);
             Assert.That(controller.CombatContext.PlayerEntity.TriggeredActiveSkill, Is.SameAs(CombatSkillCatalog.BurstStrike));
+            Assert.That(
+                controller.CombatContext.PlayerEntity.TriggeredActiveSkillUpgrade,
+                Is.SameAs(CombatRunTimeSkillUpgradeCatalog.BurstTempo));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.MaxHealth, Is.EqualTo(160f));
             Assert.That(controller.CombatContext.PlayerEntity.BaseStats.AttackPower, Is.EqualTo(16f));
         }

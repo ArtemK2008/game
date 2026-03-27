@@ -62,7 +62,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldRequireRunTimeSkillChoiceBeforeAutoStartingCombatWhenTriggeredActiveSkillIsPresent()
+        public void Show_ShouldAutoPickBaselineRunTimeSkillUpgradeAndAutoStartCombatWhenTriggeredActiveSkillIsPresent()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -82,60 +82,25 @@ namespace Survivalon.Tests.EditMode.World
                     RunPersistentContext.FromGameState(gameState));
 
                 Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
-                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Choose Run Upgrade"));
+                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
                 Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Encounter: Combat"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.False);
                 Assert.That(
                     ContainsText(hostObject, "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
-                    Is.True);
+                    Is.False);
                 Assert.That(
                     TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton"),
-                    Is.Not.Null);
+                    Is.Null);
                 Assert.That(
                     TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton"),
-                    Is.Not.Null);
-                Assert.That(
-                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton")
-                        .GetComponentInChildren<Text>(true).text,
-                    Does.Contain("Effect: Burst Strike triggers faster during this run."));
-                Assert.That(
-                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton")
-                        .GetComponentInChildren<Text>(true).text,
-                    Does.Contain("Best for: Steadier burst pressure."));
-                Assert.That(
-                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton")
-                        .GetComponentInChildren<Text>(true).text,
-                    Does.Contain("Effect: Burst Strike hits harder during this run."));
-                Assert.That(
-                    FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton")
-                        .GetComponentInChildren<Text>(true).text,
-                    Does.Contain("Best for: Bigger damage spikes."));
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.False);
+                    Is.Null);
+                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(
                     FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").GetComponent<LayoutElement>(),
                     Is.Null);
-                ForceUiLayout(hostObject);
-                Assert.That(
-                    RectangleContains(
-                        FindRectTransform(hostObject, "RunTimeSkillUpgradePanel"),
-                        (RectTransform)FindButton(
-                            hostObject,
-                            $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").transform),
-                    Is.True);
-                Assert.That(
-                    RectangleContains(
-                        FindRectTransform(hostObject, "RunTimeSkillUpgradePanel"),
-                        (RectTransform)FindButton(
-                            hostObject,
-                            $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").transform),
-                    Is.True);
-
-                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
-
-                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
@@ -285,16 +250,20 @@ namespace Survivalon.Tests.EditMode.World
                     runResult => { },
                     RunPersistentContext.FromGameState(gameState));
 
-                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
 
                 Button advanceRunLifecycleButton = FindButton(hostObject, "AdvanceRunLifecycleButton");
-                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Choose Run Upgrade"));
+                Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
-                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.False);
+                Assert.That(
+                    TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstTempo.UpgradeId}_RunTimeSkillUpgradeButton"),
+                    Is.Null);
+                Assert.That(
+                    TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton"),
+                    Is.Null);
 
-                FindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Run finished."), Is.True);

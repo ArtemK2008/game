@@ -136,7 +136,13 @@ namespace Survivalon.Run
 
         public bool TryStartAutomaticFlow()
         {
-            return UsesCombatShell && currentState == RunLifecycleState.RunStart && TryEnterActiveState();
+            if (!UsesCombatShell || currentState != RunLifecycleState.RunStart)
+            {
+                return false;
+            }
+
+            AutoSelectBaselineRunTimeSkillUpgradeForAutomaticFlow();
+            return TryEnterActiveState();
         }
 
         public bool TryAdvanceAutomaticTime(float elapsedSeconds)
@@ -265,6 +271,16 @@ namespace Survivalon.Run
             return persistentContext?.PersistentProgressionState == null
                 ? default
                 : accountWideProgressionEffectResolver.Resolve(persistentContext.PersistentProgressionState);
+        }
+
+        private void AutoSelectBaselineRunTimeSkillUpgradeForAutomaticFlow()
+        {
+            if (selectedRunTimeSkillUpgradeOption != null || runTimeSkillUpgradeOptions.Count == 0)
+            {
+                return;
+            }
+
+            selectedRunTimeSkillUpgradeOption = runTimeSkillUpgradeOptions[0];
         }
 
         private IReadOnlyList<CombatRunTimeSkillUpgradeOption> ResolveRunTimeSkillUpgradeOptions()
