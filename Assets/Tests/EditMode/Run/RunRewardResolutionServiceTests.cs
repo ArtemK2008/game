@@ -141,7 +141,7 @@ namespace Survivalon.Tests.EditMode.Run
         }
 
         [Test]
-        public void ShouldNotGrantDuplicateBossGearRewardWhenItIsAlreadyOwned()
+        public void ShouldKeepBossRewardValueWhenDuplicateBossGearRewardIsAlreadyOwned()
         {
             RunRewardResolutionService service = new RunRewardResolutionService();
 
@@ -154,6 +154,8 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(rewardPayload.BossMaterialRewards, Has.Count.EqualTo(1));
             Assert.That(rewardPayload.BossMaterialRewards[0].Amount, Is.EqualTo(2));
             Assert.That(rewardPayload.BossGearRewards, Is.Empty);
+            Assert.That(rewardPayload.HasBossRewards, Is.True);
+            Assert.That(rewardPayload.HasRewards, Is.True);
         }
 
         [Test]

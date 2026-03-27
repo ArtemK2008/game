@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 083
+Current next implementation target: Milestone 084
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -108,6 +108,7 @@ id | type | title | status | depends on / note
 080 | feature | Mark or detect farm-ready content | completed | phase 19
 081 | feature | Add one automation comfort upgrade | completed | phase 19
 082 | feature | Implement gear-as-loot acquisition | completed | phase 20
+083 | acceptance | Implement basic duplicate/conversion handling if needed | completed | phase 20
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note
