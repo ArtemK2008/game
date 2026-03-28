@@ -6,27 +6,31 @@ using Survivalon.Core;
 namespace Survivalon.Combat
 {
     /// <summary>
-    /// Рисует компактный placeholder-вид боя для активного run HUD и карточек сущностей.
+    /// Renders the compact placeholder combat shell for the run HUD and entity cards.
     /// </summary>
     public sealed class CombatShellView : MonoBehaviour
     {
-        public const float PreferredHeight = 304f;
+        public const float PreferredHeight = 360f;
 
         private const float TitleHeight = 32f;
-        private const float SummaryHeight = 116f;
-        private const float EntityRowHeight = 104f;
+        private const float SummaryHeight = 104f;
+        private const float EntityRowHeight = 152f;
+        private const float EntitySpriteWidth = 72f;
 
         private Image backgroundImage;
         private Text titleText;
         private Text summaryText;
         private Image playerEntityCardImage;
+        private Image playerEntitySpriteImage;
         private Text playerEntityCardText;
         private Image enemyEntityCardImage;
+        private Image enemyEntitySpriteImage;
         private Text enemyEntityCardText;
         private Font uiFont;
 
         public void Show(
             CombatEncounterState combatEncounterState,
+            CombatShellPresentationState presentationState,
             string title = null,
             string summary = null)
         {
@@ -45,13 +49,17 @@ namespace Survivalon.Combat
                 : summary;
             ApplyEntityCard(
                 playerEntityCardImage,
+                playerEntitySpriteImage,
                 playerEntityCardText,
                 combatEncounterState.PlayerEntity,
+                presentationState.PlayerSprite,
                 CombatShellStateResolver.ResolveEntityCardColor(combatEncounterState.PlayerEntity.Side));
             ApplyEntityCard(
                 enemyEntityCardImage,
+                enemyEntitySpriteImage,
                 enemyEntityCardText,
                 combatEncounterState.EnemyEntity,
+                presentationState.EnemySprite,
                 CombatShellStateResolver.ResolveEntityCardColor(combatEncounterState.EnemyEntity.Side));
             gameObject.SetActive(true);
         }
@@ -128,23 +136,30 @@ namespace Survivalon.Combat
             playerEntityCardImage = CreateEntityCard(
                 entityRowObject.transform,
                 "PlayerCombatEntity",
+                "PlayerCombatEntitySprite",
+                out playerEntitySpriteImage,
                 out playerEntityCardText);
             enemyEntityCardImage = CreateEntityCard(
                 entityRowObject.transform,
                 "EnemyCombatEntity",
+                "EnemyCombatEntitySprite",
+                out enemyEntitySpriteImage,
                 out enemyEntityCardText);
         }
 
         private Image CreateEntityCard(
             Transform parent,
             string objectName,
+            string spriteObjectName,
+            out Image entitySpriteImage,
             out Text entityCardText)
         {
             GameObject cardObject = new GameObject(
                 objectName,
                 typeof(RectTransform),
                 typeof(Image),
-                typeof(LayoutElement));
+                typeof(LayoutElement),
+                typeof(HorizontalLayoutGroup));
             cardObject.transform.SetParent(parent, false);
 
             RectTransform cardRectTransform = cardObject.GetComponent<RectTransform>();
@@ -157,20 +172,48 @@ namespace Survivalon.Combat
 
             Image cardImage = cardObject.GetComponent<Image>();
 
+            HorizontalLayoutGroup cardLayout = cardObject.GetComponent<HorizontalLayoutGroup>();
+            cardLayout.padding = new RectOffset(10, 10, 10, 10);
+            cardLayout.spacing = 12f;
+            cardLayout.childAlignment = TextAnchor.MiddleLeft;
+            cardLayout.childControlWidth = false;
+            cardLayout.childControlHeight = true;
+            cardLayout.childForceExpandWidth = false;
+            cardLayout.childForceExpandHeight = true;
+
+            GameObject spriteObject = new GameObject(
+                spriteObjectName,
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(LayoutElement));
+            spriteObject.transform.SetParent(cardObject.transform, false);
+
+            RectTransform spriteRectTransform = spriteObject.GetComponent<RectTransform>();
+            spriteRectTransform.localScale = Vector3.one;
+
+            LayoutElement spriteLayoutElement = spriteObject.GetComponent<LayoutElement>();
+            spriteLayoutElement.minWidth = EntitySpriteWidth;
+            spriteLayoutElement.preferredWidth = EntitySpriteWidth;
+            spriteLayoutElement.flexibleWidth = 0f;
+
+            entitySpriteImage = spriteObject.GetComponent<Image>();
+            entitySpriteImage.color = Color.white;
+            entitySpriteImage.preserveAspect = false;
+
             entityCardText = RuntimeUiSupport.CreateText(
                 cardObject.transform,
                 uiFont,
                 "Label",
-                18,
-                FontStyle.Bold,
-                TextAnchor.MiddleCenter,
+                15,
+                FontStyle.Normal,
+                TextAnchor.MiddleLeft,
                 Color.white);
+            RuntimeUiSupport.AddLayoutElement(
+                entityCardText.gameObject,
+                EntityRowHeight - 20f,
+                flexibleWidth: 1f);
 
             RectTransform textRectTransform = entityCardText.rectTransform;
-            textRectTransform.anchorMin = Vector2.zero;
-            textRectTransform.anchorMax = Vector2.one;
-            textRectTransform.offsetMin = new Vector2(12f, 8f);
-            textRectTransform.offsetMax = new Vector2(-12f, -8f);
             textRectTransform.localScale = Vector3.one;
 
             return cardImage;
@@ -178,13 +221,15 @@ namespace Survivalon.Combat
 
         private static void ApplyEntityCard(
             Image cardImage,
+            Image spriteImage,
             Text cardText,
             CombatEntityRuntimeState combatEntity,
+            Sprite sprite,
             Color backgroundColor)
         {
             cardImage.color = backgroundColor;
+            spriteImage.sprite = sprite;
             cardText.text = CombatShellTextBuilder.BuildEntityCardText(combatEntity);
         }
     }
 }
-

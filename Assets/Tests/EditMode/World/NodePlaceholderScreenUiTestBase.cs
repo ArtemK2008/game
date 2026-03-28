@@ -172,6 +172,21 @@ namespace Survivalon.Tests.EditMode.World
             return null;
         }
 
+        protected static Image FindImage(GameObject rootObject, string objectName)
+        {
+            Image[] images = rootObject.GetComponentsInChildren<Image>(true);
+            foreach (Image image in images)
+            {
+                if (image.gameObject.name == objectName)
+                {
+                    return image;
+                }
+            }
+
+            Assert.Fail($"Image '{objectName}' was not found.");
+            return null;
+        }
+
         protected static bool RectanglesOverlap(RectTransform first, RectTransform second)
         {
             Rect firstRect = GetWorldRect(first);

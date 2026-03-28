@@ -84,8 +84,15 @@ Current canonical sheet assets:
 - Current location/service backgrounds were left in place and documented as the canonical gameplay-facing files.
 - Current combat VFX assets were intentionally left as sheets because later hookup still needs explicit cue/frame mapping.
 
+## Current hookup status
+- Milestone `091` now wires the current canonical player and enemy combat-state sprites into the live combat shell.
+- That runtime hookup currently uses only the combat-state files under:
+  - `Assets/Art/Characters/<CharacterName>/Sprites/`
+  - `Assets/Art/Enemies/<EnemyName>/Sprites/`
+- Portraits, world icons, location backgrounds, service backgrounds, and combat VFX sheets remain prepared assets only and are not wired into runtime yet.
+
 ## Remaining gaps for later milestones
-- No visual runtime hookup is implemented yet for milestones `091` through `094`.
 - No dedicated world-map art assets are prepared yet.
 - No explicit per-frame VFX slicing contract exists yet.
 - No additional service/town-safe-space background variants are prepared yet.
+- Runtime hookup for location backgrounds, service/town safe-space visuals, and combat VFX is still pending for later milestones.

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ba9f9d1ab983b4489a4b68fc86da157, type: 3}
+  m_Name: CombatEntitySpriteRegistry
+  m_EditorClassIdentifier: 
+  spriteSets:
+  - combatEntityId: player_main
+    idleSprite: {fileID: 8793639957104055765, guid: c1e050cb803c0f341b73b408c86bdfeb, type: 3}
+    attackSprite: {fileID: 827538889749247048, guid: 1799ce4fac7780340b1c6954046e749e, type: 3}
+    hitSprite: {fileID: -59066101396820148, guid: c9ccc8efcd331024196394521b7107e3, type: 3}
+    defeatSprite: {fileID: -6822013724275910522, guid: e637b512f50f9db45bcaae879be0bd7f, type: 3}
+  - combatEntityId: player_striker
+    idleSprite: {fileID: 8793639957104055765, guid: 16f6f94db83051a41ad5c0d76ee0343e, type: 3}
+    attackSprite: {fileID: 827538889749247048, guid: 1d78901da7a9bc640b179519de185315, type: 3}
+    hitSprite: {fileID: -59066101396820148, guid: a71013e0875da6940bf97d9dbdc637f0, type: 3}
+    defeatSprite: {fileID: -6822013724275910522, guid: 1acdaa2d4295446429a7410091297cde, type: 3}
+  - combatEntityId: enemy_001
+    idleSprite: {fileID: 4996842061577435673, guid: 65002905ffd244acb836fb01edf4e549, type: 3}
+    attackSprite: {fileID: 213768865230216480, guid: 5f8adc3abe6d41fa95434d5937014019, type: 3}
+    hitSprite: {fileID: 6456478915562844659, guid: 564303feaebe472daa093af54b57e2ea, type: 3}
+    defeatSprite: {fileID: 1145471440825565214, guid: 21e1347cc7834258b0f4e6d255f7471f, type: 3}
+  - combatEntityId: enemy_002
+    idleSprite: {fileID: 5367421744286720572, guid: c79146fb3cfd41148ca5cf2585a65b7b, type: 3}
+    attackSprite: {fileID: 1445381992357858346, guid: 0f5dc5c3a7cf470ab4ef06564fda1d6d, type: 3}
+    hitSprite: {fileID: 7867743659455778664, guid: a012ed6f854647188cb7ed94cc050b74, type: 3}
+    defeatSprite: {fileID: 3050089658451643442, guid: c173b6e4628a49eb8fc46f83c1ed3c80, type: 3}
+  - combatEntityId: boss_001
+    idleSprite: {fileID: 5560110044273897612, guid: 8da26308337447ebbd2670cf0ece10dd, type: 3}
+    attackSprite: {fileID: 7785246177741192739, guid: dd9c2a61e44543759b41933492c3ebcf, type: 3}
+    hitSprite: {fileID: 5589011430745950069, guid: e4c0826a4916477082fd057422cc594f, type: 3}
+    defeatSprite: {fileID: 2322707203088492704, guid: c4092fd7415843af86af6f0252681b03, type: 3}

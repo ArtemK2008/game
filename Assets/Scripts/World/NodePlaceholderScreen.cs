@@ -39,6 +39,10 @@ namespace Survivalon.World
         private readonly RunHudStateResolver runHudStateResolver = new RunHudStateResolver();
         private readonly RunTimeSkillUpgradeChoiceStateResolver runTimeSkillUpgradeChoiceStateResolver =
             new RunTimeSkillUpgradeChoiceStateResolver();
+        private readonly CombatShellVisualStateResolver combatShellVisualStateResolver =
+            new CombatShellVisualStateResolver();
+        private readonly CombatShellPresentationStateResolver combatShellPresentationStateResolver =
+            new CombatShellPresentationStateResolver();
         private readonly CombatFeedbackSoundStateResolver combatFeedbackSoundStateResolver =
             new CombatFeedbackSoundStateResolver();
         private readonly PostRunNextActionResolver postRunNextActionResolver = new PostRunNextActionResolver();
@@ -53,6 +57,7 @@ namespace Survivalon.World
         private Action<UiSystemFeedbackSoundId> onFeedbackSoundRequested;
         private Action<CombatFeedbackSoundId> onCombatFeedbackSoundRequested;
         private CombatFeedbackSnapshot lastCombatFeedbackSnapshot;
+        private CombatShellVisualState currentCombatShellVisualState;
 
         public void Show(
             WorldGraph worldGraph,
@@ -620,6 +625,9 @@ namespace Survivalon.World
                 persistentContext?.PersistentWorldState);
             combatShellView.Show(
                 runLifecycleController.CombatEncounterState,
+                combatShellPresentationStateResolver.Resolve(
+                    runLifecycleController.CombatEncounterState,
+                    currentCombatShellVisualState),
                 title: RunHudTextBuilder.BuildContextTitle(runHudState),
                 summary: RunHudTextBuilder.BuildSummaryText(runHudState));
         }
@@ -651,6 +659,9 @@ namespace Survivalon.World
             if (runLifecycleController.TryAdvanceAutomaticTime(elapsedSeconds))
             {
                 CombatFeedbackSnapshot currentCombatFeedbackSnapshot = CaptureCombatFeedbackSnapshot();
+                currentCombatShellVisualState = combatShellVisualStateResolver.Resolve(
+                    previousCombatFeedbackSnapshot,
+                    currentCombatFeedbackSnapshot);
                 RequestCombatFeedback(previousCombatFeedbackSnapshot, currentCombatFeedbackSnapshot);
                 lastCombatFeedbackSnapshot = currentCombatFeedbackSnapshot;
                 Refresh();
@@ -660,6 +671,9 @@ namespace Survivalon.World
         private void ResetCombatFeedbackTracking()
         {
             lastCombatFeedbackSnapshot = CaptureCombatFeedbackSnapshot();
+            currentCombatShellVisualState = combatShellVisualStateResolver.Resolve(
+                lastCombatFeedbackSnapshot,
+                lastCombatFeedbackSnapshot);
         }
 
         private CombatFeedbackSnapshot CaptureCombatFeedbackSnapshot()

@@ -58,6 +58,11 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Player | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy | Alive: Yes | Act: Yes"), Is.True);
+                Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(
+                    FindImage(hostObject, "PlayerCombatEntitySprite").sprite,
+                    Is.Not.SameAs(FindImage(hostObject, "EnemyCombatEntitySprite").sprite));
                 Assert.That(advanceButtonText.text, Is.EqualTo("Combat Auto-Running"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
             }
@@ -111,6 +116,10 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Striker 110 / 110 | Enemy Unit 75 / 75"), Is.True);
+                Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(
+                    FindImage(hostObject, "PlayerCombatEntitySprite").sprite.name,
+                    Does.Contain("idle"));
                 Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
                 Assert.That(
                     FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").gameObject.activeSelf,
@@ -152,6 +161,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Contain("Player | Alive: Yes | Act: Yes"));
                 Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Not.Contain("HP: 120 / 120"));
                 Assert.That(FindTextInObject(hostObject, "EnemyCombatEntity"), Does.Contain("Enemy | Alive: Yes | Act: Yes"));
+                Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
             }
             finally
             {
@@ -188,6 +199,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(RectangleContains(combatShellRect, combatEntityRowRect), Is.True);
                 Assert.That(RectangleContains(combatEntityRowRect, playerCardRect), Is.True);
                 Assert.That(RectangleContains(combatEntityRowRect, enemyCardRect), Is.True);
+                Assert.That(RectangleContains(playerCardRect, FindRectTransform(hostObject, "PlayerCombatEntitySprite")), Is.True);
+                Assert.That(RectangleContains(enemyCardRect, FindRectTransform(hostObject, "EnemyCombatEntitySprite")), Is.True);
                 Assert.That(RectanglesOverlap(combatEntityRowRect, advanceButtonRect), Is.False);
                 Assert.That(RectanglesOverlap(playerCardRect, advanceButtonRect), Is.False);
                 Assert.That(RectanglesOverlap(enemyCardRect, advanceButtonRect), Is.False);
@@ -449,6 +462,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Encounter: Gate boss"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss stakes: Gate clear, Boss rewards, Gear reward"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss encounter | Verdant Frontier | Frontier Gate"), Is.True);
+                Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
                 Assert.That(
                     ContainsText(hostObject, "Boss role: Gate boss | Stakes: Gate clear, Boss rewards, Gear reward"),
                     Is.True);
