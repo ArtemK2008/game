@@ -427,6 +427,21 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - the low-health cue triggers on a downward threshold-crossing style transition instead of repeating every frame
 - Broader future audio content may exist under `Assets/Audio/`, but the runtime currently wires only the UI/system feedback subset, the baseline combat-SFX subset, and the two-context calm/gameplay music subset.
 
+### Prepared visual assets for upcoming hookup
+- The repo now also has prepared gameplay-facing visual assets under `Assets/Art/` for upcoming milestones `091` through `094`, without claiming those hookup milestones are already implemented.
+- The prepared asset families are documented in:
+  - `specs/10_art/art_asset_index.md`
+  - `specs/10_art/character_sprite_and_animation_pipeline.md`
+  - `specs/10_art/enemy_sprite_pipeline.md`
+  - `specs/10_art/environment_and_background_pipeline.md`
+  - `specs/10_art/combat_vfx_pipeline.md`
+- Current prep status:
+  - playable-character portrait, world-icon, and combat-state assets already exist in canonical gameplay-facing form
+  - enemy combat state sheets now also have canonical split `idle` / `attack` / `hit` / `defeat` files while retaining the original sheets as source assets
+  - current combat and service backgrounds are stored as stable place-owned canonical files under `Assets/Art/Locations/`
+  - current combat VFX remain intentionally sheet-based canonical source assets under `Assets/Art/VFX/Combat/`
+- Runtime hookup of those visuals into the node/combat/world/town screens is still not implemented yet.
+
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.
 - Movement is **not** part of the current MVP combat model.

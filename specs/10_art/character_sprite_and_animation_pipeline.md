@@ -25,6 +25,9 @@ This spec turns high-level visual direction into simple delivery rules for:
 This spec must be used together with:
 - `specs/09_presentation/visual_style.md`
 - `specs/05_player/characters.md`
+- `specs/10_art/enemy_sprite_pipeline.md` when aligning player-versus-enemy combat framing
+- `specs/10_art/environment_and_background_pipeline.md` when placing character sprites against shipped combat or service backdrops
+- `specs/10_art/combat_vfx_pipeline.md` when layering VFX around the current combat-state sprites
 
 If those specs conflict with this file, do not guess.
 Call out the conflict explicitly and resolve it before implementation.
@@ -500,3 +503,4 @@ This spec does not define:
 - marketing splash art
 - enemy asset pipeline
 - environment asset pipeline
+- combat VFX asset pipeline
