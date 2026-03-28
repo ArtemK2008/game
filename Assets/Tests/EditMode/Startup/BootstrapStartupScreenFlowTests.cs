@@ -91,6 +91,33 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldDisableContinueWhenPersistedTownServiceSafeTargetIsInvalid()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            seededGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            seededGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
+            seededGameState.WorldState.ReplaceReachableNodes(new[] { new NodeId("region_002_node_001") });
+            seededGameState.SafeResumeState.MarkTownService(new NodeId("region_999_node_999"));
+            storage.Seed(seededGameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.False);
+                Assert.That(
+                    ContainsText(hostObject, "Continue becomes available after a safe world or service save."),
+                    Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldStartFreshWorldFlowFromMainMenuEvenWhenSavedSafeContextExists()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");

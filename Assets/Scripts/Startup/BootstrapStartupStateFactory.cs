@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Survivalon.Core;
 using Survivalon.State;
 using Survivalon.State.Persistence;
@@ -99,6 +100,12 @@ namespace Survivalon.Startup
                 throw new ArgumentNullException(nameof(startupState));
             }
 
+            PersistentWorldState worldState = startupState.GameState.WorldState;
+            if (!HasWorldLevelResumeAnchor(worldState))
+            {
+                return false;
+            }
+
             PersistentSafeResumeState safeResumeState = startupState.GameState.SafeResumeState;
             if (safeResumeState.HasSafeResumeTarget)
             {
@@ -107,15 +114,40 @@ namespace Survivalon.Startup
                     case SafeResumeTargetType.WorldMap:
                         return true;
                     case SafeResumeTargetType.TownService:
-                        return startupState.WorldGraph.GetNode(safeResumeState.ResumeNodeId).NodeType ==
-                               NodeType.ServiceOrProgression;
+                        return CanResumeTownService(startupState.WorldGraph, safeResumeState.ResumeNodeId);
                     default:
                         return false;
                 }
             }
 
-            PersistentWorldState worldState = startupState.GameState.WorldState;
+            return true;
+        }
+
+        private static bool HasWorldLevelResumeAnchor(PersistentWorldState worldState)
+        {
+            if (worldState == null)
+            {
+                throw new ArgumentNullException(nameof(worldState));
+            }
+
             return worldState.HasCurrentNode || worldState.HasLastSafeNode;
+        }
+
+        private static bool CanResumeTownService(WorldGraph worldGraph, NodeId nodeId)
+        {
+            if (worldGraph == null)
+            {
+                throw new ArgumentNullException(nameof(worldGraph));
+            }
+
+            try
+            {
+                return worldGraph.GetNode(nodeId).NodeType == NodeType.ServiceOrProgression;
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
+            }
         }
     }
 }
