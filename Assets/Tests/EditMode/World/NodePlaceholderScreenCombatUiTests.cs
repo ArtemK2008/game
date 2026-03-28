@@ -60,6 +60,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Enemy | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").sprite, Is.Not.Null);
                 Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").preserveAspect, Is.True);
+                Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").preserveAspect, Is.True);
                 Assert.That(
                     FindImage(hostObject, "PlayerCombatEntitySprite").sprite,
                     Is.Not.SameAs(FindImage(hostObject, "EnemyCombatEntitySprite").sprite));

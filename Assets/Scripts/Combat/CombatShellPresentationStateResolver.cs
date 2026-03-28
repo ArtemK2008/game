@@ -5,7 +5,7 @@ namespace Survivalon.Combat
 {
     public sealed class CombatShellPresentationStateResolver
     {
-        private readonly CombatEntitySpriteRegistry spriteRegistry;
+        private CombatEntitySpriteRegistry spriteRegistry;
 
         public CombatShellPresentationStateResolver(CombatEntitySpriteRegistry spriteRegistry = null)
         {
@@ -34,8 +34,7 @@ namespace Survivalon.Combat
             string combatEntityId,
             CombatEntityVisualStateId visualStateId)
         {
-            CombatEntitySpriteRegistry resolvedSpriteRegistry =
-                spriteRegistry ?? CombatEntitySpriteRegistry.LoadOrNull();
+            CombatEntitySpriteRegistry resolvedSpriteRegistry = EnsureSpriteRegistry();
 
             if (resolvedSpriteRegistry == null)
             {
@@ -50,6 +49,17 @@ namespace Survivalon.Combat
             }
 
             return sprite;
+        }
+
+        private CombatEntitySpriteRegistry EnsureSpriteRegistry()
+        {
+            if (spriteRegistry != null)
+            {
+                return spriteRegistry;
+            }
+
+            spriteRegistry = CombatEntitySpriteRegistry.LoadOrNull();
+            return spriteRegistry;
         }
     }
 
