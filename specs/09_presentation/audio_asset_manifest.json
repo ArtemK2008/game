@@ -1,8 +1,11 @@
 {
   "formatVersion": 1,
-  "sourceOfTruth": "Committed audio clips currently present under Assets/Audio.",
+  "sourceOfTruth": "Committed audio clips currently present under Assets/Audio. Runtime wiring is narrower than committed availability.",
   "notes": [
     "wiredInCurrentRuntime reflects actual current code hookup, not just committed availability.",
+    "The currently wired UI/system feedback subset is resolved through Assets/Resources/UiSystemFeedbackAudioClipRegistry.asset.",
+    "UiSystemFeedbackAudioHost no longer resolves clip paths directly; it caches clip references from that runtime-safe registry asset.",
+    "Broader committed combat/system/music clips may exist here without being wired into runtime yet.",
     "Non-audio repository placeholders such as Assets/Audio/placeholder.txt are intentionally excluded."
   ],
   "clips": [

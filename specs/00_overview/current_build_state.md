@@ -392,7 +392,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - node entry/post-run replay, return, and stop actions
   - town/service purchase, equip, assignment, conversion, return, and stop actions
   - resolved post-run unlock moments and successful boss-clear result moments
-- The shared host now plays the shipped clips from `Assets/Audio/UI/` and `Assets/Audio/System/` when available and fails safely when a clip cannot be resolved.
+- The shared host now resolves the current runtime-wired UI/system subset through the runtime-safe `Assets/Resources/UiSystemFeedbackAudioClipRegistry.asset`, caches those clip references once on initialization, and fails safely when a clip cannot be resolved.
 - Broader combat/system/music clips are now committed under `Assets/Audio/`, but only the UI/system feedback subset is currently wired into runtime behavior.
 - No music, ambience, or combat hit/attack/enemy sound effects are wired into the current runtime yet.
 
