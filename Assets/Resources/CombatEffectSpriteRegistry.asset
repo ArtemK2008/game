@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e351c1ce8c349d6a3f3d70566e6152f, type: 3}
+  m_Name: CombatEffectSpriteRegistry
+  m_EditorClassIdentifier: 
+  basicImpactSprite: {fileID: 5601345633542562059, guid: f28ffe3f9aeb466a814feb828315de1d, type: 3}
+  burstStrikeSprite: {fileID: 6189341252846901790, guid: 80074f4521514fd5ac96263ff132e93e, type: 3}
+  dangerPulseSprite: {fileID: 8921968999886147969, guid: 5b78a559ce8147538d8ea580ace927b7, type: 3}
+  defeatSprite: {fileID: 1053839555669458830, guid: f7ff475329914479a9f82bbff00cc3e1, type: 3}

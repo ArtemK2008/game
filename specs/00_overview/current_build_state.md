@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 093**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 094**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -157,6 +157,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current auto-battle/run state, outcome, and elapsed combat time
   - player and enemy health at a glance
   - tracked progress context when applicable, including boss gate-clear progress
+- The live combat shell now also has one restrained combat-effect readability layer for autobattle:
+  - ordinary same-tick damage is emphasized with one short target-side impact cue instead of noisy paired attack-plus-hit clutter
+  - `Burst Strike` uses a distinct centered cue instead of reusing the ordinary impact treatment
+  - low-health danger uses one threshold-cross pulse rather than a looping or per-frame effect
+  - defeat uses a short side-specific defeat cue
+  - these cues are resolved through the runtime-safe `Assets/Resources/CombatEffectSpriteRegistry.asset`
 - The combat prototype is currently one player-side entity versus one enemy-side entity.
 - The live combat shell now also uses the prepared canonical combat-state sprites for the current shipped player and enemy entities:
   - player-side runtime currently resolves `Vanguard` and `Striker` through `idle`, `attack`, `hit`, and `defeat` sprite states
@@ -457,7 +463,8 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - player and enemy combat-state sprites are now wired into the live combat shell
   - combat location backgrounds are now wired into the live combat shell for `Verdant Frontier` and `Echo Caverns`
   - the current `Cavern Service Hub` service background is now wired into the live town/service shell
-  - portraits, world icons, and combat VFX are still prepared-only and not wired into runtime yet
+  - the current combat VFX sheets are now wired directly into the live combat shell for restrained impact, `Burst Strike`, low-health danger, and defeat readability cues
+  - portraits and world icons are still prepared-only and not wired into runtime yet
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.

@@ -291,6 +291,42 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldDisplayCombatEffectCueDuringAutomaticCombat()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                bool observedEffectCue = false;
+                for (int index = 0; index < 8; index++)
+                {
+                    AutoAdvanceCombat(hostObject, 1, 0.25f);
+                    if (FindImage(hostObject, "PlayerCombatEffectArt").enabled ||
+                        FindImage(hostObject, "EnemyCombatEffectArt").enabled ||
+                        FindImage(hostObject, "CombatShellCenterEffectArt").enabled)
+                    {
+                        observedEffectCue = true;
+                        break;
+                    }
+                }
+
+                Assert.That(observedEffectCue, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldRequestBaselineCombatFeedbackDuringAutomaticCombat()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
@@ -346,6 +382,45 @@ namespace Survivalon.Tests.EditMode.World
                 AutoAdvanceCombat(hostObject, 64, 0.25f);
 
                 Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.BurstStrike));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldDisplayBurstStrikeCenterEffectInLiveCombatFlow()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateBossCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { },
+                    RunPersistentContext.FromGameState(gameState));
+
+                bool observedBurstEffect = false;
+                for (int index = 0; index < 64; index++)
+                {
+                    AutoAdvanceCombat(hostObject, 1, 0.25f);
+                    if (FindImage(hostObject, "CombatShellCenterEffectArt").enabled)
+                    {
+                        observedBurstEffect = true;
+                        break;
+                    }
+                }
+
+                Assert.That(observedBurstEffect, Is.True);
             }
             finally
             {
