@@ -22,10 +22,13 @@ namespace Survivalon.Tests.EditMode.World
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_002"), false, true, false, WorldMapPathRole.CurrentContext);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_003"), false, false, false, WorldMapPathRole.BlockedPath);
             AssertNodeOption(nodeOptions, new NodeId("region_001_node_004"), true, false, false, WorldMapPathRole.ForwardRoute);
+            AssertNodeOption(nodeOptions, BootstrapWorldScenario.ForestEliteNodeId, true, false, false, WorldMapPathRole.ForwardRoute);
             AssertNodeOption(nodeOptions, new NodeId("region_002_node_001"), true, false, false, WorldMapPathRole.ForwardRoute);
             AssertNodeOption(nodeOptions, new NodeId("region_002_node_002"), false, false, false, WorldMapPathRole.BlockedPath);
             AssertNodeDisplayName(nodeOptions, new NodeId("region_001_node_004"), "Forest Farm");
+            AssertNodeDisplayName(nodeOptions, BootstrapWorldScenario.ForestEliteNodeId, "Raider Holdout");
             AssertNodeDisplayName(nodeOptions, new NodeId("region_002_node_001"), "Cavern Service Hub");
+            AssertOptionalChallengeLabel(nodeOptions, BootstrapWorldScenario.ForestEliteNodeId, "Elite challenge");
         }
 
         [Test]
@@ -232,10 +235,11 @@ namespace Survivalon.Tests.EditMode.World
             IReadOnlyList<NodeId> forwardSelectableNodeIds = controller.GetForwardSelectableNodeIds();
 
             Assert.That(controller.HasForwardRouteChoice, Is.True);
-            Assert.That(controller.ForwardSelectableNodeCount, Is.EqualTo(2));
+            Assert.That(controller.ForwardSelectableNodeCount, Is.EqualTo(3));
             Assert.That(forwardSelectableNodeIds, Is.EquivalentTo(new[]
             {
                 new NodeId("region_001_node_004"),
+                BootstrapWorldScenario.ForestEliteNodeId,
                 new NodeId("region_002_node_001"),
             }));
         }
@@ -323,6 +327,25 @@ namespace Survivalon.Tests.EditMode.World
                 }
 
                 Assert.That(nodeOption.NodeDisplayName, Is.EqualTo(expectedDisplayName));
+                return;
+            }
+
+            Assert.Fail($"World map node option '{nodeId}' was not found.");
+        }
+
+        private static void AssertOptionalChallengeLabel(
+            IReadOnlyList<WorldMapNodeOption> nodeOptions,
+            NodeId nodeId,
+            string expectedChallengeLabel)
+        {
+            foreach (WorldMapNodeOption nodeOption in nodeOptions)
+            {
+                if (nodeOption.NodeId != nodeId)
+                {
+                    continue;
+                }
+
+                Assert.That(nodeOption.OptionalChallengeDisplayName, Is.EqualTo(expectedChallengeLabel));
                 return;
             }
 

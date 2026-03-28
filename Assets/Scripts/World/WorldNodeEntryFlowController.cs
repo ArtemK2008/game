@@ -52,6 +52,7 @@ namespace Survivalon.World
                 enterableRegion.LocationIdentity,
                 enterableNode.BossRewardContent,
                 enterableNode.RegionMaterialYieldContent,
+                enterableNode.OptionalChallengeContent,
                 RegionMaterialRewardSupportResolver.Supports(
                     enterableNode.NodeType,
                     enterableRegion.ResourceCategory),

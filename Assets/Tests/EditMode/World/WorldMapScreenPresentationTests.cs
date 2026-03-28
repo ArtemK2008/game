@@ -32,11 +32,12 @@ namespace Survivalon.Tests.EditMode.World
                     "Verdant Frontier",
                     CreateNodeReference("region_001_node_002", "Raider Trail"),
                     NodeState.InProgress,
-                    selectableDestinationCount: 3,
+                    selectableDestinationCount: 4,
                     new[]
                     {
                         CreateNodeReference("region_002_node_001", "Cavern Service Hub"),
                         CreateNodeReference("region_001_node_004", "Forest Farm"),
+                        CreateNodeReference("region_001_node_006", "Raider Holdout"),
                     },
                     new[]
                     {
@@ -52,8 +53,8 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(summaryText, Is.EqualTo(
                 "Location: Verdant Frontier\n" +
                 "Current: Raider Trail (In progress) | Selected: Forest Farm\n" +
-                "Paths now: 3 enterable | 2 forward | 1 backtrack | 0 replayable | 1 blocked\n" +
-                "Forward: Cavern Service Hub, Forest Farm\n" +
+                "Paths now: 4 enterable | 3 forward | 1 backtrack | 0 replayable | 1 blocked\n" +
+                "Forward: Cavern Service Hub, Forest Farm, Raider Holdout\n" +
                 "Backtrack: Frontier Entry | Replayable: none\n" +
                 "Blocked: Frontier Gate\n" +
                 "Node states: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked"));
@@ -244,6 +245,30 @@ namespace Survivalon.Tests.EditMode.World
                 "Forest Farm\n" +
                 "Verdant Frontier\n" +
                 "Path: Replayable farm node | Type: Combat | State: Cleared | Farm-ready\n" +
+                "Status: Selectable"));
+        }
+
+        [Test]
+        public void BuildNodeLabel_ShouldShowEliteChallengeMarkerForOptionalChallengeContent()
+        {
+            string labelText = WorldMapScreenTextBuilder.BuildNodeLabel(
+                new WorldMapNodeOption(
+                    BootstrapWorldScenario.ForestEliteNodeId,
+                    BootstrapWorldScenario.ForestRegionId,
+                    NodeType.Combat,
+                    NodeState.Available,
+                    isSelectable: true,
+                    isCurrentContext: false,
+                    isSelected: false,
+                    "Verdant Frontier",
+                    "Raider Holdout",
+                    WorldMapPathRole.ForwardRoute,
+                    optionalChallengeDisplayName: "Elite challenge"));
+
+            Assert.That(labelText, Is.EqualTo(
+                "Raider Holdout\n" +
+                "Verdant Frontier\n" +
+                "Path: Forward route | Type: Combat | State: Available | Elite challenge\n" +
                 "Status: Selectable"));
         }
 

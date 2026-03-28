@@ -73,6 +73,8 @@ namespace Survivalon.World
             foreach (WorldNode node in orderedNodes)
             {
                 WorldRegion region = worldGraph.GetRegion(node.RegionId);
+                OptionalChallengePresentationState challengePresentationState =
+                    OptionalChallengePresentationStateResolver.Resolve(node);
                 nodeOptions.Add(new WorldMapNodeOption(
                     node.NodeId,
                     node.RegionId,
@@ -84,7 +86,8 @@ namespace Survivalon.World
                     region.LocationIdentity.DisplayName,
                     worldNodeDisplayNameResolver.Resolve(node),
                     ResolvePathRole(node.NodeId, currentContextNodeId, accessState),
-                    worldNodeFarmReadinessResolver.IsFarmReady(worldGraph, worldState, node.NodeId)));
+                    worldNodeFarmReadinessResolver.IsFarmReady(worldGraph, worldState, node.NodeId),
+                    challengePresentationState.ChallengeDisplayName));
             }
 
             return nodeOptions;

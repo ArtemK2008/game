@@ -146,7 +146,7 @@ namespace Survivalon.World
             return
                 $"{nodeOption.NodeDisplayName}\n" +
                 $"{nodeOption.LocationDisplayName}\n" +
-                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {PlayerFacingCoreLabelFormatter.FormatNodeType(nodeOption.NodeType)} | State: {PlayerFacingCoreLabelFormatter.FormatNodeState(nodeOption.NodeState)}{BuildFarmReadySuffix(nodeOption)}\n" +
+                $"Path: {BuildPathRoleLabel(nodeOption.PathRole)} | Type: {PlayerFacingCoreLabelFormatter.FormatNodeType(nodeOption.NodeType)} | State: {PlayerFacingCoreLabelFormatter.FormatNodeState(nodeOption.NodeState)}{BuildOptionalChallengeSuffix(nodeOption)}{BuildFarmReadySuffix(nodeOption)}\n" +
                 $"Status: {BuildAvailabilityLabel(nodeOption)}";
         }
 
@@ -197,6 +197,13 @@ namespace Survivalon.World
         private static string BuildFarmReadySuffix(WorldMapNodeOption nodeOption)
         {
             return nodeOption.IsFarmReady ? " | Farm-ready" : string.Empty;
+        }
+
+        private static string BuildOptionalChallengeSuffix(WorldMapNodeOption nodeOption)
+        {
+            return string.IsNullOrWhiteSpace(nodeOption.OptionalChallengeDisplayName)
+                ? string.Empty
+                : $" | {nodeOption.OptionalChallengeDisplayName}";
         }
 
         private static int CountOptionsForCategory(

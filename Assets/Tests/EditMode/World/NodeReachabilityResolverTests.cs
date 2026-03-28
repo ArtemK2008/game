@@ -139,6 +139,7 @@ namespace Survivalon.Tests.EditMode.World
                 new[]
                 {
                     new NodeId("region_001_node_004"),
+                    new NodeId("region_001_node_006"),
                     new NodeId("region_002_node_001"),
                     unlockedGateNodeId,
                 },

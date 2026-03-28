@@ -76,6 +76,26 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void ShouldCarryBootstrapOptionalChallengeContentIntoPlaceholderState()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+
+            bool entered = controller.TryEnterNode(BootstrapWorldScenario.ForestEliteNodeId, out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.NodeDisplayName, Is.EqualTo("Raider Holdout"));
+            Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatStandardEncounterCatalog.BulwarkRaiderEncounter));
+            Assert.That(placeholderState.RegionMaterialYieldContent, Is.Not.Null);
+            Assert.That(placeholderState.RegionMaterialYieldContent.RegionMaterialBonus, Is.EqualTo(2));
+            Assert.That(placeholderState.OptionalChallengeContent, Is.Not.Null);
+            Assert.That(placeholderState.OptionalChallengeContent.ChallengeDisplayName, Is.EqualTo("Elite challenge"));
+            Assert.That(placeholderState.SupportsRegionMaterialRewards, Is.True);
+        }
+
+        [Test]
         public void ShouldCarryBootstrapBossEncounterContentIntoPlaceholderState()
         {
             WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();

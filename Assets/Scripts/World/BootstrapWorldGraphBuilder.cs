@@ -9,6 +9,9 @@ namespace Survivalon.World
 {
     public sealed class BootstrapWorldGraphBuilder
     {
+        private static readonly OptionalChallengeContentDefinition ForestEliteChallengeContent =
+            new OptionalChallengeContentDefinition("Elite challenge");
+
         public WorldGraph Create()
         {
             List<WorldNode> nodes = new List<WorldNode>
@@ -47,6 +50,15 @@ namespace Survivalon.World
                     regionMaterialYieldContent: new RegionMaterialYieldContentDefinition(1),
                     displayName: "Forest Farm"),
                 new WorldNode(
+                    BootstrapWorldScenario.ForestEliteNodeId,
+                    BootstrapWorldScenario.ForestRegionId,
+                    NodeType.Combat,
+                    NodeState.Available,
+                    CombatStandardEncounterCatalog.BulwarkRaiderEncounter,
+                    regionMaterialYieldContent: new RegionMaterialYieldContentDefinition(2),
+                    optionalChallengeContent: ForestEliteChallengeContent,
+                    displayName: "Raider Holdout"),
+                new WorldNode(
                     BootstrapWorldScenario.CavernServiceNodeId,
                     BootstrapWorldScenario.CavernRegionId,
                     NodeType.ServiceOrProgression,
@@ -75,6 +87,7 @@ namespace Survivalon.World
                         BootstrapWorldScenario.ForestPushNodeId,
                         BootstrapWorldScenario.ForestGateNodeId,
                         BootstrapWorldScenario.ForestFarmNodeId,
+                        BootstrapWorldScenario.ForestEliteNodeId,
                     },
                     ResourceCategory.RegionMaterial,
                     "frontier",
@@ -98,6 +111,7 @@ namespace Survivalon.World
                 new WorldNodeConnection(BootstrapWorldScenario.ForestEntryNodeId, BootstrapWorldScenario.ForestPushNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestGateNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestFarmNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestEliteNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.CavernServiceNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.ForestGateNodeId, BootstrapWorldScenario.CavernGateNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernGateNodeId),

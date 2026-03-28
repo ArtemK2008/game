@@ -20,6 +20,7 @@ namespace Survivalon.World
             LocationIdentityDefinition locationIdentity = null,
             BossRewardContentDefinition bossRewardContent = null,
             RegionMaterialYieldContentDefinition regionMaterialYieldContent = null,
+            OptionalChallengeContentDefinition optionalChallengeContent = null,
             bool supportsRegionMaterialRewards = false,
             string nodeDisplayName = null)
         {
@@ -58,6 +59,13 @@ namespace Survivalon.World
                     nameof(regionMaterialYieldContent));
             }
 
+            if (optionalChallengeContent != null && nodeType != NodeType.Combat)
+            {
+                throw new ArgumentException(
+                    "Optional challenge content requires a standard combat placeholder node type.",
+                    nameof(optionalChallengeContent));
+            }
+
             NodeId = nodeId;
             RegionId = regionId;
             NodeType = nodeType;
@@ -72,6 +80,7 @@ namespace Survivalon.World
             TownServiceContext = townServiceContext;
             BossRewardContent = bossRewardContent;
             RegionMaterialYieldContent = regionMaterialYieldContent;
+            OptionalChallengeContent = optionalChallengeContent;
             SupportsRegionMaterialRewards = supportsRegionMaterialRewards;
         }
 
@@ -100,6 +109,8 @@ namespace Survivalon.World
         public BossRewardContentDefinition BossRewardContent { get; }
 
         public RegionMaterialYieldContentDefinition RegionMaterialYieldContent { get; }
+
+        public OptionalChallengeContentDefinition OptionalChallengeContent { get; }
 
         public bool SupportsRegionMaterialRewards { get; }
     }

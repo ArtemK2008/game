@@ -29,9 +29,13 @@ namespace Survivalon.World
 
             BossEncounterPresentationState bossPresentationState =
                 BossEncounterPresentationStateResolver.Resolve(placeholderState);
+            OptionalChallengePresentationState challengePresentationState =
+                OptionalChallengePresentationStateResolver.Resolve(placeholderState);
             string encounterDisplayName = bossPresentationState.IsBossEncounter
                 ? bossPresentationState.EncounterDisplayName
-                : PlayerFacingCoreLabelFormatter.FormatNodeType(placeholderState.NodeType);
+                : challengePresentationState.IsOptionalChallenge
+                    ? challengePresentationState.ChallengeDisplayName
+                    : PlayerFacingCoreLabelFormatter.FormatNodeType(placeholderState.NodeType);
             string summaryText =
                 $"Location: {placeholderState.LocationIdentity.DisplayName}\n" +
                 $"Encounter: {encounterDisplayName}";

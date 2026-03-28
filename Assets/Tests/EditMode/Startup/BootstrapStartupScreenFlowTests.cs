@@ -148,7 +148,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: none"), Is.True);
-                Assert.That(ContainsText(hostObject, "Forward: Cavern Service Hub, Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Forward: Cavern Service Hub, Forest Farm, Raider Holdout"), Is.True);
                 Assert.That(ContainsText(hostObject, "Backtrack: Frontier Entry | Replayable: none"), Is.True);
                 Assert.That(ContainsText(hostObject, "Blocked: Frontier Gate"), Is.True);
                 Assert.That(ContainsText(hostObject, "Node states: Available = enterable"), Is.True);
@@ -285,6 +285,33 @@ namespace Survivalon.Tests.EditMode.Startup
             {
                 Object.DestroyImmediate(firstHostObject);
                 Object.DestroyImmediate(secondHostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldShowOptionalEliteChallengePathWithoutReplacingMainRoutes()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                Assert.That(ContainsText(hostObject, "Raider Holdout"), Is.True);
+                Assert.That(ContainsText(hostObject, "State: Available | Elite challenge"), Is.True);
+
+                Button eliteButton = FindButton(hostObject, "region_001_node_006_Button");
+                Button serviceButton = FindButton(hostObject, "region_002_node_001_Button");
+                Button gateButton = FindButton(hostObject, "region_001_node_003_Button");
+
+                Assert.That(eliteButton.interactable, Is.True);
+                Assert.That(serviceButton.interactable, Is.True);
+                Assert.That(gateButton.interactable, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
             }
         }
     }
