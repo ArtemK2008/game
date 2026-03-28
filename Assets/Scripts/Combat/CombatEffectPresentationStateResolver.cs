@@ -8,15 +8,16 @@ namespace Survivalon.Combat
     /// </summary>
     public sealed class CombatEffectPresentationStateResolver
     {
+        private const float HealthEpsilon = 0.001f;
+        private const float TimerResetEpsilon = 0.0001f;
+        private const float LowHealthDangerThresholdRatio = 0.35f;
+
         private CombatEffectSpriteRegistry spriteRegistry;
-        private readonly CombatFeedbackSoundStateResolver feedbackSoundStateResolver;
 
         public CombatEffectPresentationStateResolver(
-            CombatEffectSpriteRegistry spriteRegistry = null,
-            CombatFeedbackSoundStateResolver feedbackSoundStateResolver = null)
+            CombatEffectSpriteRegistry spriteRegistry = null)
         {
             this.spriteRegistry = spriteRegistry;
-            this.feedbackSoundStateResolver = feedbackSoundStateResolver ?? new CombatFeedbackSoundStateResolver();
         }
 
         public CombatEffectPresentationState Resolve(
@@ -28,30 +29,36 @@ namespace Survivalon.Combat
                 return CombatEffectPresentationState.None;
             }
 
-            CombatFeedbackSoundState feedbackSoundState = feedbackSoundStateResolver.Resolve(
-                previousSnapshot,
-                currentSnapshot);
-
-            bool shouldShowPlayerDefeat = feedbackSoundState.ShouldPlayPlayerDefeat;
-            bool shouldShowEnemyDefeat = feedbackSoundState.ShouldPlayEnemyDefeat;
+            bool didEnemyTakeDamage = currentSnapshot.EnemyCurrentHealth + HealthEpsilon <
+                previousSnapshot.EnemyCurrentHealth;
+            bool didPlayerTakeDamage = currentSnapshot.PlayerCurrentHealth + HealthEpsilon <
+                previousSnapshot.PlayerCurrentHealth;
+            bool shouldShowBurstStrike = didEnemyTakeDamage && HasBurstStrike(previousSnapshot, currentSnapshot) &&
+                DidTimerReset(
+                    previousSnapshot.PlayerTriggeredActiveSkillTimerSeconds,
+                    currentSnapshot.PlayerTriggeredActiveSkillTimerSeconds);
+            bool shouldShowPlayerDefeat = previousSnapshot.PlayerIsAlive && !currentSnapshot.PlayerIsAlive;
+            bool shouldShowEnemyDefeat = previousSnapshot.EnemyIsAlive && !currentSnapshot.EnemyIsAlive;
+            bool shouldShowDangerLowHealth = !shouldShowPlayerDefeat &&
+                previousSnapshot.PlayerHealthRatio > LowHealthDangerThresholdRatio &&
+                currentSnapshot.PlayerHealthRatio <= LowHealthDangerThresholdRatio &&
+                currentSnapshot.PlayerIsAlive;
 
             Sprite playerEffectSprite = shouldShowPlayerDefeat
                 ? ResolveRequiredSprite(CombatEffectVisualId.Defeat)
-                : ResolveOptionalSideImpactSprite(
-                    feedbackSoundState.ShouldPlayEnemyAttack || feedbackSoundState.ShouldPlayPlayerHit);
+                : ResolveOptionalSideImpactSprite(didPlayerTakeDamage);
             Sprite enemyEffectSprite = shouldShowEnemyDefeat
                 ? ResolveRequiredSprite(CombatEffectVisualId.Defeat)
-                : ResolveOptionalSideImpactSprite(
-                    feedbackSoundState.ShouldPlayPlayerAttack || feedbackSoundState.ShouldPlayEnemyHit);
+                : ResolveOptionalSideImpactSprite(didEnemyTakeDamage && !shouldShowBurstStrike);
 
             Sprite centerEffectSprite = null;
             if (!shouldShowPlayerDefeat && !shouldShowEnemyDefeat)
             {
-                if (feedbackSoundState.ShouldPlayBurstStrike)
+                if (shouldShowBurstStrike)
                 {
                     centerEffectSprite = ResolveRequiredSprite(CombatEffectVisualId.BurstStrike);
                 }
-                else if (feedbackSoundState.ShouldPlayDangerLowHealth)
+                else if (shouldShowDangerLowHealth)
                 {
                     centerEffectSprite = ResolveRequiredSprite(CombatEffectVisualId.DangerPulse);
                 }
@@ -68,6 +75,30 @@ namespace Survivalon.Combat
             return shouldShowImpact
                 ? ResolveRequiredSprite(CombatEffectVisualId.BasicImpact)
                 : null;
+        }
+
+        private static bool HasBurstStrike(
+            CombatFeedbackSnapshot previousSnapshot,
+            CombatFeedbackSnapshot currentSnapshot)
+        {
+            return string.Equals(
+                    previousSnapshot.PlayerTriggeredActiveSkillId,
+                    CombatSkillCatalog.BurstStrike.SkillId,
+                    StringComparison.Ordinal) ||
+                string.Equals(
+                    currentSnapshot.PlayerTriggeredActiveSkillId,
+                    CombatSkillCatalog.BurstStrike.SkillId,
+                    StringComparison.Ordinal);
+        }
+
+        private static bool DidTimerReset(float previousTimerSeconds, float currentTimerSeconds)
+        {
+            if (float.IsPositiveInfinity(previousTimerSeconds) || float.IsPositiveInfinity(currentTimerSeconds))
+            {
+                return false;
+            }
+
+            return currentTimerSeconds > previousTimerSeconds + TimerResetEpsilon;
         }
 
         private Sprite ResolveRequiredSprite(CombatEffectVisualId effectVisualId)
