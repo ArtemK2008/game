@@ -407,3 +407,11 @@ This spec does not define:
 - [ ] Repeated farming remains sonically tolerable.
 - [ ] Audio supports world/location identity at least at a basic level.
 - [ ] The sys
+
+## Current audio asset source of truth
+Exact currently available shipped audio files and paths are tracked in:
+
+`specs/09_presentation/audio_asset_manifest.json`
+
+Implementation milestones that add or wire audio must use that manifest as the source of truth for available assets and exact repository paths.
+If a required asset is missing from the manifest, implementation should request it clearly instead of inventing filenames or placeholder assets unless the milestone explicitly allows placeholders.
