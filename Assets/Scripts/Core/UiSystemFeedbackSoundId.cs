@@ -1,7 +1,7 @@
 namespace Survivalon.Core
 {
     /// <summary>
-    /// РџРµСЂРµС‡РёСЃР»СЏРµС‚ Р±Р°Р·РѕРІС‹Рµ UI/system feedback-Р·РІСѓРєРё РґР»СЏ С‚РµРєСѓС‰РµРіРѕ prototype.
+    /// Перечисляет базовые UI/system feedback-звуки для текущего прототипа.
     /// </summary>
     public enum UiSystemFeedbackSoundId
     {

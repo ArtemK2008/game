@@ -5,7 +5,7 @@ using Survivalon.World;
 namespace Survivalon.Run
 {
     /// <summary>
-    /// Р Р°Р·СЂРµС€Р°РµС‚, РЅСѓР¶РЅРѕ Р»Рё РІРѕСЃРїСЂРѕРёР·РІРµСЃС‚Рё unlock/boss-clear feedback РІ РјРѕРјРµРЅС‚ РїРѕРєР°Р·Р° post-run.
+    /// Разрешает, нужно ли воспроизводить unlock/boss-clear feedback в момент показа post-run.
     /// </summary>
     public sealed class PostRunFeedbackSoundStateResolver
     {
