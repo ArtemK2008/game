@@ -17,8 +17,8 @@
 - Wired baseline combat SFX into the live placeholder combat flow only:
   - player basic attack
   - enemy basic attack
-  - player hit
-  - enemy hit
+  - player hit fallback for damage transitions not already covered by the paired attack cue
+  - enemy hit fallback for damage transitions not already covered by the paired attack or `Burst Strike` cue
   - enemy defeat
   - player defeat
   - low-health danger feedback
