@@ -24,6 +24,14 @@ namespace Survivalon.Combat
                 previousSnapshot.EnemyCurrentHealth;
             bool didPlayerTakeDamage = currentSnapshot.PlayerCurrentHealth + HealthEpsilon <
                 previousSnapshot.PlayerCurrentHealth;
+            bool didPlayerBasicAttack = didEnemyTakeDamage &&
+                DidTimerReset(
+                    previousSnapshot.PlayerBaselineAttackTimerSeconds,
+                    currentSnapshot.PlayerBaselineAttackTimerSeconds);
+            bool didEnemyBasicAttack = didPlayerTakeDamage &&
+                DidTimerReset(
+                    previousSnapshot.EnemyBaselineAttackTimerSeconds,
+                    currentSnapshot.EnemyBaselineAttackTimerSeconds);
             bool playerHasBurstStrike = HasBurstStrike(previousSnapshot) || HasBurstStrike(currentSnapshot);
             bool shouldPlayBurstStrike = didEnemyTakeDamage &&
                 playerHasBurstStrike &&
@@ -34,10 +42,10 @@ namespace Survivalon.Combat
             bool shouldPlayPlayerDefeat = previousSnapshot.PlayerIsAlive && !currentSnapshot.PlayerIsAlive;
 
             return new CombatFeedbackSoundState(
-                shouldPlayPlayerAttack: didEnemyTakeDamage && !shouldPlayBurstStrike,
-                shouldPlayEnemyAttack: didPlayerTakeDamage,
-                shouldPlayPlayerHit: didPlayerTakeDamage,
-                shouldPlayEnemyHit: didEnemyTakeDamage,
+                shouldPlayPlayerAttack: didPlayerBasicAttack && !shouldPlayBurstStrike,
+                shouldPlayEnemyAttack: didEnemyBasicAttack,
+                shouldPlayPlayerHit: didPlayerTakeDamage && !didEnemyBasicAttack,
+                shouldPlayEnemyHit: didEnemyTakeDamage && !shouldPlayBurstStrike && !didPlayerBasicAttack,
                 shouldPlayEnemyDefeat: shouldPlayEnemyDefeat,
                 shouldPlayPlayerDefeat: shouldPlayPlayerDefeat,
                 shouldPlayDangerLowHealth: !shouldPlayPlayerDefeat &&

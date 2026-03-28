@@ -31,6 +31,56 @@ namespace Survivalon.Tests.EditMode.Combat
 
             Assert.That(soundState.ShouldPlayBurstStrike, Is.True);
             Assert.That(soundState.ShouldPlayPlayerAttack, Is.False);
+            Assert.That(soundState.ShouldPlayEnemyHit, Is.False);
+        }
+
+        [Test]
+        public void Resolve_ShouldPreferAttackCueOverHitCueForBasicAttackTransitions()
+        {
+            CombatFeedbackSoundStateResolver resolver = new CombatFeedbackSoundStateResolver();
+            CombatFeedbackSnapshot previousSnapshot = CreateSnapshot(
+                playerCurrentHealth: 120f,
+                enemyCurrentHealth: 75f,
+                playerBaselineAttackTimerSeconds: 0.05f,
+                enemyBaselineAttackTimerSeconds: 0.10f,
+                playerTriggeredActiveSkillTimerSeconds: float.PositiveInfinity);
+            CombatFeedbackSnapshot currentSnapshot = CreateSnapshot(
+                playerCurrentHealth: 108f,
+                enemyCurrentHealth: 61f,
+                playerBaselineAttackTimerSeconds: 1.20f,
+                enemyBaselineAttackTimerSeconds: 1.35f,
+                playerTriggeredActiveSkillTimerSeconds: float.PositiveInfinity);
+
+            CombatFeedbackSoundState soundState = resolver.Resolve(previousSnapshot, currentSnapshot);
+
+            Assert.That(soundState.ShouldPlayPlayerAttack, Is.True);
+            Assert.That(soundState.ShouldPlayEnemyAttack, Is.True);
+            Assert.That(soundState.ShouldPlayPlayerHit, Is.False);
+            Assert.That(soundState.ShouldPlayEnemyHit, Is.False);
+        }
+
+        [Test]
+        public void Resolve_ShouldKeepHitCueWhenDamageHasNoMatchingAttackReset()
+        {
+            CombatFeedbackSoundStateResolver resolver = new CombatFeedbackSoundStateResolver();
+            CombatFeedbackSnapshot previousSnapshot = CreateSnapshot(
+                playerCurrentHealth: 120f,
+                enemyCurrentHealth: 75f,
+                playerBaselineAttackTimerSeconds: 0.80f,
+                enemyBaselineAttackTimerSeconds: 0.90f,
+                playerTriggeredActiveSkillTimerSeconds: float.PositiveInfinity);
+            CombatFeedbackSnapshot currentSnapshot = CreateSnapshot(
+                playerCurrentHealth: 108f,
+                enemyCurrentHealth: 61f,
+                playerBaselineAttackTimerSeconds: 0.55f,
+                enemyBaselineAttackTimerSeconds: 0.60f,
+                playerTriggeredActiveSkillTimerSeconds: float.PositiveInfinity);
+
+            CombatFeedbackSoundState soundState = resolver.Resolve(previousSnapshot, currentSnapshot);
+
+            Assert.That(soundState.ShouldPlayPlayerAttack, Is.False);
+            Assert.That(soundState.ShouldPlayEnemyAttack, Is.False);
+            Assert.That(soundState.ShouldPlayPlayerHit, Is.True);
             Assert.That(soundState.ShouldPlayEnemyHit, Is.True);
         }
 
@@ -92,7 +142,7 @@ namespace Survivalon.Tests.EditMode.Combat
             CombatFeedbackSoundState soundState = resolver.Resolve(previousSnapshot, currentSnapshot);
 
             Assert.That(soundState.ShouldPlayEnemyAttack, Is.True);
-            Assert.That(soundState.ShouldPlayPlayerHit, Is.True);
+            Assert.That(soundState.ShouldPlayPlayerHit, Is.False);
             Assert.That(soundState.ShouldPlayPlayerDefeat, Is.True);
             Assert.That(soundState.ShouldPlayDangerLowHealth, Is.False);
         }

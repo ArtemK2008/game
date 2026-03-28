@@ -257,8 +257,8 @@ namespace Survivalon.Tests.EditMode.World
 
                 Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.PlayerAttack));
                 Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.EnemyAttack));
-                Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.PlayerHit));
-                Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.EnemyHit));
+                Assert.That(requestedSounds, Has.No.Member(CombatFeedbackSoundId.PlayerHit));
+                Assert.That(requestedSounds, Has.No.Member(CombatFeedbackSoundId.EnemyHit));
                 Assert.That(requestedSounds, Has.No.Member(CombatFeedbackSoundId.DangerLowHealth));
             }
             finally

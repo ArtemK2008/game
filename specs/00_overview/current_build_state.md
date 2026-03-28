@@ -400,8 +400,8 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The currently wired combat feedback set includes:
   - player basic attack
   - enemy basic attack
-  - player hit
-  - enemy hit
+  - player hit fallback when damage is not already represented by a same-tick enemy attack cue
+  - enemy hit fallback when damage is not already represented by a same-tick player attack or `Burst Strike` cue
   - enemy defeat
   - player defeat
   - one non-looping low-health danger cue
