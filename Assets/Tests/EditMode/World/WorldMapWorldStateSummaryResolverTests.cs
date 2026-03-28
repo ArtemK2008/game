@@ -28,16 +28,18 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(summary.CurrentNode.NodeId, Is.EqualTo(BootstrapWorldScenario.ForestPushNodeId));
             Assert.That(summary.CurrentNode.DisplayName, Is.EqualTo("Raider Trail"));
             Assert.That(summary.CurrentNodeState, Is.EqualTo(NodeState.InProgress));
-            Assert.That(summary.SelectableDestinationCount, Is.EqualTo(3));
+            Assert.That(summary.SelectableDestinationCount, Is.EqualTo(4));
             Assert.That(ExtractNodeIds(summary.ForwardRouteNodes), Is.EqualTo(new[]
             {
                 BootstrapWorldScenario.CavernServiceNodeId,
                 BootstrapWorldScenario.ForestFarmNodeId,
+                BootstrapWorldScenario.ForestEliteNodeId,
             }));
             Assert.That(ExtractDisplayNames(summary.ForwardRouteNodes), Is.EqualTo(new[]
             {
                 "Cavern Service Hub",
                 "Forest Farm",
+                "Raider Holdout",
             }));
             Assert.That(ExtractNodeIds(summary.BacktrackRouteNodes), Is.EqualTo(new[]
             {

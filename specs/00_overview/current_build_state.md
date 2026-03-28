@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 085**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 086**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -58,6 +58,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - completed ordinary combat nodes are marked as `Farm-ready`
   - boss/gate and service/progression nodes are not marked farm-ready by this rule
   - the rule is derived from current node type plus persistent completed state rather than a new authored farming taxonomy
+- The shipped bootstrap world now also has one explicit optional elite/challenge side path:
+  - `Raider Holdout` branches off the current forest push node as an ordinary combat side destination
+  - it is surfaced explicitly as `Elite challenge` in current world-map and node-entry readability
+  - it is not required for the current service hub, forest gate unlock, or cavern gate progression
 - The same world-map entry action now also supports one low-friction repeat path only after an explicit in-session return to the world map:
   - after `post-run -> return to world` or `town/service -> return to world`, the existing entry button temporarily becomes a one-click `Replay <current combat node>` or `Return to <current service node>` action
   - ordinary startup/load into the world map, safe resume, and first world-map entry do not show that shortcut
@@ -245,6 +249,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Granted region material is applied into persistent resource balances during run resolution and is now autosaved as soon as the resolved post-run boundary is entered, before any later return-to-world or stop action.
 - The current post-run summary aggregates the region-material reward alongside soft currency when both are granted.
 - Reward/source presentation is now location-aware in the shipped bootstrap content, so the current post-run flow names the reward source based on the entered location identity rather than showing only generic reward text.
+- The shipped optional `Raider Holdout` elite side path now also uses the same ordinary reward seam with one modest authored yield bump, so that run currently pays `Region material x3` without becoming a boss- or milestone-style reward spike.
 - In the current shipped loop, that means earlier frontier farming now has one explicit lasting-value path after deeper progression opens:
   - replay the frontier farm node for higher region material
   - refine region material into persistent progression material in town

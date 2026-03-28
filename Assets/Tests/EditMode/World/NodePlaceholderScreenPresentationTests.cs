@@ -110,6 +110,17 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void BuildCombatContextSummaryText_ShouldShowEliteChallengeLabelForOptionalChallengeNode()
+        {
+            string summaryText = NodePlaceholderScreenTextBuilder.BuildCombatContextSummaryText(
+                NodePlaceholderTestData.CreateEliteChallengePlaceholderState());
+
+            Assert.That(summaryText, Is.EqualTo(
+                "Location: Verdant Frontier\n" +
+                "Encounter: Elite challenge"));
+        }
+
+        [Test]
         public void BuildStatusText_ShouldMatchNonCombatLifecycleTexts()
         {
             NodePlaceholderState serviceState = NodePlaceholderTestData.CreateServicePlaceholderState();

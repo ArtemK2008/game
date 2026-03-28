@@ -17,8 +17,9 @@ namespace Survivalon.Tests.EditMode.World
 
             IReadOnlyList<NodeId> forwardSelectableNodeIds = controller.GetForwardSelectableNodeIds();
 
-            Assert.That(forwardSelectableNodeIds.Count, Is.EqualTo(2));
+            Assert.That(forwardSelectableNodeIds.Count, Is.EqualTo(3));
             Assert.That(forwardSelectableNodeIds, Has.Member(new NodeId("region_001_node_004")));
+            Assert.That(forwardSelectableNodeIds, Has.Member(new NodeId("region_001_node_006")));
             Assert.That(forwardSelectableNodeIds, Has.Member(new NodeId("region_002_node_001")));
         }
 

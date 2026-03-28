@@ -17,6 +17,10 @@ namespace Survivalon.Tests.EditMode.World
             new BossRewardContentDefinition(1);
         private static readonly RegionMaterialYieldContentDefinition FrontierFarmYieldContent =
             new RegionMaterialYieldContentDefinition(1);
+        private static readonly RegionMaterialYieldContentDefinition ForestEliteYieldContent =
+            new RegionMaterialYieldContentDefinition(2);
+        private static readonly OptionalChallengeContentDefinition ForestEliteChallengeContent =
+            new OptionalChallengeContentDefinition("Elite challenge");
 
         public static NodePlaceholderState CreateServicePlaceholderState()
         {
@@ -85,6 +89,22 @@ namespace Survivalon.Tests.EditMode.World
                 locationIdentity: LocationIdentityCatalog.VerdantFrontier,
                 bossRewardContent: ForestGateBossRewardContent,
                 nodeDisplayName: "Frontier Gate");
+        }
+
+        public static NodePlaceholderState CreateEliteChallengePlaceholderState()
+        {
+            return new NodePlaceholderState(
+                BootstrapWorldScenario.ForestEliteNodeId,
+                BootstrapWorldScenario.ForestRegionId,
+                NodeType.Combat,
+                NodeState.Available,
+                BootstrapWorldScenario.ForestPushNodeId,
+                CombatStandardEncounterCatalog.BulwarkRaiderEncounter,
+                locationIdentity: LocationIdentityCatalog.VerdantFrontier,
+                regionMaterialYieldContent: ForestEliteYieldContent,
+                optionalChallengeContent: ForestEliteChallengeContent,
+                supportsRegionMaterialRewards: true,
+                nodeDisplayName: "Raider Holdout");
         }
 
         public static NodePlaceholderState CreateForestGateBossPlaceholderState()

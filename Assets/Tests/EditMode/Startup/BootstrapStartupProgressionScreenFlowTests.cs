@@ -413,6 +413,45 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldResolveOptionalEliteChallengeRunWithoutUnlockingMainBossRoute()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_006_Button");
+
+                Assert.That(ContainsText(hostObject, "Raider Holdout"), Is.True);
+                Assert.That(ContainsText(hostObject, "Encounter: Elite challenge"), Is.True);
+
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Ordinary rewards: Soft currency x1, Region material x3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Clear spike rewards:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Boss spike rewards:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Boss gear rewards:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Unlock outcomes:"), Is.False);
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+
+                Button gateNodeButton = FindButton(hostObject, "region_001_node_003_Button");
+                Button pushNodeButton = FindButton(hostObject, "region_001_node_002_Button");
+
+                Assert.That(gateNodeButton.interactable, Is.False);
+                Assert.That(pushNodeButton.interactable, Is.True);
+                Assert.That(ContainsText(hostObject, "Current: Raider Holdout"), Is.True);
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(3));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldGrantHigherBossProgressionRewardAtCavernGateThanForestGate()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");

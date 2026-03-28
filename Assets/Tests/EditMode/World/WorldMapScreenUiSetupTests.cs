@@ -152,6 +152,29 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldDisplayEliteChallengeMarkerForOptionalSidePath()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                Assert.That(ContainsText(hostObject, "Raider Holdout"), Is.True);
+                Assert.That(ContainsText(hostObject, "State: Available | Elite challenge"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldEnableReplayShortcutForFarmReadyCurrentCombatNodeWhenFarmReplayProjectIsPurchased()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
@@ -259,7 +282,7 @@ namespace Survivalon.Tests.EditMode.World
                         containsStateLabel = true;
                     }
 
-                    if (label.text.Contains("Forward: Cavern Service Hub, Forest Farm"))
+                    if (label.text.Contains("Forward: Cavern Service Hub, Forest Farm, Raider Holdout"))
                     {
                         containsForwardRouteSummary = true;
                     }
