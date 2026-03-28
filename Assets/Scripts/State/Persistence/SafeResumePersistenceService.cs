@@ -46,12 +46,19 @@ namespace Survivalon.State.Persistence
 
         public void SaveResolvedWorldContext(PersistentGameState gameState)
         {
-            SaveResolvedSafeContext(gameState, SafeResumeTargetType.WorldMap);
+            SaveResolvedContext(gameState, SafeResumeTargetType.WorldMap);
         }
 
         public void SaveResolvedTownServiceContext(PersistentGameState gameState)
         {
-            SaveResolvedSafeContext(gameState, SafeResumeTargetType.TownService);
+            SaveResolvedContext(gameState, SafeResumeTargetType.TownService);
+        }
+
+        public void SaveResolvedContext(
+            PersistentGameState gameState,
+            SafeResumeTargetType targetType)
+        {
+            SaveResolvedSafeContext(gameState, targetType);
         }
 
         private static NodeId ResolveResumeNodeId(PersistentWorldState worldState)

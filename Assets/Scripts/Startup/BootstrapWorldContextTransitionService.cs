@@ -93,13 +93,7 @@ namespace Survivalon.Startup
                 sessionContext.ConsumeReturnToWorldReentryOffer();
             }
 
-            if (safeResumeTargetType == SafeResumeTargetType.TownService)
-            {
-                persistenceService.SaveResolvedTownServiceContext(gameState);
-                return;
-            }
-
-            persistenceService.SaveResolvedWorldContext(gameState);
+            persistenceService.SaveResolvedContext(gameState, safeResumeTargetType);
         }
     }
 }

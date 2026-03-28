@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Survivalon.Combat;
@@ -269,18 +270,29 @@ namespace Survivalon.Startup
 
         private bool TryResumeTownServiceContext(NodeId nodeId)
         {
-            if (!nodeEntryFlowController.TryEnterNode(nodeId, out NodePlaceholderState placeholderState))
+            try
+            {
+                if (!nodeEntryFlowController.TryEnterNode(nodeId, out NodePlaceholderState placeholderState))
+                {
+                    return false;
+                }
+
+                if (placeholderState.TownServiceContext == null)
+                {
+                    return false;
+                }
+
+                ShowEnteredNodeContext(placeholderState);
+                return true;
+            }
+            catch (InvalidOperationException)
             {
                 return false;
             }
-
-            if (placeholderState.TownServiceContext == null)
+            catch (KeyNotFoundException)
             {
                 return false;
             }
-
-            ShowEnteredNodeContext(placeholderState);
-            return true;
         }
 
         private StartupPlaceholderView EnsurePlaceholderView()
