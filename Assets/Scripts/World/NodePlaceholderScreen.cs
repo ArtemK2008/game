@@ -49,6 +49,7 @@ namespace Survivalon.World
         private Action<RunResult> onReturnToWorldRequested;
         private Action<RunResult> onStopSessionRequested;
         private Action onResolvedPostRunBoundaryReached;
+        private Action<MusicContextId> onMusicContextRequested;
         private Action<UiSystemFeedbackSoundId> onFeedbackSoundRequested;
         private Action<CombatFeedbackSoundId> onCombatFeedbackSoundRequested;
         private CombatFeedbackSnapshot lastCombatFeedbackSnapshot;
@@ -60,6 +61,7 @@ namespace Survivalon.World
             Action<RunResult> stopSessionRequested = null,
             RunPersistentContext persistentContext = null,
             Action resolvedPostRunBoundaryReached = null,
+            Action<MusicContextId> musicContextRequested = null,
             Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null,
             Action<CombatFeedbackSoundId> combatFeedbackSoundRequested = null)
         {
@@ -80,6 +82,7 @@ namespace Survivalon.World
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
             onResolvedPostRunBoundaryReached = resolvedPostRunBoundaryReached;
+            onMusicContextRequested = musicContextRequested;
             onFeedbackSoundRequested = feedbackSoundRequested;
             onCombatFeedbackSoundRequested = combatFeedbackSoundRequested;
             gameObject.name = "NodePlaceholderScreen";
@@ -98,6 +101,7 @@ namespace Survivalon.World
             bool usesCompactCombatHeader = NodePlaceholderScreenStateResolver.ShouldUseCompactCombatHeader(placeholderState);
             float compactSummaryHeight = NodePlaceholderScreenStateResolver.ResolveCompactCombatHeaderSummaryHeight(
                 placeholderState);
+            RequestMusicContext();
             titleText.text = NodePlaceholderScreenTextBuilder.BuildTitleText(placeholderState);
             summaryText.text = usesCompactCombatHeader
                 ? NodePlaceholderScreenTextBuilder.BuildCombatContextSummaryText(placeholderState)
@@ -707,6 +711,19 @@ namespace Survivalon.World
             {
                 onFeedbackSoundRequested(UiSystemFeedbackSoundId.StateUnlock);
             }
+        }
+
+        private void RequestMusicContext()
+        {
+            if (onMusicContextRequested == null || runLifecycleController == null)
+            {
+                return;
+            }
+
+            bool isCombatShellVisible = NodePlaceholderScreenStateResolver.ShouldShowCombatShell(
+                runLifecycleController.CurrentState,
+                runLifecycleController.HasCombatEncounterState);
+            onMusicContextRequested(MusicContextResolver.ResolveForCombatShell(isCombatShellVisible));
         }
 
         private void RequestCombatFeedback(

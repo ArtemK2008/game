@@ -5,8 +5,10 @@
     "wiredInCurrentRuntime reflects actual current code hookup, not just committed availability.",
     "The currently wired UI/system feedback subset is resolved through Assets/Resources/UiSystemFeedbackAudioClipRegistry.asset.",
     "The currently wired combat feedback subset is resolved through Assets/Resources/CombatFeedbackAudioClipRegistry.asset.",
+    "The currently wired music subset is resolved through Assets/Resources/MusicAudioClipRegistry.asset.",
     "UiSystemFeedbackAudioHost no longer resolves clip paths directly; it caches clip references from that runtime-safe registry asset.",
     "CombatFeedbackAudioHost uses the same runtime-safe registry pattern for baseline combat SFX.",
+    "MusicAudioHost uses the same runtime-safe registry pattern for the current calm/gameplay context split.",
     "Broader committed combat/system/music clips may exist here without being wired into runtime yet.",
     "Non-audio repository placeholders such as Assets/Audio/placeholder.txt are intentionally excluded."
   ],
@@ -54,12 +56,12 @@
     {
       "path": "Assets/Audio/Music/music_calm_loop.wav",
       "category": "music",
-      "wiredInCurrentRuntime": false
+      "wiredInCurrentRuntime": true
     },
     {
       "path": "Assets/Audio/Music/music_gameplay_loop.wav",
       "category": "music",
-      "wiredInCurrentRuntime": false
+      "wiredInCurrentRuntime": true
     },
     {
       "path": "Assets/Audio/System/state_boss_clear.wav",

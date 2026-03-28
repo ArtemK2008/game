@@ -23,6 +23,7 @@ namespace Survivalon.Startup
         private SessionContextState sessionContext;
         private UiSystemFeedbackAudioHost feedbackAudioHost;
         private CombatFeedbackAudioHost combatFeedbackAudioHost;
+        private MusicAudioHost musicAudioHost;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
@@ -43,6 +44,7 @@ namespace Survivalon.Startup
             sessionContext = startupState.SessionContext;
             feedbackAudioHost = EnsureUiSystemFeedbackAudioHost();
             combatFeedbackAudioHost = EnsureCombatFeedbackAudioHost();
+            musicAudioHost = EnsureMusicAudioHost();
 
             ShowStartupEntryTarget(startupState.EntryTarget);
             Debug.Log($"Bootstrap startup flow entered {startupState.EntryTarget}.");
@@ -50,6 +52,7 @@ namespace Survivalon.Startup
 
         private void ShowWorldMap()
         {
+            musicAudioHost.SetContext(MusicContextId.Calm);
             SetOptionalScreenActive(FindOptionalScreen<StartupPlaceholderView>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<TownServiceScreen>(), false);
@@ -82,12 +85,14 @@ namespace Survivalon.Startup
                 HandleStopSessionRequested,
                 RunPersistentContext.FromGameState(gameState),
                 HandleResolvedPostRunBoundaryReached,
+                musicAudioHost.SetContext,
                 feedbackAudioHost.TryPlay,
                 combatFeedbackAudioHost.TryPlay);
         }
 
         private void ShowTownServiceScreen(NodePlaceholderState placeholderState)
         {
+            musicAudioHost.SetContext(MusicContextId.Calm);
             SetOptionalScreenActive(FindOptionalScreen<StartupPlaceholderView>(), false);
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
@@ -187,6 +192,7 @@ namespace Survivalon.Startup
                 return;
             }
 
+            musicAudioHost.SetContext(MusicContextId.Calm);
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<TownServiceScreen>(), false);
@@ -278,6 +284,19 @@ namespace Survivalon.Startup
             GameObject feedbackAudioObject = new GameObject("CombatFeedbackAudioHost");
             feedbackAudioObject.transform.SetParent(transform, false);
             return feedbackAudioObject.AddComponent<CombatFeedbackAudioHost>();
+        }
+
+        private MusicAudioHost EnsureMusicAudioHost()
+        {
+            MusicAudioHost existingMusicAudioHost = GetComponentInChildren<MusicAudioHost>(true);
+            if (existingMusicAudioHost != null)
+            {
+                return existingMusicAudioHost;
+            }
+
+            GameObject musicAudioObject = new GameObject("MusicAudioHost");
+            musicAudioObject.transform.SetParent(transform, false);
+            return musicAudioObject.AddComponent<MusicAudioHost>();
         }
 
         private static void SetOptionalScreenActive(Component component, bool isActive)

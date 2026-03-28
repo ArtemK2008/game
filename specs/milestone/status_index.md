@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 089
+Current next implementation target: Milestone 090
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -114,6 +114,7 @@ id | type | title | status | depends on / note
 086 | feature | Add one optional challenge/elite path if the core gate-boss works | completed | phase 21
 087 | feature | Implement basic UI/system feedback sounds | completed | phase 22
 088 | feature | Implement readable combat SFX baseline | completed | phase 22
+089 | feature | Implement basic music context split | completed | phase 22
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note
