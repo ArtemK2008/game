@@ -1,20 +1,41 @@
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace Survivalon.Core
 {
     /// <summary>
-    /// РџСЂРѕРёРіСЂС‹РІР°РµС‚ Р±Р°Р·РѕРІС‹Рµ UI/system feedback-Р·РІСѓРєРё Рё Р±РµР·РѕРїР°СЃРЅРѕ РјРѕР»С‡РёС‚, РµСЃР»Рё РєР»РёРїС‹ РЅРµ РґРѕСЃС‚СѓРїРЅС‹.
+    /// Проигрывает базовые UI/system feedback-звуки через runtime-safe registry и молчит, если клипы недоступны.
     /// </summary>
     public sealed class UiSystemFeedbackAudioHost : MonoBehaviour
     {
         private readonly AudioClip[] cachedClips = new AudioClip[5];
         private AudioSource audioSource;
+        private bool isInitialized;
 
         private void Awake()
         {
+            EnsureInitialized();
+        }
+
+        public void TryPlay(UiSystemFeedbackSoundId soundId)
+        {
+            EnsureInitialized();
+
+            AudioClip clip = cachedClips[(int)soundId];
+            if (clip == null)
+            {
+                return;
+            }
+
+            audioSource.PlayOneShot(clip);
+        }
+
+        private void EnsureInitialized()
+        {
+            if (isInitialized)
+            {
+                return;
+            }
+
             audioSource = RuntimeUiSupport.GetOrAddComponent<AudioSource>(gameObject);
             audioSource.playOnAwake = false;
             audioSource.loop = false;
@@ -25,56 +46,20 @@ namespace Survivalon.Core
             CacheClip(UiSystemFeedbackSoundId.UiError);
             CacheClip(UiSystemFeedbackSoundId.StateUnlock);
             CacheClip(UiSystemFeedbackSoundId.StateBossClear);
-        }
 
-        public void TryPlay(UiSystemFeedbackSoundId soundId)
-        {
-            AudioClip clip = cachedClips[(int)soundId];
-            if (clip == null)
-            {
-                return;
-            }
-
-            audioSource.PlayOneShot(clip);
+            isInitialized = true;
         }
 
         private void CacheClip(UiSystemFeedbackSoundId soundId)
         {
-            cachedClips[(int)soundId] = LoadClip(soundId);
-        }
-
-        private static AudioClip LoadClip(UiSystemFeedbackSoundId soundId)
-        {
-#if UNITY_EDITOR
-            string assetPath = ResolveAssetPath(soundId);
-            if (string.IsNullOrWhiteSpace(assetPath))
+            UiSystemFeedbackAudioClipRegistry clipRegistry = UiSystemFeedbackAudioClipRegistry.LoadOrNull();
+            if (clipRegistry == null || !clipRegistry.TryGetClip(soundId, out AudioClip clip))
             {
-                return null;
+                cachedClips[(int)soundId] = null;
+                return;
             }
 
-            return AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
-#else
-            return null;
-#endif
-        }
-
-        private static string ResolveAssetPath(UiSystemFeedbackSoundId soundId)
-        {
-            switch (soundId)
-            {
-                case UiSystemFeedbackSoundId.UiClick:
-                    return "Assets/Audio/UI/ui_click.wav";
-                case UiSystemFeedbackSoundId.UiConfirm:
-                    return "Assets/Audio/UI/ui_confirm.wav";
-                case UiSystemFeedbackSoundId.UiError:
-                    return "Assets/Audio/UI/ui_error.wav";
-                case UiSystemFeedbackSoundId.StateUnlock:
-                    return "Assets/Audio/System/state_unlock.wav";
-                case UiSystemFeedbackSoundId.StateBossClear:
-                    return "Assets/Audio/System/state_boss_clear.wav";
-                default:
-                    return null;
-            }
+            cachedClips[(int)soundId] = clip;
         }
     }
 }
