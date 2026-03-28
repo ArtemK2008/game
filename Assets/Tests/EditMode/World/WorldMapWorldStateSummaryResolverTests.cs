@@ -74,6 +74,53 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(summary.BlockedLinkedNodes, Is.Empty);
         }
 
+        [Test]
+        public void ShouldResolveDeeperCavernForwardRoutesFromServiceContext()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeAccessResolver nodeAccessResolver = new WorldNodeAccessResolver();
+            WorldMapWorldStateSummaryResolver resolver = new WorldMapWorldStateSummaryResolver();
+
+            worldState.SetCurrentNode(BootstrapWorldScenario.CavernServiceNodeId);
+            worldState.SetLastSafeNode(BootstrapWorldScenario.ForestPushNodeId);
+            worldState.ReplaceReachableNodes(new[]
+            {
+                BootstrapWorldScenario.ForestEntryNodeId,
+                BootstrapWorldScenario.ForestPushNodeId,
+            });
+
+            WorldMapWorldStateSummary summary = resolver.Resolve(
+                worldGraph,
+                worldState,
+                worldState.CurrentNodeId,
+                ToNodeIdSet(nodeAccessResolver.GetEnterableNodes(worldGraph, worldState)),
+                ToNodeIdSet(nodeAccessResolver.GetPathEnterableNodes(worldGraph, worldState)),
+                ToNodeIdSet(nodeAccessResolver.GetForwardEnterableNodes(worldGraph, worldState)));
+
+            Assert.That(summary.CurrentLocationDisplayName, Is.EqualTo("Echo Caverns"));
+            Assert.That(summary.CurrentNode.NodeId, Is.EqualTo(BootstrapWorldScenario.CavernServiceNodeId));
+            Assert.That(summary.CurrentNode.DisplayName, Is.EqualTo("Cavern Service Hub"));
+            Assert.That(summary.SelectableDestinationCount, Is.EqualTo(4));
+            Assert.That(ExtractNodeIds(summary.ForwardRouteNodes), Is.EqualTo(new[]
+            {
+                BootstrapWorldScenario.CavernPushNodeId,
+                BootstrapWorldScenario.CavernFarmNodeId,
+            }));
+            Assert.That(ExtractDisplayNames(summary.ForwardRouteNodes), Is.EqualTo(new[]
+            {
+                "Echo Approach",
+                "Relic Cache",
+            }));
+            Assert.That(ExtractNodeIds(summary.BacktrackRouteNodes), Is.EqualTo(new[]
+            {
+                BootstrapWorldScenario.ForestEntryNodeId,
+                BootstrapWorldScenario.ForestPushNodeId,
+            }));
+            Assert.That(summary.ReplayableFarmNodes, Is.Empty);
+            Assert.That(summary.BlockedLinkedNodes, Is.Empty);
+        }
+
         private static HashSet<NodeId> ToNodeIdSet(IReadOnlyList<WorldNode> nodes)
         {
             HashSet<NodeId> nodeIds = new HashSet<NodeId>();

@@ -66,6 +66,27 @@ namespace Survivalon.World
                     townServiceContext: TownServiceContextCatalog.CavernServiceHub,
                     displayName: "Cavern Service Hub"),
                 new WorldNode(
+                    BootstrapWorldScenario.CavernPushNodeId,
+                    BootstrapWorldScenario.CavernRegionId,
+                    NodeType.Combat,
+                    NodeState.Available,
+                    CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                    displayName: "Echo Approach"),
+                new WorldNode(
+                    BootstrapWorldScenario.CavernFarmNodeId,
+                    BootstrapWorldScenario.CavernRegionId,
+                    NodeType.Combat,
+                    NodeState.Available,
+                    CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                    displayName: "Relic Cache"),
+                new WorldNode(
+                    BootstrapWorldScenario.CavernApproachNodeId,
+                    BootstrapWorldScenario.CavernRegionId,
+                    NodeType.Combat,
+                    NodeState.Available,
+                    CombatStandardEncounterCatalog.BulwarkRaiderEncounter,
+                    displayName: "Gate Antechamber"),
+                new WorldNode(
                     BootstrapWorldScenario.CavernGateNodeId,
                     BootstrapWorldScenario.CavernRegionId,
                     NodeType.BossOrGate,
@@ -99,6 +120,9 @@ namespace Survivalon.World
                     new[]
                     {
                         BootstrapWorldScenario.CavernServiceNodeId,
+                        BootstrapWorldScenario.CavernPushNodeId,
+                        BootstrapWorldScenario.CavernFarmNodeId,
+                        BootstrapWorldScenario.CavernApproachNodeId,
                         BootstrapWorldScenario.CavernGateNodeId,
                     },
                     ResourceCategory.PersistentProgressionMaterial,
@@ -114,7 +138,10 @@ namespace Survivalon.World
                 new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestEliteNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.CavernServiceNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.ForestGateNodeId, BootstrapWorldScenario.CavernGateNodeId),
-                new WorldNodeConnection(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernGateNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernPushNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernFarmNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.CavernPushNodeId, BootstrapWorldScenario.CavernApproachNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.CavernApproachNodeId, BootstrapWorldScenario.CavernGateNodeId),
             };
 
             return new WorldGraph(regions, nodes, connections);

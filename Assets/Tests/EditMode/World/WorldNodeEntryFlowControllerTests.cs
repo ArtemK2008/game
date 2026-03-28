@@ -150,11 +150,12 @@ namespace Survivalon.Tests.EditMode.World
                     nodeState: NodeState.Available,
                     unlockProgress: 0),
             });
-            worldState.SetCurrentNode(BootstrapWorldScenario.CavernServiceNodeId);
-            worldState.SetLastSafeNode(BootstrapWorldScenario.ForestPushNodeId);
+            worldState.SetCurrentNode(BootstrapWorldScenario.CavernApproachNodeId);
+            worldState.SetLastSafeNode(BootstrapWorldScenario.CavernServiceNodeId);
             worldState.ReplaceReachableNodes(new[]
             {
                 BootstrapWorldScenario.CavernServiceNodeId,
+                BootstrapWorldScenario.CavernPushNodeId,
             });
 
             bool entered = controller.TryEnterNode(BootstrapWorldScenario.CavernGateNodeId, out NodePlaceholderState placeholderState);
