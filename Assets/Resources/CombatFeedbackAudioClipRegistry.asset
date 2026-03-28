@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba32af41d3194539a87f9f67fbd7e14d, type: 3}
+  m_Name: CombatFeedbackAudioClipRegistry
+  m_EditorClassIdentifier: 
+  playerAttackClip: {fileID: 8300000, guid: b2c2f72efc804af3b117a10cb6edf17f, type: 3}
+  enemyAttackClip: {fileID: 8300000, guid: e46b984616a643c2aa84075ad2830423, type: 3}
+  playerHitClip: {fileID: 8300000, guid: 94bd9a5a2c534fe098fcf21fc8aa700c, type: 3}
+  enemyHitClip: {fileID: 8300000, guid: 894d74012f8e4da2a74f484a71aa2547, type: 3}
+  enemyDefeatClip: {fileID: 8300000, guid: 5a173ee5ae21428bb48eb5bb0bf60077, type: 3}
+  playerDefeatClip: {fileID: 8300000, guid: 088c7d145e214048a776965cd60cb3f2, type: 3}
+  dangerLowHealthClip: {fileID: 8300000, guid: d30c41f584444cf3b30ffc9ba7924fc9, type: 3}
+  burstStrikeClip: {fileID: 8300000, guid: 6b4b1c3a0488457e8c40743b34c000cf, type: 3}

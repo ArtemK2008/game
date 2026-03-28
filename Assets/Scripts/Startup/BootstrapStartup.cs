@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using Survivalon.Combat;
 using Survivalon.Run;
 using Survivalon.State;
 using Survivalon.State.Persistence;
@@ -21,6 +22,7 @@ namespace Survivalon.Startup
         private BootstrapWorldContextTransitionService worldContextTransitionService;
         private SessionContextState sessionContext;
         private UiSystemFeedbackAudioHost feedbackAudioHost;
+        private CombatFeedbackAudioHost combatFeedbackAudioHost;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
@@ -40,6 +42,7 @@ namespace Survivalon.Startup
             nodeEntryFlowController = startupState.NodeEntryFlowController;
             sessionContext = startupState.SessionContext;
             feedbackAudioHost = EnsureUiSystemFeedbackAudioHost();
+            combatFeedbackAudioHost = EnsureCombatFeedbackAudioHost();
 
             ShowStartupEntryTarget(startupState.EntryTarget);
             Debug.Log($"Bootstrap startup flow entered {startupState.EntryTarget}.");
@@ -79,7 +82,8 @@ namespace Survivalon.Startup
                 HandleStopSessionRequested,
                 RunPersistentContext.FromGameState(gameState),
                 HandleResolvedPostRunBoundaryReached,
-                feedbackAudioHost.TryPlay);
+                feedbackAudioHost.TryPlay,
+                combatFeedbackAudioHost.TryPlay);
         }
 
         private void ShowTownServiceScreen(NodePlaceholderState placeholderState)
@@ -260,6 +264,20 @@ namespace Survivalon.Startup
             GameObject feedbackAudioObject = new GameObject("UiSystemFeedbackAudioHost");
             feedbackAudioObject.transform.SetParent(transform, false);
             return feedbackAudioObject.AddComponent<UiSystemFeedbackAudioHost>();
+        }
+
+        private CombatFeedbackAudioHost EnsureCombatFeedbackAudioHost()
+        {
+            CombatFeedbackAudioHost existingFeedbackAudioHost =
+                GetComponentInChildren<CombatFeedbackAudioHost>(true);
+            if (existingFeedbackAudioHost != null)
+            {
+                return existingFeedbackAudioHost;
+            }
+
+            GameObject feedbackAudioObject = new GameObject("CombatFeedbackAudioHost");
+            feedbackAudioObject.transform.SetParent(transform, false);
+            return feedbackAudioObject.AddComponent<CombatFeedbackAudioHost>();
         }
 
         private static void SetOptionalScreenActive(Component component, bool isActive)
