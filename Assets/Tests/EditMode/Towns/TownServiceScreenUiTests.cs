@@ -1,9 +1,11 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using Survivalon.Characters;
+using Survivalon.Combat;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
+using Survivalon.Data.Towns;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.World;
 using Survivalon.Towns;
@@ -50,9 +52,12 @@ namespace Survivalon.Tests.EditMode.Towns
             try
             {
                 TownServiceScreen townServiceScreen = hostObject.AddComponent<TownServiceScreen>();
+                Sprite serviceBackground = ResolveTownServiceBackground();
+                CombatLocationBackgroundRegistry combatBackgroundRegistry = CombatLocationBackgroundRegistry.LoadOrNull();
                 townServiceScreen.Show(
                     NodePlaceholderTestData.CreateTownServicePlaceholderState(),
                     gameState,
+                    serviceBackground,
                     () => returnedToWorld = true,
                     () => stoppedSession = true);
 
@@ -87,6 +92,14 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(hostObject.GetComponentsInChildren<ScrollRect>(true).Length, Is.EqualTo(1));
                 Assert.That(TryFindGameObject(hostObject, "ContentViewport"), Is.Not.Null);
                 Assert.That(TryFindGameObject(hostObject, "Content"), Is.Not.Null);
+                Assert.That(FindImage(hostObject, "TownServiceBackgroundArt").sprite, Is.EqualTo(serviceBackground));
+                Assert.That(combatBackgroundRegistry, Is.Not.Null);
+                Assert.That(
+                    combatBackgroundRegistry.TryGetBackground(
+                        "location_identity_echo_caverns",
+                        out Sprite echoCombatBackground),
+                    Is.True);
+                Assert.That(FindImage(hostObject, "TownServiceBackgroundArt").sprite, Is.Not.EqualTo(echoCombatBackground));
                 Assert.That(TryFindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "PushOffenseProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton"), Is.Not.Null);
@@ -144,6 +157,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 townServiceScreen.Show(
                     NodePlaceholderTestData.CreateTownServicePlaceholderState(),
                     gameState,
+                    ResolveTownServiceBackground(),
                     () => { },
                     () => { },
                     conversionInteractionService: interactionService);
@@ -215,6 +229,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 townServiceScreen.Show(
                     NodePlaceholderTestData.CreateTownServicePlaceholderState(),
                     gameState,
+                    ResolveTownServiceBackground(),
                     () => { },
                     () => { },
                     progressionInteractionService: interactionService);
@@ -272,6 +287,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 townServiceScreen.Show(
                     NodePlaceholderTestData.CreateTownServicePlaceholderState(),
                     gameState,
+                    ResolveTownServiceBackground(),
                     () => { },
                     () => { },
                     buildPreparationInteractionService: interactionService);
@@ -357,6 +373,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 townServiceScreen.Show(
                     NodePlaceholderTestData.CreateTownServicePlaceholderState(),
                     gameState,
+                    ResolveTownServiceBackground(),
                     () => { },
                     () => { },
                     progressionInteractionService: new TownServiceProgressionInteractionService(persistenceService),
@@ -401,6 +418,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 townServiceScreen.Show(
                     NodePlaceholderTestData.CreateTownServicePlaceholderState(),
                     gameState,
+                    ResolveTownServiceBackground(),
                     () => { },
                     () => { },
                     feedbackSoundRequested: requestedSounds.Add);
@@ -450,6 +468,21 @@ namespace Survivalon.Tests.EditMode.Towns
             return null;
         }
 
+        private static Image FindImage(GameObject rootObject, string objectName)
+        {
+            Image[] images = rootObject.GetComponentsInChildren<Image>(true);
+            foreach (Image image in images)
+            {
+                if (image.gameObject.name == objectName)
+                {
+                    return image;
+                }
+            }
+
+            Assert.Fail($"Image '{objectName}' was not found.");
+            return null;
+        }
+
         private static Button FindButton(GameObject rootObject, string buttonObjectName)
         {
             Button button = TryFindButton(rootObject, buttonObjectName);
@@ -482,6 +515,11 @@ namespace Survivalon.Tests.EditMode.Towns
             Text buttonLabel = button.GetComponentInChildren<Text>(true);
             Assert.That(buttonLabel, Is.Not.Null);
             return buttonLabel.text;
+        }
+
+        private static Sprite ResolveTownServiceBackground()
+        {
+            return new TownServiceBackgroundResolver().Resolve(TownServiceContextCatalog.CavernServiceHub);
         }
 
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage

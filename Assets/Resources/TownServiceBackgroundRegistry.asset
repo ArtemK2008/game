@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0ecba27925c4b0ca6d0d702c21c5bf0, type: 3}
+  m_Name: TownServiceBackgroundRegistry
+  m_EditorClassIdentifier: 
+  backgroundEntries:
+  - contextId: town_service_cavern_hub
+    backgroundSprite: {fileID: 4671389164152810629, guid: 626c4b5ecc6648b1a150f9428c401fce, type: 3}

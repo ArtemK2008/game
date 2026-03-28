@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Combat;
 using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
@@ -27,6 +28,8 @@ namespace Survivalon.Tests.EditMode.Startup
             seededGameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
             seededGameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 2);
             storage.Seed(seededGameState);
+            TownServiceBackgroundRegistry serviceBackgroundRegistry = TownServiceBackgroundRegistry.LoadOrNull();
+            CombatLocationBackgroundRegistry combatBackgroundRegistry = CombatLocationBackgroundRegistry.LoadOrNull();
 
             try
             {
@@ -55,6 +58,20 @@ namespace Survivalon.Tests.EditMode.Startup
                     Is.True);
                 Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
+                Assert.That(serviceBackgroundRegistry, Is.Not.Null);
+                Assert.That(
+                    serviceBackgroundRegistry.TryGetBackground(
+                        "town_service_cavern_hub",
+                        out Sprite serviceBackground),
+                    Is.True);
+                Assert.That(combatBackgroundRegistry, Is.Not.Null);
+                Assert.That(
+                    combatBackgroundRegistry.TryGetBackground(
+                        "location_identity_echo_caverns",
+                        out Sprite combatBackground),
+                    Is.True);
+                Assert.That(FindImage(hostObject, "TownServiceBackgroundArt").sprite, Is.EqualTo(serviceBackground));
+                Assert.That(FindImage(hostObject, "TownServiceBackgroundArt").sprite, Is.Not.EqualTo(combatBackground));
                 Assert.That(
                     FindButton(
                         hostObject,

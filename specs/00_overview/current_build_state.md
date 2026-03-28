@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 092**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 093**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -144,6 +144,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - return to world map
   - stop session
 - The service shell now uses a safer scrollable content area for its readable overview, progression, and build sections.
+- The current `Cavern Service Hub` service shell now also uses the prepared safe-space background art:
+  - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
+  - it is resolved through the runtime-safe `Assets/Resources/TownServiceBackgroundRegistry.asset`
+  - the existing service panel layout remains layered above that background so the current town/service context reads calmer and more distinct from combat without changing service behavior
 
 ### Combat foundation
 - Combat exists as a placeholder shell inside the current node/run flow rather than as a dedicated final combat scene.
@@ -163,7 +167,6 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Verdant Frontier` combat nodes render `Assets/Art/Locations/VerdantFrontier/Backgrounds/combat_background.png`
   - `Echo Caverns` combat nodes render `Assets/Art/Locations/EchoCaverns/Backgrounds/combat_background.png`
   - those backgrounds are resolved through the runtime-safe `Assets/Resources/CombatLocationBackgroundRegistry.asset`
-  - the current service/town-safe background remains prepared-only and is not wired until the later service-visual milestone
 - Combat entities have explicit allegiance, alive/active state, runtime health, and a small shared base stat model.
 - Base stats currently include max health, attack power, attack rate, and defense-based survivability.
 - Standard enemies now have two shipped combat profiles instead of one:
@@ -453,7 +456,8 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Current runtime hookup status:
   - player and enemy combat-state sprites are now wired into the live combat shell
   - combat location backgrounds are now wired into the live combat shell for `Verdant Frontier` and `Echo Caverns`
-  - portraits, world icons, service backgrounds, and combat VFX are still prepared-only and not wired into runtime yet
+  - the current `Cavern Service Hub` service background is now wired into the live town/service shell
+  - portraits, world icons, and combat VFX are still prepared-only and not wired into runtime yet
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.

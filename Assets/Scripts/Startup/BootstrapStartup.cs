@@ -24,6 +24,7 @@ namespace Survivalon.Startup
         private UiSystemFeedbackAudioHost feedbackAudioHost;
         private CombatFeedbackAudioHost combatFeedbackAudioHost;
         private MusicAudioHost musicAudioHost;
+        private TownServiceBackgroundResolver townServiceBackgroundResolver;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
@@ -45,6 +46,7 @@ namespace Survivalon.Startup
             feedbackAudioHost = EnsureUiSystemFeedbackAudioHost();
             combatFeedbackAudioHost = EnsureCombatFeedbackAudioHost();
             musicAudioHost = EnsureMusicAudioHost();
+            townServiceBackgroundResolver = new TownServiceBackgroundResolver();
 
             ShowStartupEntryTarget(startupState.EntryTarget);
             Debug.Log($"Bootstrap startup flow entered {startupState.EntryTarget}.");
@@ -102,6 +104,7 @@ namespace Survivalon.Startup
             townServiceScreen.Show(
                 placeholderState,
                 gameState,
+                townServiceBackgroundResolver.Resolve(placeholderState.TownServiceContext),
                 () => HandleTownServiceReturnRequested(placeholderState.NodeId),
                 () => HandleTownServiceStopRequested(placeholderState.NodeId),
                 progressionInteractionService: new TownServiceProgressionInteractionService(persistenceService),
