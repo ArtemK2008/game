@@ -369,6 +369,55 @@ namespace Survivalon.Tests.EditMode.Startup
                 Object.DestroyImmediate(hostObject);
             }
         }
+
+        [Test]
+        public void ShouldKeepSingleMusicAudioHostAndUseCalmMusicAcrossSafeContexts()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            MusicAudioClipRegistry clipRegistry = MusicAudioClipRegistry.LoadOrNull();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                Assert.That(hostObject.GetComponentsInChildren<MusicAudioHost>(true).Length, Is.EqualTo(1));
+                AssertCurrentMusicClip(hostObject, clipRegistry, MusicContextId.Calm);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                Assert.That(hostObject.GetComponentsInChildren<MusicAudioHost>(true).Length, Is.EqualTo(1));
+                AssertCurrentMusicClip(hostObject, clipRegistry, MusicContextId.Calm);
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+                Assert.That(hostObject.GetComponentsInChildren<MusicAudioHost>(true).Length, Is.EqualTo(1));
+                AssertCurrentMusicClip(hostObject, clipRegistry, MusicContextId.Calm);
+
+                FindButton(hostObject, "StopSessionButton").onClick.Invoke();
+                Assert.That(hostObject.GetComponentsInChildren<MusicAudioHost>(true).Length, Is.EqualTo(1));
+                AssertCurrentMusicClip(hostObject, clipRegistry, MusicContextId.Calm);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        private static void AssertCurrentMusicClip(
+            GameObject hostObject,
+            MusicAudioClipRegistry clipRegistry,
+            MusicContextId contextId)
+        {
+            Assert.That(clipRegistry, Is.Not.Null);
+            Assert.That(clipRegistry.TryGetClip(contextId, out AudioClip expectedClip), Is.True);
+            Assert.That(expectedClip, Is.Not.Null);
+
+            MusicAudioHost musicAudioHost = hostObject.GetComponentInChildren<MusicAudioHost>(true);
+            Assert.That(musicAudioHost, Is.Not.Null);
+
+            AudioSource audioSource = musicAudioHost.GetComponent<AudioSource>();
+            Assert.That(audioSource, Is.Not.Null);
+            Assert.That(audioSource.clip, Is.EqualTo(expectedClip));
+        }
     }
 }
 

@@ -22,6 +22,7 @@ namespace Survivalon.Tests.EditMode.Startup
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            MusicAudioClipRegistry clipRegistry = MusicAudioClipRegistry.LoadOrNull();
 
             try
             {
@@ -43,6 +44,42 @@ namespace Survivalon.Tests.EditMode.Startup
                     ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."),
                     Is.False);
                 Assert.That(FindButton(hostObject, "AdvanceRunLifecycleButton").interactable, Is.False);
+                Assert.That(clipRegistry, Is.Not.Null);
+                Assert.That(clipRegistry.TryGetClip(MusicContextId.Gameplay, out AudioClip gameplayClip), Is.True);
+                Assert.That(
+                    hostObject.GetComponentInChildren<MusicAudioHost>(true).GetComponent<AudioSource>().clip,
+                    Is.EqualTo(gameplayClip));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldSwitchBackToCalmMusicWhenCombatRunReachesPostRun()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            MusicAudioClipRegistry clipRegistry = MusicAudioClipRegistry.LoadOrNull();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
+                Assert.That(clipRegistry, Is.Not.Null);
+                Assert.That(clipRegistry.TryGetClip(MusicContextId.Gameplay, out AudioClip gameplayClip), Is.True);
+                Assert.That(
+                    hostObject.GetComponentInChildren<MusicAudioHost>(true).GetComponent<AudioSource>().clip,
+                    Is.EqualTo(gameplayClip));
+
+                AdvanceToPostRun(hostObject);
+
+                Assert.That(clipRegistry.TryGetClip(MusicContextId.Calm, out AudioClip calmClip), Is.True);
+                Assert.That(
+                    hostObject.GetComponentInChildren<MusicAudioHost>(true).GetComponent<AudioSource>().clip,
+                    Is.EqualTo(calmClip));
             }
             finally
             {
