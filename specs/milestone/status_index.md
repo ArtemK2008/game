@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 087
+Current next implementation target: Milestone 088
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -112,6 +112,7 @@ id | type | title | status | depends on / note
 084 | feature | Implement milestone reward presentation polish | completed | phase 20
 085 | feature | Expand boss readability and structure | completed | phase 21
 086 | feature | Add one optional challenge/elite path if the core gate-boss works | completed | phase 21
+087 | feature | Implement basic UI/system feedback sounds | completed | phase 22
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

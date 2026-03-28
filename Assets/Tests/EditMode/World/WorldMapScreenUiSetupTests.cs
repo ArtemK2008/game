@@ -404,6 +404,74 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldRequestClickAndConfirmFeedbackForSelectionAndEntry()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            List<UiSystemFeedbackSoundId> requestedSounds = new List<UiSystemFeedbackSoundId>();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    nodeEntryRequested: _ => { },
+                    gameState: gameState,
+                    feedbackSoundRequested: requestedSounds.Add);
+
+                FindButton(hostObject, "region_002_node_001_Button").onClick.Invoke();
+                FindButton(hostObject, "EnterSelectedNodeButton").onClick.Invoke();
+
+                CollectionAssert.AreEqual(
+                    new[]
+                    {
+                        UiSystemFeedbackSoundId.UiClick,
+                        UiSystemFeedbackSoundId.UiConfirm,
+                    },
+                    requestedSounds);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldRequestErrorFeedbackForRejectedWorldMapActions()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            List<UiSystemFeedbackSoundId> requestedSounds = new List<UiSystemFeedbackSoundId>();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    nodeEntryRequested: _ => { },
+                    gameState: gameState,
+                    feedbackSoundRequested: requestedSounds.Add);
+
+                FindButton(hostObject, "region_001_node_003_Button").onClick.Invoke();
+                FindButton(hostObject, "EnterSelectedNodeButton").onClick.Invoke();
+
+                CollectionAssert.AreEqual(
+                    new[]
+                    {
+                        UiSystemFeedbackSoundId.UiError,
+                        UiSystemFeedbackSoundId.UiError,
+                    },
+                    requestedSounds);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldInvokeNodeEntryCallbackForQuickRepeatWhenNothingIsSelected()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");

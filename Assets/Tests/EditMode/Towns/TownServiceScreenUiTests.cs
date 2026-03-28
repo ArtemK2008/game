@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections.Generic;
 using Survivalon.Characters;
 using Survivalon.Core;
 using Survivalon.Data.Characters;
@@ -331,6 +332,89 @@ namespace Survivalon.Tests.EditMode.Towns
                         out EquippedGearState savedSupportGearState),
                     Is.True);
                 Assert.That(savedSupportGearState.GearId, Is.EqualTo(GearIds.GuardCharm));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldRequestConfirmFeedbackForAcceptedTownActions()
+        {
+            GameObject hostObject = new GameObject("TownServiceScreenHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            List<UiSystemFeedbackSoundId> requestedSounds = new List<UiSystemFeedbackSoundId>();
+
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 1);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+
+            try
+            {
+                TownServiceScreen townServiceScreen = hostObject.AddComponent<TownServiceScreen>();
+                townServiceScreen.Show(
+                    NodePlaceholderTestData.CreateTownServicePlaceholderState(),
+                    gameState,
+                    () => { },
+                    () => { },
+                    progressionInteractionService: new TownServiceProgressionInteractionService(persistenceService),
+                    conversionInteractionService: new TownServiceConversionInteractionService(persistenceService),
+                    buildPreparationInteractionService: new TownServiceBuildPreparationInteractionService(persistenceService),
+                    feedbackSoundRequested: requestedSounds.Add);
+
+                FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton").onClick.Invoke();
+                FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").onClick.Invoke();
+                FindButton(
+                    hostObject,
+                    $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton")
+                    .onClick.Invoke();
+                FindButton(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
+
+                CollectionAssert.AreEqual(
+                    new[]
+                    {
+                        UiSystemFeedbackSoundId.UiConfirm,
+                        UiSystemFeedbackSoundId.UiConfirm,
+                        UiSystemFeedbackSoundId.UiConfirm,
+                        UiSystemFeedbackSoundId.UiConfirm,
+                    },
+                    requestedSounds);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldRequestErrorFeedbackForRejectedTownActions()
+        {
+            GameObject hostObject = new GameObject("TownServiceScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            List<UiSystemFeedbackSoundId> requestedSounds = new List<UiSystemFeedbackSoundId>();
+
+            try
+            {
+                TownServiceScreen townServiceScreen = hostObject.AddComponent<TownServiceScreen>();
+                townServiceScreen.Show(
+                    NodePlaceholderTestData.CreateTownServicePlaceholderState(),
+                    gameState,
+                    () => { },
+                    () => { },
+                    feedbackSoundRequested: requestedSounds.Add);
+
+                FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton").onClick.Invoke();
+                FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").onClick.Invoke();
+
+                CollectionAssert.AreEqual(
+                    new[]
+                    {
+                        UiSystemFeedbackSoundId.UiError,
+                        UiSystemFeedbackSoundId.UiError,
+                    },
+                    requestedSounds);
             }
             finally
             {

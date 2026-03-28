@@ -29,6 +29,7 @@ namespace Survivalon.World
         private PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService;
         private PlayableCharacterGearAssignmentService gearAssignmentService;
         private WorldMapBuildPreparationInteractionService buildPreparationInteractionService;
+        private Action<UiSystemFeedbackSoundId> onFeedbackSoundRequested;
         private bool hasQuickRepeatNode;
         private NodeId quickRepeatNodeId;
         private string quickRepeatNodeDisplayName;
@@ -41,7 +42,8 @@ namespace Survivalon.World
             SessionContextState sessionContext = null,
             PersistentGameState gameState = null,
             AccountWideProgressionEffectState progressionEffects = default,
-            WorldMapBuildPreparationInteractionService buildPreparationInteractionService = null)
+            WorldMapBuildPreparationInteractionService buildPreparationInteractionService = null,
+            Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null)
         {
             if (worldGraph == null)
             {
@@ -59,6 +61,7 @@ namespace Survivalon.World
                 sessionContext: sessionContext,
                 progressionEffects: progressionEffects);
             onNodeEntryRequested = nodeEntryRequested;
+            onFeedbackSoundRequested = feedbackSoundRequested;
             this.gameState = gameState;
             characterSelectionService = gameState == null ? null : new PlayableCharacterSelectionService();
             skillPackageAssignmentService = gameState == null
@@ -102,9 +105,11 @@ namespace Survivalon.World
         {
             if (!screenController.TrySelectNode(nodeId))
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiClick);
             Debug.Log($"World map node selected: {nodeId}.");
             Refresh();
         }
@@ -118,9 +123,11 @@ namespace Survivalon.World
 
             if (!buildPreparationInteractionService.TrySelectCharacter(gameState, characterId))
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiClick);
             Debug.Log($"World map character selected: {characterId}.");
             Refresh();
         }
@@ -134,9 +141,11 @@ namespace Survivalon.World
 
             if (!buildPreparationInteractionService.TryAssignSkillPackage(gameState, skillPackageId))
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             Debug.Log($"World map skill package assigned: {skillPackageId}.");
             Refresh();
         }
@@ -153,9 +162,11 @@ namespace Survivalon.World
                 : buildPreparationInteractionService.TryAssignGear(gameState, gearAssignmentOption.GearId);
             if (!changed)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             Debug.Log($"World map gear assignment changed for {gearAssignmentOption.CharacterId}.");
             Refresh();
         }
@@ -164,11 +175,13 @@ namespace Survivalon.World
         {
             if (onNodeEntryRequested == null)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
             if (screenController.TryGetSelectedNodeId(out NodeId selectedNodeId))
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
                 screenController.SessionContext?.ConsumeReturnToWorldReentryOffer();
                 onNodeEntryRequested(selectedNodeId);
                 return;
@@ -176,9 +189,11 @@ namespace Survivalon.World
 
             if (!hasQuickRepeatNode)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             screenController.SessionContext?.ConsumeReturnToWorldReentryOffer();
             onNodeEntryRequested(quickRepeatNodeId);
         }
