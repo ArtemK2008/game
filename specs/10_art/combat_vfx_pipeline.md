@@ -22,7 +22,7 @@ This spec does not define:
 ## Core rule
 Keep current combat VFX as stable, clearly named sheet assets unless a later gameplay milestone needs an unambiguous per-frame export.
 
-For the currently shipped VFX set, the sheet files themselves are the canonical gameplay-facing assets.
+For the currently shipped VFX set, the sheet files themselves are the canonical gameplay-facing assets, and milestone `094` uses those whole-sheet assets directly for the current restrained combat-readability cues.
 
 ## Folder structure
 Use:
@@ -37,11 +37,11 @@ Use:
 
 ## Why these remain sheets
 The current sheets are better treated as grouped cue sources because later hookup still needs to decide:
-- which regions of the sheet map to which runtime cue
-- whether runtime should use the full sheet, one crop, or a sequence
-- how timing should work for each effect
+- which regions of the sheet map to which richer runtime cue set
+- whether future runtime should keep using the full sheet, one crop, or a sequence
+- how timing should work for any later expanded effect treatment
 
-That mapping is not yet explicit enough to justify splitting the sheets now.
+The current milestone-094 hookup uses the full-sheet assets directly, and no broader per-frame split contract exists yet.
 
 ## Naming rule
 Use lowercase names with underscores.

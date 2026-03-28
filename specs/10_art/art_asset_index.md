@@ -82,7 +82,7 @@ Current canonical sheet assets:
 - Player character assets were already in canonical gameplay-facing form.
 - Enemy combat sheets were normalized into canonical split state files while retaining the source sheets.
 - Current location/service backgrounds were left in place and documented as the canonical gameplay-facing files.
-- Current combat VFX assets were intentionally left as sheets because later hookup still needs explicit cue/frame mapping.
+- Current combat VFX assets remain intentionally sheet-based canonical source files, and milestone `094` now uses those sheets directly for restrained combat readability cues without splitting them into a broader sequence pipeline.
 
 ## Current hookup status
 - Milestone `091` now wires the current canonical player and enemy combat-state sprites into the live combat shell.
@@ -96,10 +96,15 @@ Current canonical sheet assets:
   - `Assets/Art/Locations/EchoCaverns/Backgrounds/combat_background.png`
 - plus the current service background file under:
   - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
-- Portraits, world icons, and combat VFX sheets remain prepared assets only and are not wired into runtime yet.
+- Portraits and world icons remain prepared assets only and are not wired into runtime yet.
+- Milestone `094` now wires the current combat VFX sheets directly into the live combat shell for:
+  - baseline impact readability
+  - `Burst Strike`
+  - low-health danger
+  - defeat
 
 ## Remaining gaps for later milestones
 - No dedicated world-map art assets are prepared yet.
 - No explicit per-frame VFX slicing contract exists yet.
 - No additional service/town-safe-space background variants are prepared yet.
-- Runtime hookup for broader location backgrounds beyond the current shipped combat/service subset and combat VFX is still pending for later milestones.
+- Runtime hookup for broader location backgrounds beyond the current shipped combat/service subset is still pending for later milestones.

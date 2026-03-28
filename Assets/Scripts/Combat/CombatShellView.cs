@@ -16,7 +16,11 @@ namespace Survivalon.Combat
         private const float SummaryHeight = 104f;
         private const float EntityRowHeight = 152f;
         private const float EntitySpriteWidth = 72f;
+        private static readonly Vector2 SideEffectSize = new Vector2(120f, 120f);
+        private static readonly Vector2 CenterEffectSize = new Vector2(168f, 112f);
         private static readonly Color BackgroundArtTint = new Color(1f, 1f, 1f, 0.40f);
+        private static readonly Color SideEffectTint = new Color(1f, 1f, 1f, 0.82f);
+        private static readonly Color CenterEffectTint = new Color(1f, 1f, 1f, 0.88f);
 
         private Image backgroundImage;
         private Image backgroundArtImage;
@@ -28,6 +32,9 @@ namespace Survivalon.Combat
         private Image enemyEntityCardImage;
         private Image enemyEntitySpriteImage;
         private Text enemyEntityCardText;
+        private Image playerEffectImage;
+        private Image enemyEffectImage;
+        private Image centerEffectImage;
         private Font uiFont;
 
         public void Show(
@@ -64,6 +71,7 @@ namespace Survivalon.Combat
                 combatEncounterState.EnemyEntity,
                 presentationState.EnemySprite,
                 CombatShellStateResolver.ResolveEntityCardColor(combatEncounterState.EnemyEntity.Side));
+            ApplyCombatEffects(presentationState);
             gameObject.SetActive(true);
         }
 
@@ -150,6 +158,22 @@ namespace Survivalon.Combat
                 "EnemyCombatEntitySprite",
                 out enemyEntitySpriteImage,
                 out enemyEntityCardText);
+
+            playerEffectImage = CreateOverlayEffectImage(
+                entityRowObject.transform,
+                "PlayerCombatEffectArt",
+                new Vector2(0.25f, 0.5f),
+                SideEffectSize);
+            enemyEffectImage = CreateOverlayEffectImage(
+                entityRowObject.transform,
+                "EnemyCombatEffectArt",
+                new Vector2(0.75f, 0.5f),
+                SideEffectSize);
+            centerEffectImage = CreateOverlayEffectImage(
+                entityRowObject.transform,
+                "CombatShellCenterEffectArt",
+                new Vector2(0.5f, 0.5f),
+                CenterEffectSize);
         }
 
         private Image CreateEntityCard(
@@ -224,6 +248,37 @@ namespace Survivalon.Combat
             return cardImage;
         }
 
+        private static Image CreateOverlayEffectImage(
+            Transform parent,
+            string objectName,
+            Vector2 anchor,
+            Vector2 size)
+        {
+            GameObject effectObject = new GameObject(
+                objectName,
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(LayoutElement));
+            effectObject.transform.SetParent(parent, false);
+
+            RectTransform effectRectTransform = effectObject.GetComponent<RectTransform>();
+            effectRectTransform.anchorMin = anchor;
+            effectRectTransform.anchorMax = anchor;
+            effectRectTransform.pivot = new Vector2(0.5f, 0.5f);
+            effectRectTransform.anchoredPosition = Vector2.zero;
+            effectRectTransform.sizeDelta = size;
+            effectRectTransform.localScale = Vector3.one;
+
+            LayoutElement effectLayoutElement = effectObject.GetComponent<LayoutElement>();
+            effectLayoutElement.ignoreLayout = true;
+
+            Image effectImage = effectObject.GetComponent<Image>();
+            effectImage.enabled = false;
+            effectImage.raycastTarget = false;
+            effectImage.preserveAspect = true;
+            return effectImage;
+        }
+
         private Image CreateBackgroundArtImage()
         {
             GameObject backgroundArtObject = new GameObject(
@@ -255,6 +310,20 @@ namespace Survivalon.Combat
             backgroundArtImage.sprite = backgroundSprite;
             backgroundArtImage.enabled = backgroundSprite != null;
             backgroundArtImage.color = BackgroundArtTint;
+        }
+
+        private void ApplyCombatEffects(CombatShellPresentationState presentationState)
+        {
+            ApplyCombatEffect(playerEffectImage, presentationState.PlayerEffectSprite, SideEffectTint);
+            ApplyCombatEffect(enemyEffectImage, presentationState.EnemyEffectSprite, SideEffectTint);
+            ApplyCombatEffect(centerEffectImage, presentationState.CenterEffectSprite, CenterEffectTint);
+        }
+
+        private static void ApplyCombatEffect(Image effectImage, Sprite effectSprite, Color tint)
+        {
+            effectImage.sprite = effectSprite;
+            effectImage.enabled = effectSprite != null;
+            effectImage.color = tint;
         }
 
         private static void ApplyEntityCard(

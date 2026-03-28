@@ -20,7 +20,8 @@ namespace Survivalon.Combat
         public CombatShellPresentationState Resolve(
             LocationIdentityDefinition locationIdentity,
             CombatEncounterState combatEncounterState,
-            CombatShellVisualState visualState)
+            CombatShellVisualState visualState,
+            CombatEffectPresentationState effectPresentationState)
         {
             if (locationIdentity == null)
             {
@@ -39,7 +40,10 @@ namespace Survivalon.Combat
                     visualState.PlayerVisualState),
                 ResolveRequiredSprite(
                     combatEncounterState.EnemyEntity.EntityId.Value,
-                    visualState.EnemyVisualState));
+                    visualState.EnemyVisualState),
+                effectPresentationState.PlayerEffectSprite,
+                effectPresentationState.EnemyEffectSprite,
+                effectPresentationState.CenterEffectSprite);
         }
 
         private Sprite ResolveRequiredSprite(
@@ -80,11 +84,17 @@ namespace Survivalon.Combat
         public CombatShellPresentationState(
             Sprite backgroundSprite,
             Sprite playerSprite,
-            Sprite enemySprite)
+            Sprite enemySprite,
+            Sprite playerEffectSprite,
+            Sprite enemyEffectSprite,
+            Sprite centerEffectSprite)
         {
             BackgroundSprite = backgroundSprite ? backgroundSprite : throw new ArgumentNullException(nameof(backgroundSprite));
             PlayerSprite = playerSprite ? playerSprite : throw new ArgumentNullException(nameof(playerSprite));
             EnemySprite = enemySprite ? enemySprite : throw new ArgumentNullException(nameof(enemySprite));
+            PlayerEffectSprite = playerEffectSprite;
+            EnemyEffectSprite = enemyEffectSprite;
+            CenterEffectSprite = centerEffectSprite;
         }
 
         public Sprite BackgroundSprite { get; }
@@ -92,5 +102,11 @@ namespace Survivalon.Combat
         public Sprite PlayerSprite { get; }
 
         public Sprite EnemySprite { get; }
+
+        public Sprite PlayerEffectSprite { get; }
+
+        public Sprite EnemyEffectSprite { get; }
+
+        public Sprite CenterEffectSprite { get; }
     }
 }
