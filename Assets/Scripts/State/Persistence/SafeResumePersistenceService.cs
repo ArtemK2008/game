@@ -46,17 +46,12 @@ namespace Survivalon.State.Persistence
 
         public void SaveResolvedWorldContext(PersistentGameState gameState)
         {
-            if (gameState == null)
-            {
-                throw new ArgumentNullException(nameof(gameState));
-            }
+            SaveResolvedSafeContext(gameState, SafeResumeTargetType.WorldMap);
+        }
 
-            PersistentGameState snapshot = CloneGameState(gameState);
-            NodeId resumeNodeId = ResolveResumeNodeId(snapshot.WorldState);
-            snapshot.SafeResumeState.MarkWorldMap(resumeNodeId);
-            snapshot.OfflineProgressStableSaveAnchorState.StampStableSaveAnchor(
-                utcNowProvider().ToUnixTimeSeconds());
-            storage.Save(snapshot);
+        public void SaveResolvedTownServiceContext(PersistentGameState gameState)
+        {
+            SaveResolvedSafeContext(gameState, SafeResumeTargetType.TownService);
         }
 
         private static NodeId ResolveResumeNodeId(PersistentWorldState worldState)
@@ -78,6 +73,34 @@ namespace Survivalon.State.Persistence
 
             throw new InvalidOperationException(
                 "Safe resume persistence requires a current node or last safe node.");
+        }
+
+        private void SaveResolvedSafeContext(
+            PersistentGameState gameState,
+            SafeResumeTargetType targetType)
+        {
+            if (gameState == null)
+            {
+                throw new ArgumentNullException(nameof(gameState));
+            }
+
+            PersistentGameState snapshot = CloneGameState(gameState);
+            NodeId resumeNodeId = ResolveResumeNodeId(snapshot.WorldState);
+            switch (targetType)
+            {
+                case SafeResumeTargetType.WorldMap:
+                    snapshot.SafeResumeState.MarkWorldMap(resumeNodeId);
+                    break;
+                case SafeResumeTargetType.TownService:
+                    snapshot.SafeResumeState.MarkTownService(resumeNodeId);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(targetType), targetType, "Unsupported safe resume target type.");
+            }
+
+            snapshot.OfflineProgressStableSaveAnchorState.StampStableSaveAnchor(
+                utcNowProvider().ToUnixTimeSeconds());
+            storage.Save(snapshot);
         }
 
         private static PersistentGameState CloneGameState(PersistentGameState gameState)

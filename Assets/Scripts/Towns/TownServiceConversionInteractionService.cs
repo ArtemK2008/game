@@ -34,7 +34,7 @@ namespace Survivalon.Towns
 
             if (persistenceService != null)
             {
-                persistenceService.SaveResolvedWorldContext(gameState);
+                persistenceService.SaveResolvedTownServiceContext(gameState);
             }
 
             return true;

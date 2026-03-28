@@ -1,4 +1,5 @@
 using System;
+using Survivalon.Core;
 using Survivalon.State;
 using Survivalon.State.Persistence;
 using Survivalon.World;
@@ -62,7 +63,7 @@ namespace Survivalon.Startup
             }
 
             startupState = CreateFromGameState(worldMapFactory, persistedGameState);
-            if (startupState.EntryTarget != StartupEntryTarget.WorldViewPlaceholder)
+            if (!HasSupportedContinueTarget(startupState))
             {
                 startupState = null;
                 return false;
@@ -89,6 +90,32 @@ namespace Survivalon.Startup
                 nodeEntryFlowController,
                 sessionContext,
                 entryTarget);
+        }
+
+        private static bool HasSupportedContinueTarget(BootstrapStartupState startupState)
+        {
+            if (startupState == null)
+            {
+                throw new ArgumentNullException(nameof(startupState));
+            }
+
+            PersistentSafeResumeState safeResumeState = startupState.GameState.SafeResumeState;
+            if (safeResumeState.HasSafeResumeTarget)
+            {
+                switch (safeResumeState.TargetType)
+                {
+                    case SafeResumeTargetType.WorldMap:
+                        return true;
+                    case SafeResumeTargetType.TownService:
+                        return startupState.WorldGraph.GetNode(safeResumeState.ResumeNodeId).NodeType ==
+                               NodeType.ServiceOrProgression;
+                    default:
+                        return false;
+                }
+            }
+
+            PersistentWorldState worldState = startupState.GameState.WorldState;
+            return worldState.HasCurrentNode || worldState.HasLastSafeNode;
         }
     }
 }

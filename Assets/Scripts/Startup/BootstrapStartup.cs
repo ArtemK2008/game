@@ -183,7 +183,7 @@ namespace Survivalon.Startup
 
         private void HandleTownServiceStopRequested(NodeId nodeId)
         {
-            StartupEntryTarget entryTarget = worldContextTransitionService.PrepareStopSession(
+            StartupEntryTarget entryTarget = worldContextTransitionService.PrepareStopSessionFromTownService(
                 gameState,
                 sessionContext,
                 nodeId);
@@ -234,7 +234,7 @@ namespace Survivalon.Startup
             }
 
             ApplyStartupState(startupState);
-            ShowWorldMap();
+            ResumeContinueTarget();
         }
 
         private void HandleQuitRequested()
@@ -253,6 +253,34 @@ namespace Survivalon.Startup
             gameState = startupState.GameState;
             nodeEntryFlowController = startupState.NodeEntryFlowController;
             sessionContext = startupState.SessionContext;
+        }
+
+        private void ResumeContinueTarget()
+        {
+            if (gameState.SafeResumeState.HasSafeResumeTarget &&
+                gameState.SafeResumeState.TargetType == SafeResumeTargetType.TownService &&
+                TryResumeTownServiceContext(gameState.SafeResumeState.ResumeNodeId))
+            {
+                return;
+            }
+
+            ShowWorldMap();
+        }
+
+        private bool TryResumeTownServiceContext(NodeId nodeId)
+        {
+            if (!nodeEntryFlowController.TryEnterNode(nodeId, out NodePlaceholderState placeholderState))
+            {
+                return false;
+            }
+
+            if (placeholderState.TownServiceContext == null)
+            {
+                return false;
+            }
+
+            ShowEnteredNodeContext(placeholderState);
+            return true;
         }
 
         private StartupPlaceholderView EnsurePlaceholderView()

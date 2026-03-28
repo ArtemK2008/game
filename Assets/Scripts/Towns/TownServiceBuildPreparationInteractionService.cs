@@ -71,7 +71,7 @@ namespace Survivalon.Towns
                 return;
             }
 
-            persistenceService.SaveResolvedWorldContext(gameState);
+            persistenceService.SaveResolvedTownServiceContext(gameState);
         }
     }
 }
