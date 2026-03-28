@@ -45,6 +45,47 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldCreateFreshWorldEntryStateWithoutReusingPersistedContinueState()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState persistedGameState = new PersistentGameState();
+            persistedGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            persistedGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
+            storage.Seed(persistedGameState);
+
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            BootstrapStartupState startupState = stateFactory.CreateFresh(new BootstrapWorldMapFactory());
+
+            Assert.That(startupState.GameState, Is.Not.SameAs(persistedGameState));
+            Assert.That(startupState.GameState.WorldState.CurrentNodeId, Is.Not.EqualTo(new NodeId("region_002_node_001")));
+            Assert.That(startupState.EntryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
+        }
+
+        [Test]
+        public void ShouldCreateContinueStateOnlyWhenPersistedPlayableContextExists()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            Assert.That(stateFactory.TryCreateContinue(new BootstrapWorldMapFactory(), out BootstrapStartupState missingState), Is.False);
+            Assert.That(missingState, Is.Null);
+
+            PersistentGameState persistedGameState = new PersistentGameState();
+            persistedGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            persistedGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
+            persistedGameState.SafeResumeState.MarkWorldMap(new NodeId("region_002_node_001"));
+            storage.Seed(persistedGameState);
+
+            Assert.That(stateFactory.TryCreateContinue(new BootstrapWorldMapFactory(), out BootstrapStartupState startupState), Is.True);
+            Assert.That(startupState, Is.Not.Null);
+            Assert.That(startupState.EntryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
+            Assert.That(startupState.GameState.WorldState.CurrentNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+        }
+
+        [Test]
         public void ShouldUsePersistedGameStateAndPreserveExistingValidSelectionWhenStorageHasSavedState()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -65,7 +106,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
             BootstrapStartupState startupState = stateFactory.Create(new BootstrapWorldMapFactory());
 
-            Assert.That(startupState.GameState, Is.SameAs(persistedGameState));
+            Assert.That(startupState.GameState, Is.Not.SameAs(persistedGameState));
             Assert.That(startupState.EntryTarget, Is.EqualTo(StartupEntryTarget.WorldViewPlaceholder));
             Assert.That(startupState.SessionContext.HasRecentNode, Is.True);
             Assert.That(startupState.SessionContext.RecentNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
@@ -202,7 +243,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
             BootstrapStartupState startupState = stateFactory.Create(new BootstrapWorldMapFactory());
 
-            Assert.That(startupState.GameState, Is.SameAs(persistedGameState));
+            Assert.That(startupState.GameState, Is.Not.SameAs(persistedGameState));
             Assert.That(startupState.GameState.CharacterStates, Has.Count.EqualTo(2));
             AssertCharacterState(
                 startupState.GameState,

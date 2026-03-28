@@ -31,8 +31,51 @@ namespace Survivalon.Startup
                 throw new ArgumentNullException(nameof(worldMapFactory));
             }
 
-            WorldGraph worldGraph = worldMapFactory.CreateWorldGraph();
             PersistentGameState gameState = persistenceService.LoadOrCreate(worldMapFactory.CreateGameState());
+            return CreateFromGameState(worldMapFactory, gameState);
+        }
+
+        public BootstrapStartupState CreateFresh(BootstrapWorldMapFactory worldMapFactory)
+        {
+            if (worldMapFactory == null)
+            {
+                throw new ArgumentNullException(nameof(worldMapFactory));
+            }
+
+            PersistentGameState gameState = worldMapFactory.CreateGameState();
+            return CreateFromGameState(worldMapFactory, gameState);
+        }
+
+        public bool TryCreateContinue(
+            BootstrapWorldMapFactory worldMapFactory,
+            out BootstrapStartupState startupState)
+        {
+            if (worldMapFactory == null)
+            {
+                throw new ArgumentNullException(nameof(worldMapFactory));
+            }
+
+            if (!persistenceService.TryLoadExisting(out PersistentGameState persistedGameState))
+            {
+                startupState = null;
+                return false;
+            }
+
+            startupState = CreateFromGameState(worldMapFactory, persistedGameState);
+            if (startupState.EntryTarget != StartupEntryTarget.WorldViewPlaceholder)
+            {
+                startupState = null;
+                return false;
+            }
+
+            return true;
+        }
+
+        private BootstrapStartupState CreateFromGameState(
+            BootstrapWorldMapFactory worldMapFactory,
+            PersistentGameState gameState)
+        {
+            WorldGraph worldGraph = worldMapFactory.CreateWorldGraph();
             playableCharacterInitializer.EnsureInitialized(gameState);
             worldStateStartupNormalizer.Normalize(worldGraph, gameState.WorldState);
             WorldNodeEntryFlowController nodeEntryFlowController = new WorldNodeEntryFlowController(worldGraph, gameState.WorldState);

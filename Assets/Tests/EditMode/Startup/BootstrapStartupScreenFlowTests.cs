@@ -16,6 +16,148 @@ namespace Survivalon.Tests.EditMode.Startup
     public sealed class BootstrapStartupScreenFlowTests : BootstrapStartupScreenFlowTestBase
     {
         [Test]
+        public void ShouldShowCompactMainMenuOnInitialStartupAndDisableContinueWhenNoSavedStateExists()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(hostObject, "Main Menu"), Is.True);
+                Assert.That(ContainsText(hostObject, "Start begins a fresh prototype session."), Is.True);
+                Assert.That(FindButton(hostObject, "StartButton").gameObject.activeInHierarchy, Is.True);
+                Assert.That(FindButton(hostObject, "ContinueButton").gameObject.activeInHierarchy, Is.True);
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.False);
+                Assert.That(FindButton(hostObject, "SettingsButton").gameObject.activeInHierarchy, Is.True);
+                Assert.That(FindButton(hostObject, "QuitButton").gameObject.activeInHierarchy, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldOpenCompactSettingsEntryFromMainMenu()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+
+                OpenSettingsFromMainMenu(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Settings"), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Current settings access is intentionally compact."),
+                    Is.True);
+                Assert.That(FindButton(hostObject, "SettingsBackButton").gameObject.activeInHierarchy, Is.True);
+                Assert.That(FindButton(hostObject, "StartButton").gameObject.activeInHierarchy, Is.False);
+
+                CloseSettingsFromMainMenu(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Main Menu"), Is.True);
+                Assert.That(FindButton(hostObject, "StartButton").gameObject.activeInHierarchy, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldStartFreshWorldFlowFromMainMenuEvenWhenSavedStateExists()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            seededGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            seededGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
+            seededGameState.WorldState.ReplaceReachableNodes(new[] { new NodeId("region_002_node_001") });
+            storage.Seed(seededGameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.True);
+
+                StartFromMainMenu(hostObject);
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: none"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldContinueSavedWorldFlowFromMainMenuWhenSavedStateExists()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            seededGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            seededGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
+            seededGameState.WorldState.ReplaceReachableNodes(new[] { new NodeId("region_002_node_001") });
+            storage.Seed(seededGameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.True);
+
+                ContinueFromMainMenu(hostObject);
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
+                Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub (Available) | Selected: none"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldRequestQuitFromMainMenuThroughQuitService()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            FakeApplicationQuitService quitService = new FakeApplicationQuitService();
+
+            try
+            {
+                CreateAndInitializeBootstrap(
+                    hostObject,
+                    storage,
+                    autoEnterPlayableFlow: false,
+                    quitService: quitService);
+
+                FindButton(hostObject, "QuitButton").onClick.Invoke();
+
+                Assert.That(quitService.WasQuitRequested, Is.True);
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(1));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldReuseSingleWorldMapPlaceholderAndTownServiceScreensAcrossEnterAndReturnFlow()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
@@ -106,7 +248,7 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldShowStartupPlaceholderWhenTownServiceStopIsRequested()
+        public void ShouldShowCompactMainMenuWhenTownServiceStopIsRequested()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -125,8 +267,9 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 StartupPlaceholderView placeholderView = hostObject.GetComponentInChildren<StartupPlaceholderView>(true);
                 Assert.That(placeholderView, Is.Not.Null);
-                Assert.That(ContainsText(hostObject, "Main Menu Placeholder"), Is.True);
-                Assert.That(ContainsText(hostObject, "Session stopped at a safe world or service point."), Is.True);
+                Assert.That(ContainsText(hostObject, "Main Menu"), Is.True);
+                Assert.That(ContainsText(hostObject, "Continue resumes the last safe world context."), Is.True);
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.True);
                 Assert.That(storage.HasSavedState, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
@@ -417,6 +560,16 @@ namespace Survivalon.Tests.EditMode.Startup
             AudioSource audioSource = musicAudioHost.GetComponent<AudioSource>();
             Assert.That(audioSource, Is.Not.Null);
             Assert.That(audioSource.clip, Is.EqualTo(expectedClip));
+        }
+
+        private sealed class FakeApplicationQuitService : IApplicationQuitService
+        {
+            public bool WasQuitRequested { get; private set; }
+
+            public void RequestQuit()
+            {
+                WasQuitRequested = true;
+            }
         }
     }
 }

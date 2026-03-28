@@ -26,12 +26,44 @@ namespace Survivalon.Tests.EditMode.Startup
 
         protected static BootstrapStartup CreateAndInitializeBootstrap(
             GameObject hostObject,
-            MemoryPersistentGameStateStorage storage)
+            MemoryPersistentGameStateStorage storage,
+            bool autoEnterPlayableFlow = true,
+            IApplicationQuitService quitService = null)
         {
             BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
             bootstrapStartup.ConfigurePersistenceStorage(storage);
+            if (quitService != null)
+            {
+                bootstrapStartup.ConfigureQuitService(quitService);
+            }
+
             InvokeAwake(bootstrapStartup);
+            if (autoEnterPlayableFlow)
+            {
+                TryEnterPlayableFlowFromMainMenu(hostObject);
+            }
+
             return bootstrapStartup;
+        }
+
+        protected static void StartFromMainMenu(GameObject rootObject)
+        {
+            FindActiveButton(rootObject, "StartButton").onClick.Invoke();
+        }
+
+        protected static void ContinueFromMainMenu(GameObject rootObject)
+        {
+            FindActiveButton(rootObject, "ContinueButton").onClick.Invoke();
+        }
+
+        protected static void OpenSettingsFromMainMenu(GameObject rootObject)
+        {
+            FindActiveButton(rootObject, "SettingsButton").onClick.Invoke();
+        }
+
+        protected static void CloseSettingsFromMainMenu(GameObject rootObject)
+        {
+            FindActiveButton(rootObject, "SettingsBackButton").onClick.Invoke();
         }
 
         protected static void EnterNodeFromWorldMap(GameObject rootObject, string nodeButtonName)
@@ -295,6 +327,27 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(awakeMethod, Is.Not.Null);
 
             awakeMethod.Invoke(bootstrapStartup, null);
+        }
+
+        private static void TryEnterPlayableFlowFromMainMenu(GameObject rootObject)
+        {
+            if (CountActiveComponents<StartupPlaceholderView>(rootObject) == 0)
+            {
+                return;
+            }
+
+            Button continueButton = TryFindActiveButton(rootObject, "ContinueButton");
+            if (continueButton != null && continueButton.interactable)
+            {
+                continueButton.onClick.Invoke();
+                return;
+            }
+
+            Button startButton = TryFindActiveButton(rootObject, "StartButton");
+            if (startButton != null && startButton.interactable)
+            {
+                startButton.onClick.Invoke();
+            }
         }
     }
 }

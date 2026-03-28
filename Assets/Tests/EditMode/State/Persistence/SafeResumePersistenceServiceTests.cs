@@ -88,6 +88,24 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         }
 
         [Test]
+        public void ShouldOnlyReportExistingSavedStateWhenStorageActuallyContainsOne()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
+
+            Assert.That(service.TryLoadExisting(out PersistentGameState missingGameState), Is.False);
+            Assert.That(missingGameState, Is.Null);
+
+            PersistentGameState savedGameState = CreateGameState("region_002_node_001", "region_001_node_002");
+            service.SaveResolvedWorldContext(savedGameState);
+
+            Assert.That(service.TryLoadExisting(out PersistentGameState loadedGameState), Is.True);
+            Assert.That(loadedGameState, Is.Not.Null);
+            Assert.That(loadedGameState, Is.Not.SameAs(storage.SavedGameState));
+            Assert.That(loadedGameState.WorldState.CurrentNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+        }
+
+        [Test]
         public void ShouldPersistPurchasedAccountWideUpgradeAndAppliedEffectState()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();

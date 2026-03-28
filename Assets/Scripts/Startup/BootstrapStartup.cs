@@ -19,12 +19,15 @@ namespace Survivalon.Startup
         private PersistentGameState gameState;
         private WorldNodeEntryFlowController nodeEntryFlowController;
         private SafeResumePersistenceService persistenceService;
+        private BootstrapWorldMapFactory worldMapFactory;
+        private BootstrapStartupStateFactory startupStateFactory;
         private BootstrapWorldContextTransitionService worldContextTransitionService;
         private SessionContextState sessionContext;
         private UiSystemFeedbackAudioHost feedbackAudioHost;
         private CombatFeedbackAudioHost combatFeedbackAudioHost;
         private MusicAudioHost musicAudioHost;
         private TownServiceBackgroundResolver townServiceBackgroundResolver;
+        private IApplicationQuitService applicationQuitService;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
@@ -32,24 +35,25 @@ namespace Survivalon.Startup
                 storage ?? throw new ArgumentNullException(nameof(storage)));
         }
 
+        public void ConfigureQuitService(IApplicationQuitService quitService)
+        {
+            applicationQuitService = quitService ?? throw new ArgumentNullException(nameof(quitService));
+        }
+
         private void Awake()
         {
             persistenceService ??= new SafeResumePersistenceService(CreateDefaultPersistenceStorage());
+            applicationQuitService ??= new ApplicationQuitService();
+            worldMapFactory = new BootstrapWorldMapFactory();
+            startupStateFactory = new BootstrapStartupStateFactory(persistenceService);
             worldContextTransitionService = new BootstrapWorldContextTransitionService(persistenceService);
-
-            BootstrapStartupState startupState = new BootstrapStartupStateFactory(persistenceService)
-                .Create(new BootstrapWorldMapFactory());
-            worldGraph = startupState.WorldGraph;
-            gameState = startupState.GameState;
-            nodeEntryFlowController = startupState.NodeEntryFlowController;
-            sessionContext = startupState.SessionContext;
             feedbackAudioHost = EnsureUiSystemFeedbackAudioHost();
             combatFeedbackAudioHost = EnsureCombatFeedbackAudioHost();
             musicAudioHost = EnsureMusicAudioHost();
             townServiceBackgroundResolver = new TownServiceBackgroundResolver();
 
-            ShowStartupEntryTarget(startupState.EntryTarget);
-            Debug.Log($"Bootstrap startup flow entered {startupState.EntryTarget}.");
+            ShowMainMenu();
+            Debug.Log("Bootstrap startup flow entered the compact main menu.");
         }
 
         private void ShowWorldMap()
@@ -195,14 +199,60 @@ namespace Survivalon.Startup
                 return;
             }
 
+            ShowMainMenu();
+        }
+
+        private void ShowMainMenu()
+        {
             musicAudioHost.SetContext(MusicContextId.Calm);
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<TownServiceScreen>(), false);
 
+            bool canContinue = startupStateFactory.TryCreateContinue(worldMapFactory, out _);
             StartupPlaceholderView placeholderView = EnsurePlaceholderView();
             placeholderView.gameObject.SetActive(true);
-            placeholderView.Show(entryTarget);
+            placeholderView.ShowMainMenu(
+                canContinue,
+                HandleStartRequested,
+                canContinue ? (Action)HandleContinueRequested : null,
+                HandleQuitRequested);
+        }
+
+        private void HandleStartRequested()
+        {
+            ApplyStartupState(startupStateFactory.CreateFresh(worldMapFactory));
+            ShowWorldMap();
+        }
+
+        private void HandleContinueRequested()
+        {
+            if (!startupStateFactory.TryCreateContinue(worldMapFactory, out BootstrapStartupState startupState))
+            {
+                ShowMainMenu();
+                return;
+            }
+
+            ApplyStartupState(startupState);
+            ShowWorldMap();
+        }
+
+        private void HandleQuitRequested()
+        {
+            applicationQuitService.RequestQuit();
+        }
+
+        private void ApplyStartupState(BootstrapStartupState startupState)
+        {
+            if (startupState == null)
+            {
+                throw new ArgumentNullException(nameof(startupState));
+            }
+
+            worldGraph = startupState.WorldGraph;
+            gameState = startupState.GameState;
+            nodeEntryFlowController = startupState.NodeEntryFlowController;
+            sessionContext = startupState.SessionContext;
         }
 
         private StartupPlaceholderView EnsurePlaceholderView()

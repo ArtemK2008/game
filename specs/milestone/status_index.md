@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 095
+Current next implementation target: Milestone 096
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -120,6 +120,7 @@ id | type | title | status | depends on / note
 092 | feature | Implement two distinct location visual identities | completed | phase 23
 093 | feature | Implement service/town visual contrast | completed | phase 23
 094 | feature | Implement combat effect readability under autobattle | completed | phase 23
+095 | feature | Implement compact main menu | completed | phase 24
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

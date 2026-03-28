@@ -24,12 +24,24 @@ namespace Survivalon.State.Persistence
                 throw new ArgumentNullException(nameof(fallbackState));
             }
 
-            if (storage.TryLoad(out PersistentGameState persistedState))
+            if (TryLoadExisting(out PersistentGameState persistedState))
             {
                 return persistedState;
             }
 
             return CloneGameState(fallbackState);
+        }
+
+        public bool TryLoadExisting(out PersistentGameState gameState)
+        {
+            if (!storage.TryLoad(out PersistentGameState persistedState))
+            {
+                gameState = null;
+                return false;
+            }
+
+            gameState = CloneGameState(persistedState);
+            return true;
         }
 
         public void SaveResolvedWorldContext(PersistentGameState gameState)
