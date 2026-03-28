@@ -15,7 +15,10 @@ namespace Survivalon.Towns
     /// </summary>
     public sealed class TownServiceScreen : MonoBehaviour
     {
+        private static readonly Color BackgroundArtTint = new Color(1f, 1f, 1f, 0.64f);
+
         private Canvas canvas;
+        private Image backgroundArtImage;
         private RectTransform panelRectTransform;
         private RectTransform contentViewportRectTransform;
         private RectTransform contentRectTransform;
@@ -35,6 +38,7 @@ namespace Survivalon.Towns
         private Action onStopSessionRequested;
         private NodePlaceholderState currentPlaceholderState;
         private PersistentGameState currentGameState;
+        private Sprite currentBackgroundSprite;
         private TownServiceScreenStateResolver stateResolver;
         private TownServiceProgressionInteractionService progressionInteractionService;
         private TownServiceConversionInteractionService conversionInteractionService;
@@ -44,6 +48,7 @@ namespace Survivalon.Towns
         public void Show(
             NodePlaceholderState placeholderState,
             PersistentGameState gameState,
+            Sprite backgroundSprite,
             Action returnToWorldRequested,
             Action stopSessionRequested = null,
             TownServiceScreenStateResolver stateResolver = null,
@@ -78,6 +83,9 @@ namespace Survivalon.Towns
 
             currentPlaceholderState = placeholderState;
             currentGameState = gameState;
+            currentBackgroundSprite = backgroundSprite
+                ? backgroundSprite
+                : throw new ArgumentNullException(nameof(backgroundSprite));
             this.stateResolver = stateResolver ?? new TownServiceScreenStateResolver();
             this.progressionInteractionService = progressionInteractionService ?? new TownServiceProgressionInteractionService();
             this.conversionInteractionService = conversionInteractionService ?? new TownServiceConversionInteractionService();
@@ -95,6 +103,7 @@ namespace Survivalon.Towns
 
         private void Refresh(TownServiceScreenState screenState)
         {
+            ApplyBackgroundArt();
             titleText.text = screenState.ServiceContext.DisplayName;
             overviewText.text = TownServiceScreenTextBuilder.BuildOverviewText(screenState);
             progressionText.text = TownServiceScreenTextBuilder.BuildProgressionText(screenState);
@@ -141,6 +150,8 @@ namespace Survivalon.Towns
             rootRectTransform.pivot = new Vector2(0.5f, 0.5f);
             rootRectTransform.localScale = Vector3.one;
 
+            backgroundArtImage = CreateBackgroundArtImage();
+
             GameObject panelObject = new GameObject(
                 "Panel",
                 typeof(RectTransform),
@@ -149,7 +160,7 @@ namespace Survivalon.Towns
             panelObject.transform.SetParent(transform, false);
 
             Image panelImage = panelObject.GetComponent<Image>();
-            panelImage.color = new Color(0.10f, 0.12f, 0.16f, 0.96f);
+            panelImage.color = new Color(0.08f, 0.10f, 0.13f, 0.84f);
 
             panelRectTransform = panelObject.GetComponent<RectTransform>();
             panelRectTransform.anchorMin = new Vector2(0.14f, 0.10f);
@@ -372,6 +383,28 @@ namespace Survivalon.Towns
             textRectTransform.localScale = Vector3.one;
 
             return button;
+        }
+
+        private Image CreateBackgroundArtImage()
+        {
+            GameObject backgroundArtObject = new GameObject(
+                "TownServiceBackgroundArt",
+                typeof(RectTransform),
+                typeof(Image));
+            backgroundArtObject.transform.SetParent(transform, false);
+            backgroundArtObject.transform.SetAsFirstSibling();
+
+            RectTransform backgroundArtRectTransform = backgroundArtObject.GetComponent<RectTransform>();
+            backgroundArtRectTransform.anchorMin = Vector2.zero;
+            backgroundArtRectTransform.anchorMax = Vector2.one;
+            backgroundArtRectTransform.offsetMin = Vector2.zero;
+            backgroundArtRectTransform.offsetMax = Vector2.zero;
+            backgroundArtRectTransform.localScale = Vector3.one;
+
+            Image resolvedBackgroundArtImage = backgroundArtObject.GetComponent<Image>();
+            resolvedBackgroundArtImage.color = BackgroundArtTint;
+            resolvedBackgroundArtImage.raycastTarget = false;
+            return resolvedBackgroundArtImage;
         }
 
         private RectTransform CreateActionContainer(Transform parent, string objectName)
@@ -649,6 +682,13 @@ namespace Survivalon.Towns
 
             onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             onStopSessionRequested?.Invoke();
+        }
+
+        private void ApplyBackgroundArt()
+        {
+            backgroundArtImage.sprite = currentBackgroundSprite;
+            backgroundArtImage.enabled = currentBackgroundSprite != null;
+            backgroundArtImage.color = BackgroundArtTint;
         }
     }
 }
