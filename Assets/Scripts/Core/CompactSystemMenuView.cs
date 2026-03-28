@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace Survivalon.Core
 {
     /// <summary>
-    /// Renders a compact in-game system menu overlay with a small settings entry surface.
+    /// Renders a compact in-game system menu overlay with the shared compact settings surface.
     /// </summary>
     public sealed class CompactSystemMenuView : MonoBehaviour
     {
@@ -16,22 +16,29 @@ namespace Survivalon.Core
         private Text exitButtonText;
         private GameObject menuButtonGroup;
         private GameObject settingsButtonGroup;
+        private CompactSettingsView settingsView;
         private Font uiFont;
         private bool canExit;
         private bool isShowingSettings;
+        private UserSettingsState currentSettingsState;
         private Action onExitRequested;
         private Action onResumeRequested;
+        private Action<UserSettingsState> onSettingsChanged;
 
         public bool IsVisible => gameObject.activeSelf;
 
         public void ShowMenu(
             bool canExit,
             Action onResumeRequested,
-            Action onExitRequested = null)
+            Action onExitRequested = null,
+            UserSettingsState settingsState = null,
+            Action<UserSettingsState> settingsChanged = null)
         {
             this.canExit = canExit;
             this.onResumeRequested = onResumeRequested ?? throw new ArgumentNullException(nameof(onResumeRequested));
             this.onExitRequested = onExitRequested;
+            currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            onSettingsChanged = settingsChanged;
             isShowingSettings = false;
 
             EnsureUi();
@@ -43,6 +50,7 @@ namespace Survivalon.Core
         public void HideMenu()
         {
             isShowingSettings = false;
+            settingsView?.Hide();
             if (gameObject.activeSelf)
             {
                 gameObject.SetActive(false);
@@ -55,10 +63,11 @@ namespace Survivalon.Core
             {
                 titleText.text = "Settings";
                 summaryText.text =
-                    "Current settings access is intentionally compact.\n" +
-                    "Deeper audio, display, and control options are not expanded yet.";
+                    "Changes apply immediately and persist automatically.\n" +
+                    "Adjust master, music, SFX, and the current desktop window mode.";
                 menuButtonGroup.SetActive(false);
                 settingsButtonGroup.SetActive(true);
+                settingsView.gameObject.SetActive(true);
                 return;
             }
 
@@ -68,6 +77,7 @@ namespace Survivalon.Core
                 : "Resume returns to the current context.\nExit is unavailable until you reach a safe world, service, or resolved post-run context.";
             menuButtonGroup.SetActive(true);
             settingsButtonGroup.SetActive(false);
+            settingsView.gameObject.SetActive(false);
             exitButton.interactable = canExit && onExitRequested != null;
             exitButtonText.text = exitButton.interactable ? "Exit" : "Exit Unavailable";
         }
@@ -164,11 +174,8 @@ namespace Survivalon.Core
             exitButtonText = exitButton.GetComponentInChildren<Text>(true);
 
             settingsButtonGroup = CreateButtonGroup(panelObject.transform, "SystemMenuSettingsButtons");
-            CreateActionButton(
-                settingsButtonGroup.transform,
-                "SystemMenuSettingsBackButton",
-                "Back",
-                HandleSettingsBackRequested);
+            settingsView = settingsButtonGroup.AddComponent<CompactSettingsView>();
+            settingsView.Hide();
         }
 
         private static GameObject CreateButtonGroup(Transform parent, string objectName)
@@ -245,12 +252,18 @@ namespace Survivalon.Core
         private void HandleSettingsRequested()
         {
             isShowingSettings = true;
+            settingsView.Show(
+                currentSettingsState,
+                HandleSettingsChanged,
+                HandleSettingsBackRequested,
+                "SystemMenuSettingsBackButton");
             Refresh();
         }
 
         private void HandleSettingsBackRequested()
         {
             isShowingSettings = false;
+            settingsView.Hide();
             Refresh();
         }
 
@@ -262,6 +275,12 @@ namespace Survivalon.Core
             }
 
             onExitRequested.Invoke();
+        }
+
+        private void HandleSettingsChanged(UserSettingsState settingsState)
+        {
+            currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            onSettingsChanged?.Invoke(currentSettingsState.Clone());
         }
     }
 }

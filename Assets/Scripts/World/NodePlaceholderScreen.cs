@@ -35,6 +35,7 @@ namespace Survivalon.World
         private Text stopSessionButtonText;
         private Button systemMenuButton;
         private CompactSystemMenuView systemMenuView;
+        private UserSettingsState currentSettingsState;
         private Font uiFont;
         private WorldGraph worldGraph;
         private RunPersistentContext persistentContext;
@@ -60,6 +61,7 @@ namespace Survivalon.World
         private Action<MusicContextId> onMusicContextRequested;
         private Action<UiSystemFeedbackSoundId> onFeedbackSoundRequested;
         private Action<CombatFeedbackSoundId> onCombatFeedbackSoundRequested;
+        private Action<UserSettingsState> onSettingsChanged;
         private CombatFeedbackSnapshot lastCombatFeedbackSnapshot;
         private CombatShellVisualState currentCombatShellVisualState;
         private CombatEffectPresentationState currentCombatEffectPresentationState;
@@ -73,7 +75,9 @@ namespace Survivalon.World
             Action resolvedPostRunBoundaryReached = null,
             Action<MusicContextId> musicContextRequested = null,
             Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null,
-            Action<CombatFeedbackSoundId> combatFeedbackSoundRequested = null)
+            Action<CombatFeedbackSoundId> combatFeedbackSoundRequested = null,
+            UserSettingsState settingsState = null,
+            Action<UserSettingsState> settingsChanged = null)
         {
             if (worldGraph == null)
             {
@@ -95,6 +99,8 @@ namespace Survivalon.World
             onMusicContextRequested = musicContextRequested;
             onFeedbackSoundRequested = feedbackSoundRequested;
             onCombatFeedbackSoundRequested = combatFeedbackSoundRequested;
+            currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            onSettingsChanged = settingsChanged;
             gameObject.name = "NodePlaceholderScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
@@ -477,8 +483,11 @@ namespace Survivalon.World
                 out stopSessionButtonText);
             RuntimeUiSupport.AddLayoutElement(stopSessionButton.gameObject, 48f);
             stopSessionButton.onClick.AddListener(HandleStopSessionRequested);
-            systemMenuButton = CreateSystemMenuButton();
-            systemMenuView = EnsureSystemMenuView();
+            systemMenuButton = CompactSystemMenuUiFactory.CreateSystemMenuButton(
+                transform,
+                uiFont,
+                HandleSystemMenuRequested);
+            systemMenuView = CompactSystemMenuUiFactory.CreateSystemMenuView(transform);
         }
 
         private Button CreateActionButton(Transform parent, string objectName, string label, out Text buttonText)
@@ -859,7 +868,9 @@ namespace Survivalon.World
             EnsureSystemMenuView().ShowMenu(
                 canExit,
                 HandleSystemMenuResumeRequested,
-                canExit ? (Action)HandleSystemMenuExitRequested : null);
+                canExit ? (Action)HandleSystemMenuExitRequested : null,
+                currentSettingsState,
+                HandleSettingsChangedRequested);
         }
 
         private void HandleSystemMenuResumeRequested()
@@ -883,49 +894,10 @@ namespace Survivalon.World
             onStopSessionRequested(postRunStateController.RunResult);
         }
 
-        private Button CreateSystemMenuButton()
+        private void HandleSettingsChangedRequested(UserSettingsState settingsState)
         {
-            GameObject buttonObject = new GameObject(
-                "SystemMenuButton",
-                typeof(RectTransform),
-                typeof(Image),
-                typeof(Button));
-            buttonObject.transform.SetParent(transform, false);
-            buttonObject.transform.SetAsLastSibling();
-
-            RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
-            buttonRectTransform.anchorMin = new Vector2(1f, 1f);
-            buttonRectTransform.anchorMax = new Vector2(1f, 1f);
-            buttonRectTransform.pivot = new Vector2(1f, 1f);
-            buttonRectTransform.sizeDelta = new Vector2(132f, 42f);
-            buttonRectTransform.anchoredPosition = new Vector2(-24f, -24f);
-            buttonRectTransform.localScale = Vector3.one;
-
-            Image buttonImage = buttonObject.GetComponent<Image>();
-            buttonImage.color = new Color(0.18f, 0.24f, 0.32f, 0.96f);
-
-            Button button = buttonObject.GetComponent<Button>();
-            button.targetGraphic = buttonImage;
-            button.onClick.AddListener(HandleSystemMenuRequested);
-
-            Text buttonText = RuntimeUiSupport.CreateText(
-                buttonObject.transform,
-                uiFont,
-                "Label",
-                16,
-                FontStyle.Bold,
-                TextAnchor.MiddleCenter,
-                Color.white);
-            buttonText.text = "System";
-
-            RectTransform labelRectTransform = buttonText.rectTransform;
-            labelRectTransform.anchorMin = Vector2.zero;
-            labelRectTransform.anchorMax = Vector2.one;
-            labelRectTransform.offsetMin = new Vector2(10f, 6f);
-            labelRectTransform.offsetMax = new Vector2(-10f, -6f);
-            labelRectTransform.localScale = Vector3.one;
-
-            return button;
+            currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            onSettingsChanged?.Invoke(currentSettingsState.Clone());
         }
 
         private CompactSystemMenuView EnsureSystemMenuView()
@@ -935,10 +907,7 @@ namespace Survivalon.World
                 return systemMenuView;
             }
 
-            GameObject systemMenuObject = new GameObject("SystemMenuOverlay");
-            systemMenuObject.transform.SetParent(transform, false);
-            systemMenuView = systemMenuObject.AddComponent<CompactSystemMenuView>();
-            systemMenuView.HideMenu();
+            systemMenuView = CompactSystemMenuUiFactory.CreateSystemMenuView(transform);
             return systemMenuView;
         }
 

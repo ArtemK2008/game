@@ -443,6 +443,7 @@ namespace Survivalon.Tests.EditMode.World
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
             bool exitRequested = false;
+            UserSettingsState receivedSettingsState = null;
 
             try
             {
@@ -451,7 +452,8 @@ namespace Survivalon.Tests.EditMode.World
                     BootstrapWorldTestData.CreateWorldGraph(),
                     BootstrapWorldTestData.CreateWorldState(),
                     gameState: gameState,
-                    stopSessionRequested: () => exitRequested = true);
+                    stopSessionRequested: () => exitRequested = true,
+                    settingsChanged: settingsState => receivedSettingsState = settingsState);
 
                 FindButton(hostObject, "SystemMenuButton").onClick.Invoke();
 
@@ -459,7 +461,14 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(FindButton(hostObject, "SystemMenuExitButton").interactable, Is.True);
 
                 FindButton(hostObject, "SystemMenuSettingsButton").onClick.Invoke();
-                Assert.That(ContainsText(hostObject, "Current settings access is intentionally compact."), Is.True);
+                Assert.That(ContainsText(hostObject, "Master volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Music volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "SFX volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Display mode: Windowed"), Is.True);
+                FindButton(hostObject, "MasterVolumeDecreaseButton").onClick.Invoke();
+
+                Assert.That(receivedSettingsState, Is.Not.Null);
+                Assert.That(receivedSettingsState.MasterVolume, Is.EqualTo(0.9f).Within(0.001f));
 
                 FindButton(hostObject, "SystemMenuSettingsBackButton").onClick.Invoke();
                 FindButton(hostObject, "SystemMenuExitButton").onClick.Invoke();

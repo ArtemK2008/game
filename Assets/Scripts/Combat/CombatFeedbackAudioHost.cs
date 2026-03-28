@@ -30,6 +30,12 @@ namespace Survivalon.Combat
             audioSource.PlayOneShot(clip);
         }
 
+        public void SetOutputVolume(float volume)
+        {
+            EnsureInitialized();
+            audioSource.volume = Mathf.Clamp01(volume);
+        }
+
         private void EnsureInitialized()
         {
             if (isInitialized)

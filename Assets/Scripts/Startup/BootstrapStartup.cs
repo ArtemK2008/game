@@ -29,6 +29,10 @@ namespace Survivalon.Startup
         private MusicAudioHost musicAudioHost;
         private TownServiceBackgroundResolver townServiceBackgroundResolver;
         private IApplicationQuitService applicationQuitService;
+        private UserSettingsPersistenceService userSettingsPersistenceService;
+        private UserSettingsApplier userSettingsApplier;
+        private IDisplaySettingsApplier displaySettingsApplier;
+        private UserSettingsState currentUserSettings;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
@@ -41,10 +45,23 @@ namespace Survivalon.Startup
             applicationQuitService = quitService ?? throw new ArgumentNullException(nameof(quitService));
         }
 
+        public void ConfigureUserSettingsStorage(IUserSettingsStorage storage)
+        {
+            userSettingsPersistenceService = new UserSettingsPersistenceService(
+                storage ?? throw new ArgumentNullException(nameof(storage)));
+        }
+
+        public void ConfigureDisplaySettingsApplier(IDisplaySettingsApplier applier)
+        {
+            displaySettingsApplier = applier ?? throw new ArgumentNullException(nameof(applier));
+        }
+
         private void Awake()
         {
             persistenceService ??= new SafeResumePersistenceService(CreateDefaultPersistenceStorage());
             applicationQuitService ??= new ApplicationQuitService();
+            userSettingsPersistenceService ??= new UserSettingsPersistenceService(CreateDefaultUserSettingsStorage());
+            displaySettingsApplier ??= new UnityDisplaySettingsApplier();
             worldMapFactory = new BootstrapWorldMapFactory();
             startupStateFactory = new BootstrapStartupStateFactory(persistenceService);
             worldContextTransitionService = new BootstrapWorldContextTransitionService(persistenceService);
@@ -52,6 +69,13 @@ namespace Survivalon.Startup
             combatFeedbackAudioHost = EnsureCombatFeedbackAudioHost();
             musicAudioHost = EnsureMusicAudioHost();
             townServiceBackgroundResolver = new TownServiceBackgroundResolver();
+            userSettingsApplier = new UserSettingsApplier(
+                feedbackAudioHost,
+                combatFeedbackAudioHost,
+                musicAudioHost,
+                displaySettingsApplier);
+            currentUserSettings = userSettingsPersistenceService.LoadOrDefault();
+            userSettingsApplier.Apply(currentUserSettings);
 
             ShowMainMenu();
             Debug.Log("Bootstrap startup flow entered the compact main menu.");
@@ -75,7 +99,9 @@ namespace Survivalon.Startup
                 ResolveWorldMapProgressionEffects(),
                 new WorldMapBuildPreparationInteractionService(persistenceService),
                 feedbackAudioHost.TryPlay,
-                HandleWorldMapStopRequested);
+                HandleWorldMapStopRequested,
+                currentUserSettings,
+                HandleSettingsChangedRequested);
         }
 
         private void ShowNodePlaceholder(NodePlaceholderState placeholderState)
@@ -95,7 +121,9 @@ namespace Survivalon.Startup
                 HandleResolvedPostRunBoundaryReached,
                 musicAudioHost.SetContext,
                 feedbackAudioHost.TryPlay,
-                combatFeedbackAudioHost.TryPlay);
+                combatFeedbackAudioHost.TryPlay,
+                currentUserSettings,
+                HandleSettingsChangedRequested);
         }
 
         private void ShowTownServiceScreen(NodePlaceholderState placeholderState)
@@ -116,7 +144,9 @@ namespace Survivalon.Startup
                 progressionInteractionService: new TownServiceProgressionInteractionService(persistenceService),
                 conversionInteractionService: new TownServiceConversionInteractionService(persistenceService),
                 buildPreparationInteractionService: new TownServiceBuildPreparationInteractionService(persistenceService),
-                feedbackSoundRequested: feedbackAudioHost.TryPlay);
+                feedbackSoundRequested: feedbackAudioHost.TryPlay,
+                settingsState: currentUserSettings,
+                settingsChanged: HandleSettingsChangedRequested);
         }
 
         private void HandleNodeEntryRequested(NodeId nodeId)
@@ -229,7 +259,9 @@ namespace Survivalon.Startup
                 canContinue,
                 HandleStartRequested,
                 canContinue ? (Action)HandleContinueRequested : null,
-                HandleQuitRequested);
+                HandleQuitRequested,
+                currentUserSettings,
+                HandleSettingsChangedRequested);
         }
 
         private void HandleStartRequested()
@@ -253,6 +285,13 @@ namespace Survivalon.Startup
         private void HandleQuitRequested()
         {
             applicationQuitService.RequestQuit();
+        }
+
+        private void HandleSettingsChangedRequested(UserSettingsState settingsState)
+        {
+            currentUserSettings = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            userSettingsApplier.Apply(currentUserSettings);
+            userSettingsPersistenceService.Save(currentUserSettings);
         }
 
         private void ApplyStartupState(BootstrapStartupState startupState)
@@ -444,6 +483,12 @@ namespace Survivalon.Startup
         {
             string storagePath = Path.Combine(Application.persistentDataPath, "survivalon_game_state.json");
             return new FilePersistentGameStateStorage(storagePath);
+        }
+
+        private static IUserSettingsStorage CreateDefaultUserSettingsStorage()
+        {
+            string storagePath = Path.Combine(Application.persistentDataPath, "survivalon_user_settings.json");
+            return new FileUserSettingsStorage(storagePath);
         }
     }
 }

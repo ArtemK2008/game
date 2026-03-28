@@ -42,7 +42,7 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldOpenCompactSettingsEntryFromMainMenu()
+        public void ShouldOpenRealSettingsSurfaceFromMainMenu()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -54,9 +54,15 @@ namespace Survivalon.Tests.EditMode.Startup
                 OpenSettingsFromMainMenu(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Settings"), Is.True);
-                Assert.That(
-                    ContainsText(hostObject, "Current settings access is intentionally compact."),
-                    Is.True);
+                Assert.That(ContainsText(hostObject, "Changes apply immediately and persist automatically."), Is.True);
+                Assert.That(ContainsText(hostObject, "Master volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Music volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "SFX volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Display mode: Windowed"), Is.True);
+                Assert.That(FindButton(hostObject, "MasterVolumeDecreaseButton").gameObject.activeInHierarchy, Is.True);
+                Assert.That(FindButton(hostObject, "MusicVolumeDecreaseButton").gameObject.activeInHierarchy, Is.True);
+                Assert.That(FindButton(hostObject, "SfxVolumeDecreaseButton").gameObject.activeInHierarchy, Is.True);
+                Assert.That(FindButton(hostObject, "DisplayModeToggleButton").gameObject.activeInHierarchy, Is.True);
                 Assert.That(FindButton(hostObject, "SettingsBackButton").gameObject.activeInHierarchy, Is.True);
                 Assert.That(FindButton(hostObject, "StartButton").gameObject.activeInHierarchy, Is.False);
 
@@ -72,7 +78,63 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldOpenCompactSettingsEntryFromWorldMapSystemMenuAndResumeCurrentContext()
+        public void ShouldPersistChangedSettingsAcrossRestartAndApplyLoadedValues()
+        {
+            GameObject firstHostObject = new GameObject("BootstrapStartupHost_First");
+            GameObject secondHostObject = new GameObject("BootstrapStartupHost_Second");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            MemoryUserSettingsStorage settingsStorage = new MemoryUserSettingsStorage();
+            FakeDisplaySettingsApplier firstDisplaySettingsApplier = new FakeDisplaySettingsApplier();
+            FakeDisplaySettingsApplier secondDisplaySettingsApplier = new FakeDisplaySettingsApplier();
+
+            try
+            {
+                CreateAndInitializeBootstrap(
+                    firstHostObject,
+                    storage,
+                    autoEnterPlayableFlow: false,
+                    settingsStorage: settingsStorage,
+                    displaySettingsApplier: firstDisplaySettingsApplier);
+
+                OpenSettingsFromMainMenu(firstHostObject);
+                FindButton(firstHostObject, "MasterVolumeDecreaseButton").onClick.Invoke();
+                FindButton(firstHostObject, "MusicVolumeDecreaseButton").onClick.Invoke();
+                FindButton(firstHostObject, "SfxVolumeDecreaseButton").onClick.Invoke();
+                FindButton(firstHostObject, "DisplayModeToggleButton").onClick.Invoke();
+
+                Assert.That(settingsStorage.SavedSettingsState, Is.Not.Null);
+                Assert.That(settingsStorage.SavedSettingsState.MasterVolume, Is.EqualTo(0.9f).Within(0.001f));
+                Assert.That(settingsStorage.SavedSettingsState.MusicVolume, Is.EqualTo(0.9f).Within(0.001f));
+                Assert.That(settingsStorage.SavedSettingsState.SfxVolume, Is.EqualTo(0.9f).Within(0.001f));
+                Assert.That(settingsStorage.SavedSettingsState.UseFullscreen, Is.True);
+                Assert.That(settingsStorage.SaveCallCount, Is.EqualTo(4));
+                Assert.That(firstDisplaySettingsApplier.LastAppliedFullscreen, Is.True);
+
+                CreateAndInitializeBootstrap(
+                    secondHostObject,
+                    storage,
+                    autoEnterPlayableFlow: false,
+                    settingsStorage: settingsStorage,
+                    displaySettingsApplier: secondDisplaySettingsApplier);
+
+                OpenSettingsFromMainMenu(secondHostObject);
+
+                Assert.That(ContainsText(secondHostObject, "Master volume: 90%"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Music volume: 90%"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "SFX volume: 90%"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Display mode: Fullscreen"), Is.True);
+                Assert.That(secondDisplaySettingsApplier.LastAppliedFullscreen, Is.True);
+                Assert.That(secondDisplaySettingsApplier.ApplyCallCount, Is.EqualTo(1));
+            }
+            finally
+            {
+                Object.DestroyImmediate(firstHostObject);
+                Object.DestroyImmediate(secondHostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldOpenRealSettingsSurfaceFromWorldMapSystemMenuAndResumeCurrentContext()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -89,9 +151,10 @@ namespace Survivalon.Tests.EditMode.Startup
                 OpenSettingsFromSystemMenu(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Settings"), Is.True);
-                Assert.That(
-                    ContainsText(hostObject, "Current settings access is intentionally compact."),
-                    Is.True);
+                Assert.That(ContainsText(hostObject, "Changes apply immediately and persist automatically."), Is.True);
+                Assert.That(ContainsText(hostObject, "Master volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Display mode: Windowed"), Is.True);
+                Assert.That(FindButton(hostObject, "SystemMenuSettingsBackButton").gameObject.activeInHierarchy, Is.True);
 
                 CloseSettingsFromSystemMenu(hostObject);
                 ResumeFromSystemMenu(hostObject);

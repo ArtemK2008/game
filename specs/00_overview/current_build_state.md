@@ -4,10 +4,10 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 096**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 096** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
-On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens a compact settings entry surface, and `Quit` requests application shutdown in player builds while staying safe in editor/test contexts.
+On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while staying safe in editor/test contexts.
 
 From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. Entering that resolved post-run boundary now autosaves the durable run outcome before the player chooses replay, return to world, or stop. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. The current cavern service node now opens a distinct town/service shell instead of the generic node placeholder, while broader non-combat content remains placeholder-level.
 
@@ -30,9 +30,15 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - `Continue` now resumes the last persisted safe context directly:
   - world-level safe contexts reopen at the world map
   - the current cavern town/service safe context reopens in the town/service shell
-- `Settings` currently opens one compact entry surface inside the startup menu rather than a deeper settings system.
+- `Settings` now opens one compact real settings surface inside the startup menu rather than a deeper settings system.
+- That compact settings surface supports the current MVP settings set:
+  - master volume
+  - music volume
+  - SFX volume
+  - fullscreen / windowed mode
+- Settings changes apply immediately and persist through a dedicated player-settings save path separate from gameplay safe-resume state.
 - World map, town/service, and node/combat screens now also expose one compact shared in-game system menu with `Resume`, `Settings`, and `Exit`.
-- That in-game system menu reuses the same compact settings-entry approach rather than a deeper settings screen.
+- That in-game system menu reuses the same compact real settings surface rather than a deeper settings screen.
 - `Exit` is only available where the current safe-save model supports it:
   - world map -> safe stop back to the main menu
   - town/service -> safe stop back to the main menu
@@ -160,7 +166,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - stop session
 - The service shell now also exposes the compact in-game system menu:
   - `Resume` closes the menu and keeps the player in the current service context
-  - `Settings` reuses the current compact settings-entry surface
+- `Settings` reuses the same compact real settings surface with master/music/SFX volume and fullscreen/windowed controls
   - `Exit` safely returns to the main menu through the existing town/service safe-stop path
 - The service shell now uses a safer scrollable content area for its readable overview, progression, and build sections.
 - The current `Cavern Service Hub` service shell now also uses the prepared safe-space background art:

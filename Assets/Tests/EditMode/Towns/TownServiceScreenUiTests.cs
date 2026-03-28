@@ -146,6 +146,7 @@ namespace Survivalon.Tests.EditMode.Towns
             GameObject hostObject = new GameObject("TownServiceScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
             bool stopRequested = false;
+            UserSettingsState receivedSettingsState = null;
 
             try
             {
@@ -155,7 +156,8 @@ namespace Survivalon.Tests.EditMode.Towns
                     gameState,
                     ResolveTownServiceBackground(),
                     () => { },
-                    () => stopRequested = true);
+                    () => stopRequested = true,
+                    settingsChanged: settingsState => receivedSettingsState = settingsState);
 
                 FindButton(hostObject, "SystemMenuButton").onClick.Invoke();
 
@@ -163,7 +165,14 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(FindButton(hostObject, "SystemMenuExitButton").interactable, Is.True);
 
                 FindButton(hostObject, "SystemMenuSettingsButton").onClick.Invoke();
-                Assert.That(ContainsText(hostObject, "Current settings access is intentionally compact."), Is.True);
+                Assert.That(ContainsText(hostObject, "Master volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Music volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "SFX volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Display mode: Windowed"), Is.True);
+                FindButton(hostObject, "DisplayModeToggleButton").onClick.Invoke();
+
+                Assert.That(receivedSettingsState, Is.Not.Null);
+                Assert.That(receivedSettingsState.UseFullscreen, Is.True);
 
                 FindButton(hostObject, "SystemMenuSettingsBackButton").onClick.Invoke();
                 FindButton(hostObject, "SystemMenuExitButton").onClick.Invoke();
