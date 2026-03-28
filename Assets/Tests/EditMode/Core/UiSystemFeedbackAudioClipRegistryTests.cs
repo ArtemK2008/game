@@ -11,7 +11,7 @@ namespace Survivalon.Tests.EditMode.Core
     public sealed class UiSystemFeedbackAudioClipRegistryTests
     {
         [Test]
-        public void LoadOrNull_ShouldResolveRegistryWithAllRequiredMilestone87Clips()
+        public void LoadOrNull_ShouldResolveRegistryWithCurrentRequiredUiSystemFeedbackClips()
         {
             UiSystemFeedbackAudioClipRegistry registry = UiSystemFeedbackAudioClipRegistry.LoadOrNull();
 
@@ -19,18 +19,20 @@ namespace Survivalon.Tests.EditMode.Core
             AssertClip(registry, UiSystemFeedbackSoundId.UiClick);
             AssertClip(registry, UiSystemFeedbackSoundId.UiConfirm);
             AssertClip(registry, UiSystemFeedbackSoundId.UiError);
-            AssertClip(registry, UiSystemFeedbackSoundId.StateUnlock);
-            AssertClip(registry, UiSystemFeedbackSoundId.StateBossClear);
+            AssertClip(registry, UiSystemFeedbackSoundId.StateNodeClear);
+            AssertClip(registry, UiSystemFeedbackSoundId.StateRouteUnlock);
+            AssertClip(registry, UiSystemFeedbackSoundId.StateBossReward);
         }
 
         [Test]
-        public void Milestone87FeedbackClips_ShouldUseNonStreamingImportSettings()
+        public void CurrentUiSystemFeedbackClips_ShouldUseNonStreamingImportSettings()
         {
             AssertImportSettings("Assets/Audio/UI/ui_click.wav");
             AssertImportSettings("Assets/Audio/UI/ui_confirm.wav");
             AssertImportSettings("Assets/Audio/UI/ui_error.wav");
-            AssertImportSettings("Assets/Audio/System/state_unlock.wav");
-            AssertImportSettings("Assets/Audio/System/state_boss_clear.wav");
+            AssertImportSettings("Assets/Audio/System/state_node_clear.wav");
+            AssertImportSettings("Assets/Audio/System/state_route_unlock.wav");
+            AssertImportSettings("Assets/Audio/System/state_boss_reward.wav");
         }
 
         private static void AssertClip(UiSystemFeedbackAudioClipRegistry registry, UiSystemFeedbackSoundId soundId)

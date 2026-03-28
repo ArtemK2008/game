@@ -8,7 +8,8 @@ namespace Survivalon.Core
         UiClick,
         UiConfirm,
         UiError,
-        StateUnlock,
-        StateBossClear,
+        StateNodeClear,
+        StateRouteUnlock,
+        StateBossReward,
     }
 }

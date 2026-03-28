@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using Survivalon.Core;
-using Survivalon.World;
 
 namespace Survivalon.Run
 {
@@ -9,30 +9,40 @@ namespace Survivalon.Run
     /// </summary>
     public sealed class PostRunFeedbackSoundStateResolver
     {
-        public PostRunFeedbackSoundState Resolve(NodePlaceholderState nodeContext, RunResult runResult)
+        public PostRunFeedbackSoundState Resolve(RunResult runResult)
         {
-            if (nodeContext == null)
-            {
-                throw new ArgumentNullException(nameof(nodeContext));
-            }
-
             if (runResult == null)
             {
                 throw new ArgumentNullException(nameof(runResult));
             }
 
-            bool shouldPlayUnlockSound = runResult.DidUnlockRoute || runResult.HasBossProgressionGateUnlock;
-            bool shouldPlayBossClearSound = nodeContext.NodeType == NodeType.BossOrGate &&
-                runResult.ResolutionState == RunResolutionState.Succeeded;
+            bool shouldPlayRouteUnlockSound = runResult.DidUnlockRoute || runResult.HasBossProgressionGateUnlock;
+            bool shouldPlayBossRewardSound = runResult.RewardPayload.HasBossRewards;
+            bool shouldPlayNodeClearSound = !shouldPlayBossRewardSound && runResult.RewardPayload.HasMilestoneRewards;
 
-            if (!shouldPlayUnlockSound && !shouldPlayBossClearSound)
+            if (!shouldPlayRouteUnlockSound && !shouldPlayBossRewardSound && !shouldPlayNodeClearSound)
             {
                 return PostRunFeedbackSoundState.None;
             }
 
-            return new PostRunFeedbackSoundState(
-                shouldPlayUnlockSound,
-                shouldPlayBossClearSound);
+            List<UiSystemFeedbackSoundId> requestedSounds = new List<UiSystemFeedbackSoundId>();
+            if (shouldPlayBossRewardSound)
+            {
+                requestedSounds.Add(UiSystemFeedbackSoundId.StateBossReward);
+            }
+            else if (shouldPlayNodeClearSound)
+            {
+                requestedSounds.Add(UiSystemFeedbackSoundId.StateNodeClear);
+            }
+
+            if (shouldPlayRouteUnlockSound)
+            {
+                requestedSounds.Add(UiSystemFeedbackSoundId.StateRouteUnlock);
+            }
+
+            return requestedSounds.Count == 0
+                ? PostRunFeedbackSoundState.None
+                : new PostRunFeedbackSoundState(requestedSounds.ToArray());
         }
     }
 }

@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Survivalon.Core;
+
 namespace Survivalon.Run
 {
     /// <summary>
@@ -5,16 +10,25 @@ namespace Survivalon.Run
     /// </summary>
     public sealed class PostRunFeedbackSoundState
     {
-        public static PostRunFeedbackSoundState None { get; } = new PostRunFeedbackSoundState(false, false);
+        private readonly ReadOnlyCollection<UiSystemFeedbackSoundId> requestedSounds;
 
-        public PostRunFeedbackSoundState(bool shouldPlayUnlockSound, bool shouldPlayBossClearSound)
+        public static PostRunFeedbackSoundState None { get; } =
+            new PostRunFeedbackSoundState(Array.Empty<UiSystemFeedbackSoundId>());
+
+        public PostRunFeedbackSoundState(params UiSystemFeedbackSoundId[] requestedSounds)
         {
-            ShouldPlayUnlockSound = shouldPlayUnlockSound;
-            ShouldPlayBossClearSound = shouldPlayBossClearSound;
+            if (requestedSounds == null)
+            {
+                throw new ArgumentNullException(nameof(requestedSounds));
+            }
+
+            UiSystemFeedbackSoundId[] copiedSounds = new UiSystemFeedbackSoundId[requestedSounds.Length];
+            Array.Copy(requestedSounds, copiedSounds, requestedSounds.Length);
+            this.requestedSounds = Array.AsReadOnly(copiedSounds);
         }
 
-        public bool ShouldPlayUnlockSound { get; }
+        public IReadOnlyList<UiSystemFeedbackSoundId> RequestedSounds => requestedSounds;
 
-        public bool ShouldPlayBossClearSound { get; }
+        public bool HasRequestedSounds => requestedSounds.Count > 0;
     }
 }

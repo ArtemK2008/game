@@ -15,5 +15,6 @@ MonoBehaviour:
   uiClickClip: {fileID: 8300000, guid: eab67501dc7744b1ba63593210b2e2a8, type: 3}
   uiConfirmClip: {fileID: 8300000, guid: 4044cce15a3f491ba12171205b2752bf, type: 3}
   uiErrorClip: {fileID: 8300000, guid: a9a606dbd39d4122a0630bc07c5d68b2, type: 3}
-  stateUnlockClip: {fileID: 8300000, guid: dc30b054dc3f43c5974d9c79e72fdabf, type: 3}
-  stateBossClearClip: {fileID: 8300000, guid: 17f832bb7b2349c5aab8240df0d7fb42, type: 3}
+  stateNodeClearClip: {fileID: 8300000, guid: 15f50268dafc4b15be8ee2a1d80e2210, type: 3}
+  stateRouteUnlockClip: {fileID: 8300000, guid: 06bae26b39274e7daca779cfa07f61b4, type: 3}
+  stateBossRewardClip: {fileID: 8300000, guid: 8f539920ea51411eb8b2deaf969b266a, type: 3}

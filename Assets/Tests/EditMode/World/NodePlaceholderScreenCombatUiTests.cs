@@ -337,7 +337,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldRequestBossClearAndUnlockFeedbackWhenBossPostRunIsPresented()
+        public void Show_ShouldRequestBossRewardAndUnlockFeedbackWhenBossPostRunIsPresented()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -371,8 +371,8 @@ namespace Survivalon.Tests.EditMode.World
                 CollectionAssert.AreEqual(
                     new[]
                     {
-                        UiSystemFeedbackSoundId.StateBossClear,
-                        UiSystemFeedbackSoundId.StateUnlock,
+                        UiSystemFeedbackSoundId.StateBossReward,
+                        UiSystemFeedbackSoundId.StateRouteUnlock,
                     },
                     requestedSounds);
             }

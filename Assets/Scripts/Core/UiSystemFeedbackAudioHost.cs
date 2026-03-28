@@ -7,7 +7,7 @@ namespace Survivalon.Core
     /// </summary>
     public sealed class UiSystemFeedbackAudioHost : MonoBehaviour
     {
-        private readonly AudioClip[] cachedClips = new AudioClip[5];
+        private readonly AudioClip[] cachedClips = new AudioClip[(int)UiSystemFeedbackSoundId.StateBossReward + 1];
         private AudioSource audioSource;
         private bool isInitialized;
 
@@ -45,8 +45,9 @@ namespace Survivalon.Core
             CacheClip(clipRegistry, UiSystemFeedbackSoundId.UiClick);
             CacheClip(clipRegistry, UiSystemFeedbackSoundId.UiConfirm);
             CacheClip(clipRegistry, UiSystemFeedbackSoundId.UiError);
-            CacheClip(clipRegistry, UiSystemFeedbackSoundId.StateUnlock);
-            CacheClip(clipRegistry, UiSystemFeedbackSoundId.StateBossClear);
+            CacheClip(clipRegistry, UiSystemFeedbackSoundId.StateNodeClear);
+            CacheClip(clipRegistry, UiSystemFeedbackSoundId.StateRouteUnlock);
+            CacheClip(clipRegistry, UiSystemFeedbackSoundId.StateBossReward);
 
             isInitialized = true;
         }

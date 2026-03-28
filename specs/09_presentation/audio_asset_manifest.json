@@ -7,8 +7,10 @@
     "The currently wired combat feedback subset is resolved through Assets/Resources/CombatFeedbackAudioClipRegistry.asset.",
     "The currently wired music subset is resolved through Assets/Resources/MusicAudioClipRegistry.asset.",
     "UiSystemFeedbackAudioHost no longer resolves clip paths directly; it caches clip references from that runtime-safe registry asset.",
+    "Current post-run milestone/result cues use the specific state_node_clear, state_route_unlock, and state_boss_reward clips from that shared UI/system registry.",
     "CombatFeedbackAudioHost uses the same runtime-safe registry pattern for baseline combat SFX.",
     "MusicAudioHost uses the same runtime-safe registry pattern for the current calm/gameplay context split.",
+    "Older generic system milestone clips may remain committed without current runtime wiring.",
     "Broader committed combat/system/music clips may exist here without being wired into runtime yet.",
     "Non-audio repository placeholders such as Assets/Audio/placeholder.txt are intentionally excluded."
   ],
@@ -66,27 +68,27 @@
     {
       "path": "Assets/Audio/System/state_boss_clear.wav",
       "category": "system",
-      "wiredInCurrentRuntime": true
+      "wiredInCurrentRuntime": false
     },
     {
       "path": "Assets/Audio/System/state_boss_reward.wav",
       "category": "system",
-      "wiredInCurrentRuntime": false
+      "wiredInCurrentRuntime": true
     },
     {
       "path": "Assets/Audio/System/state_node_clear.wav",
       "category": "system",
-      "wiredInCurrentRuntime": false
+      "wiredInCurrentRuntime": true
     },
     {
       "path": "Assets/Audio/System/state_route_unlock.wav",
       "category": "system",
-      "wiredInCurrentRuntime": false
+      "wiredInCurrentRuntime": true
     },
     {
       "path": "Assets/Audio/System/state_unlock.wav",
       "category": "system",
-      "wiredInCurrentRuntime": true
+      "wiredInCurrentRuntime": false
     },
     {
       "path": "Assets/Audio/UI/ui_click.wav",
