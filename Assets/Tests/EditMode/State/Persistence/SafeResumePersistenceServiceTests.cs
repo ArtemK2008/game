@@ -52,6 +52,21 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         }
 
         [Test]
+        public void ShouldPersistResolvedTownServiceLevelContext()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService service = new SafeResumePersistenceService(storage);
+            PersistentGameState gameState = CreateGameState("region_002_node_001", "region_001_node_002");
+
+            service.SaveResolvedTownServiceContext(gameState);
+
+            Assert.That(storage.HasSavedState, Is.True);
+            Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
+            Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.TownService));
+            Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+        }
+
+        [Test]
         public void ShouldNotStampOfflineProgressStableSaveAnchorWhenOnlyLoadingFallbackState()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();

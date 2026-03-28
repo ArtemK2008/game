@@ -19,7 +19,12 @@ namespace Survivalon.Startup
             SessionContextState sessionContext,
             NodeId contextNodeId)
         {
-            RecordAndPersist(gameState, sessionContext, contextNodeId, offerReturnToWorldReentry: true);
+            RecordAndPersist(
+                gameState,
+                sessionContext,
+                contextNodeId,
+                offerReturnToWorldReentry: true,
+                safeResumeTargetType: SafeResumeTargetType.WorldMap);
             return StartupEntryTarget.WorldViewPlaceholder;
         }
 
@@ -28,7 +33,26 @@ namespace Survivalon.Startup
             SessionContextState sessionContext,
             NodeId contextNodeId)
         {
-            RecordAndPersist(gameState, sessionContext, contextNodeId, offerReturnToWorldReentry: false);
+            RecordAndPersist(
+                gameState,
+                sessionContext,
+                contextNodeId,
+                offerReturnToWorldReentry: false,
+                safeResumeTargetType: SafeResumeTargetType.WorldMap);
+            return StartupEntryTarget.MainMenuPlaceholder;
+        }
+
+        public StartupEntryTarget PrepareStopSessionFromTownService(
+            PersistentGameState gameState,
+            SessionContextState sessionContext,
+            NodeId contextNodeId)
+        {
+            RecordAndPersist(
+                gameState,
+                sessionContext,
+                contextNodeId,
+                offerReturnToWorldReentry: false,
+                safeResumeTargetType: SafeResumeTargetType.TownService);
             return StartupEntryTarget.MainMenuPlaceholder;
         }
 
@@ -46,7 +70,8 @@ namespace Survivalon.Startup
             PersistentGameState gameState,
             SessionContextState sessionContext,
             NodeId contextNodeId,
-            bool offerReturnToWorldReentry)
+            bool offerReturnToWorldReentry,
+            SafeResumeTargetType safeResumeTargetType)
         {
             if (gameState == null)
             {
@@ -66,6 +91,12 @@ namespace Survivalon.Startup
             {
                 sessionContext.RecordReturnedToWorldContext(contextNodeId);
                 sessionContext.ConsumeReturnToWorldReentryOffer();
+            }
+
+            if (safeResumeTargetType == SafeResumeTargetType.TownService)
+            {
+                persistenceService.SaveResolvedTownServiceContext(gameState);
+                return;
             }
 
             persistenceService.SaveResolvedWorldContext(gameState);

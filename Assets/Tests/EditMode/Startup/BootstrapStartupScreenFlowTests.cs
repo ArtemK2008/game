@@ -72,7 +72,26 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldStartFreshWorldFlowFromMainMenuEvenWhenSavedStateExists()
+        public void ShouldDisableContinueWhenPersistedStateHasNoResumableSafeContext()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            storage.Seed(new PersistentGameState());
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldStartFreshWorldFlowFromMainMenuEvenWhenSavedSafeContextExists()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -80,6 +99,7 @@ namespace Survivalon.Tests.EditMode.Startup
             seededGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
             seededGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
             seededGameState.WorldState.ReplaceReachableNodes(new[] { new NodeId("region_002_node_001") });
+            seededGameState.SafeResumeState.MarkTownService(new NodeId("region_002_node_001"));
             storage.Seed(seededGameState);
 
             try
@@ -102,7 +122,7 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldContinueSavedWorldFlowFromMainMenuWhenSavedStateExists()
+        public void ShouldContinueSavedWorldFlowFromMainMenuWhenSafeWorldContextExists()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
@@ -110,6 +130,7 @@ namespace Survivalon.Tests.EditMode.Startup
             seededGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
             seededGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
             seededGameState.WorldState.ReplaceReachableNodes(new[] { new NodeId("region_002_node_001") });
+            seededGameState.SafeResumeState.MarkWorldMap(new NodeId("region_002_node_001"));
             storage.Seed(seededGameState);
 
             try
@@ -124,6 +145,38 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub (Available) | Selected: none"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldContinueSavedTownServiceFlowFromMainMenuWhenSafeTownContextExists()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            seededGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            seededGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
+            seededGameState.WorldState.ReplaceReachableNodes(new[] { new NodeId("region_002_node_001") });
+            seededGameState.SafeResumeState.MarkTownService(new NodeId("region_002_node_001"));
+            storage.Seed(seededGameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.True);
+
+                ContinueFromMainMenu(hostObject);
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Cavern Service Hub"), Is.True);
+                Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
             }
             finally
             {
@@ -268,10 +321,11 @@ namespace Survivalon.Tests.EditMode.Startup
                 StartupPlaceholderView placeholderView = hostObject.GetComponentInChildren<StartupPlaceholderView>(true);
                 Assert.That(placeholderView, Is.Not.Null);
                 Assert.That(ContainsText(hostObject, "Main Menu"), Is.True);
-                Assert.That(ContainsText(hostObject, "Continue resumes the last safe world context."), Is.True);
+                Assert.That(ContainsText(hostObject, "Continue resumes the last safe world or service context."), Is.True);
                 Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.True);
                 Assert.That(storage.HasSavedState, Is.True);
                 Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
+                Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.TownService));
                 Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
             }
             finally

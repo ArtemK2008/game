@@ -27,6 +27,12 @@ namespace Survivalon.State.Persistence
             resumeNodeIdValue = nodeId.Value;
         }
 
+        public void MarkTownService(NodeId nodeId)
+        {
+            targetType = SafeResumeTargetType.TownService;
+            resumeNodeIdValue = nodeId.Value;
+        }
+
         public void Clear()
         {
             targetType = SafeResumeTargetType.None;

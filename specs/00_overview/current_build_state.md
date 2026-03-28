@@ -7,7 +7,7 @@ This file is a rolling summary of what is already implemented in the current bui
 This summary reflects completed work through **Milestone 095**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
-On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world/service context when one exists, `Settings` opens a compact settings entry surface, and `Quit` requests application shutdown in player builds while staying safe in editor/test contexts.
+On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens a compact settings entry surface, and `Quit` requests application shutdown in player builds while staying safe in editor/test contexts.
 
 From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. Entering that resolved post-run boundary now autosaves the durable run outcome before the player chooses replay, return to world, or stop. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. The current cavern service node now opens a distinct town/service shell instead of the generic node placeholder, while broader non-combat content remains placeholder-level.
 
@@ -24,11 +24,14 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The project launches through `BootstrapScene` and `BootstrapStartup`.
 - Startup now lands on a compact main menu with `Start`, `Continue`, `Settings`, and `Quit`.
 - `Start` creates a fresh playable bootstrap-world flow.
-- `Continue` is enabled only when a persisted safe world/service context can be resumed into the current prototype world-map flow.
+- `Continue` is enabled only when a persisted safe world or town/service context can be resumed into the current prototype flow.
+- `Continue` now resumes the last persisted safe context directly:
+  - world-level safe contexts reopen at the world map
+  - the current cavern town/service safe context reopens in the town/service shell
 - `Settings` currently opens one compact entry surface inside the startup menu rather than a deeper settings system.
 - Safe-stop persistence exists for resolved world-level context, and resolved post-run now also autosaves into that same safe resume path before the player leaves the post-run screen.
 - The same safe-resume persistence path now also preserves the current selected character, per-character package assignment, per-character equipped primary/support gear, and owned gear state cleanly across restart/load flows after world-map or town/service build-prep changes.
-- Safe resume is currently constrained to one clear world-map safe context on restart/load, even when the last autosave came from resolved post-run or town/service persistence; unresolved run state and temporary run-only upgrade choice state do not reopen on resume.
+- Safe resume is currently constrained to clear world-level or town/service-level safe contexts on restart/load; unresolved run state and temporary run-only upgrade choice state do not reopen on resume.
 - Stable resolved world/service save points now also stamp one future-facing offline-progress compatibility anchor:
   - a persisted UTC save timestamp
   - a persisted stable-save anchor marker for later offline-progress calculation

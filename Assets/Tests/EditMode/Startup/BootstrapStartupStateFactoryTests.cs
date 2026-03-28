@@ -86,6 +86,37 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldCreateContinueStateForPersistedTownServiceSafeContext()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState persistedGameState = new PersistentGameState();
+            persistedGameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            persistedGameState.WorldState.SetLastSafeNode(new NodeId("region_002_node_001"));
+            persistedGameState.SafeResumeState.MarkTownService(new NodeId("region_002_node_001"));
+            storage.Seed(persistedGameState);
+
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            Assert.That(stateFactory.TryCreateContinue(new BootstrapWorldMapFactory(), out BootstrapStartupState startupState), Is.True);
+            Assert.That(startupState, Is.Not.Null);
+            Assert.That(startupState.GameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.TownService));
+        }
+
+        [Test]
+        public void ShouldRejectContinueStateWhenPersistedSaveHasNoResumableSafeContext()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            storage.Seed(new PersistentGameState());
+
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            Assert.That(stateFactory.TryCreateContinue(new BootstrapWorldMapFactory(), out BootstrapStartupState startupState), Is.False);
+            Assert.That(startupState, Is.Null);
+        }
+
+        [Test]
         public void ShouldUsePersistedGameStateAndPreserveExistingValidSelectionWhenStorageHasSavedState()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();

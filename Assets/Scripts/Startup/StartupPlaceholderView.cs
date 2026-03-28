@@ -58,8 +58,8 @@ namespace Survivalon.Startup
 
             titleText.text = "Main Menu";
             summaryText.text = canContinue
-                ? "Continue resumes the last safe world context.\nStart begins a fresh prototype session."
-                : "Start begins a fresh prototype session.\nContinue becomes available after a safe stop or return save.";
+                ? "Continue resumes the last safe world or service context.\nStart begins a fresh prototype session."
+                : "Start begins a fresh prototype session.\nContinue becomes available after a safe world or service save.";
             menuButtonGroup.SetActive(true);
             settingsButtonGroup.SetActive(false);
             continueButton.interactable = canContinue && onContinueRequested != null;

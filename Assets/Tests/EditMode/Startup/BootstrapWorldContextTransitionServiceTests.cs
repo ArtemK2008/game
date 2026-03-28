@@ -78,6 +78,31 @@ namespace Survivalon.Tests.EditMode.Startup
             Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(2));
         }
 
+        [Test]
+        public void ShouldPrepareTownServiceStopSessionByRecordingSessionAndSavingResolvedTownContext()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.WorldState.SetCurrentNode(new NodeId("region_002_node_001"));
+            SessionContextState sessionContext = new SessionContextState();
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            BootstrapWorldContextTransitionService transitionService = new BootstrapWorldContextTransitionService(
+                new SafeResumePersistenceService(storage));
+
+            StartupEntryTarget entryTarget = transitionService.PrepareStopSessionFromTownService(
+                gameState,
+                sessionContext,
+                new NodeId("region_002_node_001"));
+
+            Assert.That(entryTarget, Is.EqualTo(StartupEntryTarget.MainMenuPlaceholder));
+            Assert.That(sessionContext.HasRecentNode, Is.True);
+            Assert.That(sessionContext.RecentNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            Assert.That(sessionContext.HasReturnToWorldReentryOffer, Is.False);
+            Assert.That(storage.SavedGameState, Is.Not.Null);
+            Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
+            Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.TownService));
+            Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+        }
+
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
         {
             public PersistentGameState SavedGameState { get; private set; }

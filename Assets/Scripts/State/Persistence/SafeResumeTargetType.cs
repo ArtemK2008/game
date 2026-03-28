@@ -5,6 +5,7 @@ namespace Survivalon.State.Persistence
     {
         None = 0,
         WorldMap = 1,
+        TownService = 2,
     }
 }
 

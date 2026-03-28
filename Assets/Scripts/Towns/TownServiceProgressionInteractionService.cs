@@ -32,7 +32,7 @@ namespace Survivalon.Towns
 
             if (purchaseStatus == AccountWideUpgradePurchaseStatus.Purchased && persistenceService != null)
             {
-                persistenceService.SaveResolvedWorldContext(gameState);
+                persistenceService.SaveResolvedTownServiceContext(gameState);
             }
 
             return purchaseStatus;

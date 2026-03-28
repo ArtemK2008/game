@@ -20,15 +20,19 @@
 - Updated `BootstrapStartup` so:
   - startup now opens the compact main menu
   - `Start` applies a fresh bootstrap-world state and enters the world map
-  - `Continue` resumes a persisted safe world/service context when available
+  - `Continue` resumes the last persisted safe world or town/service context when available
   - `Settings` opens a compact settings entry surface inside the startup menu
   - `Quit` routes through the dedicated quit service
+- Extended the safe-resume seam so town/service-level safe contexts are stamped explicitly and can be continued back into the current `Cavern Service Hub` shell.
 - Updated the shared startup test base so existing startup flow tests can auto-enter the playable flow from the new menu without broad test rewrites.
 
 ## Behavior Change
 - The project no longer starts directly in the world map.
 - Startup now opens a compact main menu first.
-- `Continue` is visible but only interactable when a persisted safe world/service context exists and can resume into the current playable flow.
+- `Continue` is visible but only interactable when a persisted safe world or town/service context exists and can resume into the current playable flow.
+- `Continue` now resumes the actual last persisted safe context:
+  - world-level safe saves reopen at the world map
+  - town/service safe saves reopen in the town/service shell
 - `Start` begins a fresh playable bootstrap session even when a saved state exists.
 - `Settings` is currently a compact entry surface rather than a deep settings system.
 - `Quit` behaves as a real application quit in player builds and stays safe in editor/test contexts.
@@ -39,14 +43,20 @@
 - Updated `Assets/Tests/EditMode/Startup/BootstrapStartupScreenFlowTests.cs`
   - verifies initial compact main menu presentation
   - verifies settings entry
-  - verifies fresh start vs continue behavior
+  - verifies continue-disabled behavior when no resumable safe context exists
+  - verifies fresh start vs continue behavior for both world and town/service safe contexts
   - verifies quit requests are routed through the quit service
   - verifies stop-session returns to the compact main menu with continue available
 - Updated `Assets/Tests/EditMode/Startup/BootstrapStartupStateFactoryTests.cs`
   - verifies `CreateFresh(...)`
-  - verifies `TryCreateContinue(...)`
+  - verifies `TryCreateContinue(...)` for world, town/service, and non-resumable saved-state cases
+- Updated `Assets/Tests/EditMode/Startup/BootstrapWorldContextTransitionServiceTests.cs`
+  - verifies stopping from town/service stamps a town/service safe-resume target
+- Updated `Assets/Tests/EditMode/Startup/BootstrapStartupTownServiceFlowTests.cs`
+  - verifies restart/load can continue directly back into the current town/service shell after persisted town/service build-prep changes
 - Updated `Assets/Tests/EditMode/State/Persistence/SafeResumePersistenceServiceTests.cs`
   - verifies `TryLoadExisting(...)`
+  - verifies explicit town/service safe-resume persistence stamping
 
 ## Out Of Scope
 - Milestone `096` and later
