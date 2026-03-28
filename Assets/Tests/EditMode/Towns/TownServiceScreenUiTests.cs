@@ -141,6 +141,42 @@ namespace Survivalon.Tests.EditMode.Towns
         }
 
         [Test]
+        public void Show_ShouldOpenCompactSystemMenuSettingsAndInvokeSafeExitWhenAvailable()
+        {
+            GameObject hostObject = new GameObject("TownServiceScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            bool stopRequested = false;
+
+            try
+            {
+                TownServiceScreen townServiceScreen = hostObject.AddComponent<TownServiceScreen>();
+                townServiceScreen.Show(
+                    NodePlaceholderTestData.CreateTownServicePlaceholderState(),
+                    gameState,
+                    ResolveTownServiceBackground(),
+                    () => { },
+                    () => stopRequested = true);
+
+                FindButton(hostObject, "SystemMenuButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "System Menu"), Is.True);
+                Assert.That(FindButton(hostObject, "SystemMenuExitButton").interactable, Is.True);
+
+                FindButton(hostObject, "SystemMenuSettingsButton").onClick.Invoke();
+                Assert.That(ContainsText(hostObject, "Current settings access is intentionally compact."), Is.True);
+
+                FindButton(hostObject, "SystemMenuSettingsBackButton").onClick.Invoke();
+                FindButton(hostObject, "SystemMenuExitButton").onClick.Invoke();
+
+                Assert.That(stopRequested, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldConvertAffordableRegionMaterialAndRefreshVisibleProgressionState()
         {
             GameObject hostObject = new GameObject("TownServiceScreenHost");

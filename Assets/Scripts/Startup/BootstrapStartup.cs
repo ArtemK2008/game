@@ -74,7 +74,8 @@ namespace Survivalon.Startup
                 gameState,
                 ResolveWorldMapProgressionEffects(),
                 new WorldMapBuildPreparationInteractionService(persistenceService),
-                feedbackAudioHost.TryPlay);
+                feedbackAudioHost.TryPlay,
+                HandleWorldMapStopRequested);
         }
 
         private void ShowNodePlaceholder(NodePlaceholderState placeholderState)
@@ -189,6 +190,17 @@ namespace Survivalon.Startup
                 sessionContext,
                 nodeId);
             Debug.Log($"Stopping session from town/service context at {nodeId}.");
+            ShowStartupEntryTarget(entryTarget);
+        }
+
+        private void HandleWorldMapStopRequested()
+        {
+            NodeId currentContextNodeId = ResolveCurrentWorldContextNodeId();
+            StartupEntryTarget entryTarget = worldContextTransitionService.PrepareStopSession(
+                gameState,
+                sessionContext,
+                currentContextNodeId);
+            Debug.Log($"Stopping session from world-map context at {currentContextNodeId}.");
             ShowStartupEntryTarget(entryTarget);
         }
 
@@ -410,6 +422,22 @@ namespace Survivalon.Startup
         private AccountWideProgressionEffectState ResolveWorldMapProgressionEffects()
         {
             return ProgressionEffectResolver.Resolve(gameState.ProgressionState);
+        }
+
+        private NodeId ResolveCurrentWorldContextNodeId()
+        {
+            if (gameState.WorldState.HasCurrentNode)
+            {
+                return gameState.WorldState.CurrentNodeId;
+            }
+
+            if (gameState.WorldState.HasLastSafeNode)
+            {
+                return gameState.WorldState.LastSafeNodeId;
+            }
+
+            throw new InvalidOperationException(
+                "World-map system exit requires a current node or last safe node.");
         }
 
         private static IPersistentGameStateStorage CreateDefaultPersistenceStorage()
