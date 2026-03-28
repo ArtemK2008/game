@@ -42,6 +42,28 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void Resolve_ShouldKeepEnemyImpactForDamageWithoutMatchingPlayerAttackReset()
+        {
+            CombatEffectPresentationStateResolver resolver = new CombatEffectPresentationStateResolver();
+
+            CombatEffectPresentationState effectState = resolver.Resolve(
+                CreateSnapshot(
+                    playerHealth: 120f,
+                    enemyHealth: 75f,
+                    playerAttackTimer: 0.8f,
+                    enemyAttackTimer: 0.6f),
+                CreateSnapshot(
+                    playerHealth: 120f,
+                    enemyHealth: 61f,
+                    playerAttackTimer: 0.75f,
+                    enemyAttackTimer: 0.35f));
+
+            Assert.That(effectState.PlayerEffectSprite, Is.Null);
+            Assert.That(effectState.EnemyEffectSprite, Is.Not.Null);
+            Assert.That(effectState.CenterEffectSprite, Is.Null);
+        }
+
+        [Test]
         public void Resolve_ShouldPreferBurstStrikeCenterCueWithoutEnemyImpactCue()
         {
             CombatEffectPresentationStateResolver resolver = new CombatEffectPresentationStateResolver();
