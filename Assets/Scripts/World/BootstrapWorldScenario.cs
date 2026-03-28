@@ -11,6 +11,9 @@ namespace Survivalon.World
         public static readonly NodeId ForestEliteNodeId = new NodeId("region_001_node_006");
         public static readonly NodeId CavernServiceNodeId = new NodeId("region_002_node_001");
         public static readonly NodeId CavernGateNodeId = new NodeId("region_002_node_002");
+        public static readonly NodeId CavernPushNodeId = new NodeId("region_002_node_003");
+        public static readonly NodeId CavernFarmNodeId = new NodeId("region_002_node_004");
+        public static readonly NodeId CavernApproachNodeId = new NodeId("region_002_node_005");
         public static readonly RegionId ForestRegionId = new RegionId("region_001");
         public static readonly RegionId CavernRegionId = new RegionId("region_002");
     }

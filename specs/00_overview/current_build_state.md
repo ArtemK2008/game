@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 097** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 098** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while staying safe in editor/test contexts.
@@ -56,6 +56,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### World map and node entry
 - A runtime world graph exists with regions, nodes, explicit connections, and limited branching.
+- The shipped bootstrap world graph now has ten authored nodes across the two current regions, keeping the immediate forest opening readable while proving deeper route structure beyond the first service hub.
 - The shipped bootstrap content now has two explicit location identities attached through world content data:
   - `Verdant Frontier`
   - `Echo Caverns`
@@ -84,6 +85,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Raider Holdout` branches off the current forest push node as an ordinary combat side destination
   - it is surfaced explicitly as `Elite challenge` in current world-map and node-entry readability
   - it is not required for the current service hub, forest gate unlock, or cavern gate progression
+- The shipped `Echo Caverns` region now also has a deeper internal branch behind `Cavern Service Hub`:
+  - `Echo Approach` opens as the main combat push step from the current service hub
+  - `Relic Cache` opens as a second ordinary combat side path in the same region
+  - `Gate Antechamber` extends the combat path before the current `Cavern Gate`
+  - the existing `Frontier Gate -> Cavern Gate` boss-unlock target remains intact for current progression readability, so the added cavern depth does not replace the current boss-gate milestone path
 - The same world-map entry action now also supports one low-friction repeat path only after an explicit in-session return to the world map:
   - after `post-run -> return to world` or `town/service -> return to world`, the existing entry button temporarily becomes a one-click `Replay <current combat node>` or `Return to <current service node>` action
   - ordinary startup/load into the world map, safe resume, and first world-map entry do not show that shortcut

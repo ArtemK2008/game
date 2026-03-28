@@ -444,6 +444,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub (Available) | Selected: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Forward: Echo Approach, Relic Cache"), Is.True);
             }
             finally
             {

@@ -17,8 +17,8 @@ namespace Survivalon.Tests.EditMode.World
             WorldGraph worldGraph = new BootstrapWorldGraphBuilder().Create();
 
             Assert.That(worldGraph.Regions.Count, Is.EqualTo(2));
-            Assert.That(worldGraph.Nodes.Count, Is.EqualTo(7));
-            Assert.That(worldGraph.Connections.Count, Is.EqualTo(7));
+            Assert.That(worldGraph.Nodes.Count, Is.EqualTo(10));
+            Assert.That(worldGraph.Connections.Count, Is.EqualTo(10));
 
             AssertNode(worldGraph, BootstrapWorldScenario.ForestEntryNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.Cleared);
             AssertNode(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.InProgress);
@@ -26,6 +26,9 @@ namespace Survivalon.Tests.EditMode.World
             AssertNode(worldGraph, BootstrapWorldScenario.ForestFarmNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.Available);
             AssertNode(worldGraph, BootstrapWorldScenario.ForestEliteNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.Available);
             AssertNode(worldGraph, BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.ServiceOrProgression, NodeState.Available);
+            AssertNode(worldGraph, BootstrapWorldScenario.CavernPushNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.Combat, NodeState.Available);
+            AssertNode(worldGraph, BootstrapWorldScenario.CavernFarmNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.Combat, NodeState.Available);
+            AssertNode(worldGraph, BootstrapWorldScenario.CavernApproachNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.Combat, NodeState.Available);
             AssertNode(worldGraph, BootstrapWorldScenario.CavernGateNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.BossOrGate, NodeState.Locked);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).CombatEncounter,
@@ -103,6 +106,42 @@ namespace Survivalon.Tests.EditMode.World
                 worldGraph.GetNode(BootstrapWorldScenario.CavernServiceNodeId).DisplayName,
                 Is.EqualTo("Cavern Service Hub"));
             Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernPushNodeId).CombatEncounter,
+                Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernPushNodeId).DisplayName,
+                Is.EqualTo("Echo Approach"));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernPushNodeId).TownServiceContext,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernPushNodeId).BossRewardContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernFarmNodeId).CombatEncounter,
+                Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernFarmNodeId).DisplayName,
+                Is.EqualTo("Relic Cache"));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernFarmNodeId).TownServiceContext,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernFarmNodeId).BossRewardContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernApproachNodeId).CombatEncounter,
+                Is.SameAs(CombatStandardEncounterCatalog.BulwarkRaiderEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernApproachNodeId).DisplayName,
+                Is.EqualTo("Gate Antechamber"));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernApproachNodeId).TownServiceContext,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernApproachNodeId).BossRewardContent,
+                Is.Null);
+            Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).CombatEncounter,
                 Is.SameAs(CombatBossEncounterCatalog.GateBossEncounter));
             Assert.That(
@@ -128,6 +167,15 @@ namespace Survivalon.Tests.EditMode.World
                 Is.Null);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).RegionMaterialYieldContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernPushNodeId).RegionMaterialYieldContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernFarmNodeId).RegionMaterialYieldContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernApproachNodeId).RegionMaterialYieldContent,
                 Is.Null);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).RegionMaterialYieldContent,
@@ -172,6 +220,9 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(cavernRegion.NodeIds, Is.EqualTo(new[]
             {
                 BootstrapWorldScenario.CavernServiceNodeId,
+                BootstrapWorldScenario.CavernPushNodeId,
+                BootstrapWorldScenario.CavernFarmNodeId,
+                BootstrapWorldScenario.CavernApproachNodeId,
                 BootstrapWorldScenario.CavernGateNodeId,
             }));
 
@@ -181,7 +232,10 @@ namespace Survivalon.Tests.EditMode.World
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestEliteNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.CavernServiceNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestGateNodeId, BootstrapWorldScenario.CavernGateNodeId);
-            AssertConnection(worldGraph, BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernGateNodeId);
+            AssertConnection(worldGraph, BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernPushNodeId);
+            AssertConnection(worldGraph, BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernFarmNodeId);
+            AssertConnection(worldGraph, BootstrapWorldScenario.CavernPushNodeId, BootstrapWorldScenario.CavernApproachNodeId);
+            AssertConnection(worldGraph, BootstrapWorldScenario.CavernApproachNodeId, BootstrapWorldScenario.CavernGateNodeId);
         }
 
         private static void AssertNode(

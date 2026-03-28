@@ -28,6 +28,9 @@ namespace Survivalon.World
                 CreateNodeState(BootstrapWorldScenario.ForestGateNodeId, bossThreshold, NodeState.Locked, 0),
                 CreateNodeState(BootstrapWorldScenario.ForestFarmNodeId, combatThreshold, NodeState.Available, 0),
                 CreateNodeState(BootstrapWorldScenario.ForestEliteNodeId, combatThreshold, NodeState.Available, 0),
+                CreateNodeState(BootstrapWorldScenario.CavernPushNodeId, combatThreshold, NodeState.Available, 0),
+                CreateNodeState(BootstrapWorldScenario.CavernFarmNodeId, combatThreshold, NodeState.Available, 0),
+                CreateNodeState(BootstrapWorldScenario.CavernApproachNodeId, combatThreshold, NodeState.Available, 0),
                 CreateNodeState(BootstrapWorldScenario.CavernGateNodeId, bossThreshold, NodeState.Locked, 0),
             };
         }
