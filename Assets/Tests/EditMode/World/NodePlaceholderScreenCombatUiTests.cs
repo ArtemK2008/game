@@ -237,6 +237,69 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldRequestBaselineCombatFeedbackDuringAutomaticCombat()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            List<CombatFeedbackSoundId> requestedSounds = new List<CombatFeedbackSoundId>();
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { },
+                    combatFeedbackSoundRequested: requestedSounds.Add);
+
+                AutoAdvanceCombat(hostObject, 5, 0.25f);
+
+                Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.PlayerAttack));
+                Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.EnemyAttack));
+                Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.PlayerHit));
+                Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.EnemyHit));
+                Assert.That(requestedSounds, Has.No.Member(CombatFeedbackSoundId.DangerLowHealth));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldRequestBurstStrikeInLiveCombatFlow()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+            List<CombatFeedbackSoundId> requestedSounds = new List<CombatFeedbackSoundId>();
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateBossCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { },
+                    RunPersistentContext.FromGameState(gameState),
+                    combatFeedbackSoundRequested: requestedSounds.Add);
+
+                AutoAdvanceCombat(hostObject, 64, 0.25f);
+
+                Assert.That(requestedSounds, Does.Contain(CombatFeedbackSoundId.BurstStrike));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldRequestConfirmFeedbackForReplayReturnAndStopActions()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");

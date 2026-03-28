@@ -39,6 +39,8 @@ namespace Survivalon.World
         private readonly RunHudStateResolver runHudStateResolver = new RunHudStateResolver();
         private readonly RunTimeSkillUpgradeChoiceStateResolver runTimeSkillUpgradeChoiceStateResolver =
             new RunTimeSkillUpgradeChoiceStateResolver();
+        private readonly CombatFeedbackSoundStateResolver combatFeedbackSoundStateResolver =
+            new CombatFeedbackSoundStateResolver();
         private readonly PostRunNextActionResolver postRunNextActionResolver = new PostRunNextActionResolver();
         private readonly PostRunFeedbackSoundStateResolver postRunFeedbackSoundStateResolver =
             new PostRunFeedbackSoundStateResolver();
@@ -48,6 +50,8 @@ namespace Survivalon.World
         private Action<RunResult> onStopSessionRequested;
         private Action onResolvedPostRunBoundaryReached;
         private Action<UiSystemFeedbackSoundId> onFeedbackSoundRequested;
+        private Action<CombatFeedbackSoundId> onCombatFeedbackSoundRequested;
+        private CombatFeedbackSnapshot lastCombatFeedbackSnapshot;
 
         public void Show(
             WorldGraph worldGraph,
@@ -56,7 +60,8 @@ namespace Survivalon.World
             Action<RunResult> stopSessionRequested = null,
             RunPersistentContext persistentContext = null,
             Action resolvedPostRunBoundaryReached = null,
-            Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null)
+            Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null,
+            Action<CombatFeedbackSoundId> combatFeedbackSoundRequested = null)
         {
             if (worldGraph == null)
             {
@@ -76,11 +81,13 @@ namespace Survivalon.World
             onStopSessionRequested = stopSessionRequested;
             onResolvedPostRunBoundaryReached = resolvedPostRunBoundaryReached;
             onFeedbackSoundRequested = feedbackSoundRequested;
+            onCombatFeedbackSoundRequested = combatFeedbackSoundRequested;
             gameObject.name = "NodePlaceholderScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
             EnsureUi();
             runLifecycleController.TryStartAutomaticFlow();
+            ResetCombatFeedbackTracking();
             Refresh();
         }
 
@@ -156,6 +163,7 @@ namespace Survivalon.World
 
             onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             runLifecycleController.TryStartAutomaticFlow();
+            ResetCombatFeedbackTracking();
             Refresh();
         }
 
@@ -174,6 +182,7 @@ namespace Survivalon.World
             postRunStateController = null;
             runLifecycleController = replayController;
             runLifecycleController.TryStartAutomaticFlow();
+            ResetCombatFeedbackTracking();
             Refresh();
         }
 
@@ -634,10 +643,29 @@ namespace Survivalon.World
                 return;
             }
 
+            CombatFeedbackSnapshot previousCombatFeedbackSnapshot = lastCombatFeedbackSnapshot;
             if (runLifecycleController.TryAdvanceAutomaticTime(elapsedSeconds))
             {
+                CombatFeedbackSnapshot currentCombatFeedbackSnapshot = CaptureCombatFeedbackSnapshot();
+                RequestCombatFeedback(previousCombatFeedbackSnapshot, currentCombatFeedbackSnapshot);
+                lastCombatFeedbackSnapshot = currentCombatFeedbackSnapshot;
                 Refresh();
             }
+        }
+
+        private void ResetCombatFeedbackTracking()
+        {
+            lastCombatFeedbackSnapshot = CaptureCombatFeedbackSnapshot();
+        }
+
+        private CombatFeedbackSnapshot CaptureCombatFeedbackSnapshot()
+        {
+            if (runLifecycleController == null || !runLifecycleController.HasCombatEncounterState)
+            {
+                return CombatFeedbackSnapshot.None;
+            }
+
+            return CombatFeedbackSnapshot.FromEncounterState(runLifecycleController.CombatEncounterState);
         }
 
         private void SyncPostRunStateController()
@@ -678,6 +706,59 @@ namespace Survivalon.World
             if (feedbackSoundState.ShouldPlayUnlockSound)
             {
                 onFeedbackSoundRequested(UiSystemFeedbackSoundId.StateUnlock);
+            }
+        }
+
+        private void RequestCombatFeedback(
+            CombatFeedbackSnapshot previousSnapshot,
+            CombatFeedbackSnapshot currentSnapshot)
+        {
+            if (onCombatFeedbackSoundRequested == null)
+            {
+                return;
+            }
+
+            CombatFeedbackSoundState feedbackSoundState = combatFeedbackSoundStateResolver.Resolve(
+                previousSnapshot,
+                currentSnapshot);
+
+            if (feedbackSoundState.ShouldPlayBurstStrike)
+            {
+                onCombatFeedbackSoundRequested(CombatFeedbackSoundId.BurstStrike);
+            }
+            else if (feedbackSoundState.ShouldPlayPlayerAttack)
+            {
+                onCombatFeedbackSoundRequested(CombatFeedbackSoundId.PlayerAttack);
+            }
+
+            if (feedbackSoundState.ShouldPlayEnemyAttack)
+            {
+                onCombatFeedbackSoundRequested(CombatFeedbackSoundId.EnemyAttack);
+            }
+
+            if (feedbackSoundState.ShouldPlayEnemyHit)
+            {
+                onCombatFeedbackSoundRequested(CombatFeedbackSoundId.EnemyHit);
+            }
+
+            if (feedbackSoundState.ShouldPlayPlayerHit)
+            {
+                onCombatFeedbackSoundRequested(CombatFeedbackSoundId.PlayerHit);
+            }
+
+            if (feedbackSoundState.ShouldPlayEnemyDefeat)
+            {
+                onCombatFeedbackSoundRequested(CombatFeedbackSoundId.EnemyDefeat);
+            }
+
+            if (feedbackSoundState.ShouldPlayPlayerDefeat)
+            {
+                onCombatFeedbackSoundRequested(CombatFeedbackSoundId.PlayerDefeat);
+            }
+
+            if (feedbackSoundState.ShouldPlayDangerLowHealth)
+            {
+                onCombatFeedbackSoundRequested(CombatFeedbackSoundId.DangerLowHealth);
             }
         }
 

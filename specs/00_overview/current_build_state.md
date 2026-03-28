@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 087**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 088**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -393,8 +393,23 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - town/service purchase, equip, assignment, conversion, return, and stop actions
   - resolved post-run unlock moments and successful boss-clear result moments
 - The shared host now resolves the current runtime-wired UI/system subset through the runtime-safe `Assets/Resources/UiSystemFeedbackAudioClipRegistry.asset`, caches those clip references once on initialization, and fails safely when a clip cannot be resolved.
-- Broader combat/system/music clips are now committed under `Assets/Audio/`, but only the UI/system feedback subset is currently wired into runtime behavior.
-- No music, ambience, or combat hit/attack/enemy sound effects are wired into the current runtime yet.
+
+### Combat feedback sounds
+- The current prototype now also has one minimal combat-SFX seam for the live autobattle shell.
+- The shared combat host resolves the current combat subset through the runtime-safe `Assets/Resources/CombatFeedbackAudioClipRegistry.asset`, caches those clip references once on initialization, and fails safely when a clip cannot be resolved.
+- The currently wired combat feedback set includes:
+  - player basic attack
+  - enemy basic attack
+  - player hit
+  - enemy hit
+  - enemy defeat
+  - player defeat
+  - one non-looping low-health danger cue
+  - `Burst Strike`
+- That combat feedback is currently requested only from the live placeholder combat flow:
+  - ordinary combat, boss, and optional elite encounters reuse the same baseline SFX set
+  - the low-health cue triggers on a downward threshold-crossing style transition instead of repeating every frame
+- Broader committed music and other future audio content may exist under `Assets/Audio/`, but the runtime currently wires only the UI/system feedback subset and this baseline combat-SFX subset.
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.

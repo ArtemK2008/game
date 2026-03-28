@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Survivalon.Combat;
 using Survivalon.Data.Characters;
 using Survivalon.Data.Gear;
 using Survivalon.Startup;
@@ -335,6 +336,33 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
                 Assert.That(hostObject.GetComponentsInChildren<UiSystemFeedbackAudioHost>(true).Length, Is.EqualTo(1));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldKeepSingleCombatFeedbackAudioHostAcrossCurrentScreenTransitions()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                Assert.That(hostObject.GetComponentsInChildren<CombatFeedbackAudioHost>(true).Length, Is.EqualTo(1));
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_001_Button");
+                Assert.That(hostObject.GetComponentsInChildren<CombatFeedbackAudioHost>(true).Length, Is.EqualTo(1));
+
+                ReturnToWorldMap(hostObject);
+                Assert.That(hostObject.GetComponentsInChildren<CombatFeedbackAudioHost>(true).Length, Is.EqualTo(1));
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_003_Button");
+                Assert.That(hostObject.GetComponentsInChildren<CombatFeedbackAudioHost>(true).Length, Is.EqualTo(1));
             }
             finally
             {
