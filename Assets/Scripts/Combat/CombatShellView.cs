@@ -198,7 +198,7 @@ namespace Survivalon.Combat
 
             entitySpriteImage = spriteObject.GetComponent<Image>();
             entitySpriteImage.color = Color.white;
-            entitySpriteImage.preserveAspect = false;
+            entitySpriteImage.preserveAspect = true;
 
             entityCardText = RuntimeUiSupport.CreateText(
                 cardObject.transform,
