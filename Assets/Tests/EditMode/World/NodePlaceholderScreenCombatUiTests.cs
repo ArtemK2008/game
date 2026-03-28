@@ -541,6 +541,44 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldExposeRealSettingsSurfaceFromSystemMenuAndPropagateSettingsChange()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            UserSettingsState receivedSettingsState = null;
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { },
+                    settingsChanged: settingsState => receivedSettingsState = settingsState);
+
+                FindButton(hostObject, "SystemMenuButton").onClick.Invoke();
+                FindButton(hostObject, "SystemMenuSettingsButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "Settings"), Is.True);
+                Assert.That(ContainsText(hostObject, "Master volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Music volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "SFX volume: 100%"), Is.True);
+                Assert.That(ContainsText(hostObject, "Display mode: Windowed"), Is.True);
+                Assert.That(FindButton(hostObject, "SystemMenuSettingsBackButton").gameObject.activeInHierarchy, Is.True);
+
+                FindButton(hostObject, "SfxVolumeDecreaseButton").onClick.Invoke();
+
+                Assert.That(receivedSettingsState, Is.Not.Null);
+                Assert.That(receivedSettingsState.SfxVolume, Is.EqualTo(0.9f).Within(0.001f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldRequestBossRewardAndUnlockFeedbackWhenBossPostRunIsPresented()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
