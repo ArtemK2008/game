@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 097
+Current next implementation target: Milestone 098
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -122,6 +122,7 @@ id | type | title | status | depends on / note
 094 | feature | Implement combat effect readability under autobattle | completed | phase 23
 095 | feature | Implement compact main menu | completed | phase 24
 096 | feature | Implement compact pause/system menu | completed | phase 24
+097 | feature | Implement basic audio/display settings persistence | completed | phase 24; closed by 096a shipped work and hardening verification
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

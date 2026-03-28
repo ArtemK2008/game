@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 096** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 097** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while staying safe in editor/test contexts.
@@ -37,6 +37,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - SFX volume
   - fullscreen / windowed mode
 - Settings changes apply immediately and persist through a dedicated player-settings save path separate from gameplay safe-resume state.
+- Settings load at startup before the first menu/context is shown, and malformed or unreadable settings data fails closed to sanitized defaults instead of breaking startup.
 - World map, town/service, and node/combat screens now also expose one compact shared in-game system menu with `Resume`, `Settings`, and `Exit`.
 - That in-game system menu reuses the same compact real settings surface rather than a deeper settings screen.
 - `Exit` is only available where the current safe-save model supports it:
