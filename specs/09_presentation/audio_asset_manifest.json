@@ -1,0 +1,100 @@
+{
+  "formatVersion": 1,
+  "sourceOfTruth": "Committed audio clips currently present under Assets/Audio.",
+  "notes": [
+    "wiredInCurrentRuntime reflects actual current code hookup, not just committed availability.",
+    "Non-audio repository placeholders such as Assets/Audio/placeholder.txt are intentionally excluded."
+  ],
+  "clips": [
+    {
+      "path": "Assets/Audio/Combat/combat_danger_low_health.wav",
+      "category": "combat",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Combat/combat_enemy_attack.wav",
+      "category": "combat",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Combat/combat_enemy_defeat.wav",
+      "category": "combat",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Combat/combat_enemy_hit.wav",
+      "category": "combat",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Combat/combat_player_attack.wav",
+      "category": "combat",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Combat/combat_player_defeat.wav",
+      "category": "combat",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Combat/combat_player_hit.wav",
+      "category": "combat",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Combat/combat_skill_burst_strike.wav",
+      "category": "combat",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Music/music_calm_loop.wav",
+      "category": "music",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/Music/music_gameplay_loop.wav",
+      "category": "music",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/System/state_boss_clear.wav",
+      "category": "system",
+      "wiredInCurrentRuntime": true
+    },
+    {
+      "path": "Assets/Audio/System/state_boss_reward.wav",
+      "category": "system",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/System/state_node_clear.wav",
+      "category": "system",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/System/state_route_unlock.wav",
+      "category": "system",
+      "wiredInCurrentRuntime": false
+    },
+    {
+      "path": "Assets/Audio/System/state_unlock.wav",
+      "category": "system",
+      "wiredInCurrentRuntime": true
+    },
+    {
+      "path": "Assets/Audio/UI/ui_click.wav",
+      "category": "ui",
+      "wiredInCurrentRuntime": true
+    },
+    {
+      "path": "Assets/Audio/UI/ui_confirm.wav",
+      "category": "ui",
+      "wiredInCurrentRuntime": true
+    },
+    {
+      "path": "Assets/Audio/UI/ui_error.wav",
+      "category": "ui",
+      "wiredInCurrentRuntime": true
+    }
+  ]
+}
