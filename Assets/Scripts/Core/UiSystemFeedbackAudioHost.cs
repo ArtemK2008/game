@@ -40,19 +40,19 @@ namespace Survivalon.Core
             audioSource.playOnAwake = false;
             audioSource.loop = false;
             audioSource.spatialBlend = 0f;
+            UiSystemFeedbackAudioClipRegistry clipRegistry = UiSystemFeedbackAudioClipRegistry.LoadOrNull();
 
-            CacheClip(UiSystemFeedbackSoundId.UiClick);
-            CacheClip(UiSystemFeedbackSoundId.UiConfirm);
-            CacheClip(UiSystemFeedbackSoundId.UiError);
-            CacheClip(UiSystemFeedbackSoundId.StateUnlock);
-            CacheClip(UiSystemFeedbackSoundId.StateBossClear);
+            CacheClip(clipRegistry, UiSystemFeedbackSoundId.UiClick);
+            CacheClip(clipRegistry, UiSystemFeedbackSoundId.UiConfirm);
+            CacheClip(clipRegistry, UiSystemFeedbackSoundId.UiError);
+            CacheClip(clipRegistry, UiSystemFeedbackSoundId.StateUnlock);
+            CacheClip(clipRegistry, UiSystemFeedbackSoundId.StateBossClear);
 
             isInitialized = true;
         }
 
-        private void CacheClip(UiSystemFeedbackSoundId soundId)
+        private void CacheClip(UiSystemFeedbackAudioClipRegistry clipRegistry, UiSystemFeedbackSoundId soundId)
         {
-            UiSystemFeedbackAudioClipRegistry clipRegistry = UiSystemFeedbackAudioClipRegistry.LoadOrNull();
             if (clipRegistry == null || !clipRegistry.TryGetClip(soundId, out AudioClip clip))
             {
                 cachedClips[(int)soundId] = null;

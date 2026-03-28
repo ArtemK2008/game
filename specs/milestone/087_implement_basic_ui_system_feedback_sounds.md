@@ -8,6 +8,7 @@
 - Added one small shared feedback-audio seam:
   - `UiSystemFeedbackSoundId`
   - `UiSystemFeedbackAudioHost`
+  - `UiSystemFeedbackAudioClipRegistry`
 - Added one small post-run sound-presentation seam:
   - `PostRunFeedbackSoundState`
   - `PostRunFeedbackSoundStateResolver`
@@ -21,12 +22,13 @@
   - `ui_error`
   - `state_unlock`
   - `state_boss_clear`
-- Used the supplied clip files directly when available:
+- The final shipped runtime design resolves the current UI/system feedback subset through the runtime-safe `Assets/Resources/UiSystemFeedbackAudioClipRegistry.asset`:
   - `Assets/Audio/UI/ui_click.wav`
   - `Assets/Audio/UI/ui_confirm.wav`
   - `Assets/Audio/UI/ui_error.wav`
   - `Assets/Audio/System/state_unlock.wav`
   - `Assets/Audio/System/state_boss_clear.wav`
+- `UiSystemFeedbackAudioHost` no longer resolves clip paths directly; it only caches and plays clips exposed by the registry asset.
 - Kept clip playback fail-safe:
   - missing/unresolved clips do not throw and do not break the UI flow
 
@@ -68,6 +70,7 @@
 - A dedicated audio settings menu or broader sound-mixing/configuration work
 - Any change to save/resume, autosave, reward timing, replay logic, or combat resolution
 - Any new UI screen, modal, or broader presentation redesign beyond this shared feedback seam
+- Wiring the broader committed combat/system/music clip set that may already exist under `Assets/Audio/`
 
 ## Verification
 - Compile/import first:
