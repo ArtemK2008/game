@@ -66,6 +66,26 @@ namespace Survivalon.Tests.EditMode.Startup
             FindActiveButton(rootObject, "SettingsBackButton").onClick.Invoke();
         }
 
+        protected static void OpenSystemMenu(GameObject rootObject)
+        {
+            FindActiveButton(rootObject, "SystemMenuButton").onClick.Invoke();
+        }
+
+        protected static void ResumeFromSystemMenu(GameObject rootObject)
+        {
+            FindActiveButton(rootObject, "SystemMenuResumeButton").onClick.Invoke();
+        }
+
+        protected static void OpenSettingsFromSystemMenu(GameObject rootObject)
+        {
+            FindActiveButton(rootObject, "SystemMenuSettingsButton").onClick.Invoke();
+        }
+
+        protected static void CloseSettingsFromSystemMenu(GameObject rootObject)
+        {
+            FindActiveButton(rootObject, "SystemMenuSettingsBackButton").onClick.Invoke();
+        }
+
         protected static void EnterNodeFromWorldMap(GameObject rootObject, string nodeButtonName)
         {
             FindButton(rootObject, nodeButtonName).onClick.Invoke();

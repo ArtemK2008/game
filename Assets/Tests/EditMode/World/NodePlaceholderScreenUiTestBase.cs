@@ -78,6 +78,19 @@ namespace Survivalon.Tests.EditMode.World
             }
         }
 
+        protected static void InvokeRuntimeFrame(GameObject rootObject, float elapsedSeconds)
+        {
+            NodePlaceholderScreen placeholderScreen = rootObject.GetComponent<NodePlaceholderScreen>();
+            Assert.That(placeholderScreen, Is.Not.Null);
+
+            MethodInfo frameAdvanceMethod = typeof(NodePlaceholderScreen).GetMethod(
+                "AdvanceRuntimeFrame",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(frameAdvanceMethod, Is.Not.Null);
+
+            frameAdvanceMethod.Invoke(placeholderScreen, new object[] { elapsedSeconds });
+        }
+
         protected static void ForceUiLayout(GameObject rootObject)
         {
             Canvas.ForceUpdateCanvases();

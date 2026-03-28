@@ -438,6 +438,41 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldOpenCompactSystemMenuSettingsAndInvokeSafeExitWhenAvailable()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            bool exitRequested = false;
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState,
+                    stopSessionRequested: () => exitRequested = true);
+
+                FindButton(hostObject, "SystemMenuButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "System Menu"), Is.True);
+                Assert.That(FindButton(hostObject, "SystemMenuExitButton").interactable, Is.True);
+
+                FindButton(hostObject, "SystemMenuSettingsButton").onClick.Invoke();
+                Assert.That(ContainsText(hostObject, "Current settings access is intentionally compact."), Is.True);
+
+                FindButton(hostObject, "SystemMenuSettingsBackButton").onClick.Invoke();
+                FindButton(hostObject, "SystemMenuExitButton").onClick.Invoke();
+
+                Assert.That(exitRequested, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldRequestErrorFeedbackForRejectedWorldMapActions()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");

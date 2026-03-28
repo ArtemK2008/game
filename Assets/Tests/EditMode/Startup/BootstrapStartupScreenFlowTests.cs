@@ -72,6 +72,40 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldOpenCompactSettingsEntryFromWorldMapSystemMenuAndResumeCurrentContext()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                OpenSystemMenu(hostObject);
+
+                Assert.That(ContainsText(hostObject, "System Menu"), Is.True);
+                Assert.That(FindButton(hostObject, "SystemMenuExitButton").interactable, Is.True);
+
+                OpenSettingsFromSystemMenu(hostObject);
+
+                Assert.That(ContainsText(hostObject, "Settings"), Is.True);
+                Assert.That(
+                    ContainsText(hostObject, "Current settings access is intentionally compact."),
+                    Is.True);
+
+                CloseSettingsFromSystemMenu(hostObject);
+                ResumeFromSystemMenu(hostObject);
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void ShouldDisableContinueWhenPersistedStateHasNoResumableSafeContext()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");
@@ -141,6 +175,33 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: none"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldShowCompactMainMenuWhenWorldMapSystemExitIsRequested()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                OpenSystemMenu(hostObject);
+                FindButton(hostObject, "SystemMenuExitButton").onClick.Invoke();
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Main Menu"), Is.True);
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.True);
+                Assert.That(storage.HasSavedState, Is.True);
+                Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
+                Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(BootstrapWorldScenario.ForestPushNodeId));
             }
             finally
             {
@@ -533,6 +594,35 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(eliteButton.interactable, Is.True);
                 Assert.That(serviceButton.interactable, Is.True);
                 Assert.That(gateButton.interactable, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldShowCompactMainMenuWhenTownServiceSystemExitIsRequested()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                OpenSystemMenu(hostObject);
+                FindButton(hostObject, "SystemMenuExitButton").onClick.Invoke();
+
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Main Menu"), Is.True);
+                Assert.That(FindButton(hostObject, "ContinueButton").interactable, Is.True);
+                Assert.That(storage.HasSavedState, Is.True);
+                Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.TownService));
+                Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
             }
             finally
             {

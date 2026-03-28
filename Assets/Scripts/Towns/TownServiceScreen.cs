@@ -33,6 +33,8 @@ namespace Survivalon.Towns
         private Text returnToWorldButtonText;
         private Button stopSessionButton;
         private Text stopSessionButtonText;
+        private Button systemMenuButton;
+        private CompactSystemMenuView systemMenuView;
         private Font uiFont;
         private Action onReturnToWorldRequested;
         private Action onStopSessionRequested;
@@ -326,6 +328,8 @@ namespace Survivalon.Towns
                 new Color(0.36f, 0.28f, 0.22f, 1f),
                 out stopSessionButtonText);
             stopSessionButton.onClick.AddListener(HandleStopSessionRequested);
+            systemMenuButton = CreateSystemMenuButton();
+            systemMenuView = EnsureSystemMenuView();
         }
 
         private Button CreateActionButton(
@@ -684,11 +688,98 @@ namespace Survivalon.Towns
             onStopSessionRequested?.Invoke();
         }
 
+        private void HandleSystemMenuRequested()
+        {
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiClick);
+            EnsureSystemMenuView().ShowMenu(
+                onStopSessionRequested != null,
+                HandleSystemMenuResumeRequested,
+                onStopSessionRequested != null ? (Action)HandleSystemMenuExitRequested : null);
+        }
+
+        private void HandleSystemMenuResumeRequested()
+        {
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiClick);
+            systemMenuView.HideMenu();
+        }
+
+        private void HandleSystemMenuExitRequested()
+        {
+            if (onStopSessionRequested == null)
+            {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
+                return;
+            }
+
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
+            systemMenuView.HideMenu();
+            onStopSessionRequested();
+        }
+
         private void ApplyBackgroundArt()
         {
             backgroundArtImage.sprite = currentBackgroundSprite;
             backgroundArtImage.enabled = currentBackgroundSprite != null;
             backgroundArtImage.color = BackgroundArtTint;
+        }
+
+        private Button CreateSystemMenuButton()
+        {
+            GameObject buttonObject = new GameObject(
+                "SystemMenuButton",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button));
+            buttonObject.transform.SetParent(transform, false);
+            buttonObject.transform.SetAsLastSibling();
+
+            RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
+            buttonRectTransform.anchorMin = new Vector2(1f, 1f);
+            buttonRectTransform.anchorMax = new Vector2(1f, 1f);
+            buttonRectTransform.pivot = new Vector2(1f, 1f);
+            buttonRectTransform.sizeDelta = new Vector2(132f, 42f);
+            buttonRectTransform.anchoredPosition = new Vector2(-24f, -24f);
+            buttonRectTransform.localScale = Vector3.one;
+
+            Image buttonImage = buttonObject.GetComponent<Image>();
+            buttonImage.color = new Color(0.18f, 0.24f, 0.32f, 0.96f);
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.targetGraphic = buttonImage;
+            button.onClick.AddListener(HandleSystemMenuRequested);
+
+            Text buttonText = RuntimeUiSupport.CreateText(
+                buttonObject.transform,
+                uiFont,
+                "Label",
+                16,
+                FontStyle.Bold,
+                TextAnchor.MiddleCenter,
+                Color.white);
+            buttonText.text = "System";
+
+            RectTransform labelRectTransform = buttonText.rectTransform;
+            labelRectTransform.anchorMin = Vector2.zero;
+            labelRectTransform.anchorMax = Vector2.one;
+            labelRectTransform.offsetMin = new Vector2(10f, 6f);
+            labelRectTransform.offsetMax = new Vector2(-10f, -6f);
+            labelRectTransform.localScale = Vector3.one;
+
+            return button;
+        }
+
+        private CompactSystemMenuView EnsureSystemMenuView()
+        {
+            if (systemMenuView != null)
+            {
+                return systemMenuView;
+            }
+
+            GameObject systemMenuObject = new GameObject("SystemMenuOverlay");
+            systemMenuObject.transform.SetParent(transform, false);
+            systemMenuView = systemMenuObject.AddComponent<CompactSystemMenuView>();
+            systemMenuView.HideMenu();
+            return systemMenuView;
         }
     }
 }

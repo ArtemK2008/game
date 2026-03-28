@@ -33,6 +33,8 @@ namespace Survivalon.World
         private Text returnToWorldButtonText;
         private Button stopSessionButton;
         private Text stopSessionButtonText;
+        private Button systemMenuButton;
+        private CompactSystemMenuView systemMenuView;
         private Font uiFont;
         private WorldGraph worldGraph;
         private RunPersistentContext persistentContext;
@@ -475,6 +477,8 @@ namespace Survivalon.World
                 out stopSessionButtonText);
             RuntimeUiSupport.AddLayoutElement(stopSessionButton.gameObject, 48f);
             stopSessionButton.onClick.AddListener(HandleStopSessionRequested);
+            systemMenuButton = CreateSystemMenuButton();
+            systemMenuView = EnsureSystemMenuView();
         }
 
         private Button CreateActionButton(Transform parent, string objectName, string label, out Text buttonText)
@@ -650,7 +654,17 @@ namespace Survivalon.World
 
         private void Update()
         {
-            TryAdvanceRuntimeTime(Time.unscaledDeltaTime);
+            AdvanceRuntimeFrame(Time.unscaledDeltaTime);
+        }
+
+        private void AdvanceRuntimeFrame(float elapsedSeconds)
+        {
+            if (systemMenuView != null && systemMenuView.IsVisible)
+            {
+                return;
+            }
+
+            TryAdvanceRuntimeTime(elapsedSeconds);
         }
 
         private void TryAdvanceRuntimeTime(float elapsedSeconds)
@@ -834,6 +848,98 @@ namespace Survivalon.World
                 placeholderState,
                 worldGraph,
                 persistentContext: persistentContext);
+        }
+
+        private void HandleSystemMenuRequested()
+        {
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiClick);
+            bool canExit = postRunStateController != null &&
+                postRunStateController.CanStopSession &&
+                onStopSessionRequested != null;
+            EnsureSystemMenuView().ShowMenu(
+                canExit,
+                HandleSystemMenuResumeRequested,
+                canExit ? (Action)HandleSystemMenuExitRequested : null);
+        }
+
+        private void HandleSystemMenuResumeRequested()
+        {
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiClick);
+            systemMenuView.HideMenu();
+        }
+
+        private void HandleSystemMenuExitRequested()
+        {
+            if (postRunStateController == null ||
+                !postRunStateController.CanStopSession ||
+                onStopSessionRequested == null)
+            {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
+                return;
+            }
+
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
+            systemMenuView.HideMenu();
+            onStopSessionRequested(postRunStateController.RunResult);
+        }
+
+        private Button CreateSystemMenuButton()
+        {
+            GameObject buttonObject = new GameObject(
+                "SystemMenuButton",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button));
+            buttonObject.transform.SetParent(transform, false);
+            buttonObject.transform.SetAsLastSibling();
+
+            RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
+            buttonRectTransform.anchorMin = new Vector2(1f, 1f);
+            buttonRectTransform.anchorMax = new Vector2(1f, 1f);
+            buttonRectTransform.pivot = new Vector2(1f, 1f);
+            buttonRectTransform.sizeDelta = new Vector2(132f, 42f);
+            buttonRectTransform.anchoredPosition = new Vector2(-24f, -24f);
+            buttonRectTransform.localScale = Vector3.one;
+
+            Image buttonImage = buttonObject.GetComponent<Image>();
+            buttonImage.color = new Color(0.18f, 0.24f, 0.32f, 0.96f);
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.targetGraphic = buttonImage;
+            button.onClick.AddListener(HandleSystemMenuRequested);
+
+            Text buttonText = RuntimeUiSupport.CreateText(
+                buttonObject.transform,
+                uiFont,
+                "Label",
+                16,
+                FontStyle.Bold,
+                TextAnchor.MiddleCenter,
+                Color.white);
+            buttonText.text = "System";
+
+            RectTransform labelRectTransform = buttonText.rectTransform;
+            labelRectTransform.anchorMin = Vector2.zero;
+            labelRectTransform.anchorMax = Vector2.one;
+            labelRectTransform.offsetMin = new Vector2(10f, 6f);
+            labelRectTransform.offsetMax = new Vector2(-10f, -6f);
+            labelRectTransform.localScale = Vector3.one;
+
+            return button;
+        }
+
+        private CompactSystemMenuView EnsureSystemMenuView()
+        {
+            if (systemMenuView != null)
+            {
+                return systemMenuView;
+            }
+
+            GameObject systemMenuObject = new GameObject("SystemMenuOverlay");
+            systemMenuObject.transform.SetParent(transform, false);
+            systemMenuView = systemMenuObject.AddComponent<CompactSystemMenuView>();
+            systemMenuView.HideMenu();
+            return systemMenuView;
         }
 
     }

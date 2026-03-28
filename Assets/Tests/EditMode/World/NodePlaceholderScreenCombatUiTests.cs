@@ -466,6 +466,81 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldDisableSystemExitDuringActiveCombatAndEnableItAfterResolvedPostRun()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            bool stopRequested = false;
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => stopRequested = true);
+
+                FindButton(hostObject, "SystemMenuButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "System Menu"), Is.True);
+                Assert.That(FindButton(hostObject, "SystemMenuExitButton").interactable, Is.False);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "Exit is unavailable until you reach a safe world, service, or resolved post-run context."),
+                    Is.True);
+
+                FindButton(hostObject, "SystemMenuResumeButton").onClick.Invoke();
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "SystemMenuButton").onClick.Invoke();
+
+                Assert.That(FindButton(hostObject, "SystemMenuExitButton").interactable, Is.True);
+
+                FindButton(hostObject, "SystemMenuExitButton").onClick.Invoke();
+
+                Assert.That(stopRequested, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldPauseAutomaticCombatProgressWhileSystemMenuIsVisible()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                string initialSummary = FindTextInObject(hostObject, "CombatShellSummary");
+
+                FindButton(hostObject, "SystemMenuButton").onClick.Invoke();
+                InvokeRuntimeFrame(hostObject, 2.5f);
+
+                Assert.That(FindTextInObject(hostObject, "CombatShellSummary"), Is.EqualTo(initialSummary));
+
+                FindButton(hostObject, "SystemMenuResumeButton").onClick.Invoke();
+                AutoAdvanceCombat(hostObject, 1, 2.5f);
+
+                Assert.That(FindTextInObject(hostObject, "CombatShellSummary"), Is.Not.EqualTo(initialSummary));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldRequestBossRewardAndUnlockFeedbackWhenBossPostRunIsPresented()
         {
             GameObject hostObject = new GameObject("NodePlaceholderHost");
