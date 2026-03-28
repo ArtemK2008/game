@@ -1,27 +1,39 @@
 using System;
 using UnityEngine;
+using Survivalon.Data.World;
 
 namespace Survivalon.Combat
 {
     public sealed class CombatShellPresentationStateResolver
     {
         private CombatEntitySpriteRegistry spriteRegistry;
+        private readonly CombatLocationBackgroundResolver locationBackgroundResolver;
 
-        public CombatShellPresentationStateResolver(CombatEntitySpriteRegistry spriteRegistry = null)
+        public CombatShellPresentationStateResolver(
+            CombatEntitySpriteRegistry spriteRegistry = null,
+            CombatLocationBackgroundResolver locationBackgroundResolver = null)
         {
             this.spriteRegistry = spriteRegistry;
+            this.locationBackgroundResolver = locationBackgroundResolver ?? new CombatLocationBackgroundResolver();
         }
 
         public CombatShellPresentationState Resolve(
+            LocationIdentityDefinition locationIdentity,
             CombatEncounterState combatEncounterState,
             CombatShellVisualState visualState)
         {
+            if (locationIdentity == null)
+            {
+                throw new ArgumentNullException(nameof(locationIdentity));
+            }
+
             if (combatEncounterState == null)
             {
                 throw new ArgumentNullException(nameof(combatEncounterState));
             }
 
             return new CombatShellPresentationState(
+                locationBackgroundResolver.Resolve(locationIdentity),
                 ResolveRequiredSprite(
                     combatEncounterState.PlayerEntity.EntityId.Value,
                     visualState.PlayerVisualState),
@@ -65,11 +77,17 @@ namespace Survivalon.Combat
 
     public readonly struct CombatShellPresentationState
     {
-        public CombatShellPresentationState(Sprite playerSprite, Sprite enemySprite)
+        public CombatShellPresentationState(
+            Sprite backgroundSprite,
+            Sprite playerSprite,
+            Sprite enemySprite)
         {
+            BackgroundSprite = backgroundSprite ? backgroundSprite : throw new ArgumentNullException(nameof(backgroundSprite));
             PlayerSprite = playerSprite ? playerSprite : throw new ArgumentNullException(nameof(playerSprite));
             EnemySprite = enemySprite ? enemySprite : throw new ArgumentNullException(nameof(enemySprite));
         }
+
+        public Sprite BackgroundSprite { get; }
 
         public Sprite PlayerSprite { get; }
 

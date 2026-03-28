@@ -626,6 +626,7 @@ namespace Survivalon.World
             combatShellView.Show(
                 runLifecycleController.CombatEncounterState,
                 combatShellPresentationStateResolver.Resolve(
+                    runLifecycleController.NodeContext.LocationIdentity,
                     runLifecycleController.CombatEncounterState,
                     currentCombatShellVisualState),
                 title: RunHudTextBuilder.BuildContextTitle(runHudState),
