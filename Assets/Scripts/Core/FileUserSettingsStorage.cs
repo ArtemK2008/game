@@ -20,21 +20,29 @@ namespace Survivalon.Core
 
         public bool TryLoad(out UserSettingsState settingsState)
         {
-            if (!File.Exists(storagePath))
+            try
+            {
+                if (!File.Exists(storagePath))
+                {
+                    settingsState = null;
+                    return false;
+                }
+
+                string json = File.ReadAllText(storagePath);
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    settingsState = null;
+                    return false;
+                }
+
+                settingsState = JsonUtility.FromJson<UserSettingsState>(json);
+                return settingsState != null;
+            }
+            catch (Exception)
             {
                 settingsState = null;
                 return false;
             }
-
-            string json = File.ReadAllText(storagePath);
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                settingsState = null;
-                return false;
-            }
-
-            settingsState = JsonUtility.FromJson<UserSettingsState>(json);
-            return settingsState != null;
         }
 
         public void Save(UserSettingsState settingsState)

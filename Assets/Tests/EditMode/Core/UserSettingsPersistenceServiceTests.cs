@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using Survivalon.Core;
+using System;
+using System.IO;
 
 namespace Survivalon.Tests.EditMode.Core
 {
@@ -55,6 +57,36 @@ namespace Survivalon.Tests.EditMode.Core
             Assert.That(storage.SavedSettingsState.MusicVolume, Is.EqualTo(1f));
             Assert.That(storage.SavedSettingsState.SfxVolume, Is.EqualTo(0.4f).Within(0.001f));
             Assert.That(storage.SavedSettingsState.UseFullscreen, Is.False);
+        }
+
+        [Test]
+        public void LoadOrDefault_ShouldReturnDefaultWhenBackingFileIsMalformed()
+        {
+            string storagePath = Path.Combine(
+                Path.GetTempPath(),
+                $"survivalon_user_settings_{Guid.NewGuid():N}.json");
+            File.WriteAllText(storagePath, "{ malformed json");
+
+            try
+            {
+                UserSettingsPersistenceService service = new UserSettingsPersistenceService(
+                    new FileUserSettingsStorage(storagePath));
+
+                UserSettingsState settingsState = service.LoadOrDefault();
+
+                Assert.That(settingsState, Is.Not.Null);
+                Assert.That(settingsState.MasterVolume, Is.EqualTo(1f));
+                Assert.That(settingsState.MusicVolume, Is.EqualTo(1f));
+                Assert.That(settingsState.SfxVolume, Is.EqualTo(1f));
+                Assert.That(settingsState.UseFullscreen, Is.False);
+            }
+            finally
+            {
+                if (File.Exists(storagePath))
+                {
+                    File.Delete(storagePath);
+                }
+            }
         }
 
         private sealed class MemoryUserSettingsStorage : IUserSettingsStorage

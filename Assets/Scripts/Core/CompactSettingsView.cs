@@ -9,6 +9,22 @@ namespace Survivalon.Core
     /// </summary>
     public sealed class CompactSettingsView : MonoBehaviour
     {
+        private sealed class VolumeRowControls
+        {
+            public VolumeRowControls(Text valueText, Button decreaseButton, Button increaseButton)
+            {
+                ValueText = valueText;
+                DecreaseButton = decreaseButton;
+                IncreaseButton = increaseButton;
+            }
+
+            public Text ValueText { get; }
+
+            public Button DecreaseButton { get; }
+
+            public Button IncreaseButton { get; }
+        }
+
         private VerticalLayoutGroup layoutGroup;
         private Text masterVolumeValueText;
         private Text musicVolumeValueText;
@@ -72,27 +88,38 @@ namespace Survivalon.Core
             layoutGroup.childForceExpandWidth = true;
             layoutGroup.childForceExpandHeight = false;
 
-            masterVolumeValueText = CreateVolumeRow(
+            VolumeRowControls masterVolumeRow = CreateVolumeRow(
                 "MasterVolumeRow",
                 "MasterVolumeDecreaseButton",
                 "MasterVolumeValue",
                 "MasterVolumeIncreaseButton",
                 HandleMasterVolumeDecreaseRequested,
                 HandleMasterVolumeIncreaseRequested);
-            musicVolumeValueText = CreateVolumeRow(
+            masterVolumeValueText = masterVolumeRow.ValueText;
+            masterVolumeDecreaseButton = masterVolumeRow.DecreaseButton;
+            masterVolumeIncreaseButton = masterVolumeRow.IncreaseButton;
+
+            VolumeRowControls musicVolumeRow = CreateVolumeRow(
                 "MusicVolumeRow",
                 "MusicVolumeDecreaseButton",
                 "MusicVolumeValue",
                 "MusicVolumeIncreaseButton",
                 HandleMusicVolumeDecreaseRequested,
                 HandleMusicVolumeIncreaseRequested);
-            sfxVolumeValueText = CreateVolumeRow(
+            musicVolumeValueText = musicVolumeRow.ValueText;
+            musicVolumeDecreaseButton = musicVolumeRow.DecreaseButton;
+            musicVolumeIncreaseButton = musicVolumeRow.IncreaseButton;
+
+            VolumeRowControls sfxVolumeRow = CreateVolumeRow(
                 "SfxVolumeRow",
                 "SfxVolumeDecreaseButton",
                 "SfxVolumeValue",
                 "SfxVolumeIncreaseButton",
                 HandleSfxVolumeDecreaseRequested,
                 HandleSfxVolumeIncreaseRequested);
+            sfxVolumeValueText = sfxVolumeRow.ValueText;
+            sfxVolumeDecreaseButton = sfxVolumeRow.DecreaseButton;
+            sfxVolumeIncreaseButton = sfxVolumeRow.IncreaseButton;
 
             GameObject displayRowObject = new GameObject(
                 "DisplayModeRow",
@@ -151,7 +178,7 @@ namespace Survivalon.Core
             backButton.gameObject.name = configuredBackButtonName;
         }
 
-        private Text CreateVolumeRow(
+        private VolumeRowControls CreateVolumeRow(
             string rowObjectName,
             string decreaseButtonObjectName,
             string valueObjectName,
@@ -198,23 +225,7 @@ namespace Survivalon.Core
                 "+",
                 48f);
 
-            if (decreaseButtonObjectName.StartsWith("Master"))
-            {
-                masterVolumeDecreaseButton = decreaseButton;
-                masterVolumeIncreaseButton = increaseButton;
-            }
-            else if (decreaseButtonObjectName.StartsWith("Music"))
-            {
-                musicVolumeDecreaseButton = decreaseButton;
-                musicVolumeIncreaseButton = increaseButton;
-            }
-            else
-            {
-                sfxVolumeDecreaseButton = decreaseButton;
-                sfxVolumeIncreaseButton = increaseButton;
-            }
-
-            return valueText;
+            return new VolumeRowControls(valueText, decreaseButton, increaseButton);
         }
 
         private Button CreateInlineButton(
