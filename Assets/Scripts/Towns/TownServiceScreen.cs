@@ -39,6 +39,7 @@ namespace Survivalon.Towns
         private TownServiceProgressionInteractionService progressionInteractionService;
         private TownServiceConversionInteractionService conversionInteractionService;
         private TownServiceBuildPreparationInteractionService buildPreparationInteractionService;
+        private Action<UiSystemFeedbackSoundId> onFeedbackSoundRequested;
 
         public void Show(
             NodePlaceholderState placeholderState,
@@ -48,7 +49,8 @@ namespace Survivalon.Towns
             TownServiceScreenStateResolver stateResolver = null,
             TownServiceProgressionInteractionService progressionInteractionService = null,
             TownServiceConversionInteractionService conversionInteractionService = null,
-            TownServiceBuildPreparationInteractionService buildPreparationInteractionService = null)
+            TownServiceBuildPreparationInteractionService buildPreparationInteractionService = null,
+            Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null)
         {
             if (placeholderState == null)
             {
@@ -81,6 +83,7 @@ namespace Survivalon.Towns
             this.conversionInteractionService = conversionInteractionService ?? new TownServiceConversionInteractionService();
             this.buildPreparationInteractionService = buildPreparationInteractionService ??
                 new TownServiceBuildPreparationInteractionService();
+            onFeedbackSoundRequested = feedbackSoundRequested;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
             gameObject.name = "TownServiceScreen";
@@ -521,10 +524,19 @@ namespace Survivalon.Towns
         {
             if (progressionInteractionService == null || stateResolver == null)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
-            progressionInteractionService.TryPurchase(currentGameState, upgradeId);
+            AccountWideUpgradePurchaseStatus purchaseStatus =
+                progressionInteractionService.TryPurchase(currentGameState, upgradeId);
+            if (purchaseStatus != AccountWideUpgradePurchaseStatus.Purchased)
+            {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
+                return;
+            }
+
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
         }
 
@@ -532,14 +544,17 @@ namespace Survivalon.Towns
         {
             if (buildPreparationInteractionService == null || stateResolver == null)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
             if (!buildPreparationInteractionService.TryAssignSkillPackage(currentGameState, skillPackageId))
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
         }
 
@@ -547,14 +562,17 @@ namespace Survivalon.Towns
         {
             if (conversionInteractionService == null || stateResolver == null)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
             if (!conversionInteractionService.TryConvert(currentGameState, conversionId))
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
         }
 
@@ -562,6 +580,7 @@ namespace Survivalon.Towns
         {
             if (buildPreparationInteractionService == null || stateResolver == null)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
@@ -575,9 +594,11 @@ namespace Survivalon.Towns
 
             if (!changed)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             Refresh(stateResolver.Resolve(currentPlaceholderState, currentGameState));
         }
 
@@ -608,11 +629,25 @@ namespace Survivalon.Towns
 
         private void HandleReturnToWorldRequested()
         {
+            if (onReturnToWorldRequested == null)
+            {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
+                return;
+            }
+
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             onReturnToWorldRequested?.Invoke();
         }
 
         private void HandleStopSessionRequested()
         {
+            if (onStopSessionRequested == null)
+            {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
+                return;
+            }
+
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             onStopSessionRequested?.Invoke();
         }
     }

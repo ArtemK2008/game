@@ -40,11 +40,14 @@ namespace Survivalon.World
         private readonly RunTimeSkillUpgradeChoiceStateResolver runTimeSkillUpgradeChoiceStateResolver =
             new RunTimeSkillUpgradeChoiceStateResolver();
         private readonly PostRunNextActionResolver postRunNextActionResolver = new PostRunNextActionResolver();
+        private readonly PostRunFeedbackSoundStateResolver postRunFeedbackSoundStateResolver =
+            new PostRunFeedbackSoundStateResolver();
         private RunLifecycleController runLifecycleController;
         private PostRunStateController postRunStateController;
         private Action<RunResult> onReturnToWorldRequested;
         private Action<RunResult> onStopSessionRequested;
         private Action onResolvedPostRunBoundaryReached;
+        private Action<UiSystemFeedbackSoundId> onFeedbackSoundRequested;
 
         public void Show(
             WorldGraph worldGraph,
@@ -52,7 +55,8 @@ namespace Survivalon.World
             Action<RunResult> returnToWorldRequested,
             Action<RunResult> stopSessionRequested = null,
             RunPersistentContext persistentContext = null,
-            Action resolvedPostRunBoundaryReached = null)
+            Action resolvedPostRunBoundaryReached = null,
+            Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null)
         {
             if (worldGraph == null)
             {
@@ -71,6 +75,7 @@ namespace Survivalon.World
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
             onResolvedPostRunBoundaryReached = resolvedPostRunBoundaryReached;
+            onFeedbackSoundRequested = feedbackSoundRequested;
             gameObject.name = "NodePlaceholderScreen";
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
@@ -145,9 +150,11 @@ namespace Survivalon.World
         {
             if (!runLifecycleController.TrySelectRunTimeSkillUpgrade(runTimeSkillUpgradeId))
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             runLifecycleController.TryStartAutomaticFlow();
             Refresh();
         }
@@ -156,9 +163,11 @@ namespace Survivalon.World
         {
             if (postRunStateController == null || !postRunStateController.CanReplayNode)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             RunLifecycleController replayController = postRunStateController.CreateReplayLifecycleController(
                 worldGraph,
                 persistentContext);
@@ -172,9 +181,11 @@ namespace Survivalon.World
         {
             if (postRunStateController == null || !postRunStateController.CanReturnToWorld)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             onReturnToWorldRequested?.Invoke(postRunStateController.RunResult);
         }
 
@@ -182,9 +193,11 @@ namespace Survivalon.World
         {
             if (postRunStateController == null || !postRunStateController.CanStopSession)
             {
+                onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiError);
                 return;
             }
 
+            onFeedbackSoundRequested?.Invoke(UiSystemFeedbackSoundId.UiConfirm);
             onStopSessionRequested?.Invoke(postRunStateController.RunResult);
         }
 
@@ -644,6 +657,28 @@ namespace Survivalon.World
                 runLifecycleController.NodeContext,
                 runLifecycleController.RunResult);
             onResolvedPostRunBoundaryReached?.Invoke();
+            RequestResolvedPostRunFeedback();
+        }
+
+        private void RequestResolvedPostRunFeedback()
+        {
+            if (onFeedbackSoundRequested == null || postRunStateController == null)
+            {
+                return;
+            }
+
+            PostRunFeedbackSoundState feedbackSoundState = postRunFeedbackSoundStateResolver.Resolve(
+                postRunStateController.NodeContext,
+                postRunStateController.RunResult);
+            if (feedbackSoundState.ShouldPlayBossClearSound)
+            {
+                onFeedbackSoundRequested(UiSystemFeedbackSoundId.StateBossClear);
+            }
+
+            if (feedbackSoundState.ShouldPlayUnlockSound)
+            {
+                onFeedbackSoundRequested(UiSystemFeedbackSoundId.StateUnlock);
+            }
         }
 
         private void RefreshPostRunSummaryPanel()

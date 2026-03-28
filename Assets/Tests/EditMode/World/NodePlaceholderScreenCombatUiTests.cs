@@ -3,10 +3,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using Survivalon.Combat;
 using Survivalon.Characters;
+using Survivalon.Core;
 using Survivalon.Data.Characters;
+using Survivalon.Data.Gear;
 using Survivalon.Run;
 using Survivalon.State.Persistence;
 using Survivalon.World;
+using System.Collections.Generic;
 
 namespace Survivalon.Tests.EditMode.World
 {
@@ -226,6 +229,89 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
                 Assert.That(FindButton(hostObject, "StopSessionButton").interactable, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldRequestConfirmFeedbackForReplayReturnAndStopActions()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            List<UiSystemFeedbackSoundId> requestedSounds = new List<UiSystemFeedbackSoundId>();
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { },
+                    feedbackSoundRequested: requestedSounds.Add);
+
+                AdvanceToPostRun(hostObject);
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+                FindButton(hostObject, "StopSessionButton").onClick.Invoke();
+                FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
+
+                CollectionAssert.AreEqual(
+                    new[]
+                    {
+                        UiSystemFeedbackSoundId.UiConfirm,
+                        UiSystemFeedbackSoundId.UiConfirm,
+                        UiSystemFeedbackSoundId.UiConfirm,
+                    },
+                    requestedSounds);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldRequestBossClearAndUnlockFeedbackWhenBossPostRunIsPresented()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            PlayableCharacterSelectionService selectionService = new PlayableCharacterSelectionService();
+            PlayableCharacterGearAssignmentService gearAssignmentService =
+                new PlayableCharacterGearAssignmentService(selectionService);
+            List<UiSystemFeedbackSoundId> requestedSounds = new List<UiSystemFeedbackSoundId>();
+
+            Assert.That(selectionService.TrySelectCharacter(gameState, "character_striker"), Is.True);
+            Assert.That(
+                gearAssignmentService.TryAssignSelectedCharacterGear(gameState, GearIds.TrainingBlade),
+                Is.True);
+            Assert.That(
+                gearAssignmentService.TryAssignSelectedCharacterGear(gameState, GearIds.GuardCharm),
+                Is.True);
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    CreateBossCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { },
+                    RunPersistentContext.FromGameState(gameState),
+                    feedbackSoundRequested: requestedSounds.Add);
+
+                AdvanceToPostRun(hostObject);
+
+                CollectionAssert.AreEqual(
+                    new[]
+                    {
+                        UiSystemFeedbackSoundId.StateBossClear,
+                        UiSystemFeedbackSoundId.StateUnlock,
+                    },
+                    requestedSounds);
             }
             finally
             {

@@ -20,6 +20,7 @@ namespace Survivalon.Startup
         private SafeResumePersistenceService persistenceService;
         private BootstrapWorldContextTransitionService worldContextTransitionService;
         private SessionContextState sessionContext;
+        private UiSystemFeedbackAudioHost feedbackAudioHost;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
@@ -38,6 +39,7 @@ namespace Survivalon.Startup
             gameState = startupState.GameState;
             nodeEntryFlowController = startupState.NodeEntryFlowController;
             sessionContext = startupState.SessionContext;
+            feedbackAudioHost = EnsureUiSystemFeedbackAudioHost();
 
             ShowStartupEntryTarget(startupState.EntryTarget);
             Debug.Log($"Bootstrap startup flow entered {startupState.EntryTarget}.");
@@ -58,7 +60,8 @@ namespace Survivalon.Startup
                 sessionContext,
                 gameState,
                 ResolveWorldMapProgressionEffects(),
-                new WorldMapBuildPreparationInteractionService(persistenceService));
+                new WorldMapBuildPreparationInteractionService(persistenceService),
+                feedbackAudioHost.TryPlay);
         }
 
         private void ShowNodePlaceholder(NodePlaceholderState placeholderState)
@@ -75,7 +78,8 @@ namespace Survivalon.Startup
                 HandleReturnToWorldRequested,
                 HandleStopSessionRequested,
                 RunPersistentContext.FromGameState(gameState),
-                HandleResolvedPostRunBoundaryReached);
+                HandleResolvedPostRunBoundaryReached,
+                feedbackAudioHost.TryPlay);
         }
 
         private void ShowTownServiceScreen(NodePlaceholderState placeholderState)
@@ -93,7 +97,8 @@ namespace Survivalon.Startup
                 () => HandleTownServiceStopRequested(placeholderState.NodeId),
                 progressionInteractionService: new TownServiceProgressionInteractionService(persistenceService),
                 conversionInteractionService: new TownServiceConversionInteractionService(persistenceService),
-                buildPreparationInteractionService: new TownServiceBuildPreparationInteractionService(persistenceService));
+                buildPreparationInteractionService: new TownServiceBuildPreparationInteractionService(persistenceService),
+                feedbackSoundRequested: feedbackAudioHost.TryPlay);
         }
 
         private void HandleNodeEntryRequested(NodeId nodeId)
@@ -241,6 +246,20 @@ namespace Survivalon.Startup
             townServiceObject.transform.SetParent(transform, false);
 
             return townServiceObject.AddComponent<TownServiceScreen>();
+        }
+
+        private UiSystemFeedbackAudioHost EnsureUiSystemFeedbackAudioHost()
+        {
+            UiSystemFeedbackAudioHost existingFeedbackAudioHost =
+                GetComponentInChildren<UiSystemFeedbackAudioHost>(true);
+            if (existingFeedbackAudioHost != null)
+            {
+                return existingFeedbackAudioHost;
+            }
+
+            GameObject feedbackAudioObject = new GameObject("UiSystemFeedbackAudioHost");
+            feedbackAudioObject.transform.SetParent(transform, false);
+            return feedbackAudioObject.AddComponent<UiSystemFeedbackAudioHost>();
         }
 
         private static void SetOptionalScreenActive(Component component, bool isActive)

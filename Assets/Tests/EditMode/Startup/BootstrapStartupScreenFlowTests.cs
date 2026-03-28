@@ -314,6 +314,33 @@ namespace Survivalon.Tests.EditMode.Startup
                 Object.DestroyImmediate(hostObject);
             }
         }
+
+        [Test]
+        public void ShouldKeepSingleUiSystemFeedbackAudioHostAcrossCurrentScreenTransitions()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                Assert.That(hostObject.GetComponentsInChildren<UiSystemFeedbackAudioHost>(true).Length, Is.EqualTo(1));
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                Assert.That(hostObject.GetComponentsInChildren<UiSystemFeedbackAudioHost>(true).Length, Is.EqualTo(1));
+
+                FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
+                Assert.That(hostObject.GetComponentsInChildren<UiSystemFeedbackAudioHost>(true).Length, Is.EqualTo(1));
+
+                EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
+                Assert.That(hostObject.GetComponentsInChildren<UiSystemFeedbackAudioHost>(true).Length, Is.EqualTo(1));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
     }
 }
 
