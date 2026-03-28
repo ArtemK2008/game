@@ -35,9 +35,11 @@ namespace Survivalon.Towns
         private Text stopSessionButtonText;
         private Button systemMenuButton;
         private CompactSystemMenuView systemMenuView;
+        private UserSettingsState currentSettingsState;
         private Font uiFont;
         private Action onReturnToWorldRequested;
         private Action onStopSessionRequested;
+        private Action<UserSettingsState> onSettingsChanged;
         private NodePlaceholderState currentPlaceholderState;
         private PersistentGameState currentGameState;
         private Sprite currentBackgroundSprite;
@@ -57,7 +59,9 @@ namespace Survivalon.Towns
             TownServiceProgressionInteractionService progressionInteractionService = null,
             TownServiceConversionInteractionService conversionInteractionService = null,
             TownServiceBuildPreparationInteractionService buildPreparationInteractionService = null,
-            Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null)
+            Action<UiSystemFeedbackSoundId> feedbackSoundRequested = null,
+            UserSettingsState settingsState = null,
+            Action<UserSettingsState> settingsChanged = null)
         {
             if (placeholderState == null)
             {
@@ -94,6 +98,8 @@ namespace Survivalon.Towns
             this.buildPreparationInteractionService = buildPreparationInteractionService ??
                 new TownServiceBuildPreparationInteractionService();
             onFeedbackSoundRequested = feedbackSoundRequested;
+            currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            onSettingsChanged = settingsChanged;
             onReturnToWorldRequested = returnToWorldRequested ?? throw new ArgumentNullException(nameof(returnToWorldRequested));
             onStopSessionRequested = stopSessionRequested;
             gameObject.name = "TownServiceScreen";
@@ -328,8 +334,11 @@ namespace Survivalon.Towns
                 new Color(0.36f, 0.28f, 0.22f, 1f),
                 out stopSessionButtonText);
             stopSessionButton.onClick.AddListener(HandleStopSessionRequested);
-            systemMenuButton = CreateSystemMenuButton();
-            systemMenuView = EnsureSystemMenuView();
+            systemMenuButton = CompactSystemMenuUiFactory.CreateSystemMenuButton(
+                transform,
+                uiFont,
+                HandleSystemMenuRequested);
+            systemMenuView = CompactSystemMenuUiFactory.CreateSystemMenuView(transform);
         }
 
         private Button CreateActionButton(
@@ -694,7 +703,9 @@ namespace Survivalon.Towns
             EnsureSystemMenuView().ShowMenu(
                 onStopSessionRequested != null,
                 HandleSystemMenuResumeRequested,
-                onStopSessionRequested != null ? (Action)HandleSystemMenuExitRequested : null);
+                onStopSessionRequested != null ? (Action)HandleSystemMenuExitRequested : null,
+                currentSettingsState,
+                HandleSettingsChangedRequested);
         }
 
         private void HandleSystemMenuResumeRequested()
@@ -716,56 +727,17 @@ namespace Survivalon.Towns
             onStopSessionRequested();
         }
 
+        private void HandleSettingsChangedRequested(UserSettingsState settingsState)
+        {
+            currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            onSettingsChanged?.Invoke(currentSettingsState.Clone());
+        }
+
         private void ApplyBackgroundArt()
         {
             backgroundArtImage.sprite = currentBackgroundSprite;
             backgroundArtImage.enabled = currentBackgroundSprite != null;
             backgroundArtImage.color = BackgroundArtTint;
-        }
-
-        private Button CreateSystemMenuButton()
-        {
-            GameObject buttonObject = new GameObject(
-                "SystemMenuButton",
-                typeof(RectTransform),
-                typeof(Image),
-                typeof(Button));
-            buttonObject.transform.SetParent(transform, false);
-            buttonObject.transform.SetAsLastSibling();
-
-            RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
-            buttonRectTransform.anchorMin = new Vector2(1f, 1f);
-            buttonRectTransform.anchorMax = new Vector2(1f, 1f);
-            buttonRectTransform.pivot = new Vector2(1f, 1f);
-            buttonRectTransform.sizeDelta = new Vector2(132f, 42f);
-            buttonRectTransform.anchoredPosition = new Vector2(-24f, -24f);
-            buttonRectTransform.localScale = Vector3.one;
-
-            Image buttonImage = buttonObject.GetComponent<Image>();
-            buttonImage.color = new Color(0.18f, 0.24f, 0.32f, 0.96f);
-
-            Button button = buttonObject.GetComponent<Button>();
-            button.targetGraphic = buttonImage;
-            button.onClick.AddListener(HandleSystemMenuRequested);
-
-            Text buttonText = RuntimeUiSupport.CreateText(
-                buttonObject.transform,
-                uiFont,
-                "Label",
-                16,
-                FontStyle.Bold,
-                TextAnchor.MiddleCenter,
-                Color.white);
-            buttonText.text = "System";
-
-            RectTransform labelRectTransform = buttonText.rectTransform;
-            labelRectTransform.anchorMin = Vector2.zero;
-            labelRectTransform.anchorMax = Vector2.one;
-            labelRectTransform.offsetMin = new Vector2(10f, 6f);
-            labelRectTransform.offsetMax = new Vector2(-10f, -6f);
-            labelRectTransform.localScale = Vector3.one;
-
-            return button;
         }
 
         private CompactSystemMenuView EnsureSystemMenuView()
@@ -775,10 +747,7 @@ namespace Survivalon.Towns
                 return systemMenuView;
             }
 
-            GameObject systemMenuObject = new GameObject("SystemMenuOverlay");
-            systemMenuObject.transform.SetParent(transform, false);
-            systemMenuView = systemMenuObject.AddComponent<CompactSystemMenuView>();
-            systemMenuView.HideMenu();
+            systemMenuView = CompactSystemMenuUiFactory.CreateSystemMenuView(transform);
             return systemMenuView;
         }
     }

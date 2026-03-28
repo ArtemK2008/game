@@ -1,5 +1,6 @@
 using System.Reflection;
 using NUnit.Framework;
+using Survivalon.Core;
 using Survivalon.Startup;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -28,13 +29,20 @@ namespace Survivalon.Tests.EditMode.Startup
             GameObject hostObject,
             MemoryPersistentGameStateStorage storage,
             bool autoEnterPlayableFlow = true,
-            IApplicationQuitService quitService = null)
+            IApplicationQuitService quitService = null,
+            MemoryUserSettingsStorage settingsStorage = null,
+            FakeDisplaySettingsApplier displaySettingsApplier = null)
         {
             BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
             bootstrapStartup.ConfigurePersistenceStorage(storage);
+            bootstrapStartup.ConfigureUserSettingsStorage(settingsStorage ?? new MemoryUserSettingsStorage());
             if (quitService != null)
             {
                 bootstrapStartup.ConfigureQuitService(quitService);
+            }
+            if (displaySettingsApplier != null)
+            {
+                bootstrapStartup.ConfigureDisplaySettingsApplier(displaySettingsApplier);
             }
 
             InvokeAwake(bootstrapStartup);
@@ -367,6 +375,59 @@ namespace Survivalon.Tests.EditMode.Startup
             if (startButton != null && startButton.interactable)
             {
                 startButton.onClick.Invoke();
+            }
+        }
+
+        protected sealed class MemoryUserSettingsStorage : IUserSettingsStorage
+        {
+            private UserSettingsState savedSettingsState;
+
+            public UserSettingsState SavedSettingsState => savedSettingsState;
+
+            public int SaveCallCount { get; private set; }
+
+            public void Seed(UserSettingsState settingsState)
+            {
+                savedSettingsState = CloneSettingsState(settingsState);
+                SaveCallCount = 0;
+            }
+
+            public void Save(UserSettingsState settingsState)
+            {
+                savedSettingsState = CloneSettingsState(settingsState);
+                SaveCallCount++;
+            }
+
+            public bool TryLoad(out UserSettingsState settingsState)
+            {
+                settingsState = savedSettingsState == null ? null : CloneSettingsState(savedSettingsState);
+                return settingsState != null;
+            }
+
+            private static UserSettingsState CloneSettingsState(UserSettingsState settingsState)
+            {
+                if (settingsState == null)
+                {
+                    return null;
+                }
+
+                string json = JsonUtility.ToJson(settingsState);
+                UserSettingsState clonedSettingsState = JsonUtility.FromJson<UserSettingsState>(json);
+                Assert.That(clonedSettingsState, Is.Not.Null);
+                return clonedSettingsState;
+            }
+        }
+
+        protected sealed class FakeDisplaySettingsApplier : IDisplaySettingsApplier
+        {
+            public bool LastAppliedFullscreen { get; private set; }
+
+            public int ApplyCallCount { get; private set; }
+
+            public void Apply(bool useFullscreen)
+            {
+                LastAppliedFullscreen = useFullscreen;
+                ApplyCallCount++;
             }
         }
     }

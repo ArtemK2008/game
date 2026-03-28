@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Survivalon.Startup
 {
     /// <summary>
-    /// Renders the compact startup main menu and its minimal settings entry surface.
+    /// Renders the compact startup main menu and its shared compact settings surface.
     /// </summary>
     public sealed class StartupPlaceholderView : MonoBehaviour
     {
@@ -16,23 +16,30 @@ namespace Survivalon.Startup
         private Button continueButton;
         private GameObject menuButtonGroup;
         private GameObject settingsButtonGroup;
+        private CompactSettingsView settingsView;
         private Font uiFont;
         private bool canContinue;
         private bool isShowingSettings;
+        private UserSettingsState currentSettingsState;
         private Action onStartRequested;
         private Action onContinueRequested;
         private Action onQuitRequested;
+        private Action<UserSettingsState> onSettingsChanged;
 
         public void ShowMainMenu(
             bool canContinue,
             Action onStartRequested,
             Action onContinueRequested,
-            Action onQuitRequested)
+            Action onQuitRequested,
+            UserSettingsState settingsState = null,
+            Action<UserSettingsState> settingsChanged = null)
         {
             this.canContinue = canContinue;
             this.onStartRequested = onStartRequested;
             this.onContinueRequested = onContinueRequested;
             this.onQuitRequested = onQuitRequested;
+            currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            onSettingsChanged = settingsChanged;
             isShowingSettings = false;
 
             gameObject.name = StartupEntryTarget.MainMenuPlaceholder.ToString();
@@ -49,10 +56,11 @@ namespace Survivalon.Startup
             {
                 titleText.text = "Settings";
                 summaryText.text =
-                    "Current settings access is intentionally compact.\n" +
-                    "Deeper audio, display, and control options are not expanded yet.";
+                    "Changes apply immediately and persist automatically.\n" +
+                    "Adjust master, music, SFX, and the current desktop window mode.";
                 menuButtonGroup.SetActive(false);
                 settingsButtonGroup.SetActive(true);
+                settingsView.gameObject.SetActive(true);
                 return;
             }
 
@@ -62,6 +70,7 @@ namespace Survivalon.Startup
                 : "Start begins a fresh prototype session.\nContinue becomes available after a safe world or service save.";
             menuButtonGroup.SetActive(true);
             settingsButtonGroup.SetActive(false);
+            settingsView.gameObject.SetActive(false);
             continueButton.interactable = canContinue && onContinueRequested != null;
         }
 
@@ -147,7 +156,8 @@ namespace Survivalon.Startup
             CreateActionButton(menuButtonGroup.transform, "QuitButton", "Quit", HandleQuitRequested);
 
             settingsButtonGroup = CreateButtonGroup(panelObject.transform, "SettingsButtons");
-            CreateActionButton(settingsButtonGroup.transform, "SettingsBackButton", "Back", HandleSettingsBackRequested);
+            settingsView = settingsButtonGroup.AddComponent<CompactSettingsView>();
+            settingsView.Hide();
         }
 
         private GameObject CreateButtonGroup(Transform parent, string objectName)
@@ -234,18 +244,30 @@ namespace Survivalon.Startup
         private void HandleSettingsRequested()
         {
             isShowingSettings = true;
+            settingsView.Show(
+                currentSettingsState,
+                HandleSettingsChanged,
+                HandleSettingsBackRequested,
+                "SettingsBackButton");
             Refresh();
         }
 
         private void HandleSettingsBackRequested()
         {
             isShowingSettings = false;
+            settingsView.Hide();
             Refresh();
         }
 
         private void HandleQuitRequested()
         {
             onQuitRequested?.Invoke();
+        }
+
+        private void HandleSettingsChanged(UserSettingsState settingsState)
+        {
+            currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
+            onSettingsChanged?.Invoke(currentSettingsState.Clone());
         }
     }
 }

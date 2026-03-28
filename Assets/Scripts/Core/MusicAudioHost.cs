@@ -48,6 +48,12 @@ namespace Survivalon.Core
             audioSource.Play();
         }
 
+        public void SetOutputVolume(float volume)
+        {
+            EnsureInitialized();
+            audioSource.volume = Mathf.Clamp01(volume);
+        }
+
         private void EnsureInitialized()
         {
             if (isInitialized)
