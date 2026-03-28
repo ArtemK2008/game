@@ -2,7 +2,6 @@ using NUnit.Framework;
 using Survivalon.Core;
 using Survivalon.Run;
 using Survivalon.World;
-using Survivalon.Tests.EditMode.World;
 
 namespace Survivalon.Tests.EditMode.Run
 {
@@ -12,50 +11,76 @@ namespace Survivalon.Tests.EditMode.Run
     public sealed class PostRunFeedbackSoundStateResolverTests
     {
         [Test]
-        public void Resolve_ShouldReturnNoneForOrdinaryRunWithoutUnlocks()
+        public void Resolve_ShouldReturnNoneForOrdinaryRunWithoutMilestoneOutcomes()
         {
             PostRunFeedbackSoundState feedbackSoundState = new PostRunFeedbackSoundStateResolver().Resolve(
-                NodePlaceholderTestData.CreateCombatPlaceholderState(),
                 CreateRunResult(RunResolutionState.Succeeded));
 
-            Assert.That(feedbackSoundState.ShouldPlayBossClearSound, Is.False);
-            Assert.That(feedbackSoundState.ShouldPlayUnlockSound, Is.False);
+            Assert.That(feedbackSoundState.HasRequestedSounds, Is.False);
+            Assert.That(feedbackSoundState.RequestedSounds, Is.Empty);
         }
 
         [Test]
-        public void Resolve_ShouldRequestUnlockSoundForRouteUnlockOutcome()
+        public void Resolve_ShouldRequestRouteUnlockSoundForRouteUnlockOutcome()
         {
             PostRunFeedbackSoundState feedbackSoundState = new PostRunFeedbackSoundStateResolver().Resolve(
-                NodePlaceholderTestData.CreatePushCombatPlaceholderState(),
                 CreateRunResult(RunResolutionState.Succeeded, didUnlockRoute: true));
 
-            Assert.That(feedbackSoundState.ShouldPlayBossClearSound, Is.False);
-            Assert.That(feedbackSoundState.ShouldPlayUnlockSound, Is.True);
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    UiSystemFeedbackSoundId.StateRouteUnlock,
+                },
+                feedbackSoundState.RequestedSounds);
         }
 
         [Test]
-        public void Resolve_ShouldRequestBossClearAndUnlockSoundsForSuccessfulBossGateClear()
+        public void Resolve_ShouldRequestNodeClearAndRouteUnlockSoundsForClearThresholdUnlockOutcome()
         {
             PostRunFeedbackSoundState feedbackSoundState = new PostRunFeedbackSoundStateResolver().Resolve(
-                NodePlaceholderTestData.CreateBossCombatPlaceholderState(),
                 CreateRunResult(
                     RunResolutionState.Succeeded,
+                    didUnlockRoute: true,
+                    rewardPayload: CreateMilestoneRewardPayload()));
+
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    UiSystemFeedbackSoundId.StateNodeClear,
+                    UiSystemFeedbackSoundId.StateRouteUnlock,
+                },
+                feedbackSoundState.RequestedSounds);
+        }
+
+        [Test]
+        public void Resolve_ShouldRequestBossRewardAndRouteUnlockSoundsForBossRewardUnlockOutcome()
+        {
+            PostRunFeedbackSoundState feedbackSoundState = new PostRunFeedbackSoundStateResolver().Resolve(
+                CreateRunResult(
+                    RunResolutionState.Succeeded,
+                    rewardPayload: CreateBossRewardPayload(),
                     bossProgressionGateUnlock: BossProgressionGateUnlockResult.CreateUnlocked(
                         BootstrapWorldScenario.CavernGateNodeId)));
 
-            Assert.That(feedbackSoundState.ShouldPlayBossClearSound, Is.True);
-            Assert.That(feedbackSoundState.ShouldPlayUnlockSound, Is.True);
+            CollectionAssert.AreEqual(
+                new[]
+                {
+                    UiSystemFeedbackSoundId.StateBossReward,
+                    UiSystemFeedbackSoundId.StateRouteUnlock,
+                },
+                feedbackSoundState.RequestedSounds);
         }
 
         private static RunResult CreateRunResult(
             RunResolutionState resolutionState,
             bool didUnlockRoute = false,
+            RunRewardPayload rewardPayload = null,
             BossProgressionGateUnlockResult bossProgressionGateUnlock = null)
         {
             return new RunResult(
                 new NodeId("node_test"),
                 resolutionState,
-                RunRewardPayload.Empty,
+                rewardPayload ?? RunRewardPayload.Empty,
                 nodeProgressDelta: 0,
                 nodeProgressValue: 0,
                 nodeProgressThreshold: 0,
@@ -66,6 +91,26 @@ namespace Survivalon.Tests.EditMode.Run
                     canChooseAnotherNode: true,
                     canStopSession: true),
                 bossProgressionGateUnlock: bossProgressionGateUnlock);
+        }
+
+        private static RunRewardPayload CreateMilestoneRewardPayload()
+        {
+            return new RunRewardPayload(
+                System.Array.Empty<RunCurrencyReward>(),
+                System.Array.Empty<RunMaterialReward>(),
+                System.Array.Empty<RunCurrencyReward>(),
+                new[] { new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 1) });
+        }
+
+        private static RunRewardPayload CreateBossRewardPayload()
+        {
+            return new RunRewardPayload(
+                System.Array.Empty<RunCurrencyReward>(),
+                System.Array.Empty<RunMaterialReward>(),
+                System.Array.Empty<RunCurrencyReward>(),
+                System.Array.Empty<RunMaterialReward>(),
+                System.Array.Empty<RunCurrencyReward>(),
+                new[] { new RunMaterialReward(ResourceCategory.PersistentProgressionMaterial, 2) });
         }
     }
 }

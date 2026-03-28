@@ -12,8 +12,9 @@ namespace Survivalon.Core
         [SerializeField] private AudioClip uiClickClip;
         [SerializeField] private AudioClip uiConfirmClip;
         [SerializeField] private AudioClip uiErrorClip;
-        [SerializeField] private AudioClip stateUnlockClip;
-        [SerializeField] private AudioClip stateBossClearClip;
+        [SerializeField] private AudioClip stateNodeClearClip;
+        [SerializeField] private AudioClip stateRouteUnlockClip;
+        [SerializeField] private AudioClip stateBossRewardClip;
 
         public static UiSystemFeedbackAudioClipRegistry LoadOrNull()
         {
@@ -33,11 +34,14 @@ namespace Survivalon.Core
                 case UiSystemFeedbackSoundId.UiError:
                     clip = uiErrorClip;
                     return clip != null;
-                case UiSystemFeedbackSoundId.StateUnlock:
-                    clip = stateUnlockClip;
+                case UiSystemFeedbackSoundId.StateNodeClear:
+                    clip = stateNodeClearClip;
                     return clip != null;
-                case UiSystemFeedbackSoundId.StateBossClear:
-                    clip = stateBossClearClip;
+                case UiSystemFeedbackSoundId.StateRouteUnlock:
+                    clip = stateRouteUnlockClip;
+                    return clip != null;
+                case UiSystemFeedbackSoundId.StateBossReward:
+                    clip = stateBossRewardClip;
                     return clip != null;
                 default:
                     clip = null;

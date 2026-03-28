@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 089**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 090**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -385,13 +385,21 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `ui_click`
   - `ui_confirm`
   - `ui_error`
-  - `state_unlock`
-  - `state_boss_clear`
+  - `state_node_clear`
+  - `state_route_unlock`
+  - `state_boss_reward`
 - Those events are currently wired into the highest-value existing flows:
   - world-map selection, entry, and blocked world-map actions
   - node entry/post-run replay, return, and stop actions
   - town/service purchase, equip, assignment, conversion, return, and stop actions
-  - resolved post-run unlock moments and successful boss-clear result moments
+  - resolved post-run clear-threshold, boss-reward, and route/gate unlock moments
+- Resolved post-run milestone/result audio now uses the more specific system cues:
+  - `state_node_clear` for clear-threshold reward spikes
+  - `state_route_unlock` for route/gate unlock outcomes
+  - `state_boss_reward` for boss reward moments, including boss gear reward cases
+- The current post-run milestone-result resolver keeps same-moment stacking small:
+  - boss reward takes precedence over the node-clear cue
+  - route unlock can layer as the secondary milestone cue when both outcomes happen together
 - The shared host now resolves the current runtime-wired UI/system subset through the runtime-safe `Assets/Resources/UiSystemFeedbackAudioClipRegistry.asset`, caches those clip references once on initialization, and fails safely when a clip cannot be resolved.
 
 ### Music context split

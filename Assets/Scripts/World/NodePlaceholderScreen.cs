@@ -700,16 +700,10 @@ namespace Survivalon.World
             }
 
             PostRunFeedbackSoundState feedbackSoundState = postRunFeedbackSoundStateResolver.Resolve(
-                postRunStateController.NodeContext,
                 postRunStateController.RunResult);
-            if (feedbackSoundState.ShouldPlayBossClearSound)
+            for (int index = 0; index < feedbackSoundState.RequestedSounds.Count; index++)
             {
-                onFeedbackSoundRequested(UiSystemFeedbackSoundId.StateBossClear);
-            }
-
-            if (feedbackSoundState.ShouldPlayUnlockSound)
-            {
-                onFeedbackSoundRequested(UiSystemFeedbackSoundId.StateUnlock);
+                onFeedbackSoundRequested(feedbackSoundState.RequestedSounds[index]);
             }
         }
 
