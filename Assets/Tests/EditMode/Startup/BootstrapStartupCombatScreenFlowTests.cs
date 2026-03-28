@@ -40,6 +40,14 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.False);
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
+                Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(
+                    FindImage(hostObject, "PlayerCombatEntitySprite").sprite.name,
+                    Does.Contain("idle"));
+                Assert.That(
+                    FindImage(hostObject, "EnemyCombatEntitySprite").sprite.name,
+                    Does.Contain("idle"));
                 Assert.That(
                     ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."),
                     Is.False);
@@ -141,6 +149,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Striker 110 / 110 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 110 / 110 | ATK: 18"), Is.True);
+                Assert.That(
+                    FindImage(hostObject, "PlayerCombatEntitySprite").sprite.name,
+                    Does.Contain("idle"));
             }
             finally
             {

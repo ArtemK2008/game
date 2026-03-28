@@ -170,6 +170,21 @@ namespace Survivalon.Tests.EditMode.Startup
             return false;
         }
 
+        protected static Image FindImage(GameObject rootObject, string objectName)
+        {
+            Image[] images = rootObject.GetComponentsInChildren<Image>(true);
+            foreach (Image image in images)
+            {
+                if (image.gameObject.name == objectName)
+                {
+                    return image;
+                }
+            }
+
+            Assert.Fail($"Image '{objectName}' was not found.");
+            return null;
+        }
+
         protected sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
         {
             private PersistentGameState savedGameState;

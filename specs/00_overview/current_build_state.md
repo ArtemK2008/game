@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 090**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 091**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -154,6 +154,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - player and enemy health at a glance
   - tracked progress context when applicable, including boss gate-clear progress
 - The combat prototype is currently one player-side entity versus one enemy-side entity.
+- The live combat shell now also uses the prepared canonical combat-state sprites for the current shipped player and enemy entities:
+  - player-side runtime currently resolves `Vanguard` and `Striker` through `idle`, `attack`, `hit`, and `defeat` sprite states
+  - enemy-side runtime currently resolves `Enemy Unit`, `Bulwark Raider`, and `Gate Boss` through the same four-state sprite set
+  - those sprites are loaded through the runtime-safe `Assets/Resources/CombatEntitySpriteRegistry.asset`
+  - combat-state sprite switching remains intentionally simple and readable for the autobattle prototype rather than using animation controllers
 - Combat entities have explicit allegiance, alive/active state, runtime health, and a small shared base stat model.
 - Base stats currently include max health, attack power, attack rate, and defense-based survivability.
 - Standard enemies now have two shipped combat profiles instead of one:
@@ -428,7 +433,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Broader future audio content may exist under `Assets/Audio/`, but the runtime currently wires only the UI/system feedback subset, the baseline combat-SFX subset, and the two-context calm/gameplay music subset.
 
 ### Prepared visual assets for upcoming hookup
-- The repo now also has prepared gameplay-facing visual assets under `Assets/Art/` for upcoming milestones `091` through `094`, without claiming those hookup milestones are already implemented.
+- The repo now also has prepared gameplay-facing visual assets under `Assets/Art/` for later visual milestones, with milestone `091` now consuming only the baseline player/enemy combat-state sprite subset.
 - The prepared asset families are documented in:
   - `specs/10_art/art_asset_index.md`
   - `specs/10_art/character_sprite_and_animation_pipeline.md`
@@ -440,7 +445,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - enemy combat state sheets now also have canonical split `idle` / `attack` / `hit` / `defeat` files while retaining the original sheets as source assets
   - current combat and service backgrounds are stored as stable place-owned canonical files under `Assets/Art/Locations/`
   - current combat VFX remain intentionally sheet-based canonical source assets under `Assets/Art/VFX/Combat/`
-- Runtime hookup of those visuals into the node/combat/world/town screens is still not implemented yet.
+- Current runtime hookup status:
+  - player and enemy combat-state sprites are now wired into the live combat shell
+  - portraits, world icons, location backgrounds, service backgrounds, and combat VFX are still prepared-only and not wired into runtime yet
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.
