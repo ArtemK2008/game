@@ -85,6 +85,97 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldRestoreConnectedNodeUnlocksFromCompletedPersistentSourceNodesOnStartup()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState persistedGameState = new PersistentGameState();
+            persistedGameState.WorldState.SetCurrentNode(BootstrapWorldScenario.ForestEntryNodeId);
+            persistedGameState.WorldState.SetLastSafeNode(BootstrapWorldScenario.ForestEntryNodeId);
+            persistedGameState.WorldState.ReplaceReachableNodes(new[] { BootstrapWorldScenario.ForestEntryNodeId });
+            persistedGameState.SafeResumeState.MarkWorldMap(BootstrapWorldScenario.ForestEntryNodeId);
+            persistedGameState.WorldState.ReplaceNodeStates(new[]
+            {
+                PersistentNodeStateFactory.Create(
+                    BootstrapWorldScenario.ForestEntryNodeId,
+                    unlockThreshold: 3,
+                    initialState: NodeState.Cleared,
+                    initialProgress: 3),
+                PersistentNodeStateFactory.Create(
+                    BootstrapWorldScenario.ForestPushNodeId,
+                    unlockThreshold: 3,
+                    initialState: NodeState.Cleared,
+                    initialProgress: 3),
+            });
+            storage.Seed(persistedGameState);
+
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            BootstrapStartupState startupState = stateFactory.Create(new BootstrapWorldMapFactory());
+
+            Assert.That(
+                startupState.GameState.WorldState.TryGetNodeState(
+                    BootstrapWorldScenario.ForestGateNodeId,
+                    out PersistentNodeState gateNodeState),
+                Is.True);
+            Assert.That(gateNodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(
+                startupState.NodeEntryFlowController.TryEnterNode(
+                    BootstrapWorldScenario.ForestGateNodeId,
+                    out NodePlaceholderState placeholderState),
+                Is.True);
+            Assert.That(placeholderState.NodeId, Is.EqualTo(BootstrapWorldScenario.ForestGateNodeId));
+        }
+
+        [Test]
+        public void ShouldRestoreBossProgressionGateUnlockTargetsFromCompletedPersistentBossNodesOnStartup()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState persistedGameState = new PersistentGameState();
+            persistedGameState.WorldState.SetCurrentNode(BootstrapWorldScenario.ForestEntryNodeId);
+            persistedGameState.WorldState.SetLastSafeNode(BootstrapWorldScenario.ForestEntryNodeId);
+            persistedGameState.WorldState.ReplaceReachableNodes(new[] { BootstrapWorldScenario.ForestEntryNodeId });
+            persistedGameState.SafeResumeState.MarkWorldMap(BootstrapWorldScenario.ForestEntryNodeId);
+            persistedGameState.WorldState.ReplaceNodeStates(new[]
+            {
+                PersistentNodeStateFactory.Create(
+                    BootstrapWorldScenario.ForestEntryNodeId,
+                    unlockThreshold: 3,
+                    initialState: NodeState.Cleared,
+                    initialProgress: 3),
+                PersistentNodeStateFactory.Create(
+                    BootstrapWorldScenario.ForestPushNodeId,
+                    unlockThreshold: 3,
+                    initialState: NodeState.Cleared,
+                    initialProgress: 3),
+                PersistentNodeStateFactory.Create(
+                    BootstrapWorldScenario.ForestGateNodeId,
+                    unlockThreshold: 3,
+                    initialState: NodeState.Cleared,
+                    initialProgress: 3),
+            });
+            storage.Seed(persistedGameState);
+
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            BootstrapStartupState startupState = stateFactory.Create(new BootstrapWorldMapFactory());
+
+            Assert.That(
+                startupState.GameState.WorldState.TryGetNodeState(
+                    BootstrapWorldScenario.CavernGateNodeId,
+                    out PersistentNodeState cavernGateNodeState),
+                Is.True);
+            Assert.That(cavernGateNodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(
+                startupState.NodeEntryFlowController.TryEnterNode(
+                    BootstrapWorldScenario.CavernGateNodeId,
+                    out NodePlaceholderState placeholderState),
+                Is.True);
+            Assert.That(placeholderState.NodeId, Is.EqualTo(BootstrapWorldScenario.CavernGateNodeId));
+        }
+
+        [Test]
         public void ShouldNormalizePlayableCharacterSelectionWhenPersistedStateHasNoActiveSelectableCharacter()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();

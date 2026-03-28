@@ -10,15 +10,18 @@ namespace Survivalon.Startup
         private readonly SafeResumePersistenceService persistenceService;
         private readonly GameStartupFlowResolver startupFlowResolver;
         private readonly PersistentPlayableCharacterInitializer playableCharacterInitializer;
+        private readonly PersistentWorldStateStartupNormalizer worldStateStartupNormalizer;
 
         public BootstrapStartupStateFactory(
             SafeResumePersistenceService persistenceService,
             GameStartupFlowResolver startupFlowResolver = null,
-            PersistentPlayableCharacterInitializer playableCharacterInitializer = null)
+            PersistentPlayableCharacterInitializer playableCharacterInitializer = null,
+            PersistentWorldStateStartupNormalizer worldStateStartupNormalizer = null)
         {
             this.persistenceService = persistenceService ?? throw new ArgumentNullException(nameof(persistenceService));
             this.startupFlowResolver = startupFlowResolver ?? new GameStartupFlowResolver();
             this.playableCharacterInitializer = playableCharacterInitializer ?? new PersistentPlayableCharacterInitializer();
+            this.worldStateStartupNormalizer = worldStateStartupNormalizer ?? new PersistentWorldStateStartupNormalizer();
         }
 
         public BootstrapStartupState Create(BootstrapWorldMapFactory worldMapFactory)
@@ -31,6 +34,7 @@ namespace Survivalon.Startup
             WorldGraph worldGraph = worldMapFactory.CreateWorldGraph();
             PersistentGameState gameState = persistenceService.LoadOrCreate(worldMapFactory.CreateGameState());
             playableCharacterInitializer.EnsureInitialized(gameState);
+            worldStateStartupNormalizer.Normalize(worldGraph, gameState.WorldState);
             WorldNodeEntryFlowController nodeEntryFlowController = new WorldNodeEntryFlowController(worldGraph, gameState.WorldState);
             SessionContextState sessionContext = new SessionContextState();
             sessionContext.SeedFromWorldState(gameState.WorldState);
