@@ -453,3 +453,7 @@ This file is derived from the milestone notes in `specs/milestone/` plus the cur
 - The follow-up namespace cleanup removed the broad redundant cross-domain `using` noise from runtime and EditMode files; runtime behavior stayed unchanged.
 - A small follow-up dead-code pass removed a few runtime convenience accessors that existed only for EditMode tests; runtime behavior stayed unchanged.
 - The 081a follow-up kept the same farm-replay comfort behavior but moved account-wide progression-effect resolution for the world map out of `WorldMapScreen` and into the startup composition seam so the screen stays UI-only.
+
+- The project now has a baseline shipped audio asset set for UI, system, combat, and music contexts.
+- Exact available audio files and repository paths are tracked in `specs/09_presentation/audio_asset_manifest.json`.
+
