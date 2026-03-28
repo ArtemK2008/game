@@ -60,6 +60,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Enemy | Alive: Yes | Act: Yes"), Is.True);
                 Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").sprite, Is.Not.Null);
                 Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(FindImage(hostObject, "CombatShellBackgroundArt").sprite, Is.Not.Null);
                 Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").preserveAspect, Is.True);
                 Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").preserveAspect, Is.True);
                 Assert.That(
@@ -71,6 +72,44 @@ namespace Survivalon.Tests.EditMode.World
             finally
             {
                 Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldUseDistinctCombatBackgroundsForVerdantFrontierAndEchoCaverns()
+        {
+            GameObject frontierHostObject = new GameObject("NodePlaceholderHost_Frontier");
+            GameObject cavernHostObject = new GameObject("NodePlaceholderHost_Cavern");
+
+            try
+            {
+                NodePlaceholderScreen frontierPlaceholderScreen = frontierHostObject.AddComponent<NodePlaceholderScreen>();
+                frontierPlaceholderScreen.Show(
+                    CreateWorldGraph(),
+                    NodePlaceholderTestData.CreateFrontierFarmPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                NodePlaceholderScreen cavernPlaceholderScreen = cavernHostObject.AddComponent<NodePlaceholderScreen>();
+                cavernPlaceholderScreen.Show(
+                    CreateWorldGraph(),
+                    NodePlaceholderTestData.CreateCavernGateBossPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                Sprite frontierBackground = FindImage(frontierHostObject, "CombatShellBackgroundArt").sprite;
+                Sprite cavernBackground = FindImage(cavernHostObject, "CombatShellBackgroundArt").sprite;
+
+                Assert.That(frontierBackground, Is.Not.Null);
+                Assert.That(cavernBackground, Is.Not.Null);
+                Assert.That(frontierBackground, Is.Not.SameAs(cavernBackground));
+                Assert.That(ContainsText(frontierHostObject, "Verdant Frontier | Forest Farm"), Is.True);
+                Assert.That(ContainsText(cavernHostObject, "Echo Caverns | Cavern Gate"), Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(frontierHostObject);
+                Object.DestroyImmediate(cavernHostObject);
             }
         }
 

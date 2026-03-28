@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 092
+Current next implementation target: Milestone 093
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -117,6 +117,7 @@ id | type | title | status | depends on / note
 089 | feature | Implement basic music context split | completed | phase 22
 090 | feature | Implement milestone audio cues | completed | phase 22
 091 | feature | Implement baseline player/enemy readability visuals | completed | phase 23
+092 | feature | Implement two distinct location visual identities | completed | phase 23
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

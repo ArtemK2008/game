@@ -16,8 +16,10 @@ namespace Survivalon.Combat
         private const float SummaryHeight = 104f;
         private const float EntityRowHeight = 152f;
         private const float EntitySpriteWidth = 72f;
+        private static readonly Color BackgroundArtTint = new Color(1f, 1f, 1f, 0.40f);
 
         private Image backgroundImage;
+        private Image backgroundArtImage;
         private Text titleText;
         private Text summaryText;
         private Image playerEntityCardImage;
@@ -47,6 +49,7 @@ namespace Survivalon.Combat
             summaryText.text = string.IsNullOrWhiteSpace(summary)
                 ? CombatShellTextBuilder.BuildSummaryText(combatEncounterState)
                 : summary;
+            ApplyBackgroundArt(presentationState.BackgroundSprite);
             ApplyEntityCard(
                 playerEntityCardImage,
                 playerEntitySpriteImage,
@@ -93,6 +96,8 @@ namespace Survivalon.Combat
             layoutGroup.childControlHeight = true;
             layoutGroup.childForceExpandWidth = true;
             layoutGroup.childForceExpandHeight = false;
+
+            backgroundArtImage = CreateBackgroundArtImage();
 
             titleText = RuntimeUiSupport.CreateText(
                 transform,
@@ -217,6 +222,39 @@ namespace Survivalon.Combat
             textRectTransform.localScale = Vector3.one;
 
             return cardImage;
+        }
+
+        private Image CreateBackgroundArtImage()
+        {
+            GameObject backgroundArtObject = new GameObject(
+                "CombatShellBackgroundArt",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(LayoutElement));
+            backgroundArtObject.transform.SetParent(transform, false);
+            backgroundArtObject.transform.SetAsFirstSibling();
+
+            RectTransform backgroundArtRectTransform = backgroundArtObject.GetComponent<RectTransform>();
+            backgroundArtRectTransform.anchorMin = Vector2.zero;
+            backgroundArtRectTransform.anchorMax = Vector2.one;
+            backgroundArtRectTransform.offsetMin = Vector2.zero;
+            backgroundArtRectTransform.offsetMax = Vector2.zero;
+            backgroundArtRectTransform.localScale = Vector3.one;
+
+            LayoutElement backgroundArtLayoutElement = backgroundArtObject.GetComponent<LayoutElement>();
+            backgroundArtLayoutElement.ignoreLayout = true;
+
+            Image resolvedBackgroundArtImage = backgroundArtObject.GetComponent<Image>();
+            resolvedBackgroundArtImage.color = BackgroundArtTint;
+            resolvedBackgroundArtImage.raycastTarget = false;
+            return resolvedBackgroundArtImage;
+        }
+
+        private void ApplyBackgroundArt(Sprite backgroundSprite)
+        {
+            backgroundArtImage.sprite = backgroundSprite;
+            backgroundArtImage.enabled = backgroundSprite != null;
+            backgroundArtImage.color = BackgroundArtTint;
         }
 
         private static void ApplyEntityCard(

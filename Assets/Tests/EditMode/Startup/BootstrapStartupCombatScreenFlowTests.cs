@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Survivalon.Characters;
+using Survivalon.Combat;
 using UnityEngine;
 using UnityEngine.UI;
 using Survivalon.Core;
@@ -23,6 +24,7 @@ namespace Survivalon.Tests.EditMode.Startup
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
             MusicAudioClipRegistry clipRegistry = MusicAudioClipRegistry.LoadOrNull();
+            CombatLocationBackgroundRegistry backgroundRegistry = CombatLocationBackgroundRegistry.LoadOrNull();
 
             try
             {
@@ -42,6 +44,15 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
                 Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").sprite, Is.Not.Null);
                 Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
+                Assert.That(backgroundRegistry, Is.Not.Null);
+                Assert.That(
+                    backgroundRegistry.TryGetBackground(
+                        "location_identity_verdant_frontier",
+                        out Sprite verdantBackground),
+                    Is.True);
+                Assert.That(
+                    FindImage(hostObject, "CombatShellBackgroundArt").sprite,
+                    Is.EqualTo(verdantBackground));
                 Assert.That(
                     FindImage(hostObject, "PlayerCombatEntitySprite").sprite.name,
                     Does.Contain("idle"));

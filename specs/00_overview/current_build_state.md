@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 091**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 092**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene loads a persisted game state if one exists, otherwise it falls back to the bootstrap demo world state. Startup then routes into the world map safe context or a main-menu placeholder target depending on safe-resume state.
@@ -159,6 +159,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - enemy-side runtime currently resolves `Enemy Unit`, `Bulwark Raider`, and `Gate Boss` through the same four-state sprite set
   - those sprites are loaded through the runtime-safe `Assets/Resources/CombatEntitySpriteRegistry.asset`
   - combat-state sprite switching remains intentionally simple and readable for the autobattle prototype rather than using animation controllers
+- The live combat shell now also uses the prepared canonical combat location backgrounds for the two current shipped combat places:
+  - `Verdant Frontier` combat nodes render `Assets/Art/Locations/VerdantFrontier/Backgrounds/combat_background.png`
+  - `Echo Caverns` combat nodes render `Assets/Art/Locations/EchoCaverns/Backgrounds/combat_background.png`
+  - those backgrounds are resolved through the runtime-safe `Assets/Resources/CombatLocationBackgroundRegistry.asset`
+  - the current service/town-safe background remains prepared-only and is not wired until the later service-visual milestone
 - Combat entities have explicit allegiance, alive/active state, runtime health, and a small shared base stat model.
 - Base stats currently include max health, attack power, attack rate, and defense-based survivability.
 - Standard enemies now have two shipped combat profiles instead of one:
@@ -447,7 +452,8 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current combat VFX remain intentionally sheet-based canonical source assets under `Assets/Art/VFX/Combat/`
 - Current runtime hookup status:
   - player and enemy combat-state sprites are now wired into the live combat shell
-  - portraits, world icons, location backgrounds, service backgrounds, and combat VFX are still prepared-only and not wired into runtime yet
+  - combat location backgrounds are now wired into the live combat shell for `Verdant Frontier` and `Echo Caverns`
+  - portraits, world icons, service backgrounds, and combat VFX are still prepared-only and not wired into runtime yet
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.
