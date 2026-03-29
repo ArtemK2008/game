@@ -34,6 +34,7 @@ namespace Survivalon.World
         private readonly Dictionary<NodeId, RectTransform> nodeButtonRectsById = new Dictionary<NodeId, RectTransform>();
         private readonly List<ConnectionVisual> connectionVisuals = new List<ConnectionVisual>();
         private static Sprite stateMarkerRingSprite;
+        private static Sprite stateMarkerArcSprite;
 
         private WorldMapSurfaceLayout currentLayout;
 
@@ -402,7 +403,7 @@ namespace Survivalon.World
             }
 
             GameObject markerObject = new GameObject(
-                "StateMarkerRing",
+                GetStateMarkerObjectName(markerStyle.Shape),
                 typeof(RectTransform),
                 typeof(Image));
             markerObject.transform.SetParent(parent, false);
@@ -416,7 +417,7 @@ namespace Survivalon.World
             markerRectTransform.localScale = Vector3.one;
 
             Image markerImage = markerObject.GetComponent<Image>();
-            markerImage.sprite = GetStateMarkerRingSprite();
+            markerImage.sprite = GetStateMarkerSprite(markerStyle.Shape);
             markerImage.preserveAspect = true;
             markerImage.raycastTarget = false;
             markerImage.color = markerStyle.Color;
@@ -602,6 +603,32 @@ namespace Survivalon.World
             return contentRectTransform.InverseTransformPoint(worldCenter);
         }
 
+        private static string GetStateMarkerObjectName(WorldMapNodeStateMarkerShape markerShape)
+        {
+            switch (markerShape)
+            {
+                case WorldMapNodeStateMarkerShape.FullRing:
+                    return "StateMarkerRing";
+                case WorldMapNodeStateMarkerShape.BottomArc:
+                    return "StateMarkerArc";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(markerShape), markerShape, "Unknown node state marker shape.");
+            }
+        }
+
+        private static Sprite GetStateMarkerSprite(WorldMapNodeStateMarkerShape markerShape)
+        {
+            switch (markerShape)
+            {
+                case WorldMapNodeStateMarkerShape.FullRing:
+                    return GetStateMarkerRingSprite();
+                case WorldMapNodeStateMarkerShape.BottomArc:
+                    return GetStateMarkerArcSprite();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(markerShape), markerShape, "Unknown node state marker shape.");
+            }
+        }
+
         private static Sprite GetStateMarkerRingSprite()
         {
             if (stateMarkerRingSprite != null)
@@ -610,8 +637,8 @@ namespace Survivalon.World
             }
 
             const int textureSize = 64;
-            const float outerRadius = 31f;
-            const float innerRadius = 23f;
+            const float outerRadius = 30f;
+            const float innerRadius = 26.5f;
 
             Texture2D texture = new Texture2D(textureSize, textureSize, TextureFormat.ARGB32, false);
             texture.name = "WorldMapStateMarkerRing";
@@ -643,6 +670,59 @@ namespace Survivalon.World
                 new Vector2(0.5f, 0.5f),
                 textureSize);
             return stateMarkerRingSprite;
+        }
+
+        private static Sprite GetStateMarkerArcSprite()
+        {
+            if (stateMarkerArcSprite != null)
+            {
+                return stateMarkerArcSprite;
+            }
+
+            const int textureSize = 64;
+            const float outerRadius = 29.5f;
+            const float innerRadius = 26.5f;
+            const float startAngle = 202f;
+            const float endAngle = 338f;
+
+            Texture2D texture = new Texture2D(textureSize, textureSize, TextureFormat.ARGB32, false);
+            texture.name = "WorldMapStateMarkerArc";
+            texture.wrapMode = TextureWrapMode.Clamp;
+            texture.filterMode = FilterMode.Bilinear;
+
+            Vector2 center = new Vector2((textureSize - 1) * 0.5f, (textureSize - 1) * 0.5f);
+            Color[] pixels = new Color[textureSize * textureSize];
+
+            for (int y = 0; y < textureSize; y++)
+            {
+                for (int x = 0; x < textureSize; x++)
+                {
+                    Vector2 point = new Vector2(x, y);
+                    float distance = Vector2.Distance(point, center);
+                    float angle = Mathf.Atan2(point.y - center.y, point.x - center.x) * Mathf.Rad2Deg;
+                    if (angle < 0f)
+                    {
+                        angle += 360f;
+                    }
+
+                    bool withinArc = angle >= startAngle && angle <= endAngle;
+                    float outerFalloff = Mathf.Clamp01(outerRadius - distance);
+                    float innerFalloff = Mathf.Clamp01(distance - innerRadius);
+                    float alpha = withinArc ? outerFalloff * innerFalloff : 0f;
+
+                    pixels[(y * textureSize) + x] = new Color(1f, 1f, 1f, alpha);
+                }
+            }
+
+            texture.SetPixels(pixels);
+            texture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+
+            stateMarkerArcSprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, textureSize, textureSize),
+                new Vector2(0.5f, 0.5f),
+                textureSize);
+            return stateMarkerArcSprite;
         }
 
         private static RectTransform CreateStretchLayer(Transform parent, string objectName)

@@ -119,16 +119,18 @@ namespace Survivalon.World
             if (nodeOption.IsSelected)
             {
                 markerStyle = new WorldMapNodeStateMarkerStyle(
-                    new Color(0.92f, 0.74f, 0.24f, 0.96f),
-                    size: 110f);
+                    new Color(0.92f, 0.74f, 0.24f, 0.84f),
+                    size: 104f,
+                    shape: WorldMapNodeStateMarkerShape.FullRing);
                 return true;
             }
 
             if (nodeOption.IsCurrentContext)
             {
                 markerStyle = new WorldMapNodeStateMarkerStyle(
-                    new Color(0.18f, 0.82f, 1f, 0.90f),
-                    size: 96f);
+                    new Color(0.18f, 0.82f, 1f, 0.72f),
+                    size: 92f,
+                    shape: WorldMapNodeStateMarkerShape.FullRing);
                 return true;
             }
 
@@ -141,16 +143,18 @@ namespace Survivalon.World
             if (IsReplayableNode(nodeOption))
             {
                 markerStyle = new WorldMapNodeStateMarkerStyle(
-                    new Color(0.34f, 0.72f, 0.80f, 0.62f),
-                    size: 78f);
+                    new Color(0.34f, 0.72f, 0.80f, 0.44f),
+                    size: 66f,
+                    shape: WorldMapNodeStateMarkerShape.BottomArc);
                 return true;
             }
 
             if (nodeOption.IsSelectable)
             {
                 markerStyle = new WorldMapNodeStateMarkerStyle(
-                    new Color(0.48f, 0.90f, 0.40f, 0.76f),
-                    size: 84f);
+                    new Color(0.48f, 0.90f, 0.40f, 0.56f),
+                    size: 72f,
+                    shape: WorldMapNodeStateMarkerShape.BottomArc);
                 return true;
             }
 
@@ -166,17 +170,26 @@ namespace Survivalon.World
         }
     }
 
+    public enum WorldMapNodeStateMarkerShape
+    {
+        FullRing = 0,
+        BottomArc = 1,
+    }
+
     public readonly struct WorldMapNodeStateMarkerStyle
     {
-        public WorldMapNodeStateMarkerStyle(Color color, float size)
+        public WorldMapNodeStateMarkerStyle(Color color, float size, WorldMapNodeStateMarkerShape shape)
         {
             Color = color;
             Size = size;
+            Shape = shape;
         }
 
         public Color Color { get; }
 
         public float Size { get; }
+
+        public WorldMapNodeStateMarkerShape Shape { get; }
     }
 
     public readonly struct WorldMapScreenButtonState

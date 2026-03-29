@@ -419,7 +419,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void TryResolveNodeStateMarkerStyle_ShouldSeparateSelectedCurrentSelectableReplayableAndLockedStates()
+        public void TryResolveNodeStateMarkerStyle_ShouldSeparateSelectedCurrentAndSubtleReachableReplayableMarkers()
         {
             Assert.That(
                 WorldMapScreenStateResolver.TryResolveNodeStateMarkerStyle(
@@ -453,6 +453,10 @@ namespace Survivalon.Tests.EditMode.World
                     out _),
                 Is.False);
 
+            Assert.That(selectedMarker.Shape, Is.EqualTo(WorldMapNodeStateMarkerShape.FullRing));
+            Assert.That(currentMarker.Shape, Is.EqualTo(WorldMapNodeStateMarkerShape.FullRing));
+            Assert.That(selectableMarker.Shape, Is.EqualTo(WorldMapNodeStateMarkerShape.BottomArc));
+            Assert.That(replayableMarker.Shape, Is.EqualTo(WorldMapNodeStateMarkerShape.BottomArc));
             Assert.That(selectedMarker.Size, Is.GreaterThan(currentMarker.Size));
             Assert.That(currentMarker.Size, Is.GreaterThan(selectableMarker.Size));
             Assert.That(selectableMarker.Size, Is.GreaterThan(replayableMarker.Size));

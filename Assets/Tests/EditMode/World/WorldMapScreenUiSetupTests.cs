@@ -110,7 +110,7 @@ namespace Survivalon.Tests.EditMode.World
                 Button lockedNodeButton = FindButton(hostObject, BootstrapWorldScenario.CavernGateNodeId.Value + "_Button");
                 Button currentNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button");
                 Image currentNodeMarker = FindChildImage(currentNodeButton.gameObject, "StateMarkerRing");
-                Image availableNodeMarker = FindChildImage(availableNodeButton.gameObject, "StateMarkerRing");
+                Image availableNodeMarker = FindChildImage(availableNodeButton.gameObject, "StateMarkerArc");
                 Assert.That(backgroundImage.sprite, Is.Not.Null);
                 Assert.That(currentNodeIcon.sprite, Is.Not.Null);
                 Assert.That(ordinaryNodeIcon.sprite, Is.Not.Null);
@@ -124,10 +124,14 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(eliteNodeIcon.sprite, Is.Not.SameAs(farmNodeIcon.sprite));
                 Assert.That(serviceNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(CountObjectsNamed(hostObject, "StateBacking"), Is.EqualTo(0));
-                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing"), Is.GreaterThanOrEqualTo(3));
+                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing"), Is.EqualTo(1));
+                Assert.That(CountObjectsNamed(hostObject, "StateMarkerArc"), Is.GreaterThanOrEqualTo(2));
                 Assert.That(availableNodeMarker, Is.Not.Null);
                 Assert.That(TryFindChildImage(lockedNodeButton.gameObject, "StateMarkerRing"), Is.Null);
+                Assert.That(TryFindChildImage(lockedNodeButton.gameObject, "StateMarkerArc"), Is.Null);
+                Assert.That(TryFindChildImage(availableNodeButton.gameObject, "StateMarkerRing"), Is.Null);
                 Assert.That(currentNodeMarker, Is.Not.Null);
+                Assert.That(TryFindChildImage(currentNodeButton.gameObject, "StateMarkerArc"), Is.Null);
                 Assert.That(FindChildImage(lockedNodeButton.gameObject, "StateIcon").color.a, Is.LessThan(0.7f));
                 Assert.That(currentNodeIcon.color, Is.EqualTo(Color.white));
                 Assert.That(currentNodeMarker.color, Is.Not.EqualTo(availableNodeMarker.color));
@@ -244,7 +248,7 @@ namespace Survivalon.Tests.EditMode.World
                     gameState: gameState);
 
                 Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(0));
-                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing"), Is.GreaterThanOrEqualTo(3));
+                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing") + CountObjectsNamed(hostObject, "StateMarkerArc"), Is.GreaterThanOrEqualTo(3));
 
                 FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").onClick.Invoke();
 
@@ -252,7 +256,7 @@ namespace Survivalon.Tests.EditMode.World
                     ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: Forest Farm"),
                     Is.True);
                 Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(1));
-                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing"), Is.GreaterThanOrEqualTo(3));
+                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing") + CountObjectsNamed(hostObject, "StateMarkerArc"), Is.GreaterThanOrEqualTo(3));
                 Assert.That(
                     FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").gameObject, "StateMarkerRing").rectTransform.rect.width,
                     Is.GreaterThan(FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button").gameObject, "StateMarkerRing").rectTransform.rect.width));
@@ -342,13 +346,15 @@ namespace Survivalon.Tests.EditMode.World
 
                 Image replayableNodeMarker = FindChildImage(
                     FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").gameObject,
-                    "StateMarkerRing");
+                    "StateMarkerArc");
                 Image reachableNodeMarker = FindChildImage(
                     FindButton(hostObject, BootstrapWorldScenario.ForestEliteNodeId.Value + "_Button").gameObject,
-                    "StateMarkerRing");
+                    "StateMarkerArc");
 
                 Assert.That(replayableNodeMarker, Is.Not.Null);
                 Assert.That(reachableNodeMarker, Is.Not.Null);
+                Assert.That(TryFindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").gameObject, "StateMarkerRing"), Is.Null);
+                Assert.That(TryFindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestEliteNodeId.Value + "_Button").gameObject, "StateMarkerRing"), Is.Null);
                 Assert.That(reachableNodeMarker.color, Is.Not.EqualTo(replayableNodeMarker.color));
                 Assert.That(reachableNodeMarker.rectTransform.rect.width, Is.GreaterThan(replayableNodeMarker.rectTransform.rect.width));
             }
