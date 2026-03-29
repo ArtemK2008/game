@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 106
+Current next implementation target: Milestone 107
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -131,6 +131,7 @@ id | type | title | status | depends on / note
 103 | feature | Implement minimal offline-progress eligibility model | completed | phase 26; current-session compile/import passed, helper verification reproduced the known missing-results artifact, and direct EditMode fallback was blocked by Unity Package Manager local-server startup failure
 104 | feature | Implement offline summary claim flow | completed | phase 26; compile/import passed, helper verification reproduced the known missing-results artifact, and direct Unity batch fallback passed
 105 | feature | Tune offline limits to preserve active push value | completed | phase 26; compile/import passed, helper verification reproduced the known missing-results artifact, and direct Unity batch fallback passed
+106 | feature | Tighten spec/code alignment | completed | phase 27; compile/import passed, helper verification reproduced the known missing-results artifact, and direct Unity batch fallback passed
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

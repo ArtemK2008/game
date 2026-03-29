@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 105** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
+This summary reflects completed work through **Milestone 106** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -48,7 +48,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Safe-stop persistence exists for resolved world-level context, and resolved post-run now also autosaves into that same safe resume path before the player leaves the post-run screen.
 - The same safe-resume persistence path now also preserves the current selected character, per-character package assignment, per-character equipped primary/support gear, and owned gear state cleanly across restart/load flows after world-map or town/service build-prep changes.
 - Safe resume is currently constrained to clear world-level or town/service-level safe contexts on restart/load; unresolved run state and temporary run-only upgrade choice state do not reopen on resume.
-- Stable resolved world/service save points now also stamp one future-facing offline-progress compatibility state:
+- Stable resolved world/service save points now also stamp one persisted offline-progress state:
   - a persisted UTC stable-save timestamp
   - an explicit persisted offline-progress eligibility kind
 - Eligibility is currently narrow and fail-closed:
@@ -60,6 +60,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - only after at least one whole offline hour has elapsed
   - only for ordinary `Region material`
   - capped to 2 counted hours
+  - elapsed offline time is anchored to app/session startup, so waiting on the already-open main menu does not add more offline value
   - claimed once and persisted immediately before normal resume continues
 - Town/service safe contexts, boss/gate contexts, unresolved contexts, unsupported saved nodes, and zero-hour gaps do not show an offline summary.
 - Broader offline simulation, passive income while the game is open, and deeper offline UI are still disabled.
@@ -143,7 +144,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Runs use explicit lifecycle states: `RunStart`, `RunActive`, `RunResolved`, and `PostRun`.
 - Post-run shows a compact summary and allows replay, return to world, or stop session.
 - The post-run summary now presents rewards and progress changes in a more clearly grouped aggregated format.
-- The post-run summary now also shows a compact explicit boss-gate unlock line when a boss defeat opens new forward progression, including the new `Scorched approach opened` unlock moment after `Cavern Gate`.
+- The post-run summary now also shows a compact explicit boss-gate unlock line when a boss defeat opens new forward progression, preserving authored node display names such as `Cavern Gate opened` and `Scorched Approach opened`.
 - The post-run panel now also exposes one compact next-action guidance area that clarifies the current practical decision using existing actions only:
   - replay the same node
   - return to world to push forward

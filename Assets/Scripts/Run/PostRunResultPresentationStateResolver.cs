@@ -201,7 +201,11 @@ namespace Survivalon.Run
             {
                 try
                 {
-                    return $"{FormatOpenedNodeDisplayName(worldGraph.GetNode(unlockedNodeId).DisplayName)} opened";
+                    string displayName = worldGraph.GetNode(unlockedNodeId).DisplayName;
+                    if (!string.IsNullOrWhiteSpace(displayName))
+                    {
+                        return $"{displayName} opened";
+                    }
                 }
                 catch (KeyNotFoundException)
                 {
@@ -209,21 +213,6 @@ namespace Survivalon.Run
             }
 
             return $"{unlockedNodeId.Value} unlocked";
-        }
-
-        private static string FormatOpenedNodeDisplayName(string displayName)
-        {
-            if (string.IsNullOrWhiteSpace(displayName))
-            {
-                return string.Empty;
-            }
-
-            if (displayName.Length == 1)
-            {
-                return displayName;
-            }
-
-            return char.ToUpperInvariant(displayName[0]) + displayName.Substring(1).ToLowerInvariant();
         }
     }
 }

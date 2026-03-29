@@ -104,7 +104,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(presentationState.BossGearRewardSummary, Is.EqualTo("Gatebreaker Blade"));
             Assert.That(
                 presentationState.UnlockOutcomeSummary,
-                Is.EqualTo("Forward route opened; Cavern gate opened"));
+                Is.EqualTo("Forward route opened; Cavern Gate opened"));
             Assert.That(presentationState.ProgressSummary, Is.EqualTo("node +1 this run; tracked total 3 / 3; persistent +0"));
         }
 
@@ -134,7 +134,7 @@ namespace Survivalon.Tests.EditMode.Run
             PostRunResultPresentationState presentationState =
                 resolver.Resolve(postRunStateController, runResult);
 
-            Assert.That(presentationState.UnlockOutcomeSummary, Is.EqualTo("Scorched approach opened"));
+            Assert.That(presentationState.UnlockOutcomeSummary, Is.EqualTo("Scorched Approach opened"));
         }
     }
 }

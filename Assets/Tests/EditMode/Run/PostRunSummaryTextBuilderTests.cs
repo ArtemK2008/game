@@ -54,7 +54,7 @@ namespace Survivalon.Tests.EditMode.Run
                 "Ordinary rewards: Soft currency x1, Region material x1\n" +
                 "Reward source: Frontier salvage\n" +
                 "Clear spike rewards: Persistent progression material x1\n" +
-                "Unlock outcomes: Cavern gate opened\n" +
+                "Unlock outcomes: Cavern Gate opened\n" +
                 "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0\n"));
         }
 
@@ -263,7 +263,7 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(summaryText, Does.Contain("Clear spike rewards: Persistent progression material x1"));
             Assert.That(summaryText, Does.Contain("Boss spike rewards: Persistent progression material x2"));
             Assert.That(summaryText, Does.Contain("Boss gear rewards: Gatebreaker Blade"));
-            Assert.That(summaryText, Does.Contain("Unlock outcomes: Forward route opened; Cavern gate opened"));
+            Assert.That(summaryText, Does.Contain("Unlock outcomes: Forward route opened; Cavern Gate opened"));
             Assert.That(summaryText, Does.Contain("Progress changes: node +1 this run; tracked total 3 / 3; persistent +0"));
             Assert.That(summaryText, Does.Not.Contain("route unlock"));
         }

@@ -265,7 +265,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss spike rewards: Persistent progression material x2"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss gear rewards: Gatebreaker Blade"), Is.True);
-                Assert.That(ContainsText(hostObject, "Unlock outcomes: Cavern gate opened"), Is.True);
+                Assert.That(ContainsText(hostObject, "Unlock outcomes: Cavern Gate opened"), Is.True);
                 Assert.That(ContainsText(hostObject, "Recommended: Return to world, then push to Cavern Gate."), Is.True);
                 Assert.That(
                     ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0"),
@@ -487,7 +487,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward source: Cavern relic caches"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss spike rewards: Persistent progression material x3"), Is.True);
-                Assert.That(ContainsText(hostObject, "Unlock outcomes: Scorched approach opened"), Is.True);
+                Assert.That(ContainsText(hostObject, "Unlock outcomes: Scorched Approach opened"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
