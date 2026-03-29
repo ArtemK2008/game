@@ -57,6 +57,35 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(storage.SavedGameState, Is.Null);
         }
 
+        [Test]
+        public void ShouldIncreaseRefinementOutputWhenRefinementEfficiencyProjectIsPurchased()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            TownServiceConversionInteractionService interactionService =
+                new TownServiceConversionInteractionService(persistenceService);
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            ProgressionEntryState refinementProjectEntry = gameState.ProgressionState.GetOrAddEntry(
+                "account_wide_refinement_efficiency_project",
+                ProgressionLayerType.AccountWide);
+            refinementProjectEntry.Unlock();
+            refinementProjectEntry.IncreaseValue(1);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+
+            bool converted = interactionService.TryConvert(gameState, TownServiceConversionId.RegionMaterialRefinement);
+
+            Assert.That(converted, Is.True);
+            Assert.That(storage.SaveCallCount, Is.EqualTo(1));
+            Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
+            Assert.That(
+                gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                Is.EqualTo(2));
+            Assert.That(storage.SavedGameState, Is.Not.Null);
+            Assert.That(
+                storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                Is.EqualTo(2));
+        }
+
         private sealed class MemoryPersistentGameStateStorage : IPersistentGameStateStorage
         {
             public PersistentGameState SavedGameState { get; private set; }

@@ -248,6 +248,36 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         }
 
         [Test]
+        public void ShouldPurchaseRefinementEfficiencyProjectAndApplyRefinementOutputBonus()
+        {
+            PersistentGameState gameState = new PersistentGameState();
+            AccountWideProgressionBoardService service = new AccountWideProgressionBoardService();
+            AccountWideProgressionEffectResolver effectResolver = new AccountWideProgressionEffectResolver();
+            AccountWideProgressionUpgradeDefinition upgradeDefinition =
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.RefinementEfficiencyProject);
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, upgradeDefinition.CostAmount);
+
+            AccountWideUpgradePurchaseStatus purchaseStatus =
+                service.TryPurchase(gameState, AccountWideUpgradeId.RefinementEfficiencyProject);
+            AccountWideProgressionEffectState appliedEffects =
+                effectResolver.Resolve(gameState.ProgressionState);
+
+            Assert.That(purchaseStatus, Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+            Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(0));
+            Assert.That(
+                gameState.ProgressionState.TryGetEntry(upgradeDefinition.ProgressionId, out ProgressionEntryState purchasedEntry),
+                Is.True);
+            Assert.That(purchasedEntry.LayerType, Is.EqualTo(ProgressionLayerType.AccountWide));
+            Assert.That(purchasedEntry.IsUnlocked, Is.True);
+            Assert.That(purchasedEntry.CurrentValue, Is.EqualTo(1));
+            Assert.That(appliedEffects.PlayerMaxHealthBonus, Is.EqualTo(0));
+            Assert.That(appliedEffects.PlayerAttackPowerBonus, Is.EqualTo(0));
+            Assert.That(appliedEffects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(appliedEffects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(appliedEffects.RegionMaterialRefinementOutputBonus, Is.EqualTo(1));
+        }
+
+        [Test]
         public void ShouldPurchaseBossSalvageProjectAndApplyBossProgressionMaterialRewardBonus()
         {
             PersistentGameState gameState = new PersistentGameState();

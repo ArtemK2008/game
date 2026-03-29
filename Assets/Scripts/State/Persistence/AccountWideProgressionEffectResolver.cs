@@ -19,6 +19,7 @@ namespace Survivalon.State.Persistence
             int playerAttackPowerBonus = 0;
             int ordinaryRegionMaterialRewardBonus = 0;
             int bossProgressionMaterialRewardBonus = 0;
+            int regionMaterialRefinementOutputBonus = 0;
             bool enablesFarmReadyQuickReplayShortcut = false;
 
             foreach (AccountWideProgressionUpgradeDefinition upgradeDefinition in AccountWideProgressionUpgradeCatalog.All)
@@ -39,6 +40,8 @@ namespace Survivalon.State.Persistence
                     upgradeDefinition.OrdinaryRegionMaterialRewardBonus * entry.CurrentValue;
                 bossProgressionMaterialRewardBonus +=
                     upgradeDefinition.BossProgressionMaterialRewardBonus * entry.CurrentValue;
+                regionMaterialRefinementOutputBonus +=
+                    upgradeDefinition.RegionMaterialRefinementOutputBonus * entry.CurrentValue;
                 enablesFarmReadyQuickReplayShortcut |= upgradeDefinition.EnablesFarmReadyQuickReplayShortcut;
             }
 
@@ -47,6 +50,7 @@ namespace Survivalon.State.Persistence
                 playerAttackPowerBonus,
                 ordinaryRegionMaterialRewardBonus,
                 bossProgressionMaterialRewardBonus,
+                regionMaterialRefinementOutputBonus,
                 enablesFarmReadyQuickReplayShortcut);
         }
     }

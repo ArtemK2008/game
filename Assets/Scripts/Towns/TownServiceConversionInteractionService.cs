@@ -7,10 +7,19 @@ namespace Survivalon.Towns
     public sealed class TownServiceConversionInteractionService
     {
         private readonly SafeResumePersistenceService persistenceService;
+        private readonly AccountWideProgressionEffectResolver progressionEffectResolver;
+        private readonly TownServiceConversionEffectResolver conversionEffectResolver;
 
-        public TownServiceConversionInteractionService(SafeResumePersistenceService persistenceService = null)
+        public TownServiceConversionInteractionService(
+            SafeResumePersistenceService persistenceService = null,
+            AccountWideProgressionEffectResolver progressionEffectResolver = null,
+            TownServiceConversionEffectResolver conversionEffectResolver = null)
         {
             this.persistenceService = persistenceService;
+            this.progressionEffectResolver =
+                progressionEffectResolver ?? new AccountWideProgressionEffectResolver();
+            this.conversionEffectResolver =
+                conversionEffectResolver ?? new TownServiceConversionEffectResolver();
         }
 
         public bool TryConvert(PersistentGameState gameState, TownServiceConversionId conversionId)
@@ -21,6 +30,8 @@ namespace Survivalon.Towns
             }
 
             TownServiceConversionDefinition conversionDefinition = TownServiceConversionCatalog.Get(conversionId);
+            AccountWideProgressionEffectState progressionEffects =
+                progressionEffectResolver.Resolve(gameState.ProgressionState);
             if (!gameState.ResourceBalances.TrySpend(
                     conversionDefinition.InputResourceCategory,
                     conversionDefinition.InputAmount))
@@ -28,9 +39,12 @@ namespace Survivalon.Towns
                 return false;
             }
 
+            int outputAmount = conversionEffectResolver.ResolveOutputAmount(
+                conversionDefinition,
+                progressionEffects);
             gameState.ResourceBalances.Add(
                 conversionDefinition.OutputResourceCategory,
-                conversionDefinition.OutputAmount);
+                outputAmount);
 
             if (persistenceService != null)
             {

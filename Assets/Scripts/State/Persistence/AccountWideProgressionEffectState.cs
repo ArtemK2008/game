@@ -13,6 +13,7 @@ namespace Survivalon.State.Persistence
                 playerAttackPowerBonus,
                 ordinaryRegionMaterialRewardBonus,
                 bossProgressionMaterialRewardBonus: 0,
+                regionMaterialRefinementOutputBonus: 0,
                 enablesFarmReadyQuickReplayShortcut: false)
         {
         }
@@ -27,6 +28,7 @@ namespace Survivalon.State.Persistence
                 playerAttackPowerBonus,
                 ordinaryRegionMaterialRewardBonus,
                 bossProgressionMaterialRewardBonus,
+                regionMaterialRefinementOutputBonus: 0,
                 enablesFarmReadyQuickReplayShortcut: false)
         {
         }
@@ -36,6 +38,23 @@ namespace Survivalon.State.Persistence
             int playerAttackPowerBonus,
             int ordinaryRegionMaterialRewardBonus,
             int bossProgressionMaterialRewardBonus,
+            bool enablesFarmReadyQuickReplayShortcut)
+            : this(
+                playerMaxHealthBonus,
+                playerAttackPowerBonus,
+                ordinaryRegionMaterialRewardBonus,
+                bossProgressionMaterialRewardBonus,
+                regionMaterialRefinementOutputBonus: 0,
+                enablesFarmReadyQuickReplayShortcut)
+        {
+        }
+
+        public AccountWideProgressionEffectState(
+            int playerMaxHealthBonus,
+            int playerAttackPowerBonus,
+            int ordinaryRegionMaterialRewardBonus,
+            int bossProgressionMaterialRewardBonus,
+            int regionMaterialRefinementOutputBonus,
             bool enablesFarmReadyQuickReplayShortcut)
         {
             if (playerMaxHealthBonus < 0)
@@ -62,10 +81,18 @@ namespace Survivalon.State.Persistence
                     "Boss progression-material reward bonus cannot be negative.");
             }
 
+            if (regionMaterialRefinementOutputBonus < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(regionMaterialRefinementOutputBonus),
+                    "Region-material refinement output bonus cannot be negative.");
+            }
+
             PlayerMaxHealthBonus = playerMaxHealthBonus;
             PlayerAttackPowerBonus = playerAttackPowerBonus;
             OrdinaryRegionMaterialRewardBonus = ordinaryRegionMaterialRewardBonus;
             BossProgressionMaterialRewardBonus = bossProgressionMaterialRewardBonus;
+            RegionMaterialRefinementOutputBonus = regionMaterialRefinementOutputBonus;
             EnablesFarmReadyQuickReplayShortcut = enablesFarmReadyQuickReplayShortcut;
         }
 
@@ -76,6 +103,8 @@ namespace Survivalon.State.Persistence
         public int OrdinaryRegionMaterialRewardBonus { get; }
 
         public int BossProgressionMaterialRewardBonus { get; }
+
+        public int RegionMaterialRefinementOutputBonus { get; }
 
         public bool EnablesFarmReadyQuickReplayShortcut { get; }
     }

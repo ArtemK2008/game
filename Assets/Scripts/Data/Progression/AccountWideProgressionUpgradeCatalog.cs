@@ -39,6 +39,19 @@ namespace Survivalon.Data.Progression
                 playerMaxHealthBonus: 0,
                 playerAttackPowerBonus: 0,
                 ordinaryRegionMaterialRewardBonus: 1);
+        private static readonly AccountWideProgressionUpgradeDefinition RefinementEfficiencyProject =
+            new AccountWideProgressionUpgradeDefinition(
+                AccountWideUpgradeId.RefinementEfficiencyProject,
+                "Refinement Efficiency Project",
+                "account_wide_refinement_efficiency_project",
+                ResourceCategory.PersistentProgressionMaterial,
+                costAmount: 2,
+                playerMaxHealthBonus: 0,
+                playerAttackPowerBonus: 0,
+                ordinaryRegionMaterialRewardBonus: 0,
+                bossProgressionMaterialRewardBonus: 0,
+                regionMaterialRefinementOutputBonus: 1,
+                enablesFarmReadyQuickReplayShortcut: false);
         private static readonly AccountWideProgressionUpgradeDefinition BossSalvageProject =
             new AccountWideProgressionUpgradeDefinition(
                 AccountWideUpgradeId.BossSalvageProject,
@@ -67,6 +80,7 @@ namespace Survivalon.Data.Progression
             CombatBaselineProject,
             PushOffenseProject,
             FarmYieldProject,
+            RefinementEfficiencyProject,
             BossSalvageProject,
             FarmReplayProject,
         };
@@ -83,6 +97,8 @@ namespace Survivalon.Data.Progression
                     return PushOffenseProject;
                 case AccountWideUpgradeId.FarmYieldProject:
                     return FarmYieldProject;
+                case AccountWideUpgradeId.RefinementEfficiencyProject:
+                    return RefinementEfficiencyProject;
                 case AccountWideUpgradeId.BossSalvageProject:
                     return BossSalvageProject;
                 case AccountWideUpgradeId.FarmReplayProject:

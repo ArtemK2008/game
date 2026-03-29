@@ -18,17 +18,25 @@ namespace Survivalon.Towns
     {
         private readonly PlayableCharacterSelectionService characterSelectionService;
         private readonly AccountWideProgressionBoardService progressionBoardService;
+        private readonly AccountWideProgressionEffectResolver progressionEffectResolver;
+        private readonly TownServiceConversionEffectResolver conversionEffectResolver;
         private readonly PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService;
         private readonly PlayableCharacterGearAssignmentService gearAssignmentService;
 
         public TownServiceScreenStateResolver(
             PlayableCharacterSelectionService characterSelectionService = null,
             AccountWideProgressionBoardService progressionBoardService = null,
+            AccountWideProgressionEffectResolver progressionEffectResolver = null,
+            TownServiceConversionEffectResolver conversionEffectResolver = null,
             PlayableCharacterSkillPackageAssignmentService skillPackageAssignmentService = null,
             PlayableCharacterGearAssignmentService gearAssignmentService = null)
         {
             this.characterSelectionService = characterSelectionService ?? new PlayableCharacterSelectionService();
             this.progressionBoardService = progressionBoardService ?? new AccountWideProgressionBoardService();
+            this.progressionEffectResolver =
+                progressionEffectResolver ?? new AccountWideProgressionEffectResolver();
+            this.conversionEffectResolver =
+                conversionEffectResolver ?? new TownServiceConversionEffectResolver();
             this.skillPackageAssignmentService = skillPackageAssignmentService ??
                 new PlayableCharacterSkillPackageAssignmentService(this.characterSelectionService);
             this.gearAssignmentService = gearAssignmentService ??
@@ -66,6 +74,8 @@ namespace Survivalon.Towns
             PlayableCharacterSkillPackageDefinition assignedSkillPackage = PlayableCharacterSkillPackageCatalog.Get(
                 selectedCharacterState.CharacterId,
                 selectedCharacterState.SkillPackageId);
+            AccountWideProgressionEffectState progressionEffects =
+                progressionEffectResolver.Resolve(gameState.ProgressionState);
 
             return new TownServiceScreenState(
                 placeholderState.TownServiceContext,
@@ -78,9 +88,9 @@ namespace Survivalon.Towns
                 placeholderState.LocationIdentity.EnemyEmphasisDisplayName,
                 gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
                 gameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
-                BuildMaterialPowerPathState(gameState),
+                BuildMaterialPowerPathState(gameState, progressionEffects),
                 BuildProgressionOptions(gameState),
-                BuildConversionOptions(gameState),
+                BuildConversionOptions(gameState, progressionEffects),
                 skillPackageAssignmentService.BuildOptionsForSelectedCharacter(gameState),
                 BuildGearAssignmentOptions(gameState),
                 selectedCharacter.DisplayName,
@@ -109,7 +119,9 @@ namespace Survivalon.Towns
             return progressionOptions;
         }
 
-        private static IReadOnlyList<TownServiceConversionOptionState> BuildConversionOptions(PersistentGameState gameState)
+        private IReadOnlyList<TownServiceConversionOptionState> BuildConversionOptions(
+            PersistentGameState gameState,
+            AccountWideProgressionEffectState progressionEffects)
         {
             List<TownServiceConversionOptionState> conversionOptions = new List<TownServiceConversionOptionState>();
 
@@ -118,13 +130,16 @@ namespace Survivalon.Towns
                 TownServiceConversionDefinition conversionDefinition = TownServiceConversionCatalog.All[index];
                 int availableInputAmount =
                     gameState.ResourceBalances.GetAmount(conversionDefinition.InputResourceCategory);
+                int resolvedOutputAmount = conversionEffectResolver.ResolveOutputAmount(
+                    conversionDefinition,
+                    progressionEffects);
                 conversionOptions.Add(new TownServiceConversionOptionState(
                     conversionDefinition.ConversionId,
                     conversionDefinition.DisplayName,
                     conversionDefinition.InputResourceCategory,
                     conversionDefinition.InputAmount,
                     conversionDefinition.OutputResourceCategory,
-                    conversionDefinition.OutputAmount,
+                    resolvedOutputAmount,
                     availableInputAmount,
                     availableInputAmount >= conversionDefinition.InputAmount));
             }
@@ -132,7 +147,9 @@ namespace Survivalon.Towns
             return conversionOptions;
         }
 
-        private TownServiceMaterialPowerPathState BuildMaterialPowerPathState(PersistentGameState gameState)
+        private TownServiceMaterialPowerPathState BuildMaterialPowerPathState(
+            PersistentGameState gameState,
+            AccountWideProgressionEffectState progressionEffects)
         {
             TownServiceConversionDefinition refinementDefinition =
                 TownServiceConversionCatalog.Get(TownServiceConversionId.RegionMaterialRefinement);
@@ -140,13 +157,16 @@ namespace Survivalon.Towns
                 gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial);
             int currentRegionMaterialAmount =
                 gameState.ResourceBalances.GetAmount(refinementDefinition.InputResourceCategory);
+            int resolvedRefinementOutputAmount = conversionEffectResolver.ResolveOutputAmount(
+                refinementDefinition,
+                progressionEffects);
             int readyRefinementCount = currentRegionMaterialAmount / refinementDefinition.InputAmount;
             int regionMaterialTowardsNextRefinementAmount =
                 currentRegionMaterialAmount % refinementDefinition.InputAmount;
             int persistentProgressionMaterialAfterRefinementPath = readyRefinementCount > 0
                 ? currentPersistentProgressionMaterialAmount +
-                    (readyRefinementCount * refinementDefinition.OutputAmount)
-                : currentPersistentProgressionMaterialAmount + refinementDefinition.OutputAmount;
+                    (readyRefinementCount * resolvedRefinementOutputAmount)
+                : currentPersistentProgressionMaterialAmount + resolvedRefinementOutputAmount;
             List<string> alreadyAffordableProjectDisplayNames = new List<string>();
             List<string> newProjectTargetDisplayNames = new List<string>();
 

@@ -20,6 +20,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
             Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.RegionMaterialRefinementOutputBonus, Is.EqualTo(0));
             Assert.That(effects.EnablesFarmReadyQuickReplayShortcut, Is.False);
         }
 
@@ -43,6 +44,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
             Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.RegionMaterialRefinementOutputBonus, Is.EqualTo(0));
         }
 
         [Test]
@@ -65,6 +67,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(4));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
             Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.RegionMaterialRefinementOutputBonus, Is.EqualTo(0));
         }
 
         [Test]
@@ -87,6 +90,30 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(1));
             Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.RegionMaterialRefinementOutputBonus, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ShouldResolvePurchasedRefinementEfficiencyProjectIntoAppliedEffectState()
+        {
+            PersistentProgressionState progressionState = new PersistentProgressionState();
+            AccountWideProgressionUpgradeDefinition upgradeDefinition =
+                AccountWideProgressionUpgradeCatalog.Get(AccountWideUpgradeId.RefinementEfficiencyProject);
+            ProgressionEntryState progressionEntry = progressionState.GetOrAddEntry(
+                upgradeDefinition.ProgressionId,
+                upgradeDefinition.LayerType);
+            AccountWideProgressionEffectResolver resolver = new AccountWideProgressionEffectResolver();
+
+            progressionEntry.Unlock();
+            progressionEntry.IncreaseValue(1);
+
+            AccountWideProgressionEffectState effects = resolver.Resolve(progressionState);
+
+            Assert.That(effects.PlayerMaxHealthBonus, Is.EqualTo(0));
+            Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
+            Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.RegionMaterialRefinementOutputBonus, Is.EqualTo(1));
         }
 
         [Test]
@@ -109,6 +136,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
             Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(1));
+            Assert.That(effects.RegionMaterialRefinementOutputBonus, Is.EqualTo(0));
             Assert.That(effects.EnablesFarmReadyQuickReplayShortcut, Is.False);
         }
 
@@ -132,6 +160,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(0));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(0));
             Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(0));
+            Assert.That(effects.RegionMaterialRefinementOutputBonus, Is.EqualTo(0));
             Assert.That(effects.EnablesFarmReadyQuickReplayShortcut, Is.True);
         }
 
@@ -144,6 +173,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.CombatBaselineProject);
             UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.PushOffenseProject);
             UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.FarmYieldProject);
+            UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.RefinementEfficiencyProject);
             UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.BossSalvageProject);
             UnlockPurchasedUpgrade(progressionState, AccountWideUpgradeId.FarmReplayProject);
 
@@ -153,6 +183,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(effects.PlayerAttackPowerBonus, Is.EqualTo(4));
             Assert.That(effects.OrdinaryRegionMaterialRewardBonus, Is.EqualTo(1));
             Assert.That(effects.BossProgressionMaterialRewardBonus, Is.EqualTo(1));
+            Assert.That(effects.RegionMaterialRefinementOutputBonus, Is.EqualTo(1));
             Assert.That(effects.EnablesFarmReadyQuickReplayShortcut, Is.True);
         }
 

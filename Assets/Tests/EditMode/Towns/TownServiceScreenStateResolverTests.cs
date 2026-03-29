@@ -71,12 +71,17 @@ namespace Survivalon.Tests.EditMode.Towns
                 Is.EqualTo(new[] { "Farm Yield Project" }));
             Assert.That(
                 screenState.MaterialPowerPath.NewProjectTargetDisplayNames,
-                Is.EqualTo(new[] { "Push Offense Project", "Boss Salvage Project" }));
+                Is.EqualTo(new[]
+                {
+                    "Push Offense Project",
+                    "Refinement Efficiency Project",
+                    "Boss Salvage Project",
+                }));
             Assert.That(screenState.SelectedCharacterDisplayName, Is.EqualTo("Vanguard"));
             Assert.That(screenState.AssignedSkillPackageDisplayName, Is.EqualTo("Burst Drill"));
             Assert.That(screenState.PrimaryGearDisplayName, Is.EqualTo("Training Blade"));
             Assert.That(screenState.SupportGearDisplayName, Is.EqualTo("Guard Charm"));
-            Assert.That(screenState.ProgressionOptions.Count, Is.EqualTo(5));
+            Assert.That(screenState.ProgressionOptions.Count, Is.EqualTo(6));
             Assert.That(screenState.ProgressionOptions[0].UpgradeId, Is.EqualTo(AccountWideUpgradeId.CombatBaselineProject));
             Assert.That(screenState.ProgressionOptions[0].UpgradeDisplayName, Is.EqualTo("Combat Baseline Project"));
             Assert.That(screenState.ProgressionOptions[0].IsPurchased, Is.True);
@@ -89,14 +94,18 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(screenState.ProgressionOptions[2].UpgradeDisplayName, Is.EqualTo("Farm Yield Project"));
             Assert.That(screenState.ProgressionOptions[2].IsPurchased, Is.False);
             Assert.That(screenState.ProgressionOptions[2].IsAffordable, Is.True);
-            Assert.That(screenState.ProgressionOptions[3].UpgradeId, Is.EqualTo(AccountWideUpgradeId.BossSalvageProject));
-            Assert.That(screenState.ProgressionOptions[3].UpgradeDisplayName, Is.EqualTo("Boss Salvage Project"));
+            Assert.That(screenState.ProgressionOptions[3].UpgradeId, Is.EqualTo(AccountWideUpgradeId.RefinementEfficiencyProject));
+            Assert.That(screenState.ProgressionOptions[3].UpgradeDisplayName, Is.EqualTo("Refinement Efficiency Project"));
             Assert.That(screenState.ProgressionOptions[3].IsPurchased, Is.False);
             Assert.That(screenState.ProgressionOptions[3].IsAffordable, Is.False);
-            Assert.That(screenState.ProgressionOptions[4].UpgradeId, Is.EqualTo(AccountWideUpgradeId.FarmReplayProject));
-            Assert.That(screenState.ProgressionOptions[4].UpgradeDisplayName, Is.EqualTo("Farm Replay Project"));
+            Assert.That(screenState.ProgressionOptions[4].UpgradeId, Is.EqualTo(AccountWideUpgradeId.BossSalvageProject));
+            Assert.That(screenState.ProgressionOptions[4].UpgradeDisplayName, Is.EqualTo("Boss Salvage Project"));
             Assert.That(screenState.ProgressionOptions[4].IsPurchased, Is.False);
             Assert.That(screenState.ProgressionOptions[4].IsAffordable, Is.False);
+            Assert.That(screenState.ProgressionOptions[5].UpgradeId, Is.EqualTo(AccountWideUpgradeId.FarmReplayProject));
+            Assert.That(screenState.ProgressionOptions[5].UpgradeDisplayName, Is.EqualTo("Farm Replay Project"));
+            Assert.That(screenState.ProgressionOptions[5].IsPurchased, Is.False);
+            Assert.That(screenState.ProgressionOptions[5].IsAffordable, Is.False);
             Assert.That(screenState.ConversionOptions.Count, Is.EqualTo(1));
             Assert.That(
                 screenState.ConversionOptions[0].ConversionId,
@@ -134,6 +143,34 @@ namespace Survivalon.Tests.EditMode.Towns
                     NodePlaceholderTestData.CreateServicePlaceholderState(),
                     BootstrapWorldTestData.CreateGameState()),
                 Throws.ArgumentException.With.Message.Contains("town service context"));
+        }
+
+        [Test]
+        public void ShouldReflectRefinementEfficiencyProjectInConversionAndMaterialPowerPath()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            AccountWideProgressionBoardService progressionBoardService = new AccountWideProgressionBoardService();
+            gameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 2);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+
+            Assert.That(
+                progressionBoardService.TryPurchase(
+                    gameState,
+                    AccountWideUpgradeId.RefinementEfficiencyProject),
+                Is.EqualTo(AccountWideUpgradePurchaseStatus.Purchased));
+
+            TownServiceScreenStateResolver resolver = new TownServiceScreenStateResolver();
+
+            TownServiceScreenState screenState = resolver.Resolve(
+                NodePlaceholderTestData.CreateTownServicePlaceholderState(),
+                gameState);
+
+            Assert.That(screenState.PersistentProgressionMaterialAmount, Is.EqualTo(0));
+            Assert.That(screenState.ConversionOptions[0].OutputAmount, Is.EqualTo(2));
+            Assert.That(screenState.MaterialPowerPath.ReadyRefinementCount, Is.EqualTo(1));
+            Assert.That(
+                screenState.MaterialPowerPath.PersistentProgressionMaterialAmountAfterRefinementPath,
+                Is.EqualTo(2));
         }
     }
 }

@@ -28,6 +28,7 @@ namespace Survivalon.Data.Progression
                 playerAttackPowerBonus,
                 ordinaryRegionMaterialRewardBonus,
                 bossProgressionMaterialRewardBonus: 0,
+                regionMaterialRefinementOutputBonus: 0,
                 enablesFarmReadyQuickReplayShortcut: false)
         {
         }
@@ -52,6 +53,7 @@ namespace Survivalon.Data.Progression
                 playerAttackPowerBonus,
                 ordinaryRegionMaterialRewardBonus,
                 bossProgressionMaterialRewardBonus,
+                regionMaterialRefinementOutputBonus: 0,
                 enablesFarmReadyQuickReplayShortcut: false)
         {
         }
@@ -66,6 +68,33 @@ namespace Survivalon.Data.Progression
             int playerAttackPowerBonus,
             int ordinaryRegionMaterialRewardBonus,
             int bossProgressionMaterialRewardBonus,
+            bool enablesFarmReadyQuickReplayShortcut)
+            : this(
+                upgradeId,
+                displayName,
+                progressionId,
+                costResourceCategory,
+                costAmount,
+                playerMaxHealthBonus,
+                playerAttackPowerBonus,
+                ordinaryRegionMaterialRewardBonus,
+                bossProgressionMaterialRewardBonus,
+                regionMaterialRefinementOutputBonus: 0,
+                enablesFarmReadyQuickReplayShortcut)
+        {
+        }
+
+        public AccountWideProgressionUpgradeDefinition(
+            AccountWideUpgradeId upgradeId,
+            string displayName,
+            string progressionId,
+            ResourceCategory costResourceCategory,
+            int costAmount,
+            int playerMaxHealthBonus,
+            int playerAttackPowerBonus,
+            int ordinaryRegionMaterialRewardBonus,
+            int bossProgressionMaterialRewardBonus,
+            int regionMaterialRefinementOutputBonus,
             bool enablesFarmReadyQuickReplayShortcut)
         {
             if (string.IsNullOrWhiteSpace(displayName))
@@ -107,6 +136,13 @@ namespace Survivalon.Data.Progression
                     "Boss progression-material reward bonus cannot be negative.");
             }
 
+            if (regionMaterialRefinementOutputBonus < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(regionMaterialRefinementOutputBonus),
+                    "Region-material refinement output bonus cannot be negative.");
+            }
+
             UpgradeId = upgradeId;
             DisplayName = displayName;
             ProgressionId = progressionId;
@@ -117,6 +153,7 @@ namespace Survivalon.Data.Progression
             PlayerAttackPowerBonus = playerAttackPowerBonus;
             OrdinaryRegionMaterialRewardBonus = ordinaryRegionMaterialRewardBonus;
             BossProgressionMaterialRewardBonus = bossProgressionMaterialRewardBonus;
+            RegionMaterialRefinementOutputBonus = regionMaterialRefinementOutputBonus;
             EnablesFarmReadyQuickReplayShortcut = enablesFarmReadyQuickReplayShortcut;
         }
 
@@ -139,6 +176,8 @@ namespace Survivalon.Data.Progression
         public int OrdinaryRegionMaterialRewardBonus { get; }
 
         public int BossProgressionMaterialRewardBonus { get; }
+
+        public int RegionMaterialRefinementOutputBonus { get; }
 
         public bool EnablesFarmReadyQuickReplayShortcut { get; }
     }

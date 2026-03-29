@@ -40,6 +40,7 @@ namespace Survivalon.Tests.EditMode.Towns
             Assert.That(progressionText, Does.Contain("- Combat Baseline Project | Cost: Persistent progression material x1 | Purchased"));
             Assert.That(progressionText, Does.Contain("- Push Offense Project | Cost: Persistent progression material x2 | Need 1 more"));
             Assert.That(progressionText, Does.Contain("- Farm Yield Project | Cost: Persistent progression material x1 | Affordable"));
+            Assert.That(progressionText, Does.Contain("- Refinement Efficiency Project | Cost: Persistent progression material x2 | Need 1 more"));
             Assert.That(progressionText, Does.Contain("- Boss Salvage Project | Cost: Persistent progression material x2 | Need 1 more"));
             Assert.That(
                 progressionText,
@@ -55,7 +56,8 @@ namespace Survivalon.Tests.EditMode.Towns
                 Does.Contain("Already affordable projects: Combat Baseline Project, Farm Yield Project"));
             Assert.That(
                 progressionText,
-                Does.Contain("New project targets after refinement: Push Offense Project, Boss Salvage Project"));
+                Does.Contain(
+                    "New project targets after refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"));
             Assert.That(buildText, Is.EqualTo(
                 "Build preparation\n" +
                 "Selected character: Vanguard\n" +
@@ -105,6 +107,7 @@ namespace Survivalon.Tests.EditMode.Towns
                     newProjectTargetDisplayNames: new[]
                     {
                         "Push Offense Project",
+                        "Refinement Efficiency Project",
                         "Boss Salvage Project",
                     }),
                 progressionOptions: new[]
@@ -130,6 +133,13 @@ namespace Survivalon.Tests.EditMode.Towns
                         costAmount: 1,
                         isPurchased: false,
                         isAffordable: true),
+                    new TownServiceProgressionOptionState(
+                        AccountWideUpgradeId.RefinementEfficiencyProject,
+                        "Refinement Efficiency Project",
+                        ResourceCategory.PersistentProgressionMaterial,
+                        costAmount: 2,
+                        isPurchased: false,
+                        isAffordable: false),
                     new TownServiceProgressionOptionState(
                         AccountWideUpgradeId.BossSalvageProject,
                         "Boss Salvage Project",

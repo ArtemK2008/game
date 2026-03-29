@@ -54,7 +54,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "New project targets after refinement: Push Offense Project, Boss Salvage Project"),
+                        "New project targets after refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
                     Is.True);
                 Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
@@ -77,6 +77,7 @@ namespace Survivalon.Tests.EditMode.Startup
                         hostObject,
                         $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
                     Is.Not.Null);
+                Assert.That(FindButton(hostObject, "RefinementEfficiencyProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "RegionMaterialRefinement_ConversionButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton"), Is.Not.Null);
@@ -184,6 +185,52 @@ namespace Survivalon.Tests.EditMode.Startup
                         out ProgressionEntryState progressionEntry),
                     Is.True);
                 Assert.That(progressionEntry.IsUnlocked, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldPurchaseRefinementEfficiencyProjectAndIncreaseFutureTownConversionOutput()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState seededGameState = BootstrapWorldTestData.CreateGameState();
+            seededGameState.ResourceBalances.Add(ResourceCategory.PersistentProgressionMaterial, 2);
+            seededGameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+            storage.Seed(seededGameState);
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage);
+
+                EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
+                FindButton(hostObject, "RefinementEfficiencyProject_PurchaseUpgradeButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "Persistent progression material: 0"), Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "- Refinement Efficiency Project | Cost: Persistent progression material x2 | Purchased"),
+                    Is.True);
+                Assert.That(
+                    ContainsText(
+                        hostObject,
+                        "- Region Material Refinement | Region material x3 -> Persistent progression material x2 | Affordable"),
+                    Is.True);
+
+                FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Persistent progression material: 2"), Is.True);
+                Assert.That(storage.SaveCallCount, Is.EqualTo(2));
+                Assert.That(storage.SavedGameState, Is.Not.Null);
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
+                Assert.That(
+                    storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial),
+                    Is.EqualTo(2));
             }
             finally
             {

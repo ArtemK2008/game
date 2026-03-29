@@ -10,6 +10,7 @@ namespace Survivalon.Data.Progression
         FarmYieldProject = 2,
         BossSalvageProject = 3,
         FarmReplayProject = 4,
+        RefinementEfficiencyProject = 5,
     }
 }
 

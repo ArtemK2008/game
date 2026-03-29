@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 100** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 101** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -170,6 +170,11 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - the conversion is visible in the progression-hub section
   - successful conversion persists immediately and refreshes the service screen in place
   - insufficient region material leaves the conversion visible but unavailable
+- The same town/service progression hub now also has one additional meaningful long-term project branch:
+  - `Refinement Efficiency Project`
+  - it costs `Persistent progression material x2`
+  - once purchased, the existing `Region material x3 -> Persistent progression material x1` refinement path improves to `x2`
+  - the stronger refinement output persists immediately and is reflected in both the live conversion row and the projected material-to-project summary
 - The progression-hub section now also makes the current material-to-power loop explicit:
   - it shows how repeated region-material farming feeds refinement and then future project purchases
   - it shows current refinement readiness or next-refinement progress
@@ -332,11 +337,16 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### One account-wide progression sink
 - The build now has one persistent account-wide upgrade sink stored in `PersistentProgressionState`.
-- It currently contains five small upgrades/projects that consume `ResourceCategory.PersistentProgressionMaterial` and permanently record account-wide benefits in persistent data.
+- It currently contains six small upgrades/projects that consume `ResourceCategory.PersistentProgressionMaterial` and permanently record account-wide benefits in persistent data.
 - Purchased upgrade state persists through the normal saved game-state flow and resolves into a small account-wide effect model that now feeds both player combat baseline stats and ordinary reward efficiency before future runs start.
-- The current account-wide upgrades increase player max health, player attack power, and ordinary region-material reward output in future runs, without changing enemy baseline stats or milestone reward amounts.
+- The current account-wide upgrades increase player max health, player attack power, ordinary region-material reward output, and region-material refinement output in future runs, without changing enemy baseline stats or milestone reward amounts.
 - The new push-oriented offense upgrade helps harder combat more directly by increasing player-side baseline damage enough to visibly improve tougher future encounters.
 - The new farm-oriented yield upgrade helps repeatable farming more directly by increasing ordinary region-material rewards on standard region-material combat clears.
+- The same progression sink now also includes one explicit refinement-efficiency branch:
+  - `Refinement Efficiency Project`
+  - it consumes `Persistent progression material x2`
+  - once purchased, future `Region Material Refinement` actions in `Cavern Service Hub` grant `Persistent progression material x2` instead of `x1`
+  - this adds one more meaningful long-term goal to the existing farm -> refine -> invest loop without creating a second progression subsystem
 - The new project-style powerup layer now also includes one explicit boss-focused efficiency project:
   - `Boss Salvage Project`
   - it consumes persistent progression material through the same town/service progression sink
@@ -527,12 +537,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The skill layer is still intentionally small: one passive skill, one periodic auto-triggered active skill, and one minimal world-map package-assignment placeholder now exist, while additional skill variety, cooldown/UI complexity, and broader skill-package/loadout systems are still deferred.
 - The first run-time skill choice now exists only as a minimal run-only upgrade seam for current `Burst Strike` users; the shipped baseline auto-picks `Burst Tempo`, while broader in-run upgrade pools, repeated level-up chains, manual choice depth, and upgrade UI depth are still deferred.
 - Gear now exists for two categories with a minimal pre-run equip/unequip placeholder, one deterministic boss-earned acquisition path, and three simple live stat effects; broader gear UI, random/broader gear acquisition, additional categories beyond the current two-slot baseline, and richer gear effects are still deferred.
-- The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, one fixed region-material refinement action, selected-character build preparation, and return/stop actions, but not a full service interaction suite.
+- The current town/service shell is intentionally MVP-small: it provides a distinct safe context with direct progression purchasing, one fixed region-material refinement action with one purchasable efficiency upgrade branch, selected-character build preparation, and return/stop actions, but not a full service interaction suite.
 
 ## Not implemented yet
 - Broader partial-completion outputs beyond the current 1v1 kill-driven MVP
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
-- Additional progression sinks and broader service/town interaction beyond the current direct project purchase flow and one fixed refinement action
+- Additional progression sinks and broader service/town interaction beyond the current direct project purchase flow, one fixed refinement action, and one refinement-efficiency branch
 - Deeper town/build navigation beyond the current short direct selected-character package and gear controls
 - Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
 - Additional gear categories beyond the current two-slot baseline, richer live gear effects, and broader itemization/loot systems

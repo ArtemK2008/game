@@ -85,7 +85,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "New project targets after refinement: Push Offense Project, Boss Salvage Project"),
+                        "New project targets after refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
                     Is.True);
                 Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
                 Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
@@ -102,6 +102,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(FindImage(hostObject, "TownServiceBackgroundArt").sprite, Is.Not.EqualTo(echoCombatBackground));
                 Assert.That(TryFindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "PushOffenseProject_PurchaseUpgradeButton"), Is.Not.Null);
+                Assert.That(TryFindButton(hostObject, "RefinementEfficiencyProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "FarmReplayProject_PurchaseUpgradeButton"), Is.Not.Null);
                 Assert.That(TryFindButton(hostObject, "RegionMaterialRefinement_ConversionButton"), Is.Not.Null);
@@ -232,7 +233,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "New project targets after refinement: Push Offense Project, Boss Salvage Project"),
+                        "New project targets after refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
                     Is.True);
                 Assert.That(
                     ContainsText(
@@ -282,11 +283,13 @@ namespace Survivalon.Tests.EditMode.Towns
                 Button combatBaselineButton = FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton");
                 Button pushOffenseButton = FindButton(hostObject, "PushOffenseProject_PurchaseUpgradeButton");
                 Button farmYieldButton = FindButton(hostObject, "FarmYieldProject_PurchaseUpgradeButton");
+                Button refinementEfficiencyButton = FindButton(hostObject, "RefinementEfficiencyProject_PurchaseUpgradeButton");
                 Button bossSalvageButton = FindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton");
 
                 Assert.That(combatBaselineButton.interactable, Is.True);
                 Assert.That(pushOffenseButton.interactable, Is.False);
                 Assert.That(farmYieldButton.interactable, Is.True);
+                Assert.That(refinementEfficiencyButton.interactable, Is.False);
                 Assert.That(bossSalvageButton.interactable, Is.False);
                 Assert.That(FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").interactable, Is.False);
 
@@ -307,6 +310,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 Assert.That(FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton").interactable, Is.False);
                 Assert.That(FindButtonLabel(hostObject, "CombatBaselineProject_PurchaseUpgradeButton"), Is.EqualTo("Combat Baseline Project Purchased"));
                 Assert.That(FindButton(hostObject, "FarmYieldProject_PurchaseUpgradeButton").interactable, Is.False);
+                Assert.That(FindButton(hostObject, "RefinementEfficiencyProject_PurchaseUpgradeButton").interactable, Is.False);
                 Assert.That(FindButton(hostObject, "BossSalvageProject_PurchaseUpgradeButton").interactable, Is.False);
             }
             finally
