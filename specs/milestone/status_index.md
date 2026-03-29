@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 102
+Current next implementation target: Milestone 103
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -127,6 +127,7 @@ id | type | title | status | depends on / note
 099 | feature | Add another region/location with distinct value | completed | phase 25
 100 | feature | Add another enemy family/profile set | completed | phase 25
 101 | feature | Add one more meaningful progression sink or powerup branch | completed | phase 25
+102 | feature | Add second character only if game now benefits from roster differentiation | completed | phase 25; closed by existing live Vanguard/Striker roster differentiation
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 101** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 102** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -370,12 +370,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current already-affordable projects
   - new project targets the current refinement path would fund
 
-### Persistent character baseline, selection placeholder, and linked progression
+### Persistent character baseline, live two-character roster, and linked progression
 - The build now has two explicit playable characters stored in persistent game state:
   - `character_vanguard` / `Vanguard`
   - `character_striker` / `Striker`
 - Bootstrap fallback state creation and persisted-state startup normalization both ensure these shipped playable characters exist, are unlocked, and selectable.
-- The build now also has an explicit character-selection placeholder model:
+- The build now also has an explicit small-roster character-selection flow:
   - selectable playable characters are resolved through a dedicated selection service
   - the active/current playable character is normalized so one valid selectable character remains active
   - the current world map shows the selected character and one small placeholder selection button per selectable playable character
@@ -401,6 +401,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - selecting `Striker` changes future combat entry stats
   - selecting `Striker` also adds the current always-on passive direct-damage bonus and periodic active skill to future combat entry
   - the current boss/gate placeholder encounter that defeats `Vanguard` can be cleared by `Striker` without needing account-wide offense upgrades
+- That current live roster differentiation is now strong enough to justify the second shipped character in the MVP:
+  - world map and town/service build preparation both expose the same current `Vanguard` / `Striker` choice cleanly
+  - safe resume persists the currently selected character as part of the existing durable build state
+  - run entry, combat shell visuals, and current boss-readiness outcomes all change in visible ways based on that selected character
 - The new assignment flow is also already visible and testable:
   - assigning `Vanguard` to `Burst Drill` adds the same current periodic active skill to `Vanguard`'s future combat entry
   - that package assignment is persistent and can turn the current boss/gate placeholder encounter from `Vanguard` failure into success without changing `Vanguard`'s base character identity
@@ -544,7 +548,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Real reward generation and reward persistence beyond the current soft-currency, one region-material path, and one clear-threshold milestone reward
 - Additional progression sinks and broader service/town interaction beyond the current direct project purchase flow, one fixed refinement action, and one refinement-efficiency branch
 - Deeper town/build navigation beyond the current short direct selected-character package and gear controls
-- Expanded multi-character/build systems beyond the current two-character placeholder roster and simple rank-based character growth
+- Expanded multi-character/build systems beyond the current small live `Vanguard` / `Striker` roster and simple rank-based character growth
 - Additional gear categories beyond the current two-slot baseline, richer live gear effects, and broader itemization/loot systems
 - Multi-entity combat, broader skill systems, advanced AI, and broader combat content
 
