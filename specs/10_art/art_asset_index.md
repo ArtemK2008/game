@@ -43,6 +43,7 @@ Current enemy families:
 - `EnemyUnit`
 - `BulwarkRaider`
 - `GateBoss`
+- `RuinSentinel`
 
 Canonical gameplay-facing outputs per enemy:
 - `Sprites/idle.png`
@@ -81,7 +82,7 @@ Current canonical sheet assets:
 
 ## Current prep status
 - Player character assets were already in canonical gameplay-facing form.
-- Enemy combat sheets were normalized into canonical split state files while retaining the source sheets.
+- Enemy combat sheets were normalized into canonical split state files while retaining the source sheets, including the newly prepared `RuinSentinel` family.
 - Current location/service backgrounds were left in place and documented as the canonical gameplay-facing files.
 - Current combat VFX assets remain intentionally sheet-based canonical source files, and milestone `094` now uses those sheets directly for restrained combat readability cues without splitting them into a broader sequence pipeline.
 

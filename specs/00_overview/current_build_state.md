@@ -7,7 +7,7 @@ This file is a rolling summary of what is already implemented in the current bui
 This summary reflects completed work through **Milestone 099** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
-On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while staying safe in editor/test contexts.
+On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
 
 From the world map, the player manually selects an enterable node and confirms entry. Combat-compatible nodes then auto-start their run flow: combat begins automatically, auto-targeting and auto-attacks resolve the 1v1 encounter over time, the run resolves to success or failure, and the screen enters post-run automatically. Entering that resolved post-run boundary now autosaves the durable run outcome before the player chooses replay, return to world, or stop. Cleared nodes remain replayable through both post-run replay and later world-map re-entry, including farm access when they are no longer reachable through the normal forward/backtrack path rules. The current cavern service node now opens a distinct town/service shell instead of the generic node placeholder, while broader non-combat content remains placeholder-level.
 
@@ -498,7 +498,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `specs/10_art/combat_vfx_pipeline.md`
 - Current prep status:
   - playable-character portrait, world-icon, and combat-state assets already exist in canonical gameplay-facing form
-  - enemy combat state sheets now also have canonical split `idle` / `attack` / `hit` / `defeat` files while retaining the original sheets as source assets
+  - enemy combat state sheets now also have canonical split `idle` / `attack` / `hit` / `defeat` files while retaining the original sheets as source assets, including the newly prepared `RuinSentinel` enemy sheet for later hookup
   - current combat and service backgrounds are stored as stable place-owned canonical files under `Assets/Art/Locations/`
   - current combat VFX remain intentionally sheet-based canonical source assets under `Assets/Art/VFX/Combat/`
 - Current runtime hookup status:

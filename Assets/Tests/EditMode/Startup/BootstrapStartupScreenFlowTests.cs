@@ -362,6 +362,21 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldUseEditorQuitActionWhenApplicationQuitIsRequested()
+        {
+            bool editorQuitWasRequested = false;
+            bool playerQuitWasRequested = false;
+            ApplicationQuitService quitService = new ApplicationQuitService(
+                () => editorQuitWasRequested = true,
+                () => playerQuitWasRequested = true);
+
+            quitService.RequestQuit();
+
+            Assert.That(editorQuitWasRequested, Is.True);
+            Assert.That(playerQuitWasRequested, Is.False);
+        }
+
+        [Test]
         public void ShouldReuseSingleWorldMapPlaceholderAndTownServiceScreensAcrossEnterAndReturnFlow()
         {
             GameObject hostObject = new GameObject("BootstrapStartupHost");

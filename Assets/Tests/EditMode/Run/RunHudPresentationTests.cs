@@ -77,11 +77,11 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(runHudState.OutcomeDisplayName, Is.EqualTo("PlayerVictory"));
             Assert.That(runHudState.ProgressGoalDisplayName, Is.EqualTo("gate clear"));
             Assert.That(runHudState.BossEncounterDisplayName, Is.EqualTo("Gate boss"));
-            Assert.That(runHudState.BossStakeSummary, Is.EqualTo("Boss rewards"));
+            Assert.That(runHudState.BossStakeSummary, Is.EqualTo("Gate clear, Boss rewards"));
             Assert.That(RunHudTextBuilder.BuildContextTitle(runHudState), Is.EqualTo("Boss encounter | Echo Caverns | Cavern Gate"));
             Assert.That(summaryText, Does.Contain("Run state: Auto-battle resolved | Outcome: PlayerVictory | Elapsed: 0s"));
             Assert.That(summaryText, Does.Contain("Health: Vanguard 120 / 120 | Gate Boss 180 / 180"));
-            Assert.That(summaryText, Does.Contain("Boss role: Gate boss | Stakes: Boss rewards"));
+            Assert.That(summaryText, Does.Contain("Boss role: Gate boss | Stakes: Gate clear, Boss rewards"));
             Assert.That(summaryText, Does.Contain("Progress: 0 / 3 toward gate clear"));
         }
 

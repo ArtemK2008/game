@@ -39,6 +39,7 @@ Current shipped folders:
 - `Assets/Art/Enemies/EnemyUnit/Sprites/`
 - `Assets/Art/Enemies/BulwarkRaider/Sprites/`
 - `Assets/Art/Enemies/GateBoss/Sprites/`
+- `Assets/Art/Enemies/RuinSentinel/Sprites/`
 
 ## Canonical gameplay-facing files
 Preferred per enemy:
@@ -75,6 +76,13 @@ The combined sheet remains the source/reference asset when it exists.
 - `Assets/Art/Enemies/GateBoss/Sprites/hit.png`
 - `Assets/Art/Enemies/GateBoss/Sprites/defeat.png`
 - source sheet: `Assets/Art/Enemies/GateBoss/Sprites/combat_states_sheet.png`
+
+### Ruin Sentinel
+- `Assets/Art/Enemies/RuinSentinel/Sprites/idle.png`
+- `Assets/Art/Enemies/RuinSentinel/Sprites/attack.png`
+- `Assets/Art/Enemies/RuinSentinel/Sprites/hit.png`
+- `Assets/Art/Enemies/RuinSentinel/Sprites/defeat.png`
+- source sheet: `Assets/Art/Enemies/RuinSentinel/Sprites/combat_states_sheet.png`
 
 ## Slicing assumption used for current repo prep
 The current enemy source sheets were normalized using this assumption:
@@ -113,3 +121,4 @@ Future runtime work should consume the canonical split state files first and onl
 ## Current gaps
 - No authored multi-frame enemy animation clips exist yet.
 - No dedicated elite-only or boss-only alternate state sets exist yet beyond the current `GateBoss` state strip.
+- `RuinSentinel` is currently prepared-only art and is not wired into runtime enemy content yet.

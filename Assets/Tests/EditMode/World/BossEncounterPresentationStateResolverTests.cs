@@ -35,7 +35,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Resolve_ShouldDescribeCavernGateBossAsRewardFocusedWithoutGateUnlock()
+        public void Resolve_ShouldDescribeCavernGateBossAsGateClearAndRewardFocused()
         {
             BossEncounterPresentationState presentationState =
                 BossEncounterPresentationStateResolver.Resolve(
@@ -43,7 +43,7 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(presentationState.IsBossEncounter, Is.True);
             Assert.That(presentationState.EncounterDisplayName, Is.EqualTo("Gate boss"));
-            Assert.That(presentationState.StakesSummary, Is.EqualTo("Boss rewards"));
+            Assert.That(presentationState.StakesSummary, Is.EqualTo("Gate clear, Boss rewards"));
         }
     }
 }

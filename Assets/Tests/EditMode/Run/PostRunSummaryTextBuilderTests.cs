@@ -41,7 +41,8 @@ namespace Survivalon.Tests.EditMode.Run
                 BossProgressionGateUnlockResult.CreateUnlocked(BootstrapWorldScenario.CavernGateNodeId));
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateCombatPlaceholderState(),
-                runResult);
+                runResult,
+                BootstrapWorldTestData.CreateWorldGraph());
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
@@ -157,7 +158,8 @@ namespace Survivalon.Tests.EditMode.Run
                     canStopSession: true));
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
-                runResult);
+                runResult,
+                BootstrapWorldTestData.CreateWorldGraph());
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
@@ -202,7 +204,8 @@ namespace Survivalon.Tests.EditMode.Run
                     canStopSession: true));
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
-                runResult);
+                runResult,
+                BootstrapWorldTestData.CreateWorldGraph());
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
@@ -251,7 +254,8 @@ namespace Survivalon.Tests.EditMode.Run
                 BossProgressionGateUnlockResult.CreateUnlocked(BootstrapWorldScenario.CavernGateNodeId));
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
-                runResult);
+                runResult,
+                BootstrapWorldTestData.CreateWorldGraph());
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 

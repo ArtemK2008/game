@@ -33,7 +33,7 @@ namespace Survivalon.Run
                 BuildClearSpikeRewardSummary(rewardPayload),
                 BuildBossSpikeRewardSummary(rewardPayload),
                 BuildBossGearRewardSummary(rewardPayload),
-                BuildUnlockOutcomeSummary(runResult));
+                BuildUnlockOutcomeSummary(postRunStateController, runResult));
         }
 
         private static string BuildOrdinaryRewardSummary(RunRewardPayload rewardPayload)
@@ -128,8 +128,15 @@ namespace Survivalon.Run
             return string.Join(", ", gearRewardSummaries);
         }
 
-        private static string BuildUnlockOutcomeSummary(RunResult runResult)
+        private static string BuildUnlockOutcomeSummary(
+            PostRunStateController postRunStateController,
+            RunResult runResult)
         {
+            if (postRunStateController == null)
+            {
+                throw new ArgumentNullException(nameof(postRunStateController));
+            }
+
             if (runResult == null)
             {
                 throw new ArgumentNullException(nameof(runResult));
@@ -144,7 +151,8 @@ namespace Survivalon.Run
             if (runResult.HasBossProgressionGateUnlock &&
                 runResult.BossProgressionGateUnlock.TryGetUnlockedNodeId(out NodeId unlockedNodeId))
             {
-                unlockOutcomeSummaries.Add(BuildBossProgressionGateSummary(unlockedNodeId));
+                unlockOutcomeSummaries.Add(
+                    BuildBossProgressionGateSummary(postRunStateController.WorldGraph, unlockedNodeId));
             }
 
             return string.Join("; ", unlockOutcomeSummaries);
@@ -185,19 +193,37 @@ namespace Survivalon.Run
             return $"{nodeProgressSummary}; persistent +{runResult.PersistentProgressionDelta}";
         }
 
-        private static string BuildBossProgressionGateSummary(NodeId unlockedNodeId)
+        private static string BuildBossProgressionGateSummary(
+            WorldGraph worldGraph,
+            NodeId unlockedNodeId)
         {
-            if (unlockedNodeId == BootstrapWorldScenario.CavernGateNodeId)
+            if (worldGraph != null)
             {
-                return "Cavern gate opened";
-            }
-
-            if (unlockedNodeId == BootstrapWorldScenario.SunscorchEntryNodeId)
-            {
-                return "Scorched approach opened";
+                try
+                {
+                    return $"{FormatOpenedNodeDisplayName(worldGraph.GetNode(unlockedNodeId).DisplayName)} opened";
+                }
+                catch (KeyNotFoundException)
+                {
+                }
             }
 
             return $"{unlockedNodeId.Value} unlocked";
+        }
+
+        private static string FormatOpenedNodeDisplayName(string displayName)
+        {
+            if (string.IsNullOrWhiteSpace(displayName))
+            {
+                return string.Empty;
+            }
+
+            if (displayName.Length == 1)
+            {
+                return displayName;
+            }
+
+            return char.ToUpperInvariant(displayName[0]) + displayName.Substring(1).ToLowerInvariant();
         }
     }
 }

@@ -7,16 +7,23 @@ namespace Survivalon.Run
     {
         private readonly NodePlaceholderState nodeContext;
         private readonly RunResult runResult;
+        private readonly WorldGraph worldGraph;
 
-        public PostRunStateController(NodePlaceholderState nodeContext, RunResult runResult)
+        public PostRunStateController(
+            NodePlaceholderState nodeContext,
+            RunResult runResult,
+            WorldGraph worldGraph = null)
         {
             this.nodeContext = nodeContext ?? throw new ArgumentNullException(nameof(nodeContext));
             this.runResult = runResult ?? throw new ArgumentNullException(nameof(runResult));
+            this.worldGraph = worldGraph;
         }
 
         public RunResult RunResult => runResult;
 
         public NodePlaceholderState NodeContext => nodeContext;
+
+        public WorldGraph WorldGraph => worldGraph;
 
         public bool CanReplayNode => runResult.NextActionContext.CanReplayNode;
 

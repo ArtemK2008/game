@@ -733,7 +733,8 @@ namespace Survivalon.World
 
             postRunStateController = new PostRunStateController(
                 runLifecycleController.NodeContext,
-                runLifecycleController.RunResult);
+                runLifecycleController.RunResult,
+                worldGraph);
             onResolvedPostRunBoundaryReached?.Invoke();
             RequestResolvedPostRunFeedback();
         }

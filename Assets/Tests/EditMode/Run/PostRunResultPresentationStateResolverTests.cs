@@ -92,7 +92,8 @@ namespace Survivalon.Tests.EditMode.Run
                 BossProgressionGateUnlockResult.CreateUnlocked(BootstrapWorldScenario.CavernGateNodeId));
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
-                runResult);
+                runResult,
+                BootstrapWorldTestData.CreateWorldGraph());
 
             PostRunResultPresentationState presentationState =
                 resolver.Resolve(postRunStateController, runResult);
@@ -127,7 +128,8 @@ namespace Survivalon.Tests.EditMode.Run
                 BossProgressionGateUnlockResult.CreateUnlocked(BootstrapWorldScenario.SunscorchEntryNodeId));
             PostRunStateController postRunStateController = new PostRunStateController(
                 NodePlaceholderTestData.CreateCavernGateBossPlaceholderState(),
-                runResult);
+                runResult,
+                BootstrapWorldTestData.CreateWorldGraph());
 
             PostRunResultPresentationState presentationState =
                 resolver.Resolve(postRunStateController, runResult);
