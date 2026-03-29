@@ -1,29 +1,41 @@
 using System;
 using Survivalon.Core;
+using Survivalon.State.Persistence;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Survivalon.Startup
 {
     /// <summary>
-    /// Renders the compact startup main menu and its shared compact settings surface.
+    /// Renders the compact startup entry surfaces: main menu, shared settings, and offline claim summary.
     /// </summary>
     public sealed class StartupPlaceholderView : MonoBehaviour
     {
+        private enum StartupPlaceholderMode
+        {
+            MainMenu = 0,
+            Settings = 1,
+            OfflineClaim = 2,
+        }
+
         private Canvas canvas;
         private Text titleText;
         private Text summaryText;
         private Button continueButton;
+        private Button offlineClaimButton;
         private GameObject menuButtonGroup;
         private GameObject settingsButtonGroup;
+        private GameObject offlineClaimButtonGroup;
         private CompactSettingsView settingsView;
         private Font uiFont;
         private bool canContinue;
-        private bool isShowingSettings;
+        private StartupPlaceholderMode mode;
         private UserSettingsState currentSettingsState;
+        private OfflineProgressClaimState offlineProgressClaimState;
         private Action onStartRequested;
         private Action onContinueRequested;
         private Action onQuitRequested;
+        private Action onOfflineClaimRequested;
         private Action<UserSettingsState> onSettingsChanged;
 
         public void ShowMainMenu(
@@ -40,7 +52,9 @@ namespace Survivalon.Startup
             this.onQuitRequested = onQuitRequested;
             currentSettingsState = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
             onSettingsChanged = settingsChanged;
-            isShowingSettings = false;
+            mode = StartupPlaceholderMode.MainMenu;
+            offlineProgressClaimState = null;
+            onOfflineClaimRequested = null;
 
             gameObject.name = StartupEntryTarget.MainMenuPlaceholder.ToString();
             RuntimeUiSupport.EnsureInputSystemEventSystem();
@@ -50,9 +64,25 @@ namespace Survivalon.Startup
             Debug.Log("Startup main menu active.");
         }
 
+        public void ShowOfflineClaim(
+            OfflineProgressClaimState claimState,
+            Action onClaimRequested)
+        {
+            offlineProgressClaimState = claimState ?? throw new ArgumentNullException(nameof(claimState));
+            onOfflineClaimRequested = onClaimRequested;
+            mode = StartupPlaceholderMode.OfflineClaim;
+
+            gameObject.name = StartupEntryTarget.MainMenuPlaceholder.ToString();
+            RuntimeUiSupport.EnsureInputSystemEventSystem();
+            EnsureUi();
+            Refresh();
+
+            Debug.Log("Startup offline claim summary active.");
+        }
+
         private void Refresh()
         {
-            if (isShowingSettings)
+            if (mode == StartupPlaceholderMode.Settings)
             {
                 titleText.text = "Settings";
                 summaryText.text =
@@ -60,7 +90,25 @@ namespace Survivalon.Startup
                     "Adjust master, music, SFX, and the current desktop window mode.";
                 menuButtonGroup.SetActive(false);
                 settingsButtonGroup.SetActive(true);
+                offlineClaimButtonGroup.SetActive(false);
                 settingsView.gameObject.SetActive(true);
+                return;
+            }
+
+            if (mode == StartupPlaceholderMode.OfflineClaim)
+            {
+                titleText.text = "Offline Summary";
+                summaryText.text =
+                    "Offline farming gains found.\n" +
+                    $"Source: {offlineProgressClaimState.SourceNodeDisplayName}\n" +
+                    $"Gain: {PlayerFacingCoreLabelFormatter.FormatResourceCategory(offlineProgressClaimState.ResourceCategory)} x{offlineProgressClaimState.Amount}\n" +
+                    $"Whole offline hours counted: {offlineProgressClaimState.CountedWholeHours}\n" +
+                    "Claim to apply these gains and continue.";
+                menuButtonGroup.SetActive(false);
+                settingsButtonGroup.SetActive(false);
+                offlineClaimButtonGroup.SetActive(true);
+                settingsView.gameObject.SetActive(false);
+                offlineClaimButton.interactable = onOfflineClaimRequested != null;
                 return;
             }
 
@@ -70,6 +118,7 @@ namespace Survivalon.Startup
                 : "Start begins a fresh prototype session.\nContinue becomes available after a safe world or service save.";
             menuButtonGroup.SetActive(true);
             settingsButtonGroup.SetActive(false);
+            offlineClaimButtonGroup.SetActive(false);
             settingsView.gameObject.SetActive(false);
             continueButton.interactable = canContinue && onContinueRequested != null;
         }
@@ -158,6 +207,13 @@ namespace Survivalon.Startup
             settingsButtonGroup = CreateButtonGroup(panelObject.transform, "SettingsButtons");
             settingsView = settingsButtonGroup.AddComponent<CompactSettingsView>();
             settingsView.Hide();
+
+            offlineClaimButtonGroup = CreateButtonGroup(panelObject.transform, "OfflineClaimButtons");
+            offlineClaimButton = CreateActionButton(
+                offlineClaimButtonGroup.transform,
+                "OfflineClaimButton",
+                "Claim And Continue",
+                HandleOfflineClaimRequested);
         }
 
         private GameObject CreateButtonGroup(Transform parent, string objectName)
@@ -243,7 +299,7 @@ namespace Survivalon.Startup
 
         private void HandleSettingsRequested()
         {
-            isShowingSettings = true;
+            mode = StartupPlaceholderMode.Settings;
             settingsView.Show(
                 currentSettingsState,
                 HandleSettingsChanged,
@@ -254,7 +310,7 @@ namespace Survivalon.Startup
 
         private void HandleSettingsBackRequested()
         {
-            isShowingSettings = false;
+            mode = StartupPlaceholderMode.MainMenu;
             settingsView.Hide();
             Refresh();
         }
@@ -262,6 +318,11 @@ namespace Survivalon.Startup
         private void HandleQuitRequested()
         {
             onQuitRequested?.Invoke();
+        }
+
+        private void HandleOfflineClaimRequested()
+        {
+            onOfflineClaimRequested?.Invoke();
         }
 
         private void HandleSettingsChanged(UserSettingsState settingsState)

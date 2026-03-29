@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Survivalon.Combat;
 using Survivalon.Data.Characters;
@@ -10,6 +11,7 @@ using Survivalon.State.Persistence;
 using Survivalon.Towns;
 using Survivalon.Tests.EditMode.World;
 using Survivalon.World;
+using Object = UnityEngine.Object;
 
 namespace Survivalon.Tests.EditMode.Startup
 {
@@ -300,6 +302,67 @@ namespace Survivalon.Tests.EditMode.Startup
             finally
             {
                 Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldShowOfflineClaimSummaryBeforeResumingEligibleContinueContext()
+        {
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            storage.Seed(CreateEligibleOfflineSavedGameState(DateTimeOffset.UtcNow.AddHours(-2)));
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+
+                ContinueFromMainMenu(hostObject);
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(1));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
+                Assert.That(ContainsText(hostObject, "Offline Summary"), Is.True);
+                Assert.That(ContainsText(hostObject, "Offline farming gains found."), Is.True);
+                Assert.That(ContainsText(hostObject, "Source: Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Gain: Region material x4"), Is.True);
+
+                FindButton(hostObject, "OfflineClaimButton").onClick.Invoke();
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(4));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldNotShowOfflineClaimAgainImmediatelyAfterItHasBeenClaimed()
+        {
+            GameObject firstHostObject = new GameObject("BootstrapStartupHost_First");
+            GameObject secondHostObject = new GameObject("BootstrapStartupHost_Second");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            storage.Seed(CreateEligibleOfflineSavedGameState(DateTimeOffset.UtcNow.AddHours(-2)));
+
+            try
+            {
+                CreateAndInitializeBootstrap(firstHostObject, storage, autoEnterPlayableFlow: false);
+                ContinueFromMainMenu(firstHostObject);
+                FindButton(firstHostObject, "OfflineClaimButton").onClick.Invoke();
+
+                CreateAndInitializeBootstrap(secondHostObject, storage, autoEnterPlayableFlow: false);
+                ContinueFromMainMenu(secondHostObject);
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(secondHostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<WorldMapScreen>(secondHostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(secondHostObject, "Offline Summary"), Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(firstHostObject);
+                Object.DestroyImmediate(secondHostObject);
             }
         }
 
@@ -810,6 +873,30 @@ namespace Survivalon.Tests.EditMode.Startup
             AudioSource audioSource = musicAudioHost.GetComponent<AudioSource>();
             Assert.That(audioSource, Is.Not.Null);
             Assert.That(audioSource.clip, Is.EqualTo(expectedClip));
+        }
+
+        private static PersistentGameState CreateEligibleOfflineSavedGameState(DateTimeOffset stableSaveTime)
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            gameState.WorldState.SetCurrentNode(BootstrapWorldScenario.ForestFarmNodeId);
+            gameState.WorldState.SetLastSafeNode(BootstrapWorldScenario.ForestFarmNodeId);
+            gameState.WorldState.ReplaceReachableNodes(new[] { BootstrapWorldScenario.ForestFarmNodeId });
+
+            Assert.That(
+                gameState.WorldState.TryGetNodeState(
+                    BootstrapWorldScenario.ForestFarmNodeId,
+                    out PersistentNodeState farmNodeState),
+                Is.True);
+            if (!farmNodeState.IsCompleted)
+            {
+                farmNodeState.ApplyUnlockProgress(farmNodeState.UnlockThreshold);
+            }
+
+            gameState.SafeResumeState.MarkWorldMap(BootstrapWorldScenario.ForestFarmNodeId);
+            gameState.OfflineProgressStableSaveAnchorState.StampStableSaveAnchor(
+                stableSaveTime.ToUnixTimeSeconds(),
+                OfflineProgressEligibilityKind.FarmReadyWorldNode);
+            return gameState;
         }
 
         private sealed class FakeApplicationQuitService : IApplicationQuitService

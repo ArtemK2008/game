@@ -32,7 +32,11 @@ namespace Survivalon.Startup
         private UserSettingsPersistenceService userSettingsPersistenceService;
         private UserSettingsApplier userSettingsApplier;
         private IDisplaySettingsApplier displaySettingsApplier;
+        private OfflineProgressClaimResolver offlineProgressClaimResolver;
+        private OfflineProgressClaimService offlineProgressClaimService;
         private UserSettingsState currentUserSettings;
+        private BootstrapStartupState pendingContinueStartupState;
+        private OfflineProgressClaimState pendingOfflineProgressClaimState;
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
@@ -74,6 +78,8 @@ namespace Survivalon.Startup
                 combatFeedbackAudioHost,
                 musicAudioHost,
                 displaySettingsApplier);
+            offlineProgressClaimResolver = new OfflineProgressClaimResolver(worldMapFactory.CreateWorldGraph());
+            offlineProgressClaimService = new OfflineProgressClaimService(persistenceService);
             currentUserSettings = userSettingsPersistenceService.LoadOrDefault();
             userSettingsApplier.Apply(currentUserSettings);
 
@@ -247,6 +253,7 @@ namespace Survivalon.Startup
 
         private void ShowMainMenu()
         {
+            ClearPendingOfflineClaim();
             musicAudioHost.SetContext(MusicContextId.Calm);
             SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
             SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
@@ -266,6 +273,7 @@ namespace Survivalon.Startup
 
         private void HandleStartRequested()
         {
+            ClearPendingOfflineClaim();
             ApplyStartupState(startupStateFactory.CreateFresh(worldMapFactory));
             ShowWorldMap();
         }
@@ -275,6 +283,16 @@ namespace Survivalon.Startup
             if (!startupStateFactory.TryCreateContinue(worldMapFactory, out BootstrapStartupState startupState))
             {
                 ShowMainMenu();
+                return;
+            }
+
+            if (offlineProgressClaimResolver.TryResolve(
+                    startupState.GameState,
+                    out OfflineProgressClaimState claimState))
+            {
+                pendingContinueStartupState = startupState;
+                pendingOfflineProgressClaimState = claimState;
+                ShowOfflineProgressClaim(claimState);
                 return;
             }
 
@@ -292,6 +310,24 @@ namespace Survivalon.Startup
             currentUserSettings = (settingsState ?? UserSettingsState.CreateDefault()).Sanitize();
             userSettingsApplier.Apply(currentUserSettings);
             userSettingsPersistenceService.Save(currentUserSettings);
+        }
+
+        private void HandleOfflineClaimRequested()
+        {
+            if (pendingContinueStartupState == null || pendingOfflineProgressClaimState == null)
+            {
+                ShowMainMenu();
+                return;
+            }
+
+            offlineProgressClaimService.Claim(
+                pendingContinueStartupState.GameState,
+                pendingOfflineProgressClaimState);
+
+            BootstrapStartupState startupState = pendingContinueStartupState;
+            ClearPendingOfflineClaim();
+            ApplyStartupState(startupState);
+            ResumeContinueTarget();
         }
 
         private void ApplyStartupState(BootstrapStartupState startupState)
@@ -317,6 +353,18 @@ namespace Survivalon.Startup
             }
 
             ShowWorldMap();
+        }
+
+        private void ShowOfflineProgressClaim(OfflineProgressClaimState claimState)
+        {
+            musicAudioHost.SetContext(MusicContextId.Calm);
+            SetOptionalScreenActive(FindOptionalScreen<WorldMapScreen>(), false);
+            SetOptionalScreenActive(FindOptionalScreen<NodePlaceholderScreen>(), false);
+            SetOptionalScreenActive(FindOptionalScreen<TownServiceScreen>(), false);
+
+            StartupPlaceholderView placeholderView = EnsurePlaceholderView();
+            placeholderView.gameObject.SetActive(true);
+            placeholderView.ShowOfflineClaim(claimState, HandleOfflineClaimRequested);
         }
 
         private bool TryResumeTownServiceContext(NodeId nodeId)
@@ -483,6 +531,12 @@ namespace Survivalon.Startup
         {
             string storagePath = Path.Combine(Application.persistentDataPath, "survivalon_game_state.json");
             return new FilePersistentGameStateStorage(storagePath);
+        }
+
+        private void ClearPendingOfflineClaim()
+        {
+            pendingContinueStartupState = null;
+            pendingOfflineProgressClaimState = null;
         }
 
         private static SafeResumePersistenceService CreatePersistenceService(IPersistentGameStateStorage storage)
