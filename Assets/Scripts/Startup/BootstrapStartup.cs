@@ -34,6 +34,8 @@ namespace Survivalon.Startup
         private IDisplaySettingsApplier displaySettingsApplier;
         private OfflineProgressClaimResolver offlineProgressClaimResolver;
         private OfflineProgressClaimService offlineProgressClaimService;
+        private DateTimeOffset? configuredSessionStartUtc;
+        private DateTimeOffset sessionStartUtc;
         private UserSettingsState currentUserSettings;
         private BootstrapStartupState pendingContinueStartupState;
         private OfflineProgressClaimState pendingOfflineProgressClaimState;
@@ -60,6 +62,11 @@ namespace Survivalon.Startup
             displaySettingsApplier = applier ?? throw new ArgumentNullException(nameof(applier));
         }
 
+        public void ConfigureSessionStartUtc(DateTimeOffset startupUtcTime)
+        {
+            configuredSessionStartUtc = startupUtcTime;
+        }
+
         private void Awake()
         {
             persistenceService ??= CreatePersistenceService(CreateDefaultPersistenceStorage());
@@ -78,7 +85,10 @@ namespace Survivalon.Startup
                 combatFeedbackAudioHost,
                 musicAudioHost,
                 displaySettingsApplier);
-            offlineProgressClaimResolver = new OfflineProgressClaimResolver(worldMapFactory.CreateWorldGraph());
+            sessionStartUtc = configuredSessionStartUtc ?? DateTimeOffset.UtcNow;
+            offlineProgressClaimResolver = new OfflineProgressClaimResolver(
+                worldMapFactory.CreateWorldGraph(),
+                () => sessionStartUtc);
             offlineProgressClaimService = new OfflineProgressClaimService(persistenceService);
             currentUserSettings = userSettingsPersistenceService.LoadOrDefault();
             userSettingsApplier.Apply(currentUserSettings);

@@ -308,13 +308,18 @@ namespace Survivalon.Tests.EditMode.Startup
         [Test]
         public void ShouldShowOfflineClaimSummaryBeforeResumingEligibleContinueContext()
         {
+            DateTimeOffset sessionStartUtc = new DateTimeOffset(2026, 3, 29, 12, 0, 0, TimeSpan.Zero);
             GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
-            storage.Seed(CreateEligibleOfflineSavedGameState(DateTimeOffset.UtcNow.AddHours(-2)));
+            storage.Seed(CreateEligibleOfflineSavedGameState(sessionStartUtc.AddHours(-2)));
 
             try
             {
-                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+                CreateAndInitializeBootstrap(
+                    hostObject,
+                    storage,
+                    autoEnterPlayableFlow: false,
+                    sessionStartUtc: sessionStartUtc);
 
                 ContinueFromMainMenu(hostObject);
 
@@ -339,30 +344,61 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
-        public void ShouldNotShowOfflineClaimAgainImmediatelyAfterItHasBeenClaimed()
+        public void ShouldNotCountTimeSpentWaitingOnMainMenuAsOfflineTime()
         {
-            GameObject firstHostObject = new GameObject("BootstrapStartupHost_First");
-            GameObject secondHostObject = new GameObject("BootstrapStartupHost_Second");
+            DateTimeOffset sessionStartUtc = new DateTimeOffset(2026, 3, 29, 12, 0, 0, TimeSpan.Zero);
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
-            storage.Seed(CreateEligibleOfflineSavedGameState(DateTimeOffset.UtcNow.AddHours(-2)));
+            storage.Seed(CreateEligibleOfflineSavedGameState(sessionStartUtc.AddMinutes(-59)));
 
             try
             {
-                CreateAndInitializeBootstrap(firstHostObject, storage, autoEnterPlayableFlow: false);
-                ContinueFromMainMenu(firstHostObject);
-                FindButton(firstHostObject, "OfflineClaimButton").onClick.Invoke();
+                CreateAndInitializeBootstrap(
+                    hostObject,
+                    storage,
+                    autoEnterPlayableFlow: false,
+                    sessionStartUtc: sessionStartUtc);
 
-                CreateAndInitializeBootstrap(secondHostObject, storage, autoEnterPlayableFlow: false);
-                ContinueFromMainMenu(secondHostObject);
+                ContinueFromMainMenu(hostObject);
 
-                Assert.That(CountActiveComponents<StartupPlaceholderView>(secondHostObject), Is.EqualTo(0));
-                Assert.That(CountActiveComponents<WorldMapScreen>(secondHostObject), Is.EqualTo(1));
-                Assert.That(ContainsText(secondHostObject, "Offline Summary"), Is.False);
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Offline Summary"), Is.False);
+                Assert.That(storage.SaveCallCount, Is.EqualTo(0));
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
             }
             finally
             {
-                Object.DestroyImmediate(firstHostObject);
-                Object.DestroyImmediate(secondHostObject);
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void ShouldNotShowOfflineClaimAgainImmediatelyAfterItHasBeenClaimedInSameSession()
+        {
+            DateTimeOffset seededSaveTime = DateTimeOffset.UtcNow.AddHours(-2);
+            GameObject hostObject = new GameObject("BootstrapStartupHost");
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            storage.Seed(CreateEligibleOfflineSavedGameState(seededSaveTime));
+
+            try
+            {
+                CreateAndInitializeBootstrap(hostObject, storage, autoEnterPlayableFlow: false);
+                ContinueFromMainMenu(hostObject);
+                FindButton(hostObject, "OfflineClaimButton").onClick.Invoke();
+
+                OpenSystemMenu(hostObject);
+                FindButton(hostObject, "SystemMenuExitButton").onClick.Invoke();
+                ContinueFromMainMenu(hostObject);
+
+                Assert.That(CountActiveComponents<StartupPlaceholderView>(hostObject), Is.EqualTo(0));
+                Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
+                Assert.That(ContainsText(hostObject, "Offline Summary"), Is.False);
+                Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(4));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
             }
         }
 

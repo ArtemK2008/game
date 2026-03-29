@@ -28,12 +28,13 @@
   - the persisted safe context is a world-map safe resume
   - the persisted offline eligibility kind is `FarmReadyWorldNode`
   - the saved anchor node still resolves through authored world data
-  - at least one whole offline hour has elapsed since the stable-save anchor
+  - at least one whole offline hour had already elapsed at app/session startup since the stable-save anchor
   - the saved node supports ordinary region-material output
 - Current offline rewards are intentionally narrow:
   - `Region material` only
   - whole-hour counting only
   - capped at 8 counted hours
+  - elapsed offline time is anchored to the app/session startup timestamp, not to later time spent waiting on the open main menu
   - per-hour value is derived from the existing authored ordinary region-material reward plus any authored node yield bonus and the shipped farm-yield progression bonus when owned
 - Claim applies the gain once, persists immediately, and prevents an immediate double-claim on the next startup.
 - No summary interrupts the player when:

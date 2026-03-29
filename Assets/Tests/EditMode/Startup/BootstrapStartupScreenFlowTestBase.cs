@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using NUnit.Framework;
 using Survivalon.Core;
@@ -8,6 +9,7 @@ using UnityEngine.UI;
 using Survivalon.State.Persistence;
 using Survivalon.Towns;
 using Survivalon.World;
+using Object = UnityEngine.Object;
 
 namespace Survivalon.Tests.EditMode.Startup
 {
@@ -31,7 +33,8 @@ namespace Survivalon.Tests.EditMode.Startup
             bool autoEnterPlayableFlow = true,
             IApplicationQuitService quitService = null,
             MemoryUserSettingsStorage settingsStorage = null,
-            FakeDisplaySettingsApplier displaySettingsApplier = null)
+            FakeDisplaySettingsApplier displaySettingsApplier = null,
+            DateTimeOffset? sessionStartUtc = null)
         {
             BootstrapStartup bootstrapStartup = hostObject.AddComponent<BootstrapStartup>();
             bootstrapStartup.ConfigurePersistenceStorage(storage);
@@ -43,6 +46,10 @@ namespace Survivalon.Tests.EditMode.Startup
             if (displaySettingsApplier != null)
             {
                 bootstrapStartup.ConfigureDisplaySettingsApplier(displaySettingsApplier);
+            }
+            if (sessionStartUtc.HasValue)
+            {
+                bootstrapStartup.ConfigureSessionStartUtc(sessionStartUtc.Value);
             }
 
             InvokeAwake(bootstrapStartup);
