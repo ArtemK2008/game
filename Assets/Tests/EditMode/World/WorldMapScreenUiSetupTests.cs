@@ -288,7 +288,7 @@ namespace Survivalon.Tests.EditMode.World
                 FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").onClick.Invoke();
 
                 Assert.That(
-                    ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: Forest Farm"),
+                    ContainsText(hostObject, "Selected destination: Forest Farm"),
                     Is.True);
                 Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(1));
                 Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing") + CountObjectsNamed(hostObject, "StateMarkerArc"), Is.GreaterThanOrEqualTo(3));
@@ -323,7 +323,7 @@ namespace Survivalon.Tests.EditMode.World
                 FindButton(hostObject, BootstrapWorldScenario.ForestEliteNodeId.Value + "_Button").onClick.Invoke();
 
                 Assert.That(
-                    ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: Raider Holdout"),
+                    ContainsText(hostObject, "Selected destination: Raider Holdout"),
                     Is.True);
                 Assert.That(FindButton(hostObject, "EnterSelectedNodeButton").interactable, Is.False);
                 Assert.That(
@@ -470,27 +470,28 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsSupportGearSummary = false;
                 foreach (Text label in labels)
                 {
-                    if (label.text.Contains("Location: Verdant Frontier"))
+                    if (label.text.Contains("Region: Verdant Frontier"))
                     {
                         containsReadableLocationSummary = true;
                     }
 
-                    if (label.text.Contains("Current: Raider Trail (In progress) | Selected: none"))
+                    if (label.text.Contains("You are here: Raider Trail (In progress)") &&
+                        label.text.Contains("Selected destination: none"))
                     {
                         containsForwardRouteSummary = true;
                     }
 
-                    if (label.text.Contains("Routes: 4 enterable | 3 forward | 0 replayable"))
+                    if (label.text.Contains("Routes from here: 3 forward | 1 backtrack | 0 replayable | 1 blocked"))
                     {
                         containsRouteSummary = true;
                     }
 
-                    if (label.text.Contains("Selected character: Vanguard"))
+                    if (label.text.Contains("Build character: Vanguard"))
                     {
                         containsCharacterSelectionSummary = true;
                     }
 
-                    if (label.text.Contains("Assigned package: Standard Guard"))
+                    if (label.text.Contains("Skill package: Standard Guard"))
                     {
                         containsAssignedPackageSummary = true;
                     }
@@ -980,10 +981,10 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(vanguardState.IsActive, Is.False);
                 Assert.That(gameState.TryGetCharacterState("character_striker", out PersistentCharacterState strikerState), Is.True);
                 Assert.That(strikerState.IsActive, Is.True);
-                Assert.That(ContainsText(hostObject, "Selected character: Striker"), Is.True);
-                Assert.That(ContainsText(hostObject, "Selected: Striker"), Is.True);
-                Assert.That(ContainsText(hostObject, "Select: Vanguard"), Is.True);
-                Assert.That(ContainsText(hostObject, "Assigned package: Relentless Burst"), Is.True);
+                Assert.That(ContainsText(hostObject, "Build character: Striker"), Is.True);
+                Assert.That(ContainsText(hostObject, "Using Striker"), Is.True);
+                Assert.That(ContainsText(hostObject, "Choose Vanguard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Skill package: Relentless Burst"), Is.True);
                 Assert.That(ContainsText(hostObject, "Primary gear: none | Support gear: none"), Is.True);
                 Assert.That(
                     FindButton(hostObject, $"{PlayableCharacterSkillPackageIds.StrikerDefault}_SkillPackageButton"),
@@ -1018,9 +1019,9 @@ namespace Survivalon.Tests.EditMode.World
 
                 Assert.That(gameState.TryGetCharacterState("character_vanguard", out PersistentCharacterState vanguardState), Is.True);
                 Assert.That(vanguardState.SkillPackageId, Is.EqualTo(PlayableCharacterSkillPackageIds.VanguardBurstDrill));
-                Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
-                Assert.That(ContainsText(hostObject, "Assigned: Burst Drill"), Is.True);
-                Assert.That(ContainsText(hostObject, "Assign: Standard Guard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Skill package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Using Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Use Standard Guard"), Is.True);
             }
             finally
             {
@@ -1061,8 +1062,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(
                     ContainsText(hostObject, "Primary gear: Training Blade | Support gear: Guard Charm"),
                     Is.True);
-                Assert.That(ContainsText(hostObject, "Unequip: Training Blade"), Is.True);
-                Assert.That(ContainsText(hostObject, "Unequip: Guard Charm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Remove Training Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Remove Guard Charm"), Is.True);
 
                 FindButton(hostObject, $"{GearIds.GuardCharm}_GearButton").onClick.Invoke();
                 FindButton(hostObject, $"{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
@@ -1078,8 +1079,8 @@ namespace Survivalon.Tests.EditMode.World
                         out EquippedGearState _),
                     Is.False);
                 Assert.That(ContainsText(hostObject, "Primary gear: none | Support gear: none"), Is.True);
-                Assert.That(ContainsText(hostObject, "Equip: Training Blade"), Is.True);
-                Assert.That(ContainsText(hostObject, "Equip: Guard Charm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Equip Training Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Equip Guard Charm"), Is.True);
             }
             finally
             {

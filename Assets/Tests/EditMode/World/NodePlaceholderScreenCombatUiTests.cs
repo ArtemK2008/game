@@ -41,9 +41,9 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Encounter: Combat"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
+                Assert.That(ContainsText(hostObject, "Objective: 0 / 3 toward node clear"), Is.True);
                 Assert.That(
                     ContainsText(hostObject, "Combat shell active. Enemy hostility and player attacks resolve automatically until one side is defeated."),
                     Is.False);
@@ -167,19 +167,19 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(
                     TryFindButton(hostObject, $"{CombatRunTimeSkillUpgradeCatalog.BurstPayload.UpgradeId}_RunTimeSkillUpgradeButton"),
                     Is.Null);
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
                 Assert.That(
                     FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").GetComponent<LayoutElement>(),
                     Is.Null);
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Striker 110 / 110 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(FindImage(hostObject, "PlayerCombatEntitySprite").sprite, Is.Not.Null);
                 Assert.That(
                     FindImage(hostObject, "PlayerCombatEntitySprite").sprite.name,
                     Does.Contain("idle"));
-                Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
+                Assert.That(ContainsText(hostObject, "Objective: 0 / 3 toward node clear"), Is.True);
                 Assert.That(
                     FindRectTransform(hostObject, "RunTimeSkillUpgradePanel").gameObject.activeSelf,
                     Is.False);
@@ -215,7 +215,7 @@ namespace Survivalon.Tests.EditMode.World
 
                 string runHudSummary = FindTextInObject(hostObject, "CombatShellSummary");
 
-                Assert.That(runHudSummary, Does.Contain("Run state: Auto-battle active"));
+                Assert.That(runHudSummary, Does.Contain("Status: Auto-battle active"));
                 Assert.That(runHudSummary, Does.Not.Contain("Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"));
                 Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Contain("Player | Alive: Yes | Act: Yes"));
                 Assert.That(FindTextInObject(hostObject, "PlayerCombatEntity"), Does.Not.Contain("HP: 120 / 120"));
@@ -293,9 +293,9 @@ namespace Survivalon.Tests.EditMode.World
 
                 Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
-                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Recommended: Replay Forest Farm for more Region material."), Is.True);
+                Assert.That(ContainsText(hostObject, "Run complete."), Is.True);
+                Assert.That(ContainsText(hostObject, "Result: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Best next step: Replay Forest Farm for more Region material."), Is.True);
                 Assert.That(advanceRunLifecycleButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Run Lifecycle Complete"));
                 Assert.That(advanceRunLifecycleButton.interactable, Is.False);
                 Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
@@ -703,9 +703,9 @@ namespace Survivalon.Tests.EditMode.World
 
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
-                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 2 / 3; persistent +0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run complete."), Is.True);
+                Assert.That(ContainsText(hostObject, "Result: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: node +1 this run; tracked total 2 / 3; persistent +0"), Is.True);
             }
             finally
             {
@@ -736,7 +736,7 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(ContainsText(hostObject, "Boss encounter | Verdant Frontier | Frontier Gate"), Is.True);
                 Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
                 Assert.That(
-                    ContainsText(hostObject, "Boss role: Gate boss | Stakes: Gate clear, Boss rewards, Gear reward"),
+                    ContainsText(hostObject, "Boss: Gate boss | Stakes: Gate clear, Boss rewards, Gear reward"),
                     Is.True);
                 Assert.That(
                     FindRectTransform(hostObject, "Summary").GetComponent<LayoutElement>().preferredHeight,
@@ -744,10 +744,10 @@ namespace Survivalon.Tests.EditMode.World
 
                 AutoAdvanceCombat(hostObject, 64, 0.25f);
 
-                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
-                Assert.That(ContainsText(hostObject, "Resolution: Failed"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +0 this run; tracked total 0 / 3; persistent +0"), Is.True);
-                Assert.That(ContainsText(hostObject, "Recommended: Replay Frontier Gate for another attempt."), Is.True);
+                Assert.That(ContainsText(hostObject, "Run complete."), Is.True);
+                Assert.That(ContainsText(hostObject, "Result: Failed"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: node +0 this run; tracked total 0 / 3; persistent +0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Best next step: Replay Frontier Gate for another attempt."), Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
             }
             finally

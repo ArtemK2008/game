@@ -47,15 +47,15 @@ namespace Survivalon.Tests.EditMode.Run
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
             Assert.That(summaryText, Is.EqualTo(
-                "Run finished.\n" +
+                "Run complete.\n" +
                 "Location: Verdant Frontier\n" +
                 "Node: Forest Farm\n" +
-                "Resolution: Succeeded\n" +
-                "Ordinary rewards: Soft currency x1, Region material x1\n" +
-                "Reward source: Frontier salvage\n" +
-                "Clear spike rewards: Persistent progression material x1\n" +
-                "Unlock outcomes: Cavern Gate opened\n" +
-                "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0\n"));
+                "Result: Succeeded\n" +
+                "Rewards: Soft currency x1, Region material x1\n" +
+                "Source: Frontier salvage\n" +
+                "Clear bonus: Persistent progression material x1\n" +
+                "Unlocks: Cavern Gate opened\n" +
+                "Progress: node +1 this run; tracked total 3 / 3; persistent +0\n"));
         }
 
         [Test]
@@ -80,12 +80,12 @@ namespace Survivalon.Tests.EditMode.Run
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
-            Assert.That(summaryText, Does.Contain("Ordinary rewards: None"));
+            Assert.That(summaryText, Does.Contain("Rewards: None"));
             Assert.That(summaryText, Does.Contain("Location: Echo Caverns"));
             Assert.That(summaryText, Does.Contain("Node: Cavern Service Hub"));
-            Assert.That(summaryText, Does.Not.Contain("Reward source:"));
-            Assert.That(summaryText, Does.Contain("Progress changes: node not tracked; persistent +0"));
-            Assert.That(summaryText, Does.Not.Contain("Unlock outcomes:"));
+            Assert.That(summaryText, Does.Not.Contain("Source:"));
+            Assert.That(summaryText, Does.Contain("Progress: node not tracked; persistent +0"));
+            Assert.That(summaryText, Does.Not.Contain("Unlocks:"));
             Assert.That(summaryText, Does.Not.Contain("Next actions:"));
         }
 
@@ -111,8 +111,8 @@ namespace Survivalon.Tests.EditMode.Run
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
-            Assert.That(summaryText, Does.Contain("Progress changes: node +1 this run; tracked total 2 / 3; persistent +0"));
-            Assert.That(summaryText, Does.Not.Contain("Clear spike rewards:"));
+            Assert.That(summaryText, Does.Contain("Progress: node +1 this run; tracked total 2 / 3; persistent +0"));
+            Assert.That(summaryText, Does.Not.Contain("Clear bonus:"));
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace Survivalon.Tests.EditMode.Run
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
-            Assert.That(summaryText, Does.Not.Contain("Unlock outcomes:"));
+            Assert.That(summaryText, Does.Not.Contain("Unlocks:"));
         }
 
         [Test]
@@ -163,11 +163,11 @@ namespace Survivalon.Tests.EditMode.Run
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
-            Assert.That(summaryText, Does.Contain("Ordinary rewards: Soft currency x1"));
-            Assert.That(summaryText, Does.Contain("Reward source: Frontier salvage"));
-            Assert.That(summaryText, Does.Contain("Boss spike rewards: Persistent progression material x2"));
-            Assert.That(summaryText, Does.Not.Contain("Boss gear rewards:"));
-            Assert.That(summaryText, Does.Not.Contain("Clear spike rewards:"));
+            Assert.That(summaryText, Does.Contain("Rewards: Soft currency x1"));
+            Assert.That(summaryText, Does.Contain("Source: Frontier salvage"));
+            Assert.That(summaryText, Does.Contain("Boss bonus: Persistent progression material x2"));
+            Assert.That(summaryText, Does.Not.Contain("Boss gear:"));
+            Assert.That(summaryText, Does.Not.Contain("Clear bonus:"));
         }
 
         [Test]
@@ -209,8 +209,8 @@ namespace Survivalon.Tests.EditMode.Run
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
-            Assert.That(summaryText, Does.Contain("Boss spike rewards: Persistent progression material x2"));
-            Assert.That(summaryText, Does.Contain("Boss gear rewards: Gatebreaker Blade"));
+            Assert.That(summaryText, Does.Contain("Boss bonus: Persistent progression material x2"));
+            Assert.That(summaryText, Does.Contain("Boss gear: Gatebreaker Blade"));
         }
 
         [Test]
@@ -259,12 +259,12 @@ namespace Survivalon.Tests.EditMode.Run
 
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
-            Assert.That(summaryText, Does.Contain("Ordinary rewards: Soft currency x1, Region material x1"));
-            Assert.That(summaryText, Does.Contain("Clear spike rewards: Persistent progression material x1"));
-            Assert.That(summaryText, Does.Contain("Boss spike rewards: Persistent progression material x2"));
-            Assert.That(summaryText, Does.Contain("Boss gear rewards: Gatebreaker Blade"));
-            Assert.That(summaryText, Does.Contain("Unlock outcomes: Forward route opened; Cavern Gate opened"));
-            Assert.That(summaryText, Does.Contain("Progress changes: node +1 this run; tracked total 3 / 3; persistent +0"));
+            Assert.That(summaryText, Does.Contain("Rewards: Soft currency x1, Region material x1"));
+            Assert.That(summaryText, Does.Contain("Clear bonus: Persistent progression material x1"));
+            Assert.That(summaryText, Does.Contain("Boss bonus: Persistent progression material x2"));
+            Assert.That(summaryText, Does.Contain("Boss gear: Gatebreaker Blade"));
+            Assert.That(summaryText, Does.Contain("Unlocks: Forward route opened; Cavern Gate opened"));
+            Assert.That(summaryText, Does.Contain("Progress: node +1 this run; tracked total 3 / 3; persistent +0"));
             Assert.That(summaryText, Does.Not.Contain("route unlock"));
         }
 
@@ -303,9 +303,9 @@ namespace Survivalon.Tests.EditMode.Run
             string summaryText = PostRunSummaryTextBuilder.Build(postRunStateController, runResult);
 
             Assert.That(summaryText, Does.Contain("Location: Echo Caverns"));
-            Assert.That(summaryText, Does.Contain("Reward source: Cavern relic caches"));
-            Assert.That(summaryText, Does.Contain("Boss spike rewards: Persistent progression material x3"));
-            Assert.That(summaryText, Does.Not.Contain("Clear spike rewards:"));
+            Assert.That(summaryText, Does.Contain("Source: Cavern relic caches"));
+            Assert.That(summaryText, Does.Contain("Boss bonus: Persistent progression material x3"));
+            Assert.That(summaryText, Does.Not.Contain("Clear bonus:"));
         }
 
         [Test]

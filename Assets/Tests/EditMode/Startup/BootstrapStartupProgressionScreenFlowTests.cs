@@ -61,7 +61,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(nodeState.State, Is.EqualTo(NodeState.Cleared));
 
                 Assert.That(
-                    ContainsText(hostObject, "Current: Forest Farm (Cleared) | Selected: none"),
+                    ContainsText(hostObject, "You are here: Forest Farm (Cleared)"),
                     Is.True);
             }
             finally
@@ -85,14 +85,14 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
                 AdvanceToPostRun(hostObject);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 2 / 3; persistent +0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: node +1 this run; tracked total 2 / 3; persistent +0"), Is.True);
 
                 FindButton(hostObject, "ReplayNodeButton").onClick.Invoke();
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Clear spike rewards: Persistent progression material x1"), Is.True);
-                Assert.That(ContainsText(hostObject, "Unlock outcomes: Forward route opened"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Clear bonus: Persistent progression material x1"), Is.True);
+                Assert.That(ContainsText(hostObject, "Unlocks: Forward route opened"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: node +1 this run; tracked total 3 / 3; persistent +0"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
@@ -107,7 +107,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(gateNodeButton.interactable, Is.True);
                 gateNodeButton.onClick.Invoke();
                 Assert.That(
-                    ContainsText(hostObject, "Selected: Frontier Gate"),
+                    ContainsText(hostObject, "Selected destination: Frontier Gate"),
                     Is.True);
                 Assert.That(
                     FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
@@ -145,7 +145,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(clearedPushNodeButton.interactable, Is.True);
                 clearedPushNodeButton.onClick.Invoke();
                 Assert.That(
-                    ContainsText(hostObject, "Current: Frontier Entry (Cleared) | Selected: Raider Trail"),
+                    ContainsText(hostObject, "Selected destination: Raider Trail"),
                     Is.True);
                 Assert.That(
                     FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
@@ -154,14 +154,14 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
-                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Run complete."), Is.True);
+                Assert.That(ContainsText(hostObject, "Result: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: node +1 this run; tracked total 3 / 3; persistent +0"), Is.True);
                 Assert.That(
-                    ContainsText(hostObject, "Recommended: Return to world, then visit Cavern Service Hub to spend or refine."),
+                    ContainsText(hostObject, "Best next step: Return to the world map, then visit Cavern Service Hub to spend progression material or refine Region material."),
                     Is.True);
                 Assert.That(
-                    ContainsText(hostObject, "Return: Return to world, then push to Frontier Gate or visit Cavern Service Hub."),
+                    ContainsText(hostObject, "World map: Return to the world map, then push to Frontier Gate or visit Cavern Service Hub."),
                     Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
@@ -208,10 +208,10 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Button clearedFarmNodeButton = FindButton(hostObject, "region_001_node_002_Button");
                 Assert.That(clearedFarmNodeButton.interactable, Is.True);
-                Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub"), Is.True);
+                Assert.That(ContainsText(hostObject, "You are here: Cavern Service Hub"), Is.True);
                 clearedFarmNodeButton.onClick.Invoke();
                 Assert.That(
-                    ContainsText(hostObject, "Current: Cavern Service Hub (Available) | Selected: Raider Trail"),
+                    ContainsText(hostObject, "Selected destination: Raider Trail"),
                     Is.True);
                 Assert.That(
                     FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
@@ -220,8 +220,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 3 / 3; persistent +0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Result: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progress: node +1 this run; tracked total 3 / 3; persistent +0"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
@@ -270,13 +270,13 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Boss spike rewards: Persistent progression material x2"), Is.True);
-                Assert.That(ContainsText(hostObject, "Boss gear rewards: Gatebreaker Blade"), Is.True);
-                Assert.That(ContainsText(hostObject, "Unlock outcomes: Cavern Gate opened"), Is.True);
-                Assert.That(ContainsText(hostObject, "Recommended: Return to world, then push to Cavern Gate."), Is.True);
+                Assert.That(ContainsText(hostObject, "Result: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss bonus: Persistent progression material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss gear: Gatebreaker Blade"), Is.True);
+                Assert.That(ContainsText(hostObject, "Unlocks: Cavern Gate opened"), Is.True);
+                Assert.That(ContainsText(hostObject, "Best next step: Return to the world map, then push to Cavern Gate."), Is.True);
                 Assert.That(
-                    ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0"),
+                    ContainsText(hostObject, "Progress: node +1 this run; tracked total 1 / 3; persistent +0"),
                     Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
@@ -291,7 +291,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(cavernGateButton.interactable, Is.True);
                 cavernGateButton.onClick.Invoke();
                 Assert.That(
-                    ContainsText(hostObject, "Selected: Cavern Gate"),
+                    ContainsText(hostObject, "Selected destination: Cavern Gate"),
                     Is.True);
                 Assert.That(
                     FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
@@ -335,11 +335,11 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 CreateAndInitializeBootstrap(secondHostObject, storage);
 
-                Assert.That(ContainsText(secondHostObject, "Selected character: Striker"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Build character: Striker"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Primary gear: Training Blade | Support gear: Guard Charm"), Is.True);
 
                 Button gatebreakerButton = FindButton(secondHostObject, $"{GearIds.GatebreakerBlade}_GearButton");
-                Assert.That(gatebreakerButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Equip: Gatebreaker Blade"));
+                Assert.That(gatebreakerButton.GetComponentInChildren<Text>(true).text, Is.EqualTo("Equip Gatebreaker Blade"));
 
                 gatebreakerButton.onClick.Invoke();
 
@@ -402,17 +402,17 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Ordinary rewards: Soft currency x1, Region material x2"), Is.True);
-                Assert.That(ContainsText(hostObject, "Reward source: Frontier salvage"), Is.True);
+                Assert.That(ContainsText(hostObject, "Rewards: Soft currency x1, Region material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Source: Frontier salvage"), Is.True);
                 Assert.That(
-                    ContainsText(hostObject, "Recommended: Return to world, then visit Cavern Service Hub to spend or refine."),
+                    ContainsText(hostObject, "Best next step: Return to the world map, then visit Cavern Service Hub to spend progression material or refine Region material."),
                     Is.True);
-                Assert.That(ContainsText(hostObject, "Replay: Replay Forest Farm to keep pushing node progress."), Is.True);
+                Assert.That(ContainsText(hostObject, "Replay here: Replay Forest Farm to keep pushing node progress."), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
-                Assert.That(ContainsText(hostObject, "Selected: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Selected destination: none"), Is.True);
                 Assert.That(
                     storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial),
                     Is.EqualTo(regionMaterialBeforeFarm + 2));
@@ -440,11 +440,11 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Ordinary rewards: Soft currency x1, Region material x3"), Is.True);
-                Assert.That(ContainsText(hostObject, "Clear spike rewards:"), Is.False);
-                Assert.That(ContainsText(hostObject, "Boss spike rewards:"), Is.False);
-                Assert.That(ContainsText(hostObject, "Boss gear rewards:"), Is.False);
-                Assert.That(ContainsText(hostObject, "Unlock outcomes:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Rewards: Soft currency x1, Region material x3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Clear bonus:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Boss bonus:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Boss gear:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Unlocks:"), Is.False);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
@@ -453,7 +453,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(gateNodeButton.interactable, Is.False);
                 Assert.That(pushNodeButton.interactable, Is.True);
-                Assert.That(ContainsText(hostObject, "Current: Raider Holdout"), Is.True);
+                Assert.That(ContainsText(hostObject, "You are here: Raider Holdout"), Is.True);
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(3));
             }
             finally
@@ -489,16 +489,16 @@ namespace Survivalon.Tests.EditMode.Startup
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
-                Assert.That(ContainsText(hostObject, "Boss spike rewards: Persistent progression material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss bonus: Persistent progression material x2"), Is.True);
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
                 EnterNodeFromWorldMap(hostObject, "region_002_node_002_Button");
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
-                Assert.That(ContainsText(hostObject, "Reward source: Cavern relic caches"), Is.True);
-                Assert.That(ContainsText(hostObject, "Boss spike rewards: Persistent progression material x3"), Is.True);
-                Assert.That(ContainsText(hostObject, "Unlock outcomes: Scorched Approach opened"), Is.True);
+                Assert.That(ContainsText(hostObject, "Source: Cavern relic caches"), Is.True);
+                Assert.That(ContainsText(hostObject, "Boss bonus: Persistent progression material x3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Unlocks: Scorched Approach opened"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 

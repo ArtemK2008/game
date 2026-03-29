@@ -72,23 +72,23 @@ namespace Survivalon.Tests.EditMode.Towns
 
                 Assert.That(ContainsText(hostObject, "Cavern Service Hub"), Is.True);
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
-                Assert.That(ContainsText(hostObject, "Reward focus: Persistent progression gains"), Is.True);
+                Assert.That(ContainsText(hostObject, "Best for: Persistent progression gains"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward source: Cavern relic caches"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy emphasis: Gate guardians"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progression hub"), Is.True);
-                Assert.That(ContainsText(hostObject, "Material power path:"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progression projects"), Is.True);
+                Assert.That(ContainsText(hostObject, "Next power path:"), Is.True);
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "Already affordable projects: Combat Baseline Project, Farm Yield Project"),
+                        "Ready to buy now: Combat Baseline Project, Farm Yield Project"),
                     Is.True);
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "New project targets after refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
+                        "New projects after the next refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
                     Is.True);
-                Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
-                Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Build setup"), Is.True);
+                Assert.That(ContainsText(hostObject, "Skill package: Standard Guard"), Is.True);
                 Assert.That(hostObject.GetComponentsInChildren<ScrollRect>(true).Length, Is.EqualTo(1));
                 Assert.That(TryFindGameObject(hostObject, "ContentViewport"), Is.Not.Null);
                 Assert.That(TryFindGameObject(hostObject, "Content"), Is.Not.Null);
@@ -223,17 +223,17 @@ namespace Survivalon.Tests.EditMode.Towns
                     Is.EqualTo(1));
                 Assert.That(storage.SaveCallCount, Is.EqualTo(1));
                 Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
-                Assert.That(ContainsText(hostObject, "Persistent progression material: 1"), Is.True);
-                Assert.That(ContainsText(hostObject, "Material power path:"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progression material on hand: 1"), Is.True);
+                Assert.That(ContainsText(hostObject, "Next power path:"), Is.True);
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "Already affordable projects: Combat Baseline Project, Farm Yield Project"),
+                        "Ready to buy now: Combat Baseline Project, Farm Yield Project"),
                     Is.True);
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "New project targets after refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
+                        "New projects after the next refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
                     Is.True);
                 Assert.That(
                     ContainsText(
@@ -296,7 +296,7 @@ namespace Survivalon.Tests.EditMode.Towns
                 combatBaselineButton.onClick.Invoke();
 
                 Assert.That(gameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(0));
-                Assert.That(ContainsText(hostObject, "Persistent progression material: 0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progression material on hand: 0"), Is.True);
                 Assert.That(ContainsText(hostObject, "Region material: 2"), Is.True);
                 Assert.That(ContainsText(hostObject, "- Combat Baseline Project | Cost: Persistent progression material x1 | Purchased"), Is.True);
                 Assert.That(ContainsText(hostObject, "- Farm Yield Project | Cost: Persistent progression material x1 | Need 1 more"), Is.True);
@@ -364,20 +364,20 @@ namespace Survivalon.Tests.EditMode.Towns
                         out EquippedGearState equippedSupportGearState),
                     Is.True);
                 Assert.That(equippedSupportGearState.GearId, Is.EqualTo(GearIds.GuardCharm));
-                Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Skill package: Burst Drill"), Is.True);
                 Assert.That(ContainsText(hostObject, "Primary gear: Training Blade"), Is.True);
                 Assert.That(ContainsText(hostObject, "Support gear: Guard Charm"), Is.True);
                 Assert.That(
                     FindButtonLabel(
                         hostObject,
                         $"TownService_{PlayableCharacterSkillPackageIds.VanguardBurstDrill}_SkillPackageButton"),
-                    Is.EqualTo("Assigned package: Burst Drill"));
+                    Is.EqualTo("Using package: Burst Drill"));
                 Assert.That(
                     FindButtonLabel(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton"),
-                    Is.EqualTo("Unequip primary: Training Blade"));
+                    Is.EqualTo("Remove primary: Training Blade"));
                 Assert.That(
                     FindButtonLabel(hostObject, $"TownService_{GearIds.GuardCharm}_GearButton"),
-                    Is.EqualTo("Unequip support: Guard Charm"));
+                    Is.EqualTo("Remove support: Guard Charm"));
                 Assert.That(storage.SavedGameState, Is.Not.Null);
                 Assert.That(
                     storage.SavedGameState.TryGetCharacterState(

@@ -25,10 +25,10 @@ namespace Survivalon.World
                 : selectedNodeDisplayName;
 
             return
-                $"Location: {worldStateSummary.CurrentLocationDisplayName}\n" +
-                $"Current: {worldStateSummary.CurrentNode.DisplayName} ({PlayerFacingCoreLabelFormatter.FormatNodeState(worldStateSummary.CurrentNodeState)}) | Selected: {selectedNodeLabel}\n" +
-                $"Routes: {worldStateSummary.SelectableDestinationCount} enterable | {worldStateSummary.ForwardRouteNodes.Count} forward | {worldStateSummary.ReplayableFarmNodes.Count} replayable\n" +
-                $"Blocked links: {worldStateSummary.BlockedLinkedNodes.Count}";
+                $"Region: {worldStateSummary.CurrentLocationDisplayName}\n" +
+                $"You are here: {worldStateSummary.CurrentNode.DisplayName} ({PlayerFacingCoreLabelFormatter.FormatNodeState(worldStateSummary.CurrentNodeState)})\n" +
+                $"Selected destination: {selectedNodeLabel}\n" +
+                $"Routes from here: {worldStateSummary.ForwardRouteNodes.Count} forward | {worldStateSummary.BacktrackRouteNodes.Count} backtrack | {worldStateSummary.ReplayableFarmNodes.Count} replayable | {worldStateSummary.BlockedLinkedNodes.Count} blocked";
         }
 
         public static string BuildCharacterSelectionText(IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions)
@@ -49,7 +49,7 @@ namespace Survivalon.World
             }
 
             return
-                $"Selected character: {selectedCharacterLabel}";
+                $"Build character: {selectedCharacterLabel}";
         }
 
         public static string BuildAssignmentText(
@@ -90,7 +90,7 @@ namespace Survivalon.World
                 GearCategory.SecondarySupport);
 
             return
-                $"Assigned package: {assignedPackageLabel}\n" +
+                $"Skill package: {assignedPackageLabel}\n" +
                 $"Primary gear: {primaryGearLabel} | Support gear: {supportGearLabel}";
         }
 
@@ -102,8 +102,8 @@ namespace Survivalon.World
             }
 
             return selectionOption.IsSelected
-                ? $"Selected: {selectionOption.DisplayName}"
-                : $"Select: {selectionOption.DisplayName}";
+                ? $"Using {selectionOption.DisplayName}"
+                : $"Choose {selectionOption.DisplayName}";
         }
 
         public static string BuildSkillPackageButtonLabel(PlayableCharacterSkillPackageOption skillPackageOption)
@@ -114,8 +114,8 @@ namespace Survivalon.World
             }
 
             return skillPackageOption.IsAssigned
-                ? $"Assigned: {skillPackageOption.DisplayName}"
-                : $"Assign: {skillPackageOption.DisplayName}";
+                ? $"Using {skillPackageOption.DisplayName}"
+                : $"Use {skillPackageOption.DisplayName}";
         }
 
         public static string BuildGearAssignmentButtonLabel(PlayableCharacterGearAssignmentOption gearAssignmentOption)
@@ -126,8 +126,8 @@ namespace Survivalon.World
             }
 
             return gearAssignmentOption.IsEquipped
-                ? $"Unequip: {gearAssignmentOption.DisplayName}"
-                : $"Equip: {gearAssignmentOption.DisplayName}";
+                ? $"Remove {gearAssignmentOption.DisplayName}"
+                : $"Equip {gearAssignmentOption.DisplayName}";
         }
 
         public static string BuildNodeLabel(WorldMapNodeOption nodeOption)

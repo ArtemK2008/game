@@ -44,20 +44,20 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Reward focus: Persistent progression gains"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward source: Cavern relic caches"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy emphasis: Gate guardians"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progression hub"), Is.True);
-                Assert.That(ContainsText(hostObject, "Material power path:"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progression projects"), Is.True);
+                Assert.That(ContainsText(hostObject, "Next power path:"), Is.True);
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "Already affordable projects: Combat Baseline Project, Farm Yield Project"),
+                        "Ready to buy now: Combat Baseline Project, Farm Yield Project"),
                     Is.True);
                 Assert.That(
                     ContainsText(
                         hostObject,
-                        "New project targets after refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
+                        "New projects after the next refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"),
                     Is.True);
-                Assert.That(ContainsText(hostObject, "Build preparation"), Is.True);
-                Assert.That(ContainsText(hostObject, "Assigned package: Standard Guard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Build setup"), Is.True);
+                Assert.That(ContainsText(hostObject, "Skill package: Standard Guard"), Is.True);
                 Assert.That(serviceBackgroundRegistry, Is.Not.Null);
                 Assert.That(
                     serviceBackgroundRegistry.TryGetBackground(
@@ -145,7 +145,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
-                Assert.That(ContainsText(hostObject, "Persistent progression material: 1"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progression material on hand: 1"), Is.True);
                 Assert.That(storage.SaveCallCount, Is.EqualTo(1));
                 Assert.That(storage.SavedGameState, Is.Not.Null);
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
@@ -175,7 +175,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
                 FindButton(hostObject, "CombatBaselineProject_PurchaseUpgradeButton").onClick.Invoke();
 
-                Assert.That(ContainsText(hostObject, "Persistent progression material: 0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progression material on hand: 0"), Is.True);
                 Assert.That(ContainsText(hostObject, "- Combat Baseline Project | Cost: Persistent progression material x1 | Purchased"), Is.True);
                 Assert.That(storage.SavedGameState, Is.Not.Null);
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(0));
@@ -209,7 +209,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_002_node_001_Button");
                 FindButton(hostObject, "RefinementEfficiencyProject_PurchaseUpgradeButton").onClick.Invoke();
 
-                Assert.That(ContainsText(hostObject, "Persistent progression material: 0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progression material on hand: 0"), Is.True);
                 Assert.That(
                     ContainsText(
                         hostObject,
@@ -224,7 +224,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, "RegionMaterialRefinement_ConversionButton").onClick.Invoke();
 
                 Assert.That(ContainsText(hostObject, "Region material: 0"), Is.True);
-                Assert.That(ContainsText(hostObject, "Persistent progression material: 2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Progression material on hand: 2"), Is.True);
                 Assert.That(storage.SaveCallCount, Is.EqualTo(2));
                 Assert.That(storage.SavedGameState, Is.Not.Null);
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(0));
@@ -256,7 +256,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 FindButton(hostObject, $"TownService_{GearIds.TrainingBlade}_GearButton").onClick.Invoke();
                 FindButton(hostObject, $"TownService_{GearIds.GuardCharm}_GearButton").onClick.Invoke();
 
-                Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Skill package: Burst Drill"), Is.True);
                 Assert.That(ContainsText(hostObject, "Primary gear: Training Blade"), Is.True);
                 Assert.That(ContainsText(hostObject, "Support gear: Guard Charm"), Is.True);
                 Assert.That(storage.SavedGameState, Is.Not.Null);
@@ -283,8 +283,8 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(0));
-                Assert.That(ContainsText(hostObject, "Selected character: Vanguard"), Is.True);
-                Assert.That(ContainsText(hostObject, "Assigned package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(hostObject, "Character: Vanguard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Skill package: Burst Drill"), Is.True);
                 Assert.That(ContainsText(hostObject, "Primary gear: Training Blade"), Is.True);
                 Assert.That(ContainsText(hostObject, "Support gear: Guard Charm"), Is.True);
             }
@@ -341,8 +341,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<TownServiceScreen>(secondHostObject), Is.EqualTo(1));
                 Assert.That(ContainsText(secondHostObject, "Location: Echo Caverns"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Cavern Service Hub"), Is.True);
-                Assert.That(ContainsText(secondHostObject, "Selected character: Vanguard"), Is.True);
-                Assert.That(ContainsText(secondHostObject, "Assigned package: Burst Drill"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Character: Vanguard"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Skill package: Burst Drill"), Is.True);
                 Assert.That(
                     ContainsText(secondHostObject, "Primary gear: Training Blade"),
                     Is.True);

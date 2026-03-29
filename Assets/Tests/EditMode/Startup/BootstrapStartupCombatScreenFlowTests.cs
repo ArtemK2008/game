@@ -36,9 +36,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Encounter: Combat"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Enemy Unit 75 / 75"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress: 0 / 3 toward node clear"), Is.True);
+                Assert.That(ContainsText(hostObject, "Objective: 0 / 3 toward node clear"), Is.True);
                 Assert.That(ContainsText(hostObject, "Run-only skill choice"), Is.False);
                 Assert.That(ContainsText(hostObject, "Vanguard"), Is.True);
                 Assert.That(ContainsText(hostObject, "Enemy Unit"), Is.True);
@@ -122,9 +122,9 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Raider Trail"), Is.True);
                 Assert.That(ContainsText(hostObject, "Verdant Frontier | Raider Trail"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Bulwark Raider 105 / 105"), Is.True);
-                Assert.That(ContainsText(hostObject, "Progress: 1 / 3 toward node clear"), Is.True);
+                Assert.That(ContainsText(hostObject, "Objective: 1 / 3 toward node clear"), Is.True);
                 Assert.That(ContainsText(hostObject, "Bulwark Raider"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 105 / 105 | ATK: 9"), Is.True);
                 Assert.That(FindButton(hostObject, "AdvanceRunLifecycleButton").interactable, Is.False);
@@ -145,7 +145,7 @@ namespace Survivalon.Tests.EditMode.Startup
             {
                 CreateAndInitializeBootstrap(hostObject, storage);
 
-                Assert.That(ContainsText(hostObject, "Selected character: Vanguard"), Is.True);
+                Assert.That(ContainsText(hostObject, "Build character: Vanguard"), Is.True);
 
                 FindButton(hostObject, "character_striker_CharacterButton").onClick.Invoke();
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
@@ -157,7 +157,7 @@ namespace Survivalon.Tests.EditMode.Startup
                     Is.False);
                 Assert.That(ContainsText(hostObject, "Striker"), Is.True);
                 Assert.That(ContainsText(hostObject, "Verdant Frontier | Forest Farm"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
                 Assert.That(ContainsText(hostObject, "Health: Striker 110 / 110 | Enemy Unit 75 / 75"), Is.True);
                 Assert.That(ContainsText(hostObject, "HP: 110 / 110 | ATK: 18"), Is.True);
                 Assert.That(
@@ -184,14 +184,14 @@ namespace Survivalon.Tests.EditMode.Startup
                 AdvanceToPostRun(hostObject);
 
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
-                Assert.That(ContainsText(hostObject, "Resolution: Succeeded"), Is.True);
-                Assert.That(ContainsText(hostObject, "Ordinary rewards: Soft currency x1, Region material x2"), Is.True);
-                Assert.That(ContainsText(hostObject, "Reward source: Frontier salvage"), Is.True);
-                Assert.That(ContainsText(hostObject, "Clear spike rewards:"), Is.False);
-                Assert.That(ContainsText(hostObject, "Unlock outcomes:"), Is.False);
-                Assert.That(ContainsText(hostObject, "Progress changes: node +1 this run; tracked total 1 / 3; persistent +0"), Is.True);
-                Assert.That(ContainsText(hostObject, "Recommended: Replay Forest Farm to keep pushing node progress."), Is.True);
+                Assert.That(ContainsText(hostObject, "Run complete."), Is.True);
+                Assert.That(ContainsText(hostObject, "Result: Succeeded"), Is.True);
+                Assert.That(ContainsText(hostObject, "Rewards: Soft currency x1, Region material x2"), Is.True);
+                Assert.That(ContainsText(hostObject, "Source: Frontier salvage"), Is.True);
+                Assert.That(ContainsText(hostObject, "Clear bonus:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Unlocks:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Progress: node +1 this run; tracked total 1 / 3; persistent +0"), Is.True);
+                Assert.That(ContainsText(hostObject, "Best next step: Replay Forest Farm to keep pushing node progress."), Is.True);
                 Assert.That(FindButton(hostObject, "ReplayNodeButton").interactable, Is.True);
                 Assert.That(FindButton(hostObject, "ReturnToWorldMapButton").interactable, Is.True);
             }
@@ -258,7 +258,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
-                Assert.That(ContainsText(hostObject, "Selected: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Selected destination: none"), Is.True);
                 Assert.That(
                     FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
                     Is.EqualTo("Replay Forest Farm"));
@@ -302,7 +302,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
                 Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
             }
             finally
             {
@@ -363,8 +363,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<WorldMapScreen>(secondHostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(secondHostObject), Is.EqualTo(0));
                 Assert.That(CountActiveComponents<TownServiceScreen>(secondHostObject), Is.EqualTo(0));
-                Assert.That(ContainsText(secondHostObject, "Location: Verdant Frontier"), Is.True);
-                Assert.That(ContainsText(secondHostObject, "Current: Forest Farm (In progress) | Selected: none"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Region: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "You are here: Forest Farm (In progress)"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Selected destination: none"), Is.True);
                 Assert.That(FindButton(secondHostObject, "EnterSelectedNodeButton").interactable, Is.False);
                 Assert.That(
                     FindButton(secondHostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
@@ -403,7 +404,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 EnterNodeFromWorldMap(firstHostObject, "region_001_node_004_Button");
                 Assert.That(ContainsText(firstHostObject, "Run-only skill choice"), Is.False);
-                Assert.That(ContainsText(firstHostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(firstHostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
                 Assert.That(storage.SaveCallCount, Is.EqualTo(0));
 
                 CreateAndInitializeBootstrap(secondHostObject, storage);
@@ -412,7 +413,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<WorldMapScreen>(secondHostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(secondHostObject), Is.EqualTo(0));
                 Assert.That(CountActiveComponents<TownServiceScreen>(secondHostObject), Is.EqualTo(0));
-                Assert.That(ContainsText(secondHostObject, "Selected character: Striker"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Build character: Striker"), Is.True);
                 Assert.That(ContainsText(secondHostObject, "Run-only skill choice"), Is.False);
                 Assert.That(ContainsText(secondHostObject, "Run finished."), Is.False);
 
@@ -424,7 +425,7 @@ namespace Survivalon.Tests.EditMode.Startup
                         secondHostObject,
                         "Choose 1 Burst Strike upgrade before auto-battle starts. This choice lasts for the current run only."),
                     Is.False);
-                Assert.That(ContainsText(secondHostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(secondHostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
             }
             finally
             {
@@ -489,8 +490,8 @@ namespace Survivalon.Tests.EditMode.Startup
                 EnterNodeFromWorldMap(hostObject, "region_001_node_004_Button");
                 AdvanceToPostRun(hostObject);
 
-                Assert.That(ContainsText(hostObject, "Ordinary rewards: Soft currency x1, Region material x3"), Is.True);
-                Assert.That(ContainsText(hostObject, "Clear spike rewards:"), Is.False);
+                Assert.That(ContainsText(hostObject, "Rewards: Soft currency x1, Region material x3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Clear bonus:"), Is.False);
 
                 ReturnToWorldMap(hostObject);
 
@@ -522,8 +523,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(0));
                 Assert.That(CountActiveComponents<TownServiceScreen>(hostObject), Is.EqualTo(0));
-                Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
-                Assert.That(ContainsText(hostObject, "Current: Forest Farm (Cleared) | Selected: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Region: Verdant Frontier"), Is.True);
+                Assert.That(ContainsText(hostObject, "You are here: Forest Farm (Cleared)"), Is.True);
+                Assert.That(ContainsText(hostObject, "Selected destination: none"), Is.True);
 
                 Button entryButton = FindButton(hostObject, "EnterSelectedNodeButton");
                 Assert.That(entryButton.interactable, Is.True);
@@ -536,7 +538,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<NodePlaceholderScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(0));
                 Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
-                Assert.That(ContainsText(hostObject, "Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"), Is.True);
+                Assert.That(ContainsText(hostObject, "Status: Auto-battle active | Outcome: Ongoing | Time: 0s"), Is.True);
             }
             finally
             {

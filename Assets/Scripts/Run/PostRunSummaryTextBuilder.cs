@@ -25,17 +25,17 @@ namespace Survivalon.Run
                 PresentationStateResolver.Resolve(postRunStateController, runResult);
 
             return
-                "Run finished.\n" +
+                "Run complete.\n" +
                 $"Location: {postRunStateController.NodeContext.LocationIdentity.DisplayName}\n" +
                 $"Node: {postRunStateController.NodeContext.NodeDisplayName}\n" +
-                $"Resolution: {runResult.ResolutionState}\n" +
-                $"Ordinary rewards: {presentationState.OrdinaryRewardSummary}\n" +
-                BuildOptionalLine("Reward source", presentationState.RewardSourceSummary) +
-                BuildOptionalLine("Clear spike rewards", presentationState.ClearSpikeRewardSummary) +
-                BuildOptionalLine("Boss spike rewards", presentationState.BossSpikeRewardSummary) +
-                BuildOptionalLine("Boss gear rewards", presentationState.BossGearRewardSummary) +
-                BuildOptionalLine("Unlock outcomes", presentationState.UnlockOutcomeSummary) +
-                $"Progress changes: {presentationState.ProgressSummary}\n";
+                $"Result: {runResult.ResolutionState}\n" +
+                $"Rewards: {presentationState.OrdinaryRewardSummary}\n" +
+                BuildOptionalLine("Source", presentationState.RewardSourceSummary) +
+                BuildOptionalLine("Clear bonus", presentationState.ClearSpikeRewardSummary) +
+                BuildOptionalLine("Boss bonus", presentationState.BossSpikeRewardSummary) +
+                BuildOptionalLine("Boss gear", presentationState.BossGearRewardSummary) +
+                BuildOptionalLine("Unlocks", presentationState.UnlockOutcomeSummary) +
+                $"Progress: {presentationState.ProgressSummary}\n";
         }
 
         private static string BuildOptionalLine(string label, string summary)

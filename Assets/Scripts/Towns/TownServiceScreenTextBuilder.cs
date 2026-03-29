@@ -21,15 +21,12 @@ namespace Survivalon.Towns
             }
 
             return
-                $"Service context: {screenState.ServiceContext.DisplayName}\n" +
+                $"Hub: {screenState.ServiceContext.DisplayName}\n" +
                 $"Location: {screenState.LocationDisplayName}\n" +
-                $"Reward focus: {screenState.LocationRewardFocusDisplayName}\n" +
+                $"Best for: {screenState.LocationRewardFocusDisplayName}\n" +
                 $"Reward source: {screenState.LocationRewardSourceDisplayName}\n" +
                 $"Enemy emphasis: {screenState.LocationEnemyEmphasisDisplayName}\n" +
-                $"Region: {screenState.RegionId.Value}\n" +
-                $"Node: {screenState.NodeId.Value}\n" +
-                $"Entered from: {screenState.OriginNodeId.Value}\n" +
-                $"Functions: {BuildFunctionSummary(screenState)}";
+                $"Use this stop for: {BuildFunctionSummary(screenState)}";
         }
 
         public static string BuildProgressionText(TownServiceScreenState screenState)
@@ -40,11 +37,11 @@ namespace Survivalon.Towns
             }
 
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine("Progression hub");
+            builder.AppendLine("Progression projects");
             builder.AppendLine(
-                $"Persistent progression material: {screenState.PersistentProgressionMaterialAmount}");
-            builder.AppendLine($"Region material: {screenState.RegionMaterialAmount}");
-            builder.Append("Projects:");
+                $"Progression material on hand: {screenState.PersistentProgressionMaterialAmount}");
+            builder.AppendLine($"Region material on hand: {screenState.RegionMaterialAmount}");
+            builder.Append("Project board:");
 
             for (int index = 0; index < screenState.ProgressionOptions.Count; index++)
             {
@@ -63,7 +60,7 @@ namespace Survivalon.Towns
             }
 
             builder.AppendLine();
-            builder.Append("Conversions:");
+            builder.Append("Refinement options:");
 
             for (int index = 0; index < screenState.ConversionOptions.Count; index++)
             {
@@ -95,12 +92,12 @@ namespace Survivalon.Towns
             }
 
             return
-                "Build preparation\n" +
-                $"Selected character: {screenState.SelectedCharacterDisplayName}\n" +
-                $"Assigned package: {screenState.AssignedSkillPackageDisplayName}\n" +
+                "Build setup\n" +
+                $"Character: {screenState.SelectedCharacterDisplayName}\n" +
+                $"Skill package: {screenState.AssignedSkillPackageDisplayName}\n" +
                 $"Primary gear: {screenState.PrimaryGearDisplayName}\n" +
                 $"Support gear: {screenState.SupportGearDisplayName}\n" +
-                "Use the assignment controls below to update the selected character for future runs.";
+                "Change these here before your next run.";
         }
 
         public static string BuildSkillPackageActionButtonLabel(PlayableCharacterSkillPackageOption skillPackageOption)
@@ -111,8 +108,8 @@ namespace Survivalon.Towns
             }
 
             return skillPackageOption.IsAssigned
-                ? $"Assigned package: {skillPackageOption.DisplayName}"
-                : $"Assign package: {skillPackageOption.DisplayName}";
+                ? $"Using package: {skillPackageOption.DisplayName}"
+                : $"Use package: {skillPackageOption.DisplayName}";
         }
 
         public static string BuildGearAssignmentActionButtonLabel(PlayableCharacterGearAssignmentOption gearAssignmentOption)
@@ -124,7 +121,7 @@ namespace Survivalon.Towns
 
             string gearCategoryLabel = ResolveGearCategoryDisplayName(gearAssignmentOption.GearCategory);
             return gearAssignmentOption.IsEquipped
-                ? $"Unequip {gearCategoryLabel}: {gearAssignmentOption.DisplayName}"
+                ? $"Remove {gearCategoryLabel}: {gearAssignmentOption.DisplayName}"
                 : $"Equip {gearCategoryLabel}: {gearAssignmentOption.DisplayName}";
         }
 
@@ -148,15 +145,15 @@ namespace Survivalon.Towns
             if (screenState.ServiceContext.HasProgressionHubAccess &&
                 screenState.ServiceContext.HasBuildPreparationAccess)
             {
-                return "Progression hub, Build preparation";
+                return "progression projects and build setup";
             }
 
             if (screenState.ServiceContext.HasProgressionHubAccess)
             {
-                return "Progression hub";
+                return "progression projects";
             }
 
-            return "Build preparation";
+            return "build setup";
         }
 
         private static string BuildProgressionAvailabilityText(
@@ -203,7 +200,7 @@ namespace Survivalon.Towns
             TownServiceMaterialPowerPathState materialPowerPath)
         {
             builder.AppendLine();
-            builder.AppendLine("Material power path:");
+            builder.AppendLine("Next power path:");
             builder.AppendLine(
                 "Farm region material, refine it into persistent progression material, then invest it into projects.");
 
@@ -211,7 +208,7 @@ namespace Survivalon.Towns
             {
                 builder.AppendLine($"Ready refinements now: {materialPowerPath.ReadyRefinementCount}");
                 builder.AppendLine(
-                    "Persistent progression material after ready refinements: " +
+                    "Progression material after ready refinements: " +
                     materialPowerPath.PersistentProgressionMaterialAmountAfterRefinementPath);
             }
             else
@@ -220,15 +217,15 @@ namespace Survivalon.Towns
                     $"Refinement progress: {materialPowerPath.RegionMaterialTowardsNextRefinementAmount} / " +
                     $"{materialPowerPath.RefinementInputRequirement} region material");
                 builder.AppendLine(
-                    "Persistent progression material after next refinement: " +
+                    "Progression material after the next refinement: " +
                     materialPowerPath.PersistentProgressionMaterialAmountAfterRefinementPath);
             }
 
             builder.AppendLine(
-                "Already affordable projects: " +
+                "Ready to buy now: " +
                 BuildProjectDisplayNameSummary(materialPowerPath.AlreadyAffordableProjectDisplayNames));
             builder.Append(
-                "New project targets after refinement: " +
+                "New projects after the next refinement: " +
                 BuildProjectDisplayNameSummary(materialPowerPath.NewProjectTargetDisplayNames));
         }
 

@@ -51,8 +51,8 @@ namespace Survivalon.Tests.EditMode.World
                 RunLifecycleState.PostRun,
                 runResult);
 
-            Assert.That(resolvedSummary, Does.Contain("Resolution: Succeeded"));
-            Assert.That(postRunSummary, Does.Not.Contain("Resolution: Succeeded"));
+            Assert.That(resolvedSummary, Does.Contain("Result: Succeeded"));
+            Assert.That(postRunSummary, Does.Not.Contain("Result: Succeeded"));
         }
 
         [Test]

@@ -45,9 +45,9 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(replayButton.interactable, Is.True);
                 Assert.That(returnButton.interactable, Is.True);
                 Assert.That(stopButton.interactable, Is.True);
-                Assert.That(ContainsText(hostObject, "Run finished."), Is.True);
-                Assert.That(ContainsText(hostObject, "Recommended:"), Is.True);
-                Assert.That(ContainsText(hostObject, "Stop: Safe exit after this resolved run."), Is.True);
+                Assert.That(ContainsText(hostObject, "Run complete."), Is.True);
+                Assert.That(ContainsText(hostObject, "Best next step:"), Is.True);
+                Assert.That(ContainsText(hostObject, "End session: Safe to exit after this resolved run."), Is.True);
 
                 replayButton.onClick.Invoke();
 

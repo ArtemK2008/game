@@ -24,7 +24,7 @@ namespace Survivalon.Run
             }
 
             string summaryText =
-                $"Run state: {runHudState.RunStateDisplayName} | Outcome: {runHudState.OutcomeDisplayName} | Elapsed: {FormatValue(runHudState.ElapsedCombatSeconds)}s\n" +
+                $"Status: {runHudState.RunStateDisplayName} | Outcome: {runHudState.OutcomeDisplayName} | Time: {FormatValue(runHudState.ElapsedCombatSeconds)}s\n" +
                 $"Health: {runHudState.PlayerDisplayName} {FormatValue(runHudState.PlayerCurrentHealth)} / {FormatValue(runHudState.PlayerMaxHealth)} | " +
                 $"{runHudState.EnemyDisplayName} {FormatValue(runHudState.EnemyCurrentHealth)} / {FormatValue(runHudState.EnemyMaxHealth)}";
 
@@ -40,12 +40,12 @@ namespace Survivalon.Run
 
             return summaryText +
                 "\n" +
-                $"Progress: {runHudState.CurrentProgress} / {runHudState.ProgressThreshold} toward {runHudState.ProgressGoalDisplayName}";
+                $"Objective: {runHudState.CurrentProgress} / {runHudState.ProgressThreshold} toward {runHudState.ProgressGoalDisplayName}";
         }
 
         private static string BuildBossEncounterSummaryLine(RunHudState runHudState)
         {
-            string bossSummaryLine = $"Boss role: {runHudState.BossEncounterDisplayName}";
+            string bossSummaryLine = $"Boss: {runHudState.BossEncounterDisplayName}";
             if (!runHudState.HasBossStakeSummary)
             {
                 return bossSummaryLine;

@@ -26,17 +26,15 @@ namespace Survivalon.Tests.EditMode.Towns
             string buildText = TownServiceScreenTextBuilder.BuildBuildPreparationText(screenState);
 
             Assert.That(overviewText, Is.EqualTo(
-                "Service context: Cavern Service Hub\n" +
+                "Hub: Cavern Service Hub\n" +
                 "Location: Echo Caverns\n" +
-                "Reward focus: Persistent progression gains\n" +
+                "Best for: Persistent progression gains\n" +
                 "Reward source: Cavern relic caches\n" +
                 "Enemy emphasis: Gate guardians\n" +
-                "Region: region_002\n" +
-                "Node: region_002_node_001\n" +
-                "Entered from: region_001_node_002\n" +
-                "Functions: Progression hub, Build preparation"));
-            Assert.That(progressionText, Does.Contain("Persistent progression material: 1"));
-            Assert.That(progressionText, Does.Contain("Region material: 2"));
+                "Use this stop for: progression projects and build setup"));
+            Assert.That(progressionText, Does.Contain("Progression projects"));
+            Assert.That(progressionText, Does.Contain("Progression material on hand: 1"));
+            Assert.That(progressionText, Does.Contain("Region material on hand: 2"));
             Assert.That(progressionText, Does.Contain("- Combat Baseline Project | Cost: Persistent progression material x1 | Purchased"));
             Assert.That(progressionText, Does.Contain("- Push Offense Project | Cost: Persistent progression material x2 | Need 1 more"));
             Assert.That(progressionText, Does.Contain("- Farm Yield Project | Cost: Persistent progression material x1 | Affordable"));
@@ -46,25 +44,26 @@ namespace Survivalon.Tests.EditMode.Towns
                 progressionText,
                 Does.Contain(
                     "- Region Material Refinement | Region material x3 -> Persistent progression material x1 | Need 1 more"));
-            Assert.That(progressionText, Does.Contain("Material power path:"));
+            Assert.That(progressionText, Does.Contain("Refinement options:"));
+            Assert.That(progressionText, Does.Contain("Next power path:"));
             Assert.That(progressionText, Does.Contain("Refinement progress: 2 / 3 region material"));
             Assert.That(
                 progressionText,
-                Does.Contain("Persistent progression material after next refinement: 2"));
+                Does.Contain("Progression material after the next refinement: 2"));
             Assert.That(
                 progressionText,
-                Does.Contain("Already affordable projects: Combat Baseline Project, Farm Yield Project"));
+                Does.Contain("Ready to buy now: Combat Baseline Project, Farm Yield Project"));
             Assert.That(
                 progressionText,
                 Does.Contain(
-                    "New project targets after refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"));
+                    "New projects after the next refinement: Push Offense Project, Refinement Efficiency Project, Boss Salvage Project"));
             Assert.That(buildText, Is.EqualTo(
-                "Build preparation\n" +
-                "Selected character: Vanguard\n" +
-                "Assigned package: Burst Drill\n" +
+                "Build setup\n" +
+                "Character: Vanguard\n" +
+                "Skill package: Burst Drill\n" +
                 "Primary gear: Training Blade\n" +
                 "Support gear: Guard Charm\n" +
-                "Use the assignment controls below to update the selected character for future runs."));
+                "Change these here before your next run."));
         }
 
         [Test]

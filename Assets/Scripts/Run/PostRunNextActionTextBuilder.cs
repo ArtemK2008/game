@@ -12,10 +12,10 @@ namespace Survivalon.Run
             }
 
             string text =
-                $"Recommended: {BuildRecommendation(nextActionState)}\n" +
-                $"Replay: {BuildReplayLine(nextActionState)}\n" +
-                $"Return: {BuildReturnLine(nextActionState)}\n" +
-                $"Stop: {BuildStopLine(nextActionState)}";
+                $"Best next step: {BuildRecommendation(nextActionState)}\n" +
+                $"Replay here: {BuildReplayLine(nextActionState)}\n" +
+                $"World map: {BuildReturnLine(nextActionState)}\n" +
+                $"End session: {BuildStopLine(nextActionState)}";
 
             return text;
         }
@@ -73,13 +73,13 @@ namespace Survivalon.Run
             if (nextActionState.HasForwardPushOpportunity && nextActionState.HasServiceOpportunity)
             {
                 return
-                    $"Return to world, then push to {nextActionState.ForwardTargetDisplayName} " +
+                    $"Return to the world map, then push to {nextActionState.ForwardTargetDisplayName} " +
                     $"or visit {nextActionState.ServiceHubDisplayName}.";
             }
 
             if (nextActionState.HasForwardPushOpportunity)
             {
-                return $"Return to world, then push to {nextActionState.ForwardTargetDisplayName}.";
+                return $"Return to the world map, then push to {nextActionState.ForwardTargetDisplayName}.";
             }
 
             if (nextActionState.HasServiceOpportunity)
@@ -87,21 +87,21 @@ namespace Survivalon.Run
                 return BuildServiceRecommendation(nextActionState);
             }
 
-            return "Return to world and choose another node.";
+            return "Return to the world map and choose another node.";
         }
 
         private static string BuildStopLine(PostRunNextActionState nextActionState)
         {
             return nextActionState.CanStopSession
-                ? "Safe exit after this resolved run."
+                ? "Safe to exit after this resolved run."
                 : "Unavailable in this context.";
         }
 
         private static string BuildPushRecommendation(PostRunNextActionState nextActionState)
         {
             return nextActionState.HasForwardPushOpportunity
-                ? $"Return to world, then push to {nextActionState.ForwardTargetDisplayName}."
-                : "Return to world and choose the next push path.";
+                ? $"Return to the world map, then push to {nextActionState.ForwardTargetDisplayName}."
+                : "Return to the world map and choose the next push path.";
         }
 
         private static string BuildServiceRecommendation(PostRunNextActionState nextActionState)
@@ -113,13 +113,13 @@ namespace Survivalon.Run
             switch (nextActionState.ServiceOpportunityKind)
             {
                 case PostRunServiceOpportunityKind.AffordableProject:
-                    return $"Return to world, then visit {serviceHubDisplayName} to spend progression material.";
+                    return $"Return to the world map, then visit {serviceHubDisplayName} to spend progression material.";
                 case PostRunServiceOpportunityKind.ReadyRefinement:
-                    return $"Return to world, then visit {serviceHubDisplayName} to refine Region material.";
+                    return $"Return to the world map, then visit {serviceHubDisplayName} to refine Region material.";
                 case PostRunServiceOpportunityKind.AffordableProjectAndReadyRefinement:
-                    return $"Return to world, then visit {serviceHubDisplayName} to spend or refine.";
+                    return $"Return to the world map, then visit {serviceHubDisplayName} to spend progression material or refine Region material.";
                 case PostRunServiceOpportunityKind.None:
-                    return $"Return to world, then visit {serviceHubDisplayName}.";
+                    return $"Return to the world map, then visit {serviceHubDisplayName}.";
                 default:
                     throw new InvalidOperationException(
                         $"Unknown service opportunity kind '{nextActionState.ServiceOpportunityKind}'.");

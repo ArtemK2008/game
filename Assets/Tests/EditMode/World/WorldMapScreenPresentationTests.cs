@@ -51,10 +51,10 @@ namespace Survivalon.Tests.EditMode.World
                 "Forest Farm");
 
             Assert.That(summaryText, Is.EqualTo(
-                "Location: Verdant Frontier\n" +
-                "Current: Raider Trail (In progress) | Selected: Forest Farm\n" +
-                "Routes: 4 enterable | 3 forward | 0 replayable\n" +
-                "Blocked links: 1"));
+                "Region: Verdant Frontier\n" +
+                "You are here: Raider Trail (In progress)\n" +
+                "Selected destination: Forest Farm\n" +
+                "Routes from here: 3 forward | 1 backtrack | 0 replayable | 1 blocked"));
         }
 
         [Test]
@@ -75,10 +75,10 @@ namespace Survivalon.Tests.EditMode.World
                     System.Array.Empty<WorldMapNodeReferenceDisplayState>()),
                 selectedNodeDisplayName: null);
 
-            Assert.That(summaryText, Does.Contain("Location: Verdant Frontier"));
-            Assert.That(summaryText, Does.Contain("Current: Raider Trail (In progress) | Selected: none"));
-            Assert.That(summaryText, Does.Contain("Routes: 1 enterable | 0 forward | 0 replayable"));
-            Assert.That(summaryText, Does.Contain("Blocked links: 0"));
+            Assert.That(summaryText, Does.Contain("Region: Verdant Frontier"));
+            Assert.That(summaryText, Does.Contain("You are here: Raider Trail (In progress)"));
+            Assert.That(summaryText, Does.Contain("Selected destination: none"));
+            Assert.That(summaryText, Does.Contain("Routes from here: 0 forward | 1 backtrack | 0 replayable | 0 blocked"));
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace Survivalon.Tests.EditMode.World
                     new PlayableCharacterSelectionOption("character_striker", "Striker", isSelected: true),
                 });
 
-            Assert.That(selectionText, Is.EqualTo("Selected character: Striker"));
+            Assert.That(selectionText, Is.EqualTo("Build character: Striker"));
         }
 
         [Test]
@@ -102,8 +102,8 @@ namespace Survivalon.Tests.EditMode.World
             string unselectedLabel = WorldMapScreenTextBuilder.BuildCharacterButtonLabel(
                 new PlayableCharacterSelectionOption("character_vanguard", "Vanguard", isSelected: false));
 
-            Assert.That(selectedLabel, Is.EqualTo("Selected: Vanguard"));
-            Assert.That(unselectedLabel, Is.EqualTo("Select: Vanguard"));
+            Assert.That(selectedLabel, Is.EqualTo("Using Vanguard"));
+            Assert.That(unselectedLabel, Is.EqualTo("Choose Vanguard"));
         }
 
         [Test]
@@ -143,7 +143,7 @@ namespace Survivalon.Tests.EditMode.World
                 });
 
             Assert.That(assignmentText, Is.EqualTo(
-                "Assigned package: Burst Drill\n" +
+                "Skill package: Burst Drill\n" +
                 "Primary gear: Training Blade | Support gear: none"));
         }
 
@@ -165,8 +165,8 @@ namespace Survivalon.Tests.EditMode.World
                     "Adds Burst Strike.",
                     isAssigned: false));
 
-            Assert.That(assignedLabel, Is.EqualTo("Assigned: Standard Guard"));
-            Assert.That(unassignedLabel, Is.EqualTo("Assign: Burst Drill"));
+            Assert.That(assignedLabel, Is.EqualTo("Using Standard Guard"));
+            Assert.That(unassignedLabel, Is.EqualTo("Use Burst Drill"));
         }
 
         [Test]
@@ -187,8 +187,8 @@ namespace Survivalon.Tests.EditMode.World
                     GearCategory.PrimaryCombat,
                     isEquipped: false));
 
-            Assert.That(equippedLabel, Is.EqualTo("Unequip: Training Blade"));
-            Assert.That(unequippedLabel, Is.EqualTo("Equip: Training Blade"));
+            Assert.That(equippedLabel, Is.EqualTo("Remove Training Blade"));
+            Assert.That(unequippedLabel, Is.EqualTo("Equip Training Blade"));
         }
 
         [Test]

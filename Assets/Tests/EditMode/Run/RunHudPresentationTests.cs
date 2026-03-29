@@ -47,9 +47,9 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(runHudState.ProgressThreshold, Is.EqualTo(3));
             Assert.That(runHudState.ProgressGoalDisplayName, Is.EqualTo("node clear"));
             Assert.That(RunHudTextBuilder.BuildContextTitle(runHudState), Is.EqualTo("Verdant Frontier | Raider Trail"));
-            Assert.That(summaryText, Does.Contain("Run state: Auto-battle active | Outcome: Ongoing | Elapsed: 0s"));
+            Assert.That(summaryText, Does.Contain("Status: Auto-battle active | Outcome: Ongoing | Time: 0s"));
             Assert.That(summaryText, Does.Contain("Health: Vanguard 120 / 120 | Bulwark Raider 105 / 105"));
-            Assert.That(summaryText, Does.Contain("Progress: 1 / 3 toward node clear"));
+            Assert.That(summaryText, Does.Contain("Objective: 1 / 3 toward node clear"));
         }
 
         [Test]
@@ -79,10 +79,10 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(runHudState.BossEncounterDisplayName, Is.EqualTo("Gate boss"));
             Assert.That(runHudState.BossStakeSummary, Is.EqualTo("Gate clear, Boss rewards"));
             Assert.That(RunHudTextBuilder.BuildContextTitle(runHudState), Is.EqualTo("Boss encounter | Echo Caverns | Cavern Gate"));
-            Assert.That(summaryText, Does.Contain("Run state: Auto-battle resolved | Outcome: PlayerVictory | Elapsed: 0s"));
+            Assert.That(summaryText, Does.Contain("Status: Auto-battle resolved | Outcome: PlayerVictory | Time: 0s"));
             Assert.That(summaryText, Does.Contain("Health: Vanguard 120 / 120 | Gate Boss 180 / 180"));
-            Assert.That(summaryText, Does.Contain("Boss role: Gate boss | Stakes: Gate clear, Boss rewards"));
-            Assert.That(summaryText, Does.Contain("Progress: 0 / 3 toward gate clear"));
+            Assert.That(summaryText, Does.Contain("Boss: Gate boss | Stakes: Gate clear, Boss rewards"));
+            Assert.That(summaryText, Does.Contain("Objective: 0 / 3 toward gate clear"));
         }
 
         private static CombatEncounterState CreateEncounterState(NodePlaceholderState placeholderState)

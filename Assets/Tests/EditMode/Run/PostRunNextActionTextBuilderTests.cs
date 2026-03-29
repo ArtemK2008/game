@@ -18,10 +18,10 @@ namespace Survivalon.Tests.EditMode.Run
 
             string text = PostRunNextActionTextBuilder.Build(nextActionState);
 
-            Assert.That(text, Does.Contain("Recommended: Replay Raider Trail to keep pushing node progress."));
-            Assert.That(text, Does.Contain("Replay: Replay Raider Trail to keep pushing node progress."));
-            Assert.That(text, Does.Contain("Return: Return to world and choose another node."));
-            Assert.That(text, Does.Contain("Stop: Safe exit after this resolved run."));
+            Assert.That(text, Does.Contain("Best next step: Replay Raider Trail to keep pushing node progress."));
+            Assert.That(text, Does.Contain("Replay here: Replay Raider Trail to keep pushing node progress."));
+            Assert.That(text, Does.Contain("World map: Return to the world map and choose another node."));
+            Assert.That(text, Does.Contain("End session: Safe to exit after this resolved run."));
         }
 
         [Test]
@@ -41,8 +41,8 @@ namespace Survivalon.Tests.EditMode.Run
 
             string text = PostRunNextActionTextBuilder.Build(nextActionState);
 
-            Assert.That(text, Does.Contain("Recommended: Return to world, then push to Cavern Gate."));
-            Assert.That(text, Does.Contain("Return: Return to world, then push to Cavern Gate or visit Cavern Service Hub."));
+            Assert.That(text, Does.Contain("Best next step: Return to the world map, then push to Cavern Gate."));
+            Assert.That(text, Does.Contain("World map: Return to the world map, then push to Cavern Gate or visit Cavern Service Hub."));
             Assert.That(text, Does.Not.Contain("region_002_node_002"));
         }
 
@@ -61,8 +61,8 @@ namespace Survivalon.Tests.EditMode.Run
 
             string text = PostRunNextActionTextBuilder.Build(nextActionState);
 
-            Assert.That(text, Does.Contain("Recommended: Return to world, then visit Cavern Service Hub to refine Region material."));
-            Assert.That(text, Does.Contain("Replay: Replay Forest Farm for more Region material."));
+            Assert.That(text, Does.Contain("Best next step: Return to the world map, then visit Cavern Service Hub to refine Region material."));
+            Assert.That(text, Does.Contain("Replay here: Replay Forest Farm for more Region material."));
         }
     }
 }
