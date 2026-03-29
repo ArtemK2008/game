@@ -197,6 +197,10 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(gameState, Is.Not.Null);
             Assert.That(gameState.OfflineProgressStableSaveAnchorState, Is.Not.Null);
             Assert.That(gameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.False);
+            Assert.That(gameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.False);
+            Assert.That(
+                gameState.OfflineProgressStableSaveAnchorState.EligibilityKind,
+                Is.EqualTo(OfflineProgressEligibilityKind.None));
             Assert.That(gameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds, Is.EqualTo(0));
         }
 
@@ -209,6 +213,10 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(gameState, Is.Not.Null);
             Assert.That(gameState.OfflineProgressStableSaveAnchorState, Is.Not.Null);
             Assert.That(gameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
+            Assert.That(gameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.False);
+            Assert.That(
+                gameState.OfflineProgressStableSaveAnchorState.EligibilityKind,
+                Is.EqualTo(OfflineProgressEligibilityKind.None));
             Assert.That(gameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds, Is.EqualTo(12345));
         }
     }

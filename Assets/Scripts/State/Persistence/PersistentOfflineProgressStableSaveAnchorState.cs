@@ -12,19 +12,29 @@ namespace Survivalon.State.Persistence
         [SerializeField]
         private long lastStableSaveUnixTimeSeconds;
 
-        public bool HasStableSaveAnchor => isEligibleForOfflineProgress;
+        [SerializeField]
+        private OfflineProgressEligibilityKind eligibilityKind;
+
+        public bool HasStableSaveAnchor => lastStableSaveUnixTimeSeconds > 0 || isEligibleForOfflineProgress;
 
         public long LastStableSaveUnixTimeSeconds => lastStableSaveUnixTimeSeconds;
 
-        public void StampStableSaveAnchor(long unixTimeSeconds)
+        public bool IsEligibleForOfflineProgress => eligibilityKind != OfflineProgressEligibilityKind.None;
+
+        public OfflineProgressEligibilityKind EligibilityKind => eligibilityKind;
+
+        public void StampStableSaveAnchor(
+            long unixTimeSeconds,
+            OfflineProgressEligibilityKind offlineProgressEligibilityKind = OfflineProgressEligibilityKind.None)
         {
             if (unixTimeSeconds < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(unixTimeSeconds));
             }
 
-            isEligibleForOfflineProgress = true;
+            isEligibleForOfflineProgress = false;
             lastStableSaveUnixTimeSeconds = unixTimeSeconds;
+            eligibilityKind = offlineProgressEligibilityKind;
         }
     }
 }

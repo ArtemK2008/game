@@ -8,13 +8,16 @@ namespace Survivalon.State.Persistence
     {
         private readonly IPersistentGameStateStorage storage;
         private readonly Func<DateTimeOffset> utcNowProvider;
+        private readonly OfflineProgressEligibilityResolver offlineProgressEligibilityResolver;
 
         public SafeResumePersistenceService(
             IPersistentGameStateStorage storage,
-            Func<DateTimeOffset> utcNowProvider = null)
+            Func<DateTimeOffset> utcNowProvider = null,
+            OfflineProgressEligibilityResolver offlineProgressEligibilityResolver = null)
         {
             this.storage = storage ?? throw new ArgumentNullException(nameof(storage));
             this.utcNowProvider = utcNowProvider ?? (() => DateTimeOffset.UtcNow);
+            this.offlineProgressEligibilityResolver = offlineProgressEligibilityResolver;
         }
 
         public PersistentGameState LoadOrCreate(PersistentGameState fallbackState)
@@ -105,8 +108,13 @@ namespace Survivalon.State.Persistence
                     throw new ArgumentOutOfRangeException(nameof(targetType), targetType, "Unsupported safe resume target type.");
             }
 
+            OfflineProgressEligibilityKind eligibilityKind = offlineProgressEligibilityResolver?.Resolve(
+                snapshot.WorldState,
+                targetType,
+                resumeNodeId) ?? OfflineProgressEligibilityKind.None;
             snapshot.OfflineProgressStableSaveAnchorState.StampStableSaveAnchor(
-                utcNowProvider().ToUnixTimeSeconds());
+                utcNowProvider().ToUnixTimeSeconds(),
+                eligibilityKind);
             storage.Save(snapshot);
         }
 

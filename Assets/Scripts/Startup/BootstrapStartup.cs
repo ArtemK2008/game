@@ -36,7 +36,7 @@ namespace Survivalon.Startup
 
         public void ConfigurePersistenceStorage(IPersistentGameStateStorage storage)
         {
-            persistenceService = new SafeResumePersistenceService(
+            persistenceService = CreatePersistenceService(
                 storage ?? throw new ArgumentNullException(nameof(storage)));
         }
 
@@ -58,7 +58,7 @@ namespace Survivalon.Startup
 
         private void Awake()
         {
-            persistenceService ??= new SafeResumePersistenceService(CreateDefaultPersistenceStorage());
+            persistenceService ??= CreatePersistenceService(CreateDefaultPersistenceStorage());
             applicationQuitService ??= new ApplicationQuitService();
             userSettingsPersistenceService ??= new UserSettingsPersistenceService(CreateDefaultUserSettingsStorage());
             displaySettingsApplier ??= new UnityDisplaySettingsApplier();
@@ -483,6 +483,15 @@ namespace Survivalon.Startup
         {
             string storagePath = Path.Combine(Application.persistentDataPath, "survivalon_game_state.json");
             return new FilePersistentGameStateStorage(storagePath);
+        }
+
+        private static SafeResumePersistenceService CreatePersistenceService(IPersistentGameStateStorage storage)
+        {
+            BootstrapWorldMapFactory bootstrapWorldMapFactory = new BootstrapWorldMapFactory();
+            return new SafeResumePersistenceService(
+                storage,
+                offlineProgressEligibilityResolver: new OfflineProgressEligibilityResolver(
+                    bootstrapWorldMapFactory.CreateWorldGraph()));
         }
 
         private static IUserSettingsStorage CreateDefaultUserSettingsStorage()

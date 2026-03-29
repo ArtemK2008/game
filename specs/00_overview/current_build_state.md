@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 102** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
+This summary reflects completed work through **Milestone 103** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -48,9 +48,13 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Safe-stop persistence exists for resolved world-level context, and resolved post-run now also autosaves into that same safe resume path before the player leaves the post-run screen.
 - The same safe-resume persistence path now also preserves the current selected character, per-character package assignment, per-character equipped primary/support gear, and owned gear state cleanly across restart/load flows after world-map or town/service build-prep changes.
 - Safe resume is currently constrained to clear world-level or town/service-level safe contexts on restart/load; unresolved run state and temporary run-only upgrade choice state do not reopen on resume.
-- Stable resolved world/service save points now also stamp one future-facing offline-progress compatibility anchor:
-  - a persisted UTC save timestamp
-  - a persisted stable-save anchor marker for later offline-progress calculation
+- Stable resolved world/service save points now also stamp one future-facing offline-progress compatibility state:
+  - a persisted UTC stable-save timestamp
+  - an explicit persisted offline-progress eligibility kind
+- Eligibility is currently narrow and fail-closed:
+  - only resolved world-level contexts anchored to completed ordinary combat nodes marked `Farm-ready` are offline-progress-eligible
+  - town/service safe contexts are not offline-progress-eligible
+  - unresolved combat, boss/gate, service/progression, and ambiguous contexts remain ineligible
 - Offline rewards, offline claim flow, and background simulation are still disabled; the new metadata does not change current player-facing behavior.
 - The startup/bootstrap runtime flow is now grouped under a dedicated `Startup` domain folder/namespace for clearer ownership and navigation.
 

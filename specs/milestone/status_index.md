@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 103
+Current next implementation target: Milestone 104
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -128,6 +128,7 @@ id | type | title | status | depends on / note
 100 | feature | Add another enemy family/profile set | completed | phase 25
 101 | feature | Add one more meaningful progression sink or powerup branch | completed | phase 25
 102 | feature | Add second character only if game now benefits from roster differentiation | completed | phase 25; closed by audit of already-shipped live Vanguard/Striker differentiation; no new runtime changes in the closeout pass; current-session compile/import passed but EditMode verification was blocked by the known helper artifact plus Unity Package Manager local-server startup failure
+103 | feature | Implement minimal offline-progress eligibility model | completed | phase 26; current-session compile/import passed, helper verification reproduced the known missing-results artifact, and direct EditMode fallback was blocked by Unity Package Manager local-server startup failure
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

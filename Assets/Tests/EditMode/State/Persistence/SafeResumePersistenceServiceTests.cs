@@ -35,6 +35,10 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.WorldMap));
             Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
             Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
+            Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.False);
+            Assert.That(
+                storage.SavedGameState.OfflineProgressStableSaveAnchorState.EligibilityKind,
+                Is.EqualTo(OfflineProgressEligibilityKind.None));
             Assert.That(
                 storage.SavedGameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds,
                 Is.EqualTo(expectedTimestamp.ToUnixTimeSeconds()));
@@ -44,6 +48,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             PersistentGameState loadedGameState = service.LoadOrCreate(CreateGameState("region_001_node_001", "region_001_node_001"));
 
             Assert.That(loadedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
+            Assert.That(loadedGameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.False);
             Assert.That(
                 loadedGameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds,
                 Is.EqualTo(expectedTimestamp.ToUnixTimeSeconds()));
@@ -64,6 +69,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(storage.SavedGameState.SafeResumeState.HasSafeResumeTarget, Is.True);
             Assert.That(storage.SavedGameState.SafeResumeState.TargetType, Is.EqualTo(SafeResumeTargetType.TownService));
             Assert.That(storage.SavedGameState.SafeResumeState.ResumeNodeId, Is.EqualTo(new NodeId("region_002_node_001")));
+            Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.False);
         }
 
         [Test]
@@ -82,6 +88,56 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(loadedGameState.ResourceBalances.GetAmount(ResourceCategory.SoftCurrency), Is.EqualTo(7));
             Assert.That(loadedGameState.ResourceBalances.GetAmount(ResourceCategory.RegionMaterial), Is.EqualTo(3));
             Assert.That(storage.HasSavedState, Is.False);
+        }
+
+        [Test]
+        public void ShouldMarkCompletedFarmReadyWorldContextAsOfflineEligible()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            DateTimeOffset expectedTimestamp = new DateTimeOffset(2026, 3, 29, 8, 0, 0, TimeSpan.Zero);
+            SafeResumePersistenceService service = new SafeResumePersistenceService(
+                storage,
+                () => expectedTimestamp,
+                new OfflineProgressEligibilityResolver(WorldFlowTestData.CreateFarmAccessGraph()));
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.WorldState.SetCurrentNode(new NodeId("node_cleared_farm"));
+            gameState.WorldState.SetLastSafeNode(new NodeId("node_current"));
+            gameState.WorldState.ReplaceReachableNodes(new[] { new NodeId("node_current") });
+            gameState.WorldState.ReplaceNodeStates(WorldFlowTestData.CreateFarmAccessWorldState().NodeStates);
+
+            service.SaveResolvedWorldContext(gameState);
+
+            Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
+            Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.True);
+            Assert.That(
+                storage.SavedGameState.OfflineProgressStableSaveAnchorState.EligibilityKind,
+                Is.EqualTo(OfflineProgressEligibilityKind.FarmReadyWorldNode));
+            Assert.That(
+                storage.SavedGameState.OfflineProgressStableSaveAnchorState.LastStableSaveUnixTimeSeconds,
+                Is.EqualTo(expectedTimestamp.ToUnixTimeSeconds()));
+        }
+
+        [Test]
+        public void ShouldKeepTownServiceSafeSaveOfflineIneligibleEvenWithResolver()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService service = new SafeResumePersistenceService(
+                storage,
+                offlineProgressEligibilityResolver: new OfflineProgressEligibilityResolver(
+                    WorldFlowTestData.CreateFarmAccessGraph()));
+            PersistentGameState gameState = new PersistentGameState();
+            gameState.WorldState.SetCurrentNode(new NodeId("node_current"));
+            gameState.WorldState.SetLastSafeNode(new NodeId("node_current"));
+            gameState.WorldState.ReplaceReachableNodes(new[] { new NodeId("node_current") });
+            gameState.WorldState.ReplaceNodeStates(WorldFlowTestData.CreateFarmAccessWorldState().NodeStates);
+
+            service.SaveResolvedTownServiceContext(gameState);
+
+            Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
+            Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.False);
+            Assert.That(
+                storage.SavedGameState.OfflineProgressStableSaveAnchorState.EligibilityKind,
+                Is.EqualTo(OfflineProgressEligibilityKind.None));
         }
 
         [Test]
