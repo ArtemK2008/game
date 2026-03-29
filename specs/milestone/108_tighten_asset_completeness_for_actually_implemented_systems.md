@@ -25,9 +25,20 @@
   - runtime hookup through the world-map build-preparation character-selection surface only
 - No new external asset request was opened in this milestone.
   - The audit did not find any repo-absent sprite, animation, or music asset that could be honestly requested for a currently shipped system without also implying a broader runtime expansion.
-  - Character portraits remain prepared-only because the current shipped build still has no portrait-specific runtime surface.
-  - Broader location-/service-specific music is still unavailable in-repo, but the shipped runtime intentionally only exposes the current calm/gameplay music split and safely falls back to those two loops.
-  - No shipped system currently uses animation controllers or clip-driven character/enemy animation assets; the live combat shell still intentionally uses state-sprite switching.
+
+### Remaining Honest Non-Integrated Asset Limits
+- Playable-character portraits
+  - not integrated now because the current shipped build still has no portrait-specific runtime surface to receive them cleanly
+  - current runtime falls back safely by using text-only selected-character summaries plus the newly wired world icons in world-map build preparation
+  - canonical future asset location if later needed: `Assets/Art/Characters/<CharacterName>/Portrait/portrait.png`
+- Broader location-/service-specific music
+  - not integrated now because the repo currently contains only the shipped calm/gameplay loop pair and the runtime intentionally exposes only that two-context music split
+  - current runtime falls back safely by continuing to use `music_calm_loop.wav` for safe/planning contexts and `music_gameplay_loop.wav` for active combat
+  - canonical future asset location if later needed: `Assets/Audio/Music/` using the current loop-based music asset root
+- Clip-driven character/enemy animation assets
+  - not integrated now because no shipped system currently uses animation controllers or clip-driven runtime animation; the live combat shell still intentionally relies on state-sprite switching
+  - current runtime falls back safely by continuing to resolve `idle` / `attack` / `hit` / `defeat` state sprites from the existing sprite registries
+  - canonical future asset location if later needed: `Assets/Art/Characters/<CharacterName>/Sprites/` and `Assets/Art/Enemies/<EnemyName>/Sprites/` alongside the current authored combat-state sprite families
 
 ## Behavior Change
 - The live world-map build-preparation character-selection buttons now render authored world icons for the current playable `Vanguard` / `Striker` roster instead of remaining text-only.
@@ -53,5 +64,13 @@
   - log: `C:\IT_related\myGame\Survivalon\Logs\unity_compile_check.log`
 - EditMode helper:
   - `powershell -NoLogo -NoProfile -File "tools/unity_editmode_verify.ps1"`
-  - result: see final milestone report for whether the known helper artifact reproduced and which fallback artifacts were used
+  - result: the known helper artifact issue reproduced and did not create `C:\IT_related\myGame\Survivalon\Logs\editmode_results.xml`
+- Direct Unity batch fallback:
+  - `C:\Program Files\Unity\Hub\Editor\6000.3.10f1\Editor\Unity.exe -batchmode -nographics -projectPath C:\IT_related\myGame\Survivalon -runTests -runSynchronously -testPlatform EditMode -testResults C:\IT_related\myGame\Survivalon\Logs\m108_editmode_results.xml -logFile C:\IT_related\myGame\Survivalon\Logs\m108_editmode.log`
+  - result: `695 passed`, `0 failed`, `0 inconclusive`, `0 skipped`
+  - requested project-local artifacts:
+    - `C:\IT_related\myGame\Survivalon\Logs\m108_editmode_results.xml`
+    - `C:\IT_related\myGame\Survivalon\Logs\m108_editmode.log`
+  - Unity also wrote its default XML artifact:
+    - `C:\Users\Happy\AppData\LocalLow\DefaultCompany\Survivalon\TestResults.xml`
 - This milestone was asset-completeness hardening for already shipped systems, not feature expansion.
