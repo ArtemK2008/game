@@ -19,7 +19,7 @@ This spec does not define:
 - parallax systems
 - camera behavior
 - lighting pipelines
-- world-map background art systems
+- world-map node-icon art systems
 - scene wiring
 
 ## Core rule
@@ -30,6 +30,10 @@ Current background assets stay grouped by place under:
 `Assets/Art/Locations/<PlaceName>/Backgrounds/`
 
 This includes both combat locations and the current safe-space/service location.
+
+The current world-map presentation background stays under:
+
+`Assets/Art/WorldMap/Backgrounds/`
 
 ## Canonical file naming
 Use:
@@ -46,6 +50,9 @@ Use:
 ### Service / town-safe background
 - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
 
+### World-map presentation background
+- `Assets/Art/WorldMap/Backgrounds/world_map_background.png`
+
 ## Folder rule
 Keep the place folder readable and shallow:
 - `Assets/Art/Locations/<PlaceName>/Backgrounds/`
@@ -61,11 +68,11 @@ For current prototype prep, these background files should be import-ready for 2D
 ## Current interpretation
 - `VerdantFrontier`, `EchoCaverns`, and `SunscorchRuins` are the current combat-space place backgrounds.
 - `CavernServiceHub` is the current safe planning/service-space background.
+- `world_map_background.png` is the current authored world-map presentation surface background.
 
 The current repo keeps the service hub under the same `Locations` root so place identity remains easy to track.
 No separate `Services/` top-level art root is required yet.
 
 ## Current gaps
-- No dedicated world-map background assets are shipped yet.
 - No alternate post-run-specific background assets are shipped yet.
 - No additional service/town-safe spaces beyond `CavernServiceHub` are shipped yet.

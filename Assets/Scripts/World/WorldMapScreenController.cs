@@ -52,6 +52,8 @@ namespace Survivalon.World
 
         public bool HasSelection => hasSelectedNode;
 
+        public WorldGraph WorldGraph => worldGraph;
+
         public bool HasForwardRouteChoice => BuildAccessState().ForwardSelectableNodeIds.Count > 1;
 
         public int ForwardSelectableNodeCount => BuildAccessState().ForwardSelectableNodeIds.Count;

@@ -62,6 +62,40 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(FindRectTransform(hostObject, "GearAssignmentList"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "EnterSelectedNodeButton"), Is.Not.Null);
                 Assert.That(FindScrollRect(hostObject, "NodeListScrollView"), Is.Not.Null);
+                Assert.That(FindRectTransform(hostObject, "MapBackgroundArt"), Is.Not.Null);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldRenderAuthoredMapBackgroundAndNodeStateIcons()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                Image backgroundImage = FindImage(hostObject, "MapBackgroundArt");
+                Image currentNodeIcon = FindChildImage(
+                    FindButton(hostObject, BootstrapWorldScenario.ForestEntryNodeId.Value + "_Button").gameObject,
+                    "StateIcon");
+                Image availableNodeIcon = FindChildImage(
+                    FindButton(hostObject, BootstrapWorldScenario.CavernServiceNodeId.Value + "_Button").gameObject,
+                    "StateIcon");
+
+                Assert.That(backgroundImage.sprite, Is.Not.Null);
+                Assert.That(currentNodeIcon.sprite, Is.Not.Null);
+                Assert.That(availableNodeIcon.sprite, Is.Not.Null);
+                Assert.That(currentNodeIcon.sprite, Is.Not.SameAs(availableNodeIcon.sprite));
             }
             finally
             {
@@ -143,7 +177,8 @@ namespace Survivalon.Tests.EditMode.World
                     WorldFlowTestData.CreateFarmAccessWorldState(),
                     gameState: gameState);
 
-                Assert.That(ContainsText(hostObject, "State: Cleared | Farm-ready"), Is.True);
+                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
+                Assert.That(ContainsText(hostObject, "Farm-ready"), Is.True);
             }
             finally
             {
@@ -166,7 +201,7 @@ namespace Survivalon.Tests.EditMode.World
                     gameState: gameState);
 
                 Assert.That(ContainsText(hostObject, "Raider Holdout"), Is.True);
-                Assert.That(ContainsText(hostObject, "State: Available | Elite challenge"), Is.True);
+                Assert.That(ContainsText(hostObject, "Elite challenge"), Is.True);
             }
             finally
             {
@@ -264,7 +299,6 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(buttons.Length, Is.GreaterThan(0));
 
                 Text[] labels = hostObject.GetComponentsInChildren<Text>(true);
-                bool containsStateLabel = false;
                 bool containsForwardRouteSummary = false;
                 bool containsReadableLocationSummary = false;
                 bool containsBlockedLinkSummary = false;
@@ -273,15 +307,10 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsAssignedPackageSummary = false;
                 bool containsPrimaryGearSummary = false;
                 bool containsSupportGearSummary = false;
-                bool containsLocationIdentityLabel = false;
-                bool containsPathRoleLabel = false;
+                bool containsServiceCaption = false;
+                bool containsChallengeCaption = false;
                 foreach (Text label in labels)
                 {
-                    if (label.text.Contains("State:"))
-                    {
-                        containsStateLabel = true;
-                    }
-
                     if (label.text.Contains("Forward: Cavern Service Hub, Forest Farm, Raider Holdout"))
                     {
                         containsForwardRouteSummary = true;
@@ -322,18 +351,17 @@ namespace Survivalon.Tests.EditMode.World
                         containsSupportGearSummary = true;
                     }
 
-                    if (label.text.Contains("Cavern Service Hub"))
+                    if (label.text.Contains("Service"))
                     {
-                        containsLocationIdentityLabel = true;
+                        containsServiceCaption = true;
                     }
 
-                    if (label.text.Contains("Path: Forward route"))
+                    if (label.text.Contains("Elite challenge"))
                     {
-                        containsPathRoleLabel = true;
+                        containsChallengeCaption = true;
                     }
                 }
 
-                Assert.That(containsStateLabel, Is.True);
                 Assert.That(containsForwardRouteSummary, Is.True);
                 Assert.That(containsReadableLocationSummary, Is.True);
                 Assert.That(containsBlockedLinkSummary, Is.True);
@@ -342,8 +370,15 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(containsAssignedPackageSummary, Is.True);
                 Assert.That(containsPrimaryGearSummary, Is.True);
                 Assert.That(containsSupportGearSummary, Is.True);
-                Assert.That(containsLocationIdentityLabel, Is.True);
-                Assert.That(containsPathRoleLabel, Is.True);
+                Assert.That(containsServiceCaption, Is.True);
+                Assert.That(containsChallengeCaption, Is.True);
+                Assert.That(FindImage(hostObject, "MapBackgroundArt").sprite, Is.Not.Null);
+                Assert.That(
+                    FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestEntryNodeId.Value + "_Button").gameObject, "StateIcon").sprite,
+                    Is.Not.Null);
+                Assert.That(
+                    FindChildImage(FindButton(hostObject, BootstrapWorldScenario.CavernServiceNodeId.Value + "_Button").gameObject, "StateIcon").sprite,
+                    Is.Not.Null);
                 Assert.That(FindButton(hostObject, "character_vanguard_CharacterButton"), Is.Not.Null);
                 Assert.That(FindButton(hostObject, "character_striker_CharacterButton"), Is.Not.Null);
                 Assert.That(
@@ -942,6 +977,47 @@ namespace Survivalon.Tests.EditMode.World
             }
 
             Assert.Fail($"Button '{buttonObjectName}' was not found.");
+            return null;
+        }
+
+        private static Image FindImage(GameObject rootObject, string objectName)
+        {
+            Image image = TryFindImage(rootObject, objectName);
+            if (image != null)
+            {
+                return image;
+            }
+
+            Assert.Fail($"Image '{objectName}' was not found.");
+            return null;
+        }
+
+        private static Image FindChildImage(GameObject rootObject, string objectName)
+        {
+            Image[] images = rootObject.GetComponentsInChildren<Image>(true);
+            foreach (Image image in images)
+            {
+                if (image.gameObject.name == objectName)
+                {
+                    return image;
+                }
+            }
+
+            Assert.Fail($"Child image '{objectName}' was not found.");
+            return null;
+        }
+
+        private static Image TryFindImage(GameObject rootObject, string objectName)
+        {
+            Image[] images = rootObject.GetComponentsInChildren<Image>(true);
+            foreach (Image image in images)
+            {
+                if (image.gameObject.name == objectName)
+                {
+                    return image;
+                }
+            }
+
             return null;
         }
 

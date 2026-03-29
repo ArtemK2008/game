@@ -150,6 +150,51 @@ namespace Survivalon.World
                 $"Status: {BuildAvailabilityLabel(nodeOption)}";
         }
 
+        public static string BuildNodeMapCaption(WorldMapNodeOption nodeOption)
+        {
+            if (nodeOption == null)
+            {
+                throw new ArgumentNullException(nameof(nodeOption));
+            }
+
+            if (nodeOption.IsSelected)
+            {
+                return "Selected";
+            }
+
+            if (nodeOption.IsCurrentContext)
+            {
+                return "Current";
+            }
+
+            if (nodeOption.NodeType == NodeType.ServiceOrProgression)
+            {
+                return "Service";
+            }
+
+            if (!string.IsNullOrWhiteSpace(nodeOption.OptionalChallengeDisplayName))
+            {
+                return nodeOption.OptionalChallengeDisplayName;
+            }
+
+            if (nodeOption.NodeType == NodeType.BossOrGate)
+            {
+                return "Boss Gate";
+            }
+
+            if (nodeOption.IsFarmReady)
+            {
+                return "Farm-ready";
+            }
+
+            if (nodeOption.IsSelectable)
+            {
+                return "Selectable";
+            }
+
+            return PlayerFacingCoreLabelFormatter.FormatNodeState(nodeOption.NodeState);
+        }
+
         private static string BuildPathRoleLabel(WorldMapPathRole pathRole)
         {
             switch (pathRole)

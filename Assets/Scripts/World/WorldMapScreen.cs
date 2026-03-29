@@ -18,11 +18,14 @@ namespace Survivalon.World
     {
         private Canvas canvas;
         private RectTransform panelRectTransform;
+        private RectTransform sidebarRectTransform;
         private WorldMapOverviewSectionView overviewSectionView;
         private WorldMapBuildSectionView buildSectionView;
         private WorldMapEntryActionSectionView entryActionSectionView;
-        private WorldMapNodeListSectionView nodeListSectionView;
+        private WorldMapSurfaceSectionView surfaceSectionView;
         private WorldMapScreenController screenController;
+        private WorldMapArtResolver artResolver;
+        private WorldMapNodeLayoutResolver nodeLayoutResolver;
         private Action<NodeId> onNodeEntryRequested;
         private Action onStopSessionRequested;
         private PersistentGameState gameState;
@@ -89,6 +92,8 @@ namespace Survivalon.World
                         skillPackageAssignmentService: skillPackageAssignmentService,
                         gearAssignmentService: gearAssignmentService));
             gameObject.name = "WorldMapScreen";
+            artResolver ??= new WorldMapArtResolver();
+            nodeLayoutResolver ??= new WorldMapNodeLayoutResolver();
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
             EnsureUi();
@@ -99,6 +104,7 @@ namespace Survivalon.World
         {
             WorldMapWorldStateSummary worldStateSummary = screenController.BuildWorldStateSummary();
             IReadOnlyList<WorldMapNodeOption> nodeOptions = screenController.BuildNodeOptions();
+            WorldMapSurfaceLayout surfaceLayout = nodeLayoutResolver.Resolve(nodeOptions);
 
             overviewSectionView.Refresh(
                 "World Map",
@@ -108,7 +114,12 @@ namespace Survivalon.World
             RefreshCharacterSelection();
             RefreshBuildAssignment();
             RefreshEntryButton();
-            nodeListSectionView.Refresh(nodeOptions, HandleNodeSelection);
+            surfaceSectionView.Refresh(
+                nodeOptions,
+                screenController.WorldGraph.Connections,
+                artResolver,
+                surfaceLayout,
+                HandleNodeSelection);
             RefreshLayout();
         }
 
@@ -242,11 +253,11 @@ namespace Survivalon.World
                 "Panel",
                 typeof(RectTransform),
                 typeof(Image),
-                typeof(VerticalLayoutGroup));
+                typeof(HorizontalLayoutGroup));
             panelObject.transform.SetParent(transform, false);
 
             Image panelImage = panelObject.GetComponent<Image>();
-            panelImage.color = new Color(0.08f, 0.10f, 0.14f, 0.94f);
+            panelImage.color = new Color(0.02f, 0.03f, 0.04f, 0.22f);
 
             panelRectTransform = panelObject.GetComponent<RectTransform>();
             panelRectTransform.anchorMin = Vector2.zero;
@@ -255,22 +266,50 @@ namespace Survivalon.World
             panelRectTransform.offsetMax = new Vector2(-24f, -24f);
             panelRectTransform.localScale = Vector3.one;
 
-            VerticalLayoutGroup panelLayout = panelObject.GetComponent<VerticalLayoutGroup>();
+            HorizontalLayoutGroup panelLayout = panelObject.GetComponent<HorizontalLayoutGroup>();
             panelLayout.padding = new RectOffset(16, 16, 16, 16);
-            panelLayout.spacing = 8f;
+            panelLayout.spacing = 16f;
             panelLayout.childAlignment = TextAnchor.UpperLeft;
             panelLayout.childControlWidth = true;
             panelLayout.childControlHeight = true;
-            panelLayout.childForceExpandWidth = true;
-            panelLayout.childForceExpandHeight = false;
+            panelLayout.childForceExpandWidth = false;
+            panelLayout.childForceExpandHeight = true;
 
-            overviewSectionView = WorldMapOverviewSectionView.Create(panelObject.transform, uiFont);
-            buildSectionView = WorldMapBuildSectionView.Create(panelObject.transform, uiFont);
+            GameObject sidebarObject = new GameObject(
+                "Sidebar",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(VerticalLayoutGroup),
+                typeof(LayoutElement));
+            sidebarObject.transform.SetParent(panelObject.transform, false);
+
+            sidebarRectTransform = sidebarObject.GetComponent<RectTransform>();
+            sidebarRectTransform.localScale = Vector3.one;
+
+            Image sidebarImage = sidebarObject.GetComponent<Image>();
+            sidebarImage.color = new Color(0.06f, 0.08f, 0.10f, 0.86f);
+
+            LayoutElement sidebarLayoutElement = sidebarObject.GetComponent<LayoutElement>();
+            sidebarLayoutElement.preferredWidth = 400f;
+            sidebarLayoutElement.minWidth = 360f;
+            sidebarLayoutElement.flexibleHeight = 1f;
+
+            VerticalLayoutGroup sidebarLayout = sidebarObject.GetComponent<VerticalLayoutGroup>();
+            sidebarLayout.padding = new RectOffset(16, 16, 16, 16);
+            sidebarLayout.spacing = 10f;
+            sidebarLayout.childAlignment = TextAnchor.UpperLeft;
+            sidebarLayout.childControlWidth = true;
+            sidebarLayout.childControlHeight = true;
+            sidebarLayout.childForceExpandWidth = true;
+            sidebarLayout.childForceExpandHeight = false;
+
+            overviewSectionView = WorldMapOverviewSectionView.Create(sidebarObject.transform, uiFont);
             entryActionSectionView = WorldMapEntryActionSectionView.Create(
-                panelObject.transform,
+                sidebarObject.transform,
                 uiFont,
                 HandleNodeEntryRequest);
-            nodeListSectionView = WorldMapNodeListSectionView.Create(panelObject.transform, uiFont);
+            buildSectionView = WorldMapBuildSectionView.Create(sidebarObject.transform, uiFont);
+            surfaceSectionView = WorldMapSurfaceSectionView.Create(panelObject.transform, uiFont);
             systemMenuButton = CompactSystemMenuUiFactory.CreateSystemMenuButton(
                 transform,
                 uiFont,
@@ -386,8 +425,9 @@ namespace Survivalon.World
         {
             Canvas.ForceUpdateCanvases();
             buildSectionView.RefreshLayout();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(sidebarRectTransform);
             LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
-            nodeListSectionView.RefreshLayout();
+            surfaceSectionView.RefreshLayout();
             LayoutRebuilder.ForceRebuildLayoutImmediate(panelRectTransform);
             Canvas.ForceUpdateCanvases();
         }

@@ -67,6 +67,26 @@ Current canonical files:
 - `Assets/Art/Locations/SunscorchRuins/Backgrounds/combat_background.png`
 - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
 
+### World map presentation art
+Pipeline spec:
+- `specs/10_art/environment_and_background_pipeline.md`
+
+Root:
+- `Assets/Art/WorldMap/`
+
+Current canonical files:
+- `Assets/Art/WorldMap/Backgrounds/world_map_background.png`
+- `Assets/Art/WorldMap/Nodes/locked.png`
+- `Assets/Art/WorldMap/Nodes/available.png`
+- `Assets/Art/WorldMap/Nodes/current.png`
+- `Assets/Art/WorldMap/Nodes/cleared.png`
+
+Retained source:
+- `Assets/Art/WorldMap/Nodes/node_states_sheet.png`
+
+Current split order:
+- left-to-right source panels -> `locked`, `available`, `current`, `cleared`
+
 ### Combat VFX
 Pipeline spec:
 - `specs/10_art/combat_vfx_pipeline.md`
@@ -84,6 +104,7 @@ Current canonical sheet assets:
 - Player character assets were already in canonical gameplay-facing form.
 - Enemy combat sheets were normalized into canonical split state files while retaining the source sheets, with `RuinSentinel` now promoted from prepared art to live runtime use.
 - Current location/service backgrounds were left in place and documented as the canonical gameplay-facing files.
+- The authored world-map presentation sheet was normalized into canonical split node-state files while retaining the source sheet.
 - Current combat VFX assets remain intentionally sheet-based canonical source files, and milestone `094` now uses those sheets directly for restrained combat readability cues without splitting them into a broader sequence pipeline.
 
 ## Current hookup status
@@ -91,6 +112,7 @@ Current canonical sheet assets:
 - Milestone `100` now wires the current canonical `RuinSentinel` state set into live `Sunscorch Ruins` combat content.
 - Milestone `092` and `099` now wire the current canonical combat backgrounds for `VerdantFrontier`, `EchoCaverns`, and `SunscorchRuins` into the live combat shell.
 - Milestone `093` now wires the current canonical `CavernServiceHub` service background into the live town/service shell.
+- Follow-up `106a` now wires the authored world-map background and canonical node-state icons into the live world-map presentation.
 - That runtime hookup currently uses only the combat-state files under:
   - `Assets/Art/Characters/<CharacterName>/Sprites/`
   - `Assets/Art/Enemies/<EnemyName>/Sprites/`
@@ -100,6 +122,12 @@ Current canonical sheet assets:
   - `Assets/Art/Locations/SunscorchRuins/Backgrounds/combat_background.png`
 - plus the current service background file under:
   - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
+- plus the world-map presentation files under:
+  - `Assets/Art/WorldMap/Backgrounds/world_map_background.png`
+  - `Assets/Art/WorldMap/Nodes/locked.png`
+  - `Assets/Art/WorldMap/Nodes/available.png`
+  - `Assets/Art/WorldMap/Nodes/current.png`
+  - `Assets/Art/WorldMap/Nodes/cleared.png`
 - Portraits and world icons remain prepared assets only and are not wired into runtime yet.
 - Milestone `094` now wires the current combat VFX sheets directly into the live combat shell for:
   - baseline impact readability
@@ -108,7 +136,7 @@ Current canonical sheet assets:
   - defeat
 
 ## Remaining gaps for later milestones
-- No dedicated world-map art assets are prepared yet.
+- No additional world-map node-state variants beyond `locked`, `available`, `current`, and `cleared` are prepared yet.
 - No explicit per-frame VFX slicing contract exists yet.
 - No additional service/town-safe-space background variants are prepared yet.
 - Runtime hookup for broader location backgrounds beyond the current shipped combat/service subset is still pending for later milestones.

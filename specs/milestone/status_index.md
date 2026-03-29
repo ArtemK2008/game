@@ -171,6 +171,7 @@ id | type | title | status | depends on / note
 079a | follow-up | Cleanup auto-pick policy boundary | completed | after 079
 081a | follow-up | Cleanup automation comfort upgrade boundaries | completed | after 081
 096a | follow-up | Implement basic settings surface and persistence | completed | after 096; keeps next numbered target at 097
+106a | follow-up | Improve world map presentation with authored map art and node icons | completed | after 106; keeps next numbered target at 107
 
 ## Refactor Milestones
 id | type | title | status | depends on / note
