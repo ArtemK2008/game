@@ -11,12 +11,18 @@ namespace Survivalon.World
     /// </summary>
     internal sealed class WorldMapSurfaceSectionView
     {
-        private const float NodeButtonWidth = 184f;
-        private const float NodeButtonHeight = 188f;
-        private const float NodeBackingSize = 116f;
-        private const float HighlightBackingSize = 136f;
-        private const float NodeIconSize = 112f;
-        private const float ConnectionThickness = 8f;
+        private const float AuthoredNodeHitAreaSize = 120f;
+        private const float AuthoredSelectedGlowSize = 102f;
+        private const float AuthoredCurrentGlowSize = 90f;
+        private const float AuthoredNodeIconSize = 76f;
+        private const float AuthoredConnectionThickness = 5f;
+
+        private const float FallbackNodeButtonWidth = 184f;
+        private const float FallbackNodeButtonHeight = 188f;
+        private const float FallbackNodeBackingSize = 116f;
+        private const float FallbackHighlightBackingSize = 136f;
+        private const float FallbackNodeIconSize = 112f;
+        private const float FallbackConnectionThickness = 8f;
 
         private readonly Font uiFont;
         private readonly RectTransform scrollViewRectTransform;
@@ -83,7 +89,7 @@ namespace Survivalon.World
             scrollViewRectTransform.localScale = Vector3.one;
 
             Image scrollViewImage = scrollViewObject.GetComponent<Image>();
-            scrollViewImage.color = new Color(0.04f, 0.05f, 0.07f, 0.56f);
+            scrollViewImage.color = new Color(0f, 0f, 0f, 0.05f);
 
             LayoutElement layoutElement = scrollViewObject.GetComponent<LayoutElement>();
             layoutElement.minWidth = 720f;
@@ -101,12 +107,12 @@ namespace Survivalon.World
             RectTransform viewportRectTransform = viewportObject.GetComponent<RectTransform>();
             viewportRectTransform.anchorMin = Vector2.zero;
             viewportRectTransform.anchorMax = Vector2.one;
-            viewportRectTransform.offsetMin = new Vector2(12f, 12f);
-            viewportRectTransform.offsetMax = new Vector2(-12f, -12f);
+            viewportRectTransform.offsetMin = Vector2.zero;
+            viewportRectTransform.offsetMax = Vector2.zero;
             viewportRectTransform.localScale = Vector3.one;
 
             Image viewportImage = viewportObject.GetComponent<Image>();
-            viewportImage.color = new Color(0f, 0f, 0f, 0.08f);
+            viewportImage.color = new Color(0f, 0f, 0f, 0f);
 
             GameObject contentObject = new GameObject(
                 "NodeList",
@@ -293,7 +299,9 @@ namespace Survivalon.World
             lineRectTransform.localScale = Vector3.one;
 
             Image lineImage = lineObject.GetComponent<Image>();
-            lineImage.color = new Color(0.90f, 0.82f, 0.66f, 0.28f);
+            lineImage.color = currentLayout.UsesNormalizedPositions
+                ? new Color(0.90f, 0.82f, 0.66f, 0.22f)
+                : new Color(0.90f, 0.82f, 0.66f, 0.28f);
             lineImage.raycastTarget = false;
 
             return new ConnectionVisual(connection.SourceNodeId, connection.TargetNodeId, lineRectTransform);
@@ -314,7 +322,9 @@ namespace Survivalon.World
 
             RectTransform buttonRectTransform = buttonObject.GetComponent<RectTransform>();
             buttonRectTransform.localScale = Vector3.one;
-            buttonRectTransform.sizeDelta = new Vector2(NodeButtonWidth, NodeButtonHeight);
+            buttonRectTransform.sizeDelta = currentLayout.UsesNormalizedPositions
+                ? Vector2.one * AuthoredNodeHitAreaSize
+                : new Vector2(FallbackNodeButtonWidth, FallbackNodeButtonHeight);
 
             if (currentLayout.UsesNormalizedPositions)
             {
@@ -339,8 +349,19 @@ namespace Survivalon.World
             button.interactable = nodeOption.IsSelectable;
             button.onClick.AddListener(() => onNodeSelected(nodeOption.NodeId));
 
-            CreateNodeBacking(buttonObject.transform, nodeOption);
-            CreateNodeIcon(buttonObject.transform, nodeOption, artResolver);
+            Sprite nodeSprite = null;
+            artResolver.TryResolveNodeSprite(nodeOption, out nodeSprite);
+
+            if (currentLayout.UsesNormalizedPositions)
+            {
+                CreateNodeHighlight(buttonObject.transform, nodeOption, nodeSprite);
+            }
+            else
+            {
+                CreateNodeBacking(buttonObject.transform, nodeOption);
+            }
+
+            CreateNodeIcon(buttonObject.transform, nodeSprite);
             if (ShouldShowNodeLabel(nodeOption))
             {
                 CreateNodeLabel(buttonObject.transform, nodeOption);
@@ -363,7 +384,9 @@ namespace Survivalon.World
             backingRectTransform.pivot = new Vector2(0.5f, 0.5f);
             backingRectTransform.anchoredPosition = new Vector2(0f, -58f);
             backingRectTransform.sizeDelta = Vector2.one *
-                (nodeOption.IsSelected || nodeOption.IsCurrentContext ? HighlightBackingSize : NodeBackingSize);
+                (nodeOption.IsSelected || nodeOption.IsCurrentContext
+                    ? FallbackHighlightBackingSize
+                    : FallbackNodeBackingSize);
             backingRectTransform.localScale = Vector3.one;
 
             Image backingImage = backingObject.GetComponent<Image>();
@@ -372,10 +395,39 @@ namespace Survivalon.World
             backingImage.raycastTarget = false;
         }
 
-        private void CreateNodeIcon(
-            Transform parent,
-            WorldMapNodeOption nodeOption,
-            WorldMapArtResolver artResolver)
+        private void CreateNodeHighlight(Transform parent, WorldMapNodeOption nodeOption, Sprite nodeSprite)
+        {
+            if ((!nodeOption.IsSelected && !nodeOption.IsCurrentContext) || nodeSprite == null)
+            {
+                return;
+            }
+
+            GameObject highlightObject = new GameObject(
+                "StateGlow",
+                typeof(RectTransform),
+                typeof(Image));
+            highlightObject.transform.SetParent(parent, false);
+
+            RectTransform highlightRectTransform = highlightObject.GetComponent<RectTransform>();
+            highlightRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            highlightRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            highlightRectTransform.pivot = new Vector2(0.5f, 0.5f);
+            highlightRectTransform.anchoredPosition = Vector2.zero;
+            highlightRectTransform.sizeDelta = Vector2.one *
+                (nodeOption.IsSelected ? AuthoredSelectedGlowSize : AuthoredCurrentGlowSize);
+            highlightRectTransform.localScale = Vector3.one;
+
+            Image highlightImage = highlightObject.GetComponent<Image>();
+            highlightImage.sprite = nodeSprite;
+            highlightImage.preserveAspect = true;
+            highlightImage.raycastTarget = false;
+
+            Color highlightColor = WorldMapScreenStateResolver.ResolveNodeColor(nodeOption);
+            float alpha = nodeOption.IsSelected ? 0.26f : 0.16f;
+            highlightImage.color = new Color(highlightColor.r, highlightColor.g, highlightColor.b, alpha);
+        }
+
+        private void CreateNodeIcon(Transform parent, Sprite nodeSprite)
         {
             GameObject iconObject = new GameObject(
                 "StateIcon",
@@ -384,18 +436,30 @@ namespace Survivalon.World
             iconObject.transform.SetParent(parent, false);
 
             RectTransform iconRectTransform = iconObject.GetComponent<RectTransform>();
-            iconRectTransform.anchorMin = new Vector2(0.5f, 1f);
-            iconRectTransform.anchorMax = new Vector2(0.5f, 1f);
-            iconRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            iconRectTransform.anchoredPosition = new Vector2(0f, -58f);
-            iconRectTransform.sizeDelta = Vector2.one * NodeIconSize;
+            if (currentLayout.UsesNormalizedPositions)
+            {
+                iconRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                iconRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                iconRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                iconRectTransform.anchoredPosition = Vector2.zero;
+                iconRectTransform.sizeDelta = Vector2.one * AuthoredNodeIconSize;
+            }
+            else
+            {
+                iconRectTransform.anchorMin = new Vector2(0.5f, 1f);
+                iconRectTransform.anchorMax = new Vector2(0.5f, 1f);
+                iconRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                iconRectTransform.anchoredPosition = new Vector2(0f, -58f);
+                iconRectTransform.sizeDelta = Vector2.one * FallbackNodeIconSize;
+            }
+
             iconRectTransform.localScale = Vector3.one;
 
             Image iconImage = iconObject.GetComponent<Image>();
             iconImage.preserveAspect = true;
             iconImage.raycastTarget = false;
 
-            if (artResolver.TryResolveNodeSprite(nodeOption, out Sprite nodeSprite))
+            if (nodeSprite != null)
             {
                 iconImage.sprite = nodeSprite;
                 iconImage.color = Color.white;
@@ -414,15 +478,23 @@ namespace Survivalon.World
             labelPlateObject.transform.SetParent(parent, false);
 
             RectTransform labelPlateRectTransform = labelPlateObject.GetComponent<RectTransform>();
-            labelPlateRectTransform.anchorMin = new Vector2(0.5f, 0f);
-            labelPlateRectTransform.anchorMax = new Vector2(0.5f, 0f);
-            labelPlateRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            labelPlateRectTransform.anchoredPosition = currentLayout.UsesNormalizedPositions
-                ? new Vector2(0f, 22f)
-                : new Vector2(0f, 30f);
-            labelPlateRectTransform.sizeDelta = currentLayout.UsesNormalizedPositions
-                ? new Vector2(176f, 34f)
-                : new Vector2(164f, 54f);
+            if (currentLayout.UsesNormalizedPositions)
+            {
+                labelPlateRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+                labelPlateRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                labelPlateRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                labelPlateRectTransform.anchoredPosition = new Vector2(0f, -50f);
+                labelPlateRectTransform.sizeDelta = new Vector2(152f, 28f);
+            }
+            else
+            {
+                labelPlateRectTransform.anchorMin = new Vector2(0.5f, 0f);
+                labelPlateRectTransform.anchorMax = new Vector2(0.5f, 0f);
+                labelPlateRectTransform.pivot = new Vector2(0.5f, 0.5f);
+                labelPlateRectTransform.anchoredPosition = new Vector2(0f, 30f);
+                labelPlateRectTransform.sizeDelta = new Vector2(164f, 54f);
+            }
+
             labelPlateRectTransform.localScale = Vector3.one;
 
             Image labelPlateImage = labelPlateObject.GetComponent<Image>();
@@ -435,14 +507,14 @@ namespace Survivalon.World
                 labelPlateObject.transform,
                 uiFont,
                 "Label",
-                currentLayout.UsesNormalizedPositions ? 13 : 14,
+                currentLayout.UsesNormalizedPositions ? 12 : 14,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
                 Color.white);
             labelText.text = BuildNodeSurfaceLabel(nodeOption);
             labelText.resizeTextForBestFit = currentLayout.UsesNormalizedPositions;
-            labelText.resizeTextMinSize = 11;
-            labelText.resizeTextMaxSize = 13;
+            labelText.resizeTextMinSize = 10;
+            labelText.resizeTextMaxSize = 12;
 
             RectTransform labelRectTransform = labelText.rectTransform;
             labelRectTransform.anchorMin = Vector2.zero;
@@ -475,7 +547,7 @@ namespace Survivalon.World
                 return true;
             }
 
-            return nodeOption.IsSelected || nodeOption.IsCurrentContext;
+            return nodeOption.IsSelected;
         }
 
         private static void ConfigureButtonColors(Button button, WorldMapNodeOption nodeOption)
@@ -513,7 +585,10 @@ namespace Survivalon.World
                 }
 
                 connectionVisual.RectTransform.gameObject.SetActive(true);
-                connectionVisual.RectTransform.sizeDelta = new Vector2(distance, ConnectionThickness);
+                float connectionThickness = currentLayout.UsesNormalizedPositions
+                    ? AuthoredConnectionThickness
+                    : FallbackConnectionThickness;
+                connectionVisual.RectTransform.sizeDelta = new Vector2(distance, connectionThickness);
                 connectionVisual.RectTransform.anchoredPosition = (sourcePosition + targetPosition) * 0.5f;
                 connectionVisual.RectTransform.localEulerAngles = new Vector3(
                     0f,

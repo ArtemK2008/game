@@ -113,12 +113,14 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(farmNodeIcon.sprite, Is.Not.Null);
                 Assert.That(eliteNodeIcon.sprite, Is.Not.Null);
                 Assert.That(serviceNodeIcon.sprite, Is.Not.Null);
-                Assert.That(currentNodeIcon.rectTransform.rect.width, Is.GreaterThan(100f));
-                Assert.That(currentNodeIcon.rectTransform.rect.height, Is.GreaterThan(100f));
+                Assert.That(currentNodeIcon.rectTransform.rect.width, Is.InRange(64f, 88f));
+                Assert.That(currentNodeIcon.rectTransform.rect.height, Is.InRange(64f, 88f));
                 Assert.That(currentNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(farmNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(eliteNodeIcon.sprite, Is.Not.SameAs(farmNodeIcon.sprite));
                 Assert.That(serviceNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
+                Assert.That(CountObjectsNamed(hostObject, "StateBacking"), Is.EqualTo(0));
+                Assert.That(CountObjectsNamed(hostObject, "StateGlow"), Is.EqualTo(1));
             }
             finally
             {
@@ -187,7 +189,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldLimitAuthoredMapLabelsToCurrentAndSelectedNodes()
+        public void Show_ShouldLimitAuthoredMapLabelsToSelectedNodesOnly()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -200,14 +202,16 @@ namespace Survivalon.Tests.EditMode.World
                     BootstrapWorldTestData.CreateWorldState(),
                     gameState: gameState);
 
-                Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(1));
+                Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(0));
+                Assert.That(CountObjectsNamed(hostObject, "StateGlow"), Is.EqualTo(1));
 
                 FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").onClick.Invoke();
 
                 Assert.That(
                     ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: Forest Farm"),
                     Is.True);
-                Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(2));
+                Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(1));
+                Assert.That(CountObjectsNamed(hostObject, "StateGlow"), Is.EqualTo(2));
             }
             finally
             {

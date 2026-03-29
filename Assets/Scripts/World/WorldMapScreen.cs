@@ -262,13 +262,13 @@ namespace Survivalon.World
             panelRectTransform = panelObject.GetComponent<RectTransform>();
             panelRectTransform.anchorMin = Vector2.zero;
             panelRectTransform.anchorMax = Vector2.one;
-            panelRectTransform.offsetMin = new Vector2(24f, 24f);
-            panelRectTransform.offsetMax = new Vector2(-24f, -24f);
+            panelRectTransform.offsetMin = new Vector2(20f, 20f);
+            panelRectTransform.offsetMax = new Vector2(-20f, -20f);
             panelRectTransform.localScale = Vector3.one;
 
             HorizontalLayoutGroup panelLayout = panelObject.GetComponent<HorizontalLayoutGroup>();
-            panelLayout.padding = new RectOffset(18, 18, 18, 18);
-            panelLayout.spacing = 18f;
+            panelLayout.padding = new RectOffset(14, 14, 14, 14);
+            panelLayout.spacing = 14f;
             panelLayout.childAlignment = TextAnchor.UpperLeft;
             panelLayout.childControlWidth = true;
             panelLayout.childControlHeight = true;
@@ -292,12 +292,12 @@ namespace Survivalon.World
             sidebarImage.color = new Color(0.05f, 0.07f, 0.09f, 0.88f);
 
             LayoutElement sidebarLayoutElement = sidebarObject.GetComponent<LayoutElement>();
-            sidebarLayoutElement.preferredWidth = 312f;
-            sidebarLayoutElement.minWidth = 296f;
+            sidebarLayoutElement.preferredWidth = 276f;
+            sidebarLayoutElement.minWidth = 248f;
             sidebarLayoutElement.flexibleHeight = 1f;
 
             VerticalLayoutGroup sidebarLayout = sidebarObject.GetComponent<VerticalLayoutGroup>();
-            sidebarLayout.padding = new RectOffset(16, 16, 16, 16);
+            sidebarLayout.padding = new RectOffset(14, 14, 14, 14);
             sidebarLayout.spacing = 8f;
             sidebarLayout.childAlignment = TextAnchor.UpperLeft;
             sidebarLayout.childControlWidth = true;
