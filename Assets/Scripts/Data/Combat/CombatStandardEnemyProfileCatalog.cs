@@ -28,15 +28,29 @@ namespace Survivalon.Data.Combat
                 defense: 6f),
             CombatEnemyBehaviorType.BulwarkPressure,
             CombatHostileEntityType.StandardEnemy);
+        private static readonly CombatEnemyProfile RuinSentinelProfile = new CombatEnemyProfile(
+            "combat_enemy_ruin_sentinel",
+            "enemy_003",
+            "Ruin Sentinel",
+            new CombatStatBlock(
+                maxHealth: 95f,
+                attackPower: 11f,
+                attackRate: 0.95f,
+                defense: 8f),
+            CombatEnemyBehaviorType.SentinelPressure,
+            CombatHostileEntityType.StandardEnemy);
         private static readonly IReadOnlyList<CombatEnemyProfile> AllProfiles = Array.AsReadOnly(new[]
         {
             EnemyUnitProfile,
             BulwarkRaiderProfile,
+            RuinSentinelProfile,
         });
 
         public static CombatEnemyProfile EnemyUnit => EnemyUnitProfile;
 
         public static CombatEnemyProfile BulwarkRaider => BulwarkRaiderProfile;
+
+        public static CombatEnemyProfile RuinSentinel => RuinSentinelProfile;
 
         public static IReadOnlyList<CombatEnemyProfile> All => AllProfiles;
 

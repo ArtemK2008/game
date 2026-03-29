@@ -209,7 +209,11 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.NodeDisplayName, Is.EqualTo("Scorched Approach"));
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.SunscorchRuins));
             Assert.That(placeholderState.LocationIdentity.RewardSourceDisplayName, Is.EqualTo("Sunscorch salvage"));
-            Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Scorched raiders"));
+            Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Ruin sentinels"));
+            Assert.That(placeholderState.CombatEncounter, Is.SameAs(CombatStandardEncounterCatalog.RuinSentinelEncounter));
+            Assert.That(
+                placeholderState.CombatEncounter.PrimaryEnemyProfile,
+                Is.SameAs(CombatStandardEnemyProfileCatalog.RuinSentinel));
             Assert.That(placeholderState.SupportsRegionMaterialRewards, Is.True);
         }
 

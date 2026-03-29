@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 099** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 100** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -65,7 +65,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - The shipped location identities now also carry small gameplay-facing emphasis data:
   - `Verdant Frontier` is the region-material farming / raider-emphasis location
   - `Echo Caverns` is the progression-focused / gate-guardian-emphasis location
-  - `Sunscorch Ruins` is the deeper region-material recovery / scorched-raider-emphasis location
+  - `Sunscorch Ruins` is the deeper region-material recovery / ruin-sentinel-emphasis location
 - Reachability supports forward movement and backtracking from current world context.
 - The world map shows friendly node identity, node type, node state, current/selectable status, and a small summary of current context.
 - The shipped bootstrap nodes now carry authored friendly player-facing names, and the main world-map surfaces use those names instead of raw internal node ids:
@@ -97,7 +97,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Scorched Approach` is the first readable forward step into that region
   - `Ruin Span` continues the push path
   - `Ash Cache` is the local side-farm branch
-  - this keeps the graph breadth growing without adding a new enemy family, a new service hub, or a broader world-map redesign
+  - this keeps the graph breadth growing without adding a new service hub or a broader world-map redesign
+- `Sunscorch Ruins` now also uses one distinct authored enemy family for its ordinary combat content:
+  - `Ruin Sentinel` is the standard hostile profile for `Scorched Approach`, `Ruin Span`, and `Ash Cache`
+  - this strengthens the region's mechanical identity through enemy diversity without changing the current world-graph shape
 - The same world-map entry action now also supports one low-friction repeat path only after an explicit in-session return to the world map:
   - after `post-run -> return to world` or `town/service -> return to world`, the existing entry button temporarily becomes a one-click `Replay <current combat node>` or `Return to <current service node>` action
   - ordinary startup/load into the world map, safe resume, and first world-map entry do not show that shortcut
@@ -498,11 +501,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `specs/10_art/combat_vfx_pipeline.md`
 - Current prep status:
   - playable-character portrait, world-icon, and combat-state assets already exist in canonical gameplay-facing form
-  - enemy combat state sheets now also have canonical split `idle` / `attack` / `hit` / `defeat` files while retaining the original sheets as source assets, including the newly prepared `RuinSentinel` enemy sheet for later hookup
+  - enemy combat state sheets now also have canonical split `idle` / `attack` / `hit` / `defeat` files while retaining the original sheets as source assets, including the `RuinSentinel` family now used by live `Sunscorch Ruins` combat content
   - current combat and service backgrounds are stored as stable place-owned canonical files under `Assets/Art/Locations/`
   - current combat VFX remain intentionally sheet-based canonical source assets under `Assets/Art/VFX/Combat/`
 - Current runtime hookup status:
   - player and enemy combat-state sprites are now wired into the live combat shell
+  - the current runtime-wired enemy set now includes `EnemyUnit`, `BulwarkRaider`, `GateBoss`, and `RuinSentinel`
   - combat location backgrounds are now wired into the live combat shell for `Verdant Frontier`, `Echo Caverns`, and `Sunscorch Ruins`
   - the current `Cavern Service Hub` service background is now wired into the live town/service shell
   - the current combat VFX sheets are now wired directly into the live combat shell for restrained impact, `Burst Strike`, low-health danger, and defeat readability cues
@@ -546,7 +550,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Combat nodes use a minimal direct-engagement model with no movement, range, animation, or final presentation systems.
 - The current passive skill layer is still interpreted through a small hardcoded resolver path for the single shipped passive, `Relentless Assault`.
 - The current auto-triggered active skill layer is still interpreted through small hardcoded resolver paths for the single shipped active skill, `Burst Strike`.
-- Standard enemy and boss variety are still intentionally small: one faster baseline standard enemy, one slower sturdier push-oriented standard enemy variant, and one explicit gate-boss profile/encounter currently exist, while broader enemy rosters and faction/content variety are still deferred.
+- Standard enemy and boss variety are still intentionally small: one faster baseline standard enemy, one slower sturdier push-oriented raider variant, one later-region `Ruin Sentinel` standard enemy family, and one explicit gate-boss profile/encounter currently exist, while broader enemy rosters and faction/content variety are still deferred.
 - Standard-enemy encounter/profile data and boss encounter/profile data now live in separate small catalogs, while current encounter content remains bootstrap-seeded.
 - Boss/gate node progress behavior is still intentionally temporary beyond the new forest-gate unlock result; boss defeat now opens the next gate target and grants one small differentiated boss reward bundle, but broader boss clear semantics and richer boss reward systems are still deferred.
 

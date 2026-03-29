@@ -167,19 +167,19 @@ namespace Survivalon.Tests.EditMode.World
                 Is.Null);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.SunscorchEntryNodeId).CombatEncounter,
-                Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
+                Is.SameAs(CombatStandardEncounterCatalog.RuinSentinelEncounter));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.SunscorchEntryNodeId).DisplayName,
                 Is.EqualTo("Scorched Approach"));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.SunscorchPushNodeId).CombatEncounter,
-                Is.SameAs(CombatStandardEncounterCatalog.BulwarkRaiderEncounter));
+                Is.SameAs(CombatStandardEncounterCatalog.RuinSentinelEncounter));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.SunscorchPushNodeId).DisplayName,
                 Is.EqualTo("Ruin Span"));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.SunscorchFarmNodeId).CombatEncounter,
-                Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
+                Is.SameAs(CombatStandardEncounterCatalog.RuinSentinelEncounter));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.SunscorchFarmNodeId).DisplayName,
                 Is.EqualTo("Ash Cache"));
@@ -271,7 +271,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(sunscorchRegion.LocationIdentity.IsFallbackIdentity, Is.False);
             Assert.That(sunscorchRegion.LocationIdentity.DisplayName, Is.EqualTo("Sunscorch Ruins"));
             Assert.That(sunscorchRegion.LocationIdentity.RewardSourceDisplayName, Is.EqualTo("Sunscorch salvage"));
-            Assert.That(sunscorchRegion.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Scorched raiders"));
+            Assert.That(sunscorchRegion.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Ruin sentinels"));
             Assert.That(sunscorchRegion.NodeIds, Is.EqualTo(new[]
             {
                 BootstrapWorldScenario.SunscorchEntryNodeId,

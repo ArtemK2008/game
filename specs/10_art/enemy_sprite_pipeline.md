@@ -118,7 +118,10 @@ The source sheet may also remain imported as a single sprite asset because the c
 This prep supports later hookup work without claiming that those milestones are already implemented.
 Future runtime work should consume the canonical split state files first and only fall back to the source sheets when a specific milestone explicitly needs sheet-based slicing logic.
 
+## Current runtime hookup note
+- `EnemyUnit`, `BulwarkRaider`, and `GateBoss` remain wired through the current combat shell sprite registry.
+- `RuinSentinel` is now also wired through that same registry as the shipped standard enemy family for `Sunscorch Ruins`.
+
 ## Current gaps
 - No authored multi-frame enemy animation clips exist yet.
 - No dedicated elite-only or boss-only alternate state sets exist yet beyond the current `GateBoss` state strip.
-- `RuinSentinel` is currently prepared-only art and is not wired into runtime enemy content yet.

@@ -115,9 +115,13 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(frontierBackground, Is.Not.SameAs(cavernBackground));
                 Assert.That(frontierBackground, Is.Not.SameAs(sunscorchBackground));
                 Assert.That(cavernBackground, Is.Not.SameAs(sunscorchBackground));
+                Assert.That(
+                    FindImage(frontierHostObject, "EnemyCombatEntitySprite").sprite,
+                    Is.Not.SameAs(FindImage(sunscorchHostObject, "EnemyCombatEntitySprite").sprite));
                 Assert.That(ContainsText(frontierHostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(cavernHostObject, "Echo Caverns | Cavern Gate"), Is.True);
                 Assert.That(ContainsText(sunscorchHostObject, "Sunscorch Ruins | Scorched Approach"), Is.True);
+                Assert.That(ContainsText(sunscorchHostObject, "Ruin Sentinel"), Is.True);
             }
             finally
             {
@@ -435,6 +439,31 @@ namespace Survivalon.Tests.EditMode.World
                 }
 
                 Assert.That(observedBurstEffect, Is.True);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldDisplaySunscorchCombatWithRuinSentinelFamily()
+        {
+            GameObject hostObject = new GameObject("NodePlaceholderHost_SunscorchCombat");
+
+            try
+            {
+                NodePlaceholderScreen placeholderScreen = hostObject.AddComponent<NodePlaceholderScreen>();
+
+                placeholderScreen.Show(
+                    CreateWorldGraph(),
+                    NodePlaceholderTestData.CreateSunscorchCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
+                Assert.That(ContainsText(hostObject, "Sunscorch Ruins | Scorched Approach"), Is.True);
+                Assert.That(ContainsText(hostObject, "Health: Vanguard 120 / 120 | Ruin Sentinel 95 / 95"), Is.True);
+                Assert.That(FindImage(hostObject, "EnemyCombatEntitySprite").sprite, Is.Not.Null);
             }
             finally
             {

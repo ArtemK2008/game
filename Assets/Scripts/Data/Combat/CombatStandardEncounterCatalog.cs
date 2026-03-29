@@ -10,9 +10,15 @@ namespace Survivalon.Data.Combat
             new CombatStandardEncounterDefinition(
                 "combat_encounter_bulwark_raider",
                 CombatStandardEnemyProfileCatalog.BulwarkRaider);
+        private static readonly CombatStandardEncounterDefinition RuinSentinelEncounterDefinition =
+            new CombatStandardEncounterDefinition(
+                "combat_encounter_ruin_sentinel",
+                CombatStandardEnemyProfileCatalog.RuinSentinel);
 
         public static CombatStandardEncounterDefinition EnemyUnitEncounter => EnemyUnitEncounterDefinition;
 
         public static CombatStandardEncounterDefinition BulwarkRaiderEncounter => BulwarkRaiderEncounterDefinition;
+
+        public static CombatStandardEncounterDefinition RuinSentinelEncounter => RuinSentinelEncounterDefinition;
     }
 }

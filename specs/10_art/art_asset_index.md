@@ -82,12 +82,13 @@ Current canonical sheet assets:
 
 ## Current prep status
 - Player character assets were already in canonical gameplay-facing form.
-- Enemy combat sheets were normalized into canonical split state files while retaining the source sheets, including the newly prepared `RuinSentinel` family.
+- Enemy combat sheets were normalized into canonical split state files while retaining the source sheets, with `RuinSentinel` now promoted from prepared art to live runtime use.
 - Current location/service backgrounds were left in place and documented as the canonical gameplay-facing files.
 - Current combat VFX assets remain intentionally sheet-based canonical source files, and milestone `094` now uses those sheets directly for restrained combat readability cues without splitting them into a broader sequence pipeline.
 
 ## Current hookup status
 - Milestone `091` now wires the current canonical player and enemy combat-state sprites into the live combat shell.
+- Milestone `100` now wires the current canonical `RuinSentinel` state set into live `Sunscorch Ruins` combat content.
 - Milestone `092` and `099` now wire the current canonical combat backgrounds for `VerdantFrontier`, `EchoCaverns`, and `SunscorchRuins` into the live combat shell.
 - Milestone `093` now wires the current canonical `CavernServiceHub` service background into the live town/service shell.
 - That runtime hookup currently uses only the combat-state files under:

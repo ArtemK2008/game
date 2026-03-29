@@ -147,7 +147,7 @@ namespace Survivalon.Tests.EditMode.World
                 NodeType.Combat,
                 NodeState.Available,
                 BootstrapWorldScenario.CavernGateNodeId,
-                CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                CombatStandardEncounterCatalog.RuinSentinelEncounter,
                 locationIdentity: LocationIdentityCatalog.SunscorchRuins,
                 supportsRegionMaterialRewards: true,
                 nodeDisplayName: "Scorched Approach");

@@ -15,10 +15,16 @@ namespace Survivalon.Tests.EditMode.Data
                 CombatStandardEncounterCatalog.BulwarkRaiderEncounter.PrimaryEnemyProfile,
                 Is.SameAs(CombatStandardEnemyProfileCatalog.BulwarkRaider));
             Assert.That(
+                CombatStandardEncounterCatalog.RuinSentinelEncounter.PrimaryEnemyProfile,
+                Is.SameAs(CombatStandardEnemyProfileCatalog.RuinSentinel));
+            Assert.That(
                 CombatStandardEncounterCatalog.EnemyUnitEncounter.EncounterType,
                 Is.EqualTo(CombatEncounterType.StandardEnemy));
             Assert.That(
                 CombatStandardEncounterCatalog.BulwarkRaiderEncounter.PrimaryEnemyProfile.HostileEntityType,
+                Is.EqualTo(CombatHostileEntityType.StandardEnemy));
+            Assert.That(
+                CombatStandardEncounterCatalog.RuinSentinelEncounter.PrimaryEnemyProfile.HostileEntityType,
                 Is.EqualTo(CombatHostileEntityType.StandardEnemy));
         }
 

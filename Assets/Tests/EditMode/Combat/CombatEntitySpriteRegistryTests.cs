@@ -27,6 +27,10 @@ namespace Survivalon.Tests.EditMode.Combat
             Assert.That(registry.TryGetSprite("enemy_002", CombatEntityVisualStateId.Attack, out _), Is.True);
             Assert.That(registry.TryGetSprite("enemy_002", CombatEntityVisualStateId.Hit, out _), Is.True);
             Assert.That(registry.TryGetSprite("enemy_002", CombatEntityVisualStateId.Defeat, out _), Is.True);
+            Assert.That(registry.TryGetSprite("enemy_003", CombatEntityVisualStateId.Idle, out _), Is.True);
+            Assert.That(registry.TryGetSprite("enemy_003", CombatEntityVisualStateId.Attack, out _), Is.True);
+            Assert.That(registry.TryGetSprite("enemy_003", CombatEntityVisualStateId.Hit, out _), Is.True);
+            Assert.That(registry.TryGetSprite("enemy_003", CombatEntityVisualStateId.Defeat, out _), Is.True);
             Assert.That(registry.TryGetSprite("boss_001", CombatEntityVisualStateId.Idle, out _), Is.True);
             Assert.That(registry.TryGetSprite("boss_001", CombatEntityVisualStateId.Attack, out _), Is.True);
             Assert.That(registry.TryGetSprite("boss_001", CombatEntityVisualStateId.Hit, out _), Is.True);
@@ -36,6 +40,9 @@ namespace Survivalon.Tests.EditMode.Combat
                 Is.True);
             Assert.That(
                 registry.TryGetSprite("region_001_node_002_enemy_002", CombatEntityVisualStateId.Attack, out _),
+                Is.True);
+            Assert.That(
+                registry.TryGetSprite("region_003_node_001_enemy_003", CombatEntityVisualStateId.Hit, out _),
                 Is.True);
             Assert.That(
                 registry.TryGetSprite("region_001_node_005_boss_001", CombatEntityVisualStateId.Defeat, out _),

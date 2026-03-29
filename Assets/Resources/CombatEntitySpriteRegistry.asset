@@ -38,3 +38,8 @@ MonoBehaviour:
     attackSprite: {fileID: 7785246177741192739, guid: dd9c2a61e44543759b41933492c3ebcf, type: 3}
     hitSprite: {fileID: 5589011430745950069, guid: e4c0826a4916477082fd057422cc594f, type: 3}
     defeatSprite: {fileID: 2322707203088492704, guid: c4092fd7415843af86af6f0252681b03, type: 3}
+  - combatEntityId: enemy_003
+    idleSprite: {fileID: 4996842061577435673, guid: 732bf12b695b48998af3091141b6855f, type: 3}
+    attackSprite: {fileID: 1445381992357858346, guid: 947e2803257a4ea2b424484e1286c261, type: 3}
+    hitSprite: {fileID: 7867743659455778664, guid: e140f506a18749ba96604995d8c94cf8, type: 3}
+    defeatSprite: {fileID: 3050089658451643442, guid: 296bbe5c14da4984bdff67d7928dabd9, type: 3}

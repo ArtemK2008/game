@@ -44,16 +44,40 @@ namespace Survivalon.Tests.EditMode.Combat
         }
 
         [Test]
+        public void ShouldResolveRuinSentinelForSunscorchCombatNodes()
+        {
+            CombatEnemyProfileResolver resolver = new CombatEnemyProfileResolver();
+
+            CombatEnemyProfile resolvedProfile = resolver.Resolve(
+                NodePlaceholderTestData.CreateSunscorchCombatPlaceholderState());
+
+            Assert.That(resolvedProfile, Is.SameAs(CombatStandardEnemyProfileCatalog.RuinSentinel));
+            Assert.That(resolvedProfile.DisplayName, Is.EqualTo("Ruin Sentinel"));
+            Assert.That(resolvedProfile.EntityIdSuffix, Is.EqualTo("enemy_003"));
+            Assert.That(resolvedProfile.BaseStats.MaxHealth, Is.EqualTo(95f));
+            Assert.That(resolvedProfile.BaseStats.AttackPower, Is.EqualTo(11f));
+            Assert.That(resolvedProfile.BaseStats.AttackRate, Is.EqualTo(0.95f));
+            Assert.That(resolvedProfile.BaseStats.Defense, Is.EqualTo(8f));
+            Assert.That(resolvedProfile.BehaviorType, Is.EqualTo(CombatEnemyBehaviorType.SentinelPressure));
+        }
+
+        [Test]
         public void ShouldExposeDifferentPressureStatsAcrossShippedStandardEnemyProfiles()
         {
             CombatEnemyProfile enemyUnitProfile = CombatStandardEnemyProfileCatalog.EnemyUnit;
             CombatEnemyProfile bulwarkRaiderProfile = CombatStandardEnemyProfileCatalog.BulwarkRaider;
+            CombatEnemyProfile ruinSentinelProfile = CombatStandardEnemyProfileCatalog.RuinSentinel;
 
             Assert.That(enemyUnitProfile.BaseStats.AttackRate, Is.GreaterThan(bulwarkRaiderProfile.BaseStats.AttackRate));
             Assert.That(enemyUnitProfile.BaseStats.MaxHealth, Is.LessThan(bulwarkRaiderProfile.BaseStats.MaxHealth));
             Assert.That(enemyUnitProfile.BaseStats.Defense, Is.LessThan(bulwarkRaiderProfile.BaseStats.Defense));
             Assert.That(enemyUnitProfile.BaseStats.AttackPower, Is.LessThan(bulwarkRaiderProfile.BaseStats.AttackPower));
             Assert.That(enemyUnitProfile.BehaviorType, Is.Not.EqualTo(bulwarkRaiderProfile.BehaviorType));
+            Assert.That(ruinSentinelProfile.BaseStats.AttackPower, Is.GreaterThan(bulwarkRaiderProfile.BaseStats.AttackPower));
+            Assert.That(ruinSentinelProfile.BaseStats.AttackRate, Is.LessThan(enemyUnitProfile.BaseStats.AttackRate));
+            Assert.That(ruinSentinelProfile.BaseStats.Defense, Is.GreaterThan(bulwarkRaiderProfile.BaseStats.Defense));
+            Assert.That(ruinSentinelProfile.BehaviorType, Is.Not.EqualTo(enemyUnitProfile.BehaviorType));
+            Assert.That(ruinSentinelProfile.BehaviorType, Is.Not.EqualTo(bulwarkRaiderProfile.BehaviorType));
         }
 
         [Test]

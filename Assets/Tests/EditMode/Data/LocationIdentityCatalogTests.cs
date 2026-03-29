@@ -25,7 +25,7 @@ namespace Survivalon.Tests.EditMode.Data
             Assert.That(LocationIdentityCatalog.SunscorchRuins.DisplayName, Is.EqualTo("Sunscorch Ruins"));
             Assert.That(LocationIdentityCatalog.SunscorchRuins.RewardSourceDisplayName, Is.EqualTo("Sunscorch salvage"));
             Assert.That(LocationIdentityCatalog.SunscorchRuins.RewardFocusDisplayName, Is.EqualTo("Late region-material recovery"));
-            Assert.That(LocationIdentityCatalog.SunscorchRuins.EnemyEmphasisDisplayName, Is.EqualTo("Scorched raiders"));
+            Assert.That(LocationIdentityCatalog.SunscorchRuins.EnemyEmphasisDisplayName, Is.EqualTo("Ruin sentinels"));
             Assert.That(LocationIdentityCatalog.SunscorchRuins.IsFallbackIdentity, Is.False);
         }
 

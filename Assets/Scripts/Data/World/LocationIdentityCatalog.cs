@@ -26,7 +26,7 @@ namespace Survivalon.Data.World
                 "Sunscorch Ruins",
                 "Sunscorch salvage",
                 "Late region-material recovery",
-                "Scorched raiders");
+                "Ruin sentinels");
 
         public static LocationIdentityDefinition CreateFallback(RegionId regionId)
         {
