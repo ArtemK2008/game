@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 104** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
+This summary reflects completed work through **Milestone 105** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -52,14 +52,14 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - a persisted UTC stable-save timestamp
   - an explicit persisted offline-progress eligibility kind
 - Eligibility is currently narrow and fail-closed:
-  - only resolved world-level contexts anchored to completed ordinary combat nodes marked `Farm-ready` are offline-progress-eligible
+  - only resolved world-level contexts anchored to completed ordinary combat nodes marked `Farm-ready` and carrying explicit authored region-material yield content are offline-progress-eligible
   - town/service safe contexts are not offline-progress-eligible
   - unresolved combat, boss/gate, service/progression, and ambiguous contexts remain ineligible
 - `Continue` can now interpose one compact offline-farming summary before resuming when the saved state is actually claimable:
   - only on eligible world-map safe contexts
   - only after at least one whole offline hour has elapsed
   - only for ordinary `Region material`
-  - capped to 8 counted hours
+  - capped to 2 counted hours
   - claimed once and persisted immediately before normal resume continues
 - Town/service safe contexts, boss/gate contexts, unresolved contexts, unsupported saved nodes, and zero-hour gaps do not show an offline summary.
 - Broader offline simulation, passive income while the game is open, and deeper offline UI are still disabled.

@@ -36,9 +36,20 @@ namespace Survivalon.State.Persistence
 
             try
             {
-                return worldNodeFarmReadinessResolver.IsFarmReady(worldGraph, worldState, resumeNodeId)
-                    ? OfflineProgressEligibilityKind.FarmReadyWorldNode
-                    : OfflineProgressEligibilityKind.None;
+                if (!worldNodeFarmReadinessResolver.IsFarmReady(worldGraph, worldState, resumeNodeId))
+                {
+                    return OfflineProgressEligibilityKind.None;
+                }
+
+                WorldNode worldNode = worldGraph.GetNode(resumeNodeId);
+                WorldRegion worldRegion = worldGraph.GetRegion(worldNode.RegionId);
+                if (!RegionMaterialRewardSupportResolver.Supports(worldNode.NodeType, worldRegion.ResourceCategory) ||
+                    worldNode.RegionMaterialYieldContent == null)
+                {
+                    return OfflineProgressEligibilityKind.None;
+                }
+
+                return OfflineProgressEligibilityKind.FarmReadyWorldNode;
             }
             catch (KeyNotFoundException)
             {

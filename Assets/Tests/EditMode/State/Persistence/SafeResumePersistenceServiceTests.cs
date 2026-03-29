@@ -10,6 +10,7 @@ using Survivalon.Run;
 using Survivalon.State.Persistence;
 using Survivalon.Tests.EditMode.Run;
 using Survivalon.Tests.EditMode.World;
+using Survivalon.World;
 
 namespace Survivalon.Tests.EditMode.State.Persistence
 {
@@ -134,6 +135,33 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             service.SaveResolvedTownServiceContext(gameState);
 
             Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.HasStableSaveAnchor, Is.True);
+            Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.False);
+            Assert.That(
+                storage.SavedGameState.OfflineProgressStableSaveAnchorState.EligibilityKind,
+                Is.EqualTo(OfflineProgressEligibilityKind.None));
+        }
+
+        [Test]
+        public void ShouldKeepResolvedWorldContextWithoutExplicitFarmYieldOfflineIneligible()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService service = new SafeResumePersistenceService(
+                storage,
+                offlineProgressEligibilityResolver: new OfflineProgressEligibilityResolver(
+                    BootstrapWorldTestData.CreateWorldGraph()));
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            gameState.WorldState.SetCurrentNode(BootstrapWorldScenario.ForestPushNodeId);
+            gameState.WorldState.SetLastSafeNode(BootstrapWorldScenario.ForestPushNodeId);
+            gameState.WorldState.ReplaceReachableNodes(new[] { BootstrapWorldScenario.ForestPushNodeId });
+            Assert.That(
+                gameState.WorldState.TryGetNodeState(
+                    BootstrapWorldScenario.ForestPushNodeId,
+                    out PersistentNodeState nodeState),
+                Is.True);
+            nodeState.ApplyUnlockProgress(nodeState.UnlockThreshold);
+
+            service.SaveResolvedWorldContext(gameState);
+
             Assert.That(storage.SavedGameState.OfflineProgressStableSaveAnchorState.IsEligibleForOfflineProgress, Is.False);
             Assert.That(
                 storage.SavedGameState.OfflineProgressStableSaveAnchorState.EligibilityKind,

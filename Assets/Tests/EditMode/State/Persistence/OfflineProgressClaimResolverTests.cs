@@ -51,7 +51,7 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             bool resolved = resolver.TryResolve(gameState, out OfflineProgressClaimState claimState);
 
             Assert.That(resolved, Is.True);
-            Assert.That(claimState.Amount, Is.EqualTo(24));
+            Assert.That(claimState.Amount, Is.EqualTo(6));
             Assert.That(claimState.CountedWholeHours, Is.EqualTo(OfflineProgressClaimResolver.MaximumClaimableWholeHours));
         }
 
@@ -79,6 +79,21 @@ namespace Survivalon.Tests.EditMode.State.Persistence
                 () => now);
             PersistentGameState gameState = CreateEligibleFarmReadySavedGameState(
                 BootstrapWorldScenario.CavernPushNodeId,
+                now.AddHours(-2));
+
+            Assert.That(resolver.TryResolve(gameState, out OfflineProgressClaimState claimState), Is.False);
+            Assert.That(claimState, Is.Null);
+        }
+
+        [Test]
+        public void ShouldFailClosedWhenSavedWorldNodeHasNoExplicitFarmYieldContent()
+        {
+            DateTimeOffset now = new DateTimeOffset(2026, 3, 29, 12, 0, 0, TimeSpan.Zero);
+            OfflineProgressClaimResolver resolver = new OfflineProgressClaimResolver(
+                BootstrapWorldTestData.CreateWorldGraph(),
+                () => now);
+            PersistentGameState gameState = CreateEligibleFarmReadySavedGameState(
+                BootstrapWorldScenario.ForestPushNodeId,
                 now.AddHours(-2));
 
             Assert.That(resolver.TryResolve(gameState, out OfflineProgressClaimState claimState), Is.False);

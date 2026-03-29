@@ -13,7 +13,12 @@ namespace Survivalon.Tests.EditMode.World
             RegionId regionId = new RegionId("region_001");
             WorldNode currentNode = new WorldNode(new NodeId("node_current"), regionId, NodeType.ServiceOrProgression, NodeState.Available);
             WorldNode reachableNode = new WorldNode(new NodeId("node_reachable"), regionId, NodeType.Combat, NodeState.Available);
-            WorldNode clearedFarmNode = new WorldNode(new NodeId("node_cleared_farm"), regionId, NodeType.Combat, NodeState.Available);
+            WorldNode clearedFarmNode = new WorldNode(
+                new NodeId("node_cleared_farm"),
+                regionId,
+                NodeType.Combat,
+                NodeState.Available,
+                regionMaterialYieldContent: new RegionMaterialYieldContentDefinition(1));
             WorldNode unreachableAvailableNode = new WorldNode(new NodeId("node_unreachable_available"), regionId, NodeType.Combat, NodeState.Available);
             WorldNode lockedNode = new WorldNode(new NodeId("node_locked"), regionId, NodeType.BossOrGate, NodeState.Locked);
 

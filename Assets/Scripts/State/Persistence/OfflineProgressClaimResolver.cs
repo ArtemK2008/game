@@ -29,7 +29,7 @@ namespace Survivalon.State.Persistence
                 worldNodeDisplayNameResolver ?? new WorldNodeDisplayNameResolver();
         }
 
-        public static int MaximumClaimableWholeHours => 8;
+        public static int MaximumClaimableWholeHours => 2;
 
         public bool TryResolve(PersistentGameState gameState, out OfflineProgressClaimState claimState)
         {
@@ -123,9 +123,14 @@ namespace Survivalon.State.Persistence
                     return false;
                 }
 
+                if (worldNode.RegionMaterialYieldContent == null)
+                {
+                    return false;
+                }
+
                 AccountWideProgressionEffectState progressionEffects =
                     progressionEffectResolver.Resolve(gameState.ProgressionState);
-                int regionMaterialYieldBonus = worldNode.RegionMaterialYieldContent?.RegionMaterialBonus ?? 0;
+                int regionMaterialYieldBonus = worldNode.RegionMaterialYieldContent.RegionMaterialBonus;
                 perHourRewardAmount =
                     RunRewardTuningCatalog.Current.OrdinaryCombatRegionMaterialReward.Amount +
                     progressionEffects.OrdinaryRegionMaterialRewardBonus +
