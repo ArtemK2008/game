@@ -175,6 +175,7 @@ id | type | title | status | depends on / note
 106b | follow-up | Upgrade world map node icons to authored eight-slice set | completed | after 106a; keeps next numbered target at 107
 106c | follow-up | Make world map demo ready at 16:9 | completed | after 106b; keeps next numbered target at 107
 106d | follow-up | Clean up world map node visuals for demo presentation | completed | after 106c; keeps next numbered target at 107
+106e | follow-up | Clarify world map node availability and hitbox alignment | completed | after 106d; keeps next numbered target at 107
 
 ## Refactor Milestones
 id | type | title | status | depends on / note

@@ -106,6 +106,9 @@ namespace Survivalon.Tests.EditMode.World
                 Image serviceNodeIcon = FindChildImage(
                     FindButton(hostObject, BootstrapWorldScenario.CavernServiceNodeId.Value + "_Button").gameObject,
                     "StateIcon");
+                Button availableNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button");
+                Button lockedNodeButton = FindButton(hostObject, BootstrapWorldScenario.CavernGateNodeId.Value + "_Button");
+                Button currentNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button");
 
                 Assert.That(backgroundImage.sprite, Is.Not.Null);
                 Assert.That(currentNodeIcon.sprite, Is.Not.Null);
@@ -121,6 +124,42 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(serviceNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(CountObjectsNamed(hostObject, "StateBacking"), Is.EqualTo(0));
                 Assert.That(CountObjectsNamed(hostObject, "StateGlow"), Is.EqualTo(1));
+                Assert.That(FindChildImage(availableNodeButton.gameObject, "StateAccent"), Is.Not.Null);
+                Assert.That(TryFindChildImage(lockedNodeButton.gameObject, "StateAccent"), Is.Null);
+                Assert.That(TryFindChildImage(currentNodeButton.gameObject, "StateAccent"), Is.Null);
+                Assert.That(FindChildImage(currentNodeButton.gameObject, "StateGlow"), Is.Not.Null);
+                Assert.That(FindChildImage(lockedNodeButton.gameObject, "StateIcon").color.a, Is.LessThan(0.7f));
+                Assert.That(FindChildImage(availableNodeButton.gameObject, "StateIcon").color.a, Is.GreaterThan(0.9f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldCenterAuthoredMapHitTargetOnVisibleNodeIcon()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                Button currentNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button");
+                Button availableNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button");
+
+                AssertCentersAligned(
+                    currentNodeButton.GetComponent<RectTransform>(),
+                    FindChildImage(currentNodeButton.gameObject, "StateIcon").rectTransform);
+                AssertCentersAligned(
+                    availableNodeButton.GetComponent<RectTransform>(),
+                    FindChildImage(availableNodeButton.gameObject, "StateIcon").rectTransform);
             }
             finally
             {
@@ -1014,6 +1053,18 @@ namespace Survivalon.Tests.EditMode.World
 
         private static Image FindChildImage(GameObject rootObject, string objectName)
         {
+            Image image = TryFindChildImage(rootObject, objectName);
+            if (image != null)
+            {
+                return image;
+            }
+
+            Assert.Fail($"Child image '{objectName}' was not found.");
+            return null;
+        }
+
+        private static Image TryFindChildImage(GameObject rootObject, string objectName)
+        {
             Image[] images = rootObject.GetComponentsInChildren<Image>(true);
             foreach (Image image in images)
             {
@@ -1023,7 +1074,6 @@ namespace Survivalon.Tests.EditMode.World
                 }
             }
 
-            Assert.Fail($"Child image '{objectName}' was not found.");
             return null;
         }
 
@@ -1152,6 +1202,14 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(childRect.xMin, Is.GreaterThanOrEqualTo(viewportRect.xMin - 1f));
             Assert.That(childRect.xMax, Is.LessThanOrEqualTo(viewportRect.xMax + 1f));
+        }
+
+        private static void AssertCentersAligned(RectTransform first, RectTransform second)
+        {
+            Vector2 firstCenter = GetWorldRect(first).center;
+            Vector2 secondCenter = GetWorldRect(second).center;
+
+            Assert.That(Vector2.Distance(firstCenter, secondCenter), Is.LessThanOrEqualTo(1f));
         }
 
         private static PersistentGameState CreateFarmReadyReplayGameState()

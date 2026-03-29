@@ -81,6 +81,77 @@ namespace Survivalon.World
 
             return new Color(0.34f, 0.34f, 0.38f, 1f);
         }
+
+        public static Color ResolveNodeIconTint(WorldMapNodeOption nodeOption)
+        {
+            if (nodeOption == null)
+            {
+                throw new ArgumentNullException(nameof(nodeOption));
+            }
+
+            if (nodeOption.IsSelected)
+            {
+                return Color.white;
+            }
+
+            if (nodeOption.IsCurrentContext)
+            {
+                return new Color(0.90f, 0.96f, 1f, 1f);
+            }
+
+            if (nodeOption.NodeState == NodeState.Locked)
+            {
+                return new Color(0.42f, 0.44f, 0.48f, 0.52f);
+            }
+
+            if (IsReplayableNode(nodeOption))
+            {
+                return new Color(0.84f, 0.93f, 0.94f, 0.90f);
+            }
+
+            if (nodeOption.IsSelectable)
+            {
+                return new Color(1f, 1f, 1f, 0.98f);
+            }
+
+            return new Color(0.72f, 0.76f, 0.81f, 0.74f);
+        }
+
+        public static bool TryResolveNodeAccent(WorldMapNodeOption nodeOption, out Color accentColor)
+        {
+            if (nodeOption == null)
+            {
+                throw new ArgumentNullException(nameof(nodeOption));
+            }
+
+            if (nodeOption.IsSelected || nodeOption.IsCurrentContext || nodeOption.NodeState == NodeState.Locked)
+            {
+                accentColor = default;
+                return false;
+            }
+
+            if (IsReplayableNode(nodeOption))
+            {
+                accentColor = new Color(0.33f, 0.72f, 0.80f, 0.22f);
+                return true;
+            }
+
+            if (nodeOption.IsSelectable)
+            {
+                accentColor = new Color(0.50f, 0.90f, 0.42f, 0.28f);
+                return true;
+            }
+
+            accentColor = default;
+            return false;
+        }
+
+        private static bool IsReplayableNode(WorldMapNodeOption nodeOption)
+        {
+            return nodeOption.NodeState == NodeState.Cleared ||
+                nodeOption.IsFarmReady ||
+                nodeOption.PathRole == WorldMapPathRole.ReplayableFarmNode;
+        }
     }
 
     public readonly struct WorldMapScreenButtonState

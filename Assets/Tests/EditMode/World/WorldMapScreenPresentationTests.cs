@@ -392,6 +392,70 @@ namespace Survivalon.Tests.EditMode.World
                 Throws.ArgumentNullException.With.Property("ParamName").EqualTo("nodeOption"));
         }
 
+        [Test]
+        public void ResolveNodeIconTint_ShouldDifferentiateLockedSelectableReplayableCurrentAndSelectedStates()
+        {
+            Color lockedTint = WorldMapScreenStateResolver.ResolveNodeIconTint(
+                CreateNodeOption("locked", NodeState.Locked, isSelectable: false, isCurrentContext: false, isSelected: false));
+            Color selectableTint = WorldMapScreenStateResolver.ResolveNodeIconTint(
+                CreateNodeOption("selectable", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: false));
+            Color replayableTint = WorldMapScreenStateResolver.ResolveNodeIconTint(
+                CreateNodeOption(
+                    "replayable",
+                    NodeState.Cleared,
+                    isSelectable: true,
+                    isCurrentContext: false,
+                    isSelected: false,
+                    isFarmReady: true));
+            Color currentTint = WorldMapScreenStateResolver.ResolveNodeIconTint(
+                CreateNodeOption("current", NodeState.InProgress, isSelectable: false, isCurrentContext: true, isSelected: false));
+            Color selectedTint = WorldMapScreenStateResolver.ResolveNodeIconTint(
+                CreateNodeOption("selected", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: true));
+
+            Assert.That(lockedTint.a, Is.LessThan(selectableTint.a));
+            Assert.That(replayableTint, Is.Not.EqualTo(selectableTint));
+            Assert.That(currentTint, Is.Not.EqualTo(selectableTint));
+            Assert.That(selectedTint, Is.EqualTo(Color.white));
+        }
+
+        [Test]
+        public void TryResolveNodeAccent_ShouldHighlightSelectableAndReplayableNodesButNotLockedCurrentOrSelectedNodes()
+        {
+            Assert.That(
+                WorldMapScreenStateResolver.TryResolveNodeAccent(
+                    CreateNodeOption("selectable", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: false),
+                    out Color selectableAccent),
+                Is.True);
+            Assert.That(
+                WorldMapScreenStateResolver.TryResolveNodeAccent(
+                    CreateNodeOption(
+                        "replayable",
+                        NodeState.Cleared,
+                        isSelectable: true,
+                        isCurrentContext: false,
+                        isSelected: false,
+                        isFarmReady: true),
+                    out Color replayableAccent),
+                Is.True);
+            Assert.That(
+                WorldMapScreenStateResolver.TryResolveNodeAccent(
+                    CreateNodeOption("locked", NodeState.Locked, isSelectable: false, isCurrentContext: false, isSelected: false),
+                    out _),
+                Is.False);
+            Assert.That(
+                WorldMapScreenStateResolver.TryResolveNodeAccent(
+                    CreateNodeOption("current", NodeState.Available, isSelectable: false, isCurrentContext: true, isSelected: false),
+                    out _),
+                Is.False);
+            Assert.That(
+                WorldMapScreenStateResolver.TryResolveNodeAccent(
+                    CreateNodeOption("selected", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: true),
+                    out _),
+                Is.False);
+
+            Assert.That(selectableAccent, Is.Not.EqualTo(replayableAccent));
+        }
+
         private static void AssertButtonState(WorldMapScreenButtonState buttonState, string expectedLabel, bool expectedInteractable)
         {
             Assert.That(buttonState.Label, Is.EqualTo(expectedLabel));
@@ -403,7 +467,8 @@ namespace Survivalon.Tests.EditMode.World
             NodeState nodeState,
             bool isSelectable,
             bool isCurrentContext,
-            bool isSelected)
+            bool isSelected,
+            bool isFarmReady = false)
         {
             return new WorldMapNodeOption(
                 new NodeId(nodeIdValue),
@@ -418,8 +483,11 @@ namespace Survivalon.Tests.EditMode.World
                 isCurrentContext
                     ? WorldMapPathRole.CurrentContext
                     : isSelectable
-                        ? WorldMapPathRole.ForwardRoute
-                        : WorldMapPathRole.BlockedPath);
+                        ? isFarmReady
+                            ? WorldMapPathRole.ReplayableFarmNode
+                            : WorldMapPathRole.ForwardRoute
+                        : WorldMapPathRole.BlockedPath,
+                isFarmReady: isFarmReady);
         }
 
         private static WorldMapWorldStateSummary CreateWorldStateSummary(

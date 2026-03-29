@@ -11,7 +11,8 @@ namespace Survivalon.World
     /// </summary>
     internal sealed class WorldMapSurfaceSectionView
     {
-        private const float AuthoredNodeHitAreaSize = 120f;
+        private const float AuthoredNodeHitAreaSize = 108f;
+        private const float AuthoredNodeAccentSize = 88f;
         private const float AuthoredSelectedGlowSize = 102f;
         private const float AuthoredCurrentGlowSize = 90f;
         private const float AuthoredNodeIconSize = 76f;
@@ -354,6 +355,7 @@ namespace Survivalon.World
 
             if (currentLayout.UsesNormalizedPositions)
             {
+                CreateNodeAccent(buttonObject.transform, nodeOption, nodeSprite);
                 CreateNodeHighlight(buttonObject.transform, nodeOption, nodeSprite);
             }
             else
@@ -361,7 +363,7 @@ namespace Survivalon.World
                 CreateNodeBacking(buttonObject.transform, nodeOption);
             }
 
-            CreateNodeIcon(buttonObject.transform, nodeSprite);
+            CreateNodeIcon(buttonObject.transform, nodeOption, nodeSprite);
             if (ShouldShowNodeLabel(nodeOption))
             {
                 CreateNodeLabel(buttonObject.transform, nodeOption);
@@ -427,7 +429,36 @@ namespace Survivalon.World
             highlightImage.color = new Color(highlightColor.r, highlightColor.g, highlightColor.b, alpha);
         }
 
-        private void CreateNodeIcon(Transform parent, Sprite nodeSprite)
+        private void CreateNodeAccent(Transform parent, WorldMapNodeOption nodeOption, Sprite nodeSprite)
+        {
+            if (nodeSprite == null ||
+                !WorldMapScreenStateResolver.TryResolveNodeAccent(nodeOption, out Color accentColor))
+            {
+                return;
+            }
+
+            GameObject accentObject = new GameObject(
+                "StateAccent",
+                typeof(RectTransform),
+                typeof(Image));
+            accentObject.transform.SetParent(parent, false);
+
+            RectTransform accentRectTransform = accentObject.GetComponent<RectTransform>();
+            accentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            accentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            accentRectTransform.pivot = new Vector2(0.5f, 0.5f);
+            accentRectTransform.anchoredPosition = Vector2.zero;
+            accentRectTransform.sizeDelta = Vector2.one * AuthoredNodeAccentSize;
+            accentRectTransform.localScale = Vector3.one;
+
+            Image accentImage = accentObject.GetComponent<Image>();
+            accentImage.sprite = nodeSprite;
+            accentImage.preserveAspect = true;
+            accentImage.raycastTarget = false;
+            accentImage.color = accentColor;
+        }
+
+        private void CreateNodeIcon(Transform parent, WorldMapNodeOption nodeOption, Sprite nodeSprite)
         {
             GameObject iconObject = new GameObject(
                 "StateIcon",
@@ -462,7 +493,7 @@ namespace Survivalon.World
             if (nodeSprite != null)
             {
                 iconImage.sprite = nodeSprite;
-                iconImage.color = Color.white;
+                iconImage.color = WorldMapScreenStateResolver.ResolveNodeIconTint(nodeOption);
                 return;
             }
 
@@ -515,6 +546,7 @@ namespace Survivalon.World
             labelText.resizeTextForBestFit = currentLayout.UsesNormalizedPositions;
             labelText.resizeTextMinSize = 10;
             labelText.resizeTextMaxSize = 12;
+            labelText.raycastTarget = false;
 
             RectTransform labelRectTransform = labelText.rectTransform;
             labelRectTransform.anchorMin = Vector2.zero;
