@@ -12,9 +12,9 @@ namespace Survivalon.World
     internal sealed class WorldMapSurfaceSectionView
     {
         private const float AuthoredNodeHitAreaSize = 108f;
-        private const float AuthoredNodeAccentSize = 88f;
-        private const float AuthoredSelectedGlowSize = 102f;
-        private const float AuthoredCurrentGlowSize = 90f;
+        private const float AuthoredNodeAccentSize = 84f;
+        private const float AuthoredSelectedGlowSize = 112f;
+        private const float AuthoredCurrentGlowSize = 102f;
         private const float AuthoredNodeIconSize = 76f;
         private const float AuthoredConnectionThickness = 5f;
 
@@ -425,7 +425,7 @@ namespace Survivalon.World
             highlightImage.raycastTarget = false;
 
             Color highlightColor = WorldMapScreenStateResolver.ResolveNodeColor(nodeOption);
-            float alpha = nodeOption.IsSelected ? 0.26f : 0.16f;
+            float alpha = nodeOption.IsSelected ? 0.34f : 0.30f;
             highlightImage.color = new Color(highlightColor.r, highlightColor.g, highlightColor.b, alpha);
         }
 

@@ -372,7 +372,7 @@ namespace Survivalon.Tests.EditMode.World
                 Is.EqualTo(new Color(0.77f, 0.62f, 0.20f, 1f)));
             Assert.That(
                 WorldMapScreenStateResolver.ResolveNodeColor(CreateNodeOption("current", NodeState.Available, false, true, false)),
-                Is.EqualTo(new Color(0.18f, 0.39f, 0.70f, 1f)));
+                Is.EqualTo(new Color(0.10f, 0.62f, 0.86f, 1f)));
             Assert.That(
                 WorldMapScreenStateResolver.ResolveNodeColor(CreateNodeOption("selectable", NodeState.Available, true, false, false)),
                 Is.EqualTo(new Color(0.18f, 0.50f, 0.24f, 1f)));

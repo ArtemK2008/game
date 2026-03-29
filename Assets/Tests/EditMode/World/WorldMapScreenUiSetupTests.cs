@@ -109,6 +109,8 @@ namespace Survivalon.Tests.EditMode.World
                 Button availableNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button");
                 Button lockedNodeButton = FindButton(hostObject, BootstrapWorldScenario.CavernGateNodeId.Value + "_Button");
                 Button currentNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button");
+                Image currentNodeGlow = FindChildImage(currentNodeButton.gameObject, "StateGlow");
+                Image availableNodeAccent = FindChildImage(availableNodeButton.gameObject, "StateAccent");
 
                 Assert.That(backgroundImage.sprite, Is.Not.Null);
                 Assert.That(currentNodeIcon.sprite, Is.Not.Null);
@@ -127,9 +129,12 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(FindChildImage(availableNodeButton.gameObject, "StateAccent"), Is.Not.Null);
                 Assert.That(TryFindChildImage(lockedNodeButton.gameObject, "StateAccent"), Is.Null);
                 Assert.That(TryFindChildImage(currentNodeButton.gameObject, "StateAccent"), Is.Null);
-                Assert.That(FindChildImage(currentNodeButton.gameObject, "StateGlow"), Is.Not.Null);
+                Assert.That(currentNodeGlow, Is.Not.Null);
                 Assert.That(FindChildImage(lockedNodeButton.gameObject, "StateIcon").color.a, Is.LessThan(0.7f));
                 Assert.That(FindChildImage(availableNodeButton.gameObject, "StateIcon").color.a, Is.GreaterThan(0.9f));
+                Assert.That(currentNodeGlow.color.a, Is.GreaterThan(availableNodeAccent.color.a));
+                Assert.That(currentNodeGlow.rectTransform.rect.width, Is.GreaterThan(availableNodeAccent.rectTransform.rect.width));
+                Assert.That(currentNodeIcon.color, Is.Not.EqualTo(FindChildImage(availableNodeButton.gameObject, "StateIcon").color));
             }
             finally
             {
@@ -251,6 +256,9 @@ namespace Survivalon.Tests.EditMode.World
                     Is.True);
                 Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(1));
                 Assert.That(CountObjectsNamed(hostObject, "StateGlow"), Is.EqualTo(2));
+                Assert.That(
+                    FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").gameObject, "StateGlow").rectTransform.rect.width,
+                    Is.GreaterThan(FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button").gameObject, "StateGlow").rectTransform.rect.width));
             }
             finally
             {

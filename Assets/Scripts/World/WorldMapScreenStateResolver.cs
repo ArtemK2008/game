@@ -66,7 +66,7 @@ namespace Survivalon.World
 
             if (nodeOption.IsCurrentContext)
             {
-                return new Color(0.18f, 0.39f, 0.70f, 1f);
+                return new Color(0.10f, 0.62f, 0.86f, 1f);
             }
 
             if (nodeOption.IsSelectable)
@@ -96,7 +96,7 @@ namespace Survivalon.World
 
             if (nodeOption.IsCurrentContext)
             {
-                return new Color(0.90f, 0.96f, 1f, 1f);
+                return new Color(0.72f, 0.95f, 1f, 1f);
             }
 
             if (nodeOption.NodeState == NodeState.Locked)
@@ -132,13 +132,13 @@ namespace Survivalon.World
 
             if (IsReplayableNode(nodeOption))
             {
-                accentColor = new Color(0.33f, 0.72f, 0.80f, 0.22f);
+                accentColor = new Color(0.33f, 0.72f, 0.80f, 0.16f);
                 return true;
             }
 
             if (nodeOption.IsSelectable)
             {
-                accentColor = new Color(0.50f, 0.90f, 0.42f, 0.28f);
+                accentColor = new Color(0.50f, 0.90f, 0.42f, 0.22f);
                 return true;
             }
 
