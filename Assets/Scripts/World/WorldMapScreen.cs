@@ -26,6 +26,7 @@ namespace Survivalon.World
         private WorldMapScreenController screenController;
         private WorldMapArtResolver artResolver;
         private WorldMapNodeLayoutResolver nodeLayoutResolver;
+        private PlayableCharacterWorldIconResolver characterWorldIconResolver;
         private Action<NodeId> onNodeEntryRequested;
         private Action onStopSessionRequested;
         private PersistentGameState gameState;
@@ -94,6 +95,7 @@ namespace Survivalon.World
             gameObject.name = "WorldMapScreen";
             artResolver ??= new WorldMapArtResolver();
             nodeLayoutResolver ??= new WorldMapNodeLayoutResolver();
+            characterWorldIconResolver ??= new PlayableCharacterWorldIconResolver();
 
             RuntimeUiSupport.EnsureInputSystemEventSystem();
             EnsureUi();
@@ -325,6 +327,7 @@ namespace Survivalon.World
             buildSectionView.RefreshCharacterSelection(
                 WorldMapScreenTextBuilder.BuildCharacterSelectionText(selectionOptions),
                 selectionOptions,
+                ResolveCharacterSelectionWorldIcons(selectionOptions),
                 HandleCharacterSelection);
         }
 
@@ -352,6 +355,32 @@ namespace Survivalon.World
             }
 
             return characterSelectionService.BuildSelectableOptions(gameState);
+        }
+
+        private IReadOnlyDictionary<string, Sprite> ResolveCharacterSelectionWorldIcons(
+            IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions)
+        {
+            Dictionary<string, Sprite> worldIconsByCharacterId = new Dictionary<string, Sprite>();
+            if (selectionOptions == null || characterWorldIconResolver == null)
+            {
+                return worldIconsByCharacterId;
+            }
+
+            for (int index = 0; index < selectionOptions.Count; index++)
+            {
+                PlayableCharacterSelectionOption selectionOption = selectionOptions[index];
+                if (selectionOption == null ||
+                    !characterWorldIconResolver.TryResolveWorldIcon(
+                        selectionOption.CharacterId,
+                        out Sprite worldIconSprite))
+                {
+                    continue;
+                }
+
+                worldIconsByCharacterId[selectionOption.CharacterId] = worldIconSprite;
+            }
+
+            return worldIconsByCharacterId;
         }
 
         private IReadOnlyList<PlayableCharacterSkillPackageOption> BuildSkillPackageOptions()

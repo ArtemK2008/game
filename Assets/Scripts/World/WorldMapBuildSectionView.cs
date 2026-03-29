@@ -13,10 +13,14 @@ namespace Survivalon.World
     internal sealed class WorldMapBuildSectionView
     {
         private const float CharacterSelectionSummaryPreferredHeight = 28f;
-        private const float CharacterSelectionButtonPreferredHeight = 36f;
+        private const float CharacterSelectionButtonPreferredHeight = 42f;
         private const float BuildAssignmentSummaryPreferredHeight = 54f;
         private const float SkillPackageAssignmentButtonPreferredHeight = 34f;
         private const float GearAssignmentButtonPreferredHeight = 34f;
+        private const float CharacterWorldIconSize = 26f;
+        private const float CharacterWorldIconAnchorX = 24f;
+        private const float CharacterButtonLabelInsetWithoutIcon = 14f;
+        private const float CharacterButtonLabelInsetWithIcon = 48f;
 
         private readonly Font uiFont;
         private readonly Text characterSelectionText;
@@ -104,6 +108,7 @@ namespace Survivalon.World
         public void RefreshCharacterSelection(
             string summaryText,
             IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions,
+            IReadOnlyDictionary<string, Sprite> worldIconsByCharacterId,
             Action<string> onCharacterSelected)
         {
             if (summaryText == null)
@@ -114,6 +119,11 @@ namespace Survivalon.World
             if (selectionOptions == null)
             {
                 throw new ArgumentNullException(nameof(selectionOptions));
+            }
+
+            if (worldIconsByCharacterId == null)
+            {
+                throw new ArgumentNullException(nameof(worldIconsByCharacterId));
             }
 
             if (onCharacterSelected == null)
@@ -131,6 +141,7 @@ namespace Survivalon.World
                     ? new Color(0.20f, 0.45f, 0.28f, 1f)
                     : new Color(0.25f, 0.33f, 0.58f, 1f);
                 string buttonLabel = WorldMapScreenTextBuilder.BuildCharacterButtonLabel(selectionOption);
+                worldIconsByCharacterId.TryGetValue(selectionOption.CharacterId, out Sprite worldIconSprite);
 
                 CreateChoiceButton(
                     characterSelectionContainer,
@@ -138,6 +149,7 @@ namespace Survivalon.World
                     buttonLabel,
                     buttonColor,
                     CharacterSelectionButtonPreferredHeight,
+                    worldIconSprite,
                     () => onCharacterSelected(selectionOption.CharacterId));
             }
         }
@@ -206,6 +218,7 @@ namespace Survivalon.World
                     buttonLabel,
                     buttonColor,
                     SkillPackageAssignmentButtonPreferredHeight,
+                    null,
                     () => onSkillPackageAssigned(skillPackageOption.SkillPackageId));
             }
         }
@@ -230,6 +243,7 @@ namespace Survivalon.World
                     buttonLabel,
                     buttonColor,
                     GearAssignmentButtonPreferredHeight,
+                    null,
                     () => onGearAssignmentChanged(gearAssignmentOption));
             }
         }
@@ -240,6 +254,7 @@ namespace Survivalon.World
             string label,
             Color buttonColor,
             float preferredHeight,
+            Sprite leadingIconSprite,
             Action onClick)
         {
             GameObject buttonObject = new GameObject(
@@ -275,13 +290,18 @@ namespace Survivalon.World
             colors.disabledColor = buttonImage.color * 0.7f;
             button.colors = colors;
 
+            if (leadingIconSprite != null)
+            {
+                CreateLeadingIcon(buttonObject.transform, leadingIconSprite);
+            }
+
             Text buttonText = RuntimeUiSupport.CreateText(
                 buttonObject.transform,
                 uiFont,
                 "Label",
                 14,
                 FontStyle.Bold,
-                TextAnchor.MiddleCenter,
+                leadingIconSprite != null ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter,
                 Color.white);
             buttonText.text = label;
             buttonText.resizeTextForBestFit = true;
@@ -290,8 +310,31 @@ namespace Survivalon.World
             buttonText.horizontalOverflow = HorizontalWrapMode.Wrap;
             buttonText.verticalOverflow = VerticalWrapMode.Truncate;
 
-            ConfigureButtonLabelRect(buttonText.rectTransform);
+            ConfigureButtonLabelRect(buttonText.rectTransform, leadingIconSprite != null);
             return button;
+        }
+
+        private static void CreateLeadingIcon(Transform parent, Sprite leadingIconSprite)
+        {
+            GameObject iconObject = new GameObject(
+                "WorldIcon",
+                typeof(RectTransform),
+                typeof(Image));
+            iconObject.transform.SetParent(parent, false);
+
+            Image iconImage = iconObject.GetComponent<Image>();
+            iconImage.sprite = leadingIconSprite;
+            iconImage.preserveAspect = true;
+            iconImage.raycastTarget = false;
+            iconImage.color = Color.white;
+
+            RectTransform iconRectTransform = iconObject.GetComponent<RectTransform>();
+            iconRectTransform.anchorMin = new Vector2(0f, 0.5f);
+            iconRectTransform.anchorMax = new Vector2(0f, 0.5f);
+            iconRectTransform.pivot = new Vector2(0.5f, 0.5f);
+            iconRectTransform.anchoredPosition = new Vector2(CharacterWorldIconAnchorX, 0f);
+            iconRectTransform.sizeDelta = new Vector2(CharacterWorldIconSize, CharacterWorldIconSize);
+            iconRectTransform.localScale = Vector3.one;
         }
 
         private static RectTransform CreateChoiceListContainer(Transform parent, string objectName)
@@ -329,11 +372,13 @@ namespace Survivalon.World
             return rowRectTransform;
         }
 
-        private static void ConfigureButtonLabelRect(RectTransform labelRectTransform)
+        private static void ConfigureButtonLabelRect(RectTransform labelRectTransform, bool hasLeadingIcon)
         {
             labelRectTransform.anchorMin = Vector2.zero;
             labelRectTransform.anchorMax = Vector2.one;
-            labelRectTransform.offsetMin = new Vector2(14f, 8f);
+            labelRectTransform.offsetMin = new Vector2(
+                hasLeadingIcon ? CharacterButtonLabelInsetWithIcon : CharacterButtonLabelInsetWithoutIcon,
+                8f);
             labelRectTransform.offsetMax = new Vector2(-14f, -8f);
             labelRectTransform.localScale = Vector3.one;
         }

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3d2f4b4fd0d4ad2a9c19d4c8d8c4b01, type: 3}
+  m_Name: PlayableCharacterWorldIconRegistry
+  m_EditorClassIdentifier: 
+  worldIconEntries:
+  - characterId: character_vanguard
+    worldIconSprite: {fileID: 2153019629219582732, guid: ed9a89c3d4eb56643aa13450fd4516c3, type: 3}
+  - characterId: character_striker
+    worldIconSprite: {fileID: 2153019629219582732, guid: bc3a316191546ec47a2687ab04ede594, type: 3}

@@ -174,6 +174,41 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
+        public void Show_ShouldRenderWorldIconsForCurrentPlayableCharacterSelectionButtons()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                Image vanguardWorldIcon = FindChildImage(
+                    FindButton(hostObject, "character_vanguard_CharacterButton").gameObject,
+                    "WorldIcon");
+                Image strikerWorldIcon = FindChildImage(
+                    FindButton(hostObject, "character_striker_CharacterButton").gameObject,
+                    "WorldIcon");
+
+                Assert.That(vanguardWorldIcon.sprite, Is.Not.Null);
+                Assert.That(strikerWorldIcon.sprite, Is.Not.Null);
+                Assert.That(vanguardWorldIcon.sprite, Is.Not.SameAs(strikerWorldIcon.sprite));
+                Assert.That(vanguardWorldIcon.preserveAspect, Is.True);
+                Assert.That(strikerWorldIcon.preserveAspect, Is.True);
+                Assert.That(vanguardWorldIcon.raycastTarget, Is.False);
+                Assert.That(strikerWorldIcon.raycastTarget, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
         public void Show_ShouldRequireReachableSelectionWithoutReturnToWorldReentryOffer()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");

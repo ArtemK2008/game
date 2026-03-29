@@ -145,7 +145,8 @@ Current canonical sheet assets:
   - `Assets/Art/WorldMap/Nodes/locked.png`
   - `Assets/Art/WorldMap/Nodes/current.png`
 - `Assets/Art/WorldMap/Nodes/region_transition.png` currently remains prepared canonical art only and is not runtime-used yet because the current world graph does not expose a separate honest region-transition node meaning.
-- Portraits and world icons remain prepared assets only and are not wired into runtime yet.
+- Milestone `108` now wires the authored `Vanguard` / `Striker` world icons into the live world-map build-preparation character-selection surface through `Assets/Resources/PlayableCharacterWorldIconRegistry.asset`.
+- Character portraits remain prepared-only because the current shipped build still does not expose a portrait-specific runtime surface.
 - Milestone `094` now wires the current combat VFX sheets directly into the live combat shell for:
   - baseline impact readability
   - `Burst Strike`
@@ -157,3 +158,5 @@ Current canonical sheet assets:
 - No explicit per-frame VFX slicing contract exists yet.
 - No additional service/town-safe-space background variants are prepared yet.
 - Runtime hookup for broader location backgrounds beyond the current shipped combat/service subset is still pending for later milestones.
+- No additional repo-contained music clips exist beyond the current shipped calm/gameplay split, so broader location- or service-specific music remains unavailable and the runtime safely falls back to `music_calm_loop.wav` / `music_gameplay_loop.wav`.
+- No shipped runtime system currently uses animation controllers or clip-driven character/enemy animation assets; the live combat shell still intentionally relies on state-sprite switching.

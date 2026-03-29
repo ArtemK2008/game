@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 107** and follow-ups **096a**, **106a**, **106b**, **106c**, **106d**, **106e**, **106f**, **106g**, and **106h**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass. Milestone `107` was coverage-hardening only and did not change shipped runtime behavior.
+This summary reflects completed work through **Milestone 108** and follow-ups **096a**, **106a**, **106b**, **106c**, **106d**, **106e**, **106f**, **106g**, and **106h**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass. Milestone `107` was coverage-hardening only and did not change shipped runtime behavior. Milestone `108` tightened shipped asset completeness without changing gameplay rules.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -153,6 +153,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Replayable farm node`
   - `Blocked path`
 - The same placeholder world map now also exposes one minimal two-slot gear equip/unequip area for the currently selected character without changing the overall placeholder screen structure.
+- The live world-map build-preparation character-selection buttons now also use the authored `Vanguard` / `Striker` world icons through a runtime-safe registry rather than staying text-only.
 - Entering a selected node routes into a placeholder node screen through explicit node-entry flow logic.
 - The placeholder node screen now also surfaces the current location identity and reward focus for the entered content.
 - The placeholder node screen and live town/service shell now also surface the current location's enemy emphasis, keeping location identity visible beyond world-map labels.
@@ -558,7 +559,9 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - combat location backgrounds are now wired into the live combat shell for `Verdant Frontier`, `Echo Caverns`, and `Sunscorch Ruins`
   - the current `Cavern Service Hub` service background is now wired into the live town/service shell
   - the current combat VFX sheets are now wired directly into the live combat shell for restrained impact, `Burst Strike`, low-health danger, and defeat readability cues
-  - portraits and world icons are still prepared-only and not wired into runtime yet
+  - playable-character world icons are now wired into the live world-map build-preparation character-selection surface for the current `Vanguard` / `Striker` roster
+  - playable-character portraits remain prepared-only because the current shipped build does not expose a portrait-specific runtime surface yet
+  - no additional repo-contained music clips exist beyond the current two-loop calm/gameplay split, so broader location- or service-specific music is still unavailable and the runtime safely falls back to those shipped loops
 
 ## Important current rules / constraints
 - Combat is currently **1v1 only**.

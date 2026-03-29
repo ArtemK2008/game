@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 108
+Current next implementation target: Milestone 109
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -133,6 +133,7 @@ id | type | title | status | depends on / note
 105 | feature | Tune offline limits to preserve active push value | completed | phase 26; compile/import passed, helper verification reproduced the known missing-results artifact, and direct Unity batch fallback passed
 106 | feature | Tighten spec/code alignment | completed | phase 27; compile/import passed, helper verification reproduced the known missing-results artifact, and direct Unity batch fallback passed
 107 | acceptance | Tighten test coverage around milestone-critical rules | completed | phase 27; coverage-hardening only, no runtime behavior change; compile/import passed, helper verification reproduced the known missing-results artifact, direct Unity batch fallback passed, and the coverage report refreshed successfully
+108 | feature | Tighten asset completeness for actually implemented systems | completed | phase 28; audited shipped runtime-facing asset gaps, wired current playable-character world icons into live world-map build preparation, and documented remaining honest asset limits without gameplay changes
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note
