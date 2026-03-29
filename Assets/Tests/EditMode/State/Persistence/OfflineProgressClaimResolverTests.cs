@@ -71,6 +71,71 @@ namespace Survivalon.Tests.EditMode.State.Persistence
         }
 
         [Test]
+        public void ShouldResolveClaimAtExactOneWholeHourBoundary()
+        {
+            DateTimeOffset now = new DateTimeOffset(2026, 3, 29, 12, 0, 0, TimeSpan.Zero);
+            OfflineProgressClaimResolver resolver = new OfflineProgressClaimResolver(
+                BootstrapWorldTestData.CreateWorldGraph(),
+                () => now);
+            PersistentGameState gameState = CreateEligibleFarmReadySavedGameState(
+                BootstrapWorldScenario.ForestFarmNodeId,
+                now.AddHours(-1));
+
+            Assert.That(resolver.TryResolve(gameState, out OfflineProgressClaimState claimState), Is.True);
+            Assert.That(claimState, Is.Not.Null);
+            Assert.That(claimState.CountedWholeHours, Is.EqualTo(1));
+            Assert.That(claimState.Amount, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void ShouldNotResolveClaimWhenSafeResumeTargetIsNotWorldMap()
+        {
+            DateTimeOffset now = new DateTimeOffset(2026, 3, 29, 12, 0, 0, TimeSpan.Zero);
+            OfflineProgressClaimResolver resolver = new OfflineProgressClaimResolver(
+                BootstrapWorldTestData.CreateWorldGraph(),
+                () => now);
+            PersistentGameState gameState = CreateEligibleFarmReadySavedGameState(
+                BootstrapWorldScenario.ForestFarmNodeId,
+                now.AddHours(-2));
+            gameState.SafeResumeState.MarkTownService(BootstrapWorldScenario.ForestFarmNodeId);
+
+            Assert.That(resolver.TryResolve(gameState, out OfflineProgressClaimState claimState), Is.False);
+            Assert.That(claimState, Is.Null);
+        }
+
+        [Test]
+        public void ShouldNotResolveClaimWithoutStableSaveAnchor()
+        {
+            DateTimeOffset now = new DateTimeOffset(2026, 3, 29, 12, 0, 0, TimeSpan.Zero);
+            OfflineProgressClaimResolver resolver = new OfflineProgressClaimResolver(
+                BootstrapWorldTestData.CreateWorldGraph(),
+                () => now);
+            PersistentGameState gameState = CreateEligibleFarmReadySavedGameState(
+                BootstrapWorldScenario.ForestFarmNodeId,
+                now.AddHours(-2));
+            gameState.OfflineProgressStableSaveAnchorState.StampStableSaveAnchor(0);
+
+            Assert.That(resolver.TryResolve(gameState, out OfflineProgressClaimState claimState), Is.False);
+            Assert.That(claimState, Is.Null);
+        }
+
+        [Test]
+        public void ShouldFailClosedWhenSavedResumeNodeIsMissingFromWorldGraph()
+        {
+            DateTimeOffset now = new DateTimeOffset(2026, 3, 29, 12, 0, 0, TimeSpan.Zero);
+            OfflineProgressClaimResolver resolver = new OfflineProgressClaimResolver(
+                BootstrapWorldTestData.CreateWorldGraph(),
+                () => now);
+            PersistentGameState gameState = CreateEligibleFarmReadySavedGameState(
+                BootstrapWorldScenario.ForestFarmNodeId,
+                now.AddHours(-2));
+            gameState.SafeResumeState.MarkWorldMap(new NodeId("missing_node"));
+
+            Assert.That(resolver.TryResolve(gameState, out OfflineProgressClaimState claimState), Is.False);
+            Assert.That(claimState, Is.Null);
+        }
+
+        [Test]
         public void ShouldFailClosedWhenEligibleSavedNodeDoesNotSupportRegionMaterialOutput()
         {
             DateTimeOffset now = new DateTimeOffset(2026, 3, 29, 12, 0, 0, TimeSpan.Zero);

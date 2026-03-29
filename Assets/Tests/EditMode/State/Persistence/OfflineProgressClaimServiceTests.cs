@@ -47,6 +47,24 @@ namespace Survivalon.Tests.EditMode.State.Persistence
             Assert.That(secondClaimState, Is.Null);
         }
 
+        [Test]
+        public void ShouldThrowWhenClaimRequiresMissingSafeResumeTarget()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            OfflineProgressClaimService claimService = new OfflineProgressClaimService(persistenceService);
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            OfflineProgressClaimState claimState = new OfflineProgressClaimState(
+                ResourceCategory.RegionMaterial,
+                2,
+                1,
+                "Forest Farm");
+
+            Assert.That(
+                () => claimService.Claim(gameState, claimState),
+                Throws.InvalidOperationException.With.Message.Contains("safe resume target"));
+        }
+
         private static PersistentGameState CreateEligibleFarmReadySavedGameState(
             NodeId nodeId,
             DateTimeOffset stableSaveTime)

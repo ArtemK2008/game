@@ -162,6 +162,123 @@ namespace Survivalon.Tests.EditMode.Run
             Assert.That(updatedState.ForwardOpportunityKind, Is.EqualTo(PostRunForwardOpportunityKind.AvailablePushTarget));
         }
 
+        [Test]
+        public void ShouldPreferNewlyUnlockedPushOverServiceOpportunityWhenBothExist()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            gameState.WorldState.SetCurrentNode(BootstrapWorldScenario.ForestPushNodeId);
+            gameState.WorldState.SetLastSafeNode(BootstrapWorldScenario.ForestEntryNodeId);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+
+            PostRunStateController postRunStateController = CreateController(
+                NodePlaceholderTestData.CreateForestGateBossPlaceholderState(),
+                new RunResult(
+                    BootstrapWorldScenario.ForestGateNodeId,
+                    RunResolutionState.Succeeded,
+                    RunRewardPayload.Empty,
+                    1,
+                    1,
+                    3,
+                    0,
+                    false,
+                    new RunNextActionContext(
+                        canReplayNode: true,
+                        canChooseAnotherNode: true,
+                        canStopSession: true),
+                    BossProgressionGateUnlockResult.CreateUnlocked(BootstrapWorldScenario.CavernGateNodeId)));
+
+            PostRunNextActionState nextActionState = new PostRunNextActionResolver().Resolve(
+                postRunStateController,
+                worldGraph,
+                gameState.WorldState,
+                gameState.ResourceBalances,
+                gameState.ProgressionState);
+
+            Assert.That(nextActionState.RecommendedActionKind, Is.EqualTo(PostRunRecommendedActionKind.ReturnToWorldPush));
+            Assert.That(nextActionState.ForwardOpportunityKind, Is.EqualTo(PostRunForwardOpportunityKind.NewlyUnlockedPushTarget));
+            Assert.That(nextActionState.ForwardTargetDisplayName, Is.EqualTo("Cavern Gate"));
+            Assert.That(nextActionState.HasServiceOpportunity, Is.True);
+            Assert.That(nextActionState.ServiceOpportunityKind, Is.EqualTo(PostRunServiceOpportunityKind.ReadyRefinement));
+        }
+
+        [Test]
+        public void ShouldRecommendAvailablePushWhenReplayIsUnavailableButForwardPathExists()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            gameState.WorldState.SetCurrentNode(BootstrapWorldScenario.ForestPushNodeId);
+            gameState.WorldState.SetLastSafeNode(BootstrapWorldScenario.ForestEntryNodeId);
+
+            PostRunStateController postRunStateController = CreateController(
+                NodePlaceholderTestData.CreatePushCombatPlaceholderState(),
+                new RunResult(
+                    BootstrapWorldScenario.ForestPushNodeId,
+                    RunResolutionState.Succeeded,
+                    RunRewardPayload.Empty,
+                    1,
+                    2,
+                    3,
+                    0,
+                    false,
+                    new RunNextActionContext(
+                        canReplayNode: false,
+                        canChooseAnotherNode: true,
+                        canStopSession: true)));
+
+            PostRunNextActionState nextActionState = new PostRunNextActionResolver().Resolve(
+                postRunStateController,
+                worldGraph,
+                gameState.WorldState,
+                gameState.ResourceBalances,
+                gameState.ProgressionState);
+
+            Assert.That(nextActionState.RecommendedActionKind, Is.EqualTo(PostRunRecommendedActionKind.ReturnToWorldPush));
+            Assert.That(nextActionState.ReplayReasonKind, Is.EqualTo(PostRunReplayReasonKind.None));
+            Assert.That(nextActionState.ForwardOpportunityKind, Is.EqualTo(PostRunForwardOpportunityKind.AvailablePushTarget));
+            Assert.That(nextActionState.ForwardTargetDisplayName, Is.EqualTo("Forest Farm"));
+        }
+
+        [Test]
+        public void ShouldRecommendStopWhenWorldReturnIsUnavailableDespiteResolvedOpportunities()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            gameState.WorldState.SetCurrentNode(BootstrapWorldScenario.ForestPushNodeId);
+            gameState.WorldState.SetLastSafeNode(BootstrapWorldScenario.ForestEntryNodeId);
+            gameState.ResourceBalances.Add(ResourceCategory.RegionMaterial, 3);
+
+            PostRunStateController postRunStateController = CreateController(
+                NodePlaceholderTestData.CreatePushCombatPlaceholderState(),
+                new RunResult(
+                    BootstrapWorldScenario.ForestPushNodeId,
+                    RunResolutionState.Succeeded,
+                    RunRewardPayload.Empty,
+                    1,
+                    2,
+                    3,
+                    0,
+                    false,
+                    new RunNextActionContext(
+                        canReplayNode: false,
+                        canChooseAnotherNode: false,
+                        canStopSession: true)));
+
+            PostRunNextActionState nextActionState = new PostRunNextActionResolver().Resolve(
+                postRunStateController,
+                worldGraph,
+                gameState.WorldState,
+                gameState.ResourceBalances,
+                gameState.ProgressionState);
+
+            Assert.That(nextActionState.RecommendedActionKind, Is.EqualTo(PostRunRecommendedActionKind.Stop));
+            Assert.That(nextActionState.ReplayReasonKind, Is.EqualTo(PostRunReplayReasonKind.None));
+            Assert.That(nextActionState.HasForwardPushOpportunity, Is.True);
+            Assert.That(nextActionState.ForwardOpportunityKind, Is.EqualTo(PostRunForwardOpportunityKind.AvailablePushTarget));
+            Assert.That(nextActionState.HasServiceOpportunity, Is.True);
+            Assert.That(nextActionState.ServiceOpportunityKind, Is.EqualTo(PostRunServiceOpportunityKind.ReadyRefinement));
+        }
+
         private static PostRunStateController CreateController(
             NodePlaceholderState placeholderState,
             RunResult runResult)
