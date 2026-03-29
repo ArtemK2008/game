@@ -127,7 +127,7 @@ id | type | title | status | depends on / note
 099 | feature | Add another region/location with distinct value | completed | phase 25
 100 | feature | Add another enemy family/profile set | completed | phase 25
 101 | feature | Add one more meaningful progression sink or powerup branch | completed | phase 25
-102 | feature | Add second character only if game now benefits from roster differentiation | completed | phase 25; closed by existing live Vanguard/Striker roster differentiation
+102 | feature | Add second character only if game now benefits from roster differentiation | completed | phase 25; closed by audit of already-shipped live Vanguard/Striker differentiation; no new runtime changes in the closeout pass; current-session compile/import passed but EditMode verification was blocked by the known helper artifact plus Unity Package Manager local-server startup failure
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note
