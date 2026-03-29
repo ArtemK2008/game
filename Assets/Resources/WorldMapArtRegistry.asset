@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: WorldMapArtRegistry
   m_EditorClassIdentifier: 
   backgroundSprite: {fileID: 4363930180419652903, guid: 536c5625ecfe474899e31fb3a717dc46, type: 3}
+  ordinaryCombatNodeSprite: {fileID: 7144635388455545892, guid: a17139a376b75364f94b19aabb82b846, type: 3}
+  farmNodeSprite: {fileID: 6437738476519406127, guid: 24f9012e0f940a34db075cbc9f6efc57, type: 3}
+  eliteNodeSprite: {fileID: 1082636897498741918, guid: 7263ca3edb6fc9140aed18e4073e3e98, type: 3}
+  bossGateNodeSprite: {fileID: -4022274406296677812, guid: 6aa2334cec90ca140989f41eea285c45, type: 3}
+  serviceNodeSprite: {fileID: -7234024760785634570, guid: f2429154d2afc9e4899d4eb220fca3c0, type: 3}
   lockedNodeSprite: {fileID: -3846330120125846787, guid: 84f4e9ed5a863364eb7c07dc2d6375bf, type: 3}
-  availableNodeSprite: {fileID: -1358167650858817084, guid: 99e933aa6a688d94bb773e66c1e829d9, type: 3}
   currentNodeSprite: {fileID: -1246946423219253457, guid: bc1a22e4d3fbfbc409a062ecbb7a5a84, type: 3}
-  clearedNodeSprite: {fileID: -6571730860063949250, guid: 7029dd3a49b0c8846af5ff1208a1ce70, type: 3}
+  regionTransitionNodeSprite: {fileID: 3082486514913930656, guid: 78b6118f063d2a74b9fdf885ef9ba29e, type: 3}

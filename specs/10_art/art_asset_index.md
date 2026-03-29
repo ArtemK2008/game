@@ -76,16 +76,28 @@ Root:
 
 Current canonical files:
 - `Assets/Art/WorldMap/Backgrounds/world_map_background.png`
+- `Assets/Art/WorldMap/Nodes/ordinary_combat.png`
+- `Assets/Art/WorldMap/Nodes/farm.png`
+- `Assets/Art/WorldMap/Nodes/elite.png`
+- `Assets/Art/WorldMap/Nodes/boss_gate.png`
+- `Assets/Art/WorldMap/Nodes/service.png`
 - `Assets/Art/WorldMap/Nodes/locked.png`
-- `Assets/Art/WorldMap/Nodes/available.png`
 - `Assets/Art/WorldMap/Nodes/current.png`
-- `Assets/Art/WorldMap/Nodes/cleared.png`
+- `Assets/Art/WorldMap/Nodes/region_transition.png`
 
 Retained source:
-- `Assets/Art/WorldMap/Nodes/node_states_sheet.png`
+- `Assets/Art/WorldMap/Source/world_nodes_sheet_v2.png`
 
 Current split order:
-- left-to-right source panels -> `locked`, `available`, `current`, `cleared`
+- strict 4x2 equal-cell grid, left-to-right then top-to-bottom:
+  - `ordinary_combat`
+  - `farm`
+  - `elite`
+  - `boss_gate`
+  - `service`
+  - `locked`
+  - `current`
+  - `region_transition`
 
 ### Combat VFX
 Pipeline spec:
@@ -104,7 +116,7 @@ Current canonical sheet assets:
 - Player character assets were already in canonical gameplay-facing form.
 - Enemy combat sheets were normalized into canonical split state files while retaining the source sheets, with `RuinSentinel` now promoted from prepared art to live runtime use.
 - Current location/service backgrounds were left in place and documented as the canonical gameplay-facing files.
-- The authored world-map presentation sheet was normalized into canonical split node-state files while retaining the source sheet.
+- The authored world-map presentation sheet was normalized into canonical split node-icon files while retaining the source sheet.
 - Current combat VFX assets remain intentionally sheet-based canonical source files, and milestone `094` now uses those sheets directly for restrained combat readability cues without splitting them into a broader sequence pipeline.
 
 ## Current hookup status
@@ -112,7 +124,8 @@ Current canonical sheet assets:
 - Milestone `100` now wires the current canonical `RuinSentinel` state set into live `Sunscorch Ruins` combat content.
 - Milestone `092` and `099` now wire the current canonical combat backgrounds for `VerdantFrontier`, `EchoCaverns`, and `SunscorchRuins` into the live combat shell.
 - Milestone `093` now wires the current canonical `CavernServiceHub` service background into the live town/service shell.
-- Follow-up `106a` now wires the authored world-map background and canonical node-state icons into the live world-map presentation.
+- Follow-up `106a` wires the authored world-map background into the live world-map presentation.
+- Follow-up `106b` upgrades the live world-map node icons to the authored eight-slice meaning-first set.
 - That runtime hookup currently uses only the combat-state files under:
   - `Assets/Art/Characters/<CharacterName>/Sprites/`
   - `Assets/Art/Enemies/<EnemyName>/Sprites/`
@@ -124,10 +137,14 @@ Current canonical sheet assets:
   - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
 - plus the world-map presentation files under:
   - `Assets/Art/WorldMap/Backgrounds/world_map_background.png`
+  - `Assets/Art/WorldMap/Nodes/ordinary_combat.png`
+  - `Assets/Art/WorldMap/Nodes/farm.png`
+  - `Assets/Art/WorldMap/Nodes/elite.png`
+  - `Assets/Art/WorldMap/Nodes/boss_gate.png`
+  - `Assets/Art/WorldMap/Nodes/service.png`
   - `Assets/Art/WorldMap/Nodes/locked.png`
-  - `Assets/Art/WorldMap/Nodes/available.png`
   - `Assets/Art/WorldMap/Nodes/current.png`
-  - `Assets/Art/WorldMap/Nodes/cleared.png`
+- `Assets/Art/WorldMap/Nodes/region_transition.png` currently remains prepared canonical art only and is not runtime-used yet because the current world graph does not expose a separate honest region-transition node meaning.
 - Portraits and world icons remain prepared assets only and are not wired into runtime yet.
 - Milestone `094` now wires the current combat VFX sheets directly into the live combat shell for:
   - baseline impact readability
@@ -136,7 +153,7 @@ Current canonical sheet assets:
   - defeat
 
 ## Remaining gaps for later milestones
-- No additional world-map node-state variants beyond `locked`, `available`, `current`, and `cleared` are prepared yet.
+- `region_transition.png` is prepared but not runtime-used yet because the current shipped world graph does not expose a dedicated region-transition node meaning separate from service/combat/boss semantics.
 - No explicit per-frame VFX slicing contract exists yet.
 - No additional service/town-safe-space background variants are prepared yet.
 - Runtime hookup for broader location backgrounds beyond the current shipped combat/service subset is still pending for later milestones.

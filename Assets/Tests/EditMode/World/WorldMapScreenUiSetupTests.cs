@@ -71,7 +71,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldRenderAuthoredMapBackgroundAndNodeStateIcons()
+        public void Show_ShouldRenderAuthoredMapBackgroundAndMeaningBasedNodeIcons()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -88,14 +88,29 @@ namespace Survivalon.Tests.EditMode.World
                 Image currentNodeIcon = FindChildImage(
                     FindButton(hostObject, BootstrapWorldScenario.ForestEntryNodeId.Value + "_Button").gameObject,
                     "StateIcon");
-                Image availableNodeIcon = FindChildImage(
+                Image ordinaryNodeIcon = FindChildImage(
+                    FindButton(hostObject, BootstrapWorldScenario.CavernPushNodeId.Value + "_Button").gameObject,
+                    "StateIcon");
+                Image farmNodeIcon = FindChildImage(
+                    FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").gameObject,
+                    "StateIcon");
+                Image eliteNodeIcon = FindChildImage(
+                    FindButton(hostObject, BootstrapWorldScenario.ForestEliteNodeId.Value + "_Button").gameObject,
+                    "StateIcon");
+                Image serviceNodeIcon = FindChildImage(
                     FindButton(hostObject, BootstrapWorldScenario.CavernServiceNodeId.Value + "_Button").gameObject,
                     "StateIcon");
 
                 Assert.That(backgroundImage.sprite, Is.Not.Null);
                 Assert.That(currentNodeIcon.sprite, Is.Not.Null);
-                Assert.That(availableNodeIcon.sprite, Is.Not.Null);
-                Assert.That(currentNodeIcon.sprite, Is.Not.SameAs(availableNodeIcon.sprite));
+                Assert.That(ordinaryNodeIcon.sprite, Is.Not.Null);
+                Assert.That(farmNodeIcon.sprite, Is.Not.Null);
+                Assert.That(eliteNodeIcon.sprite, Is.Not.Null);
+                Assert.That(serviceNodeIcon.sprite, Is.Not.Null);
+                Assert.That(currentNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
+                Assert.That(farmNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
+                Assert.That(eliteNodeIcon.sprite, Is.Not.SameAs(farmNodeIcon.sprite));
+                Assert.That(serviceNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
             }
             finally
             {

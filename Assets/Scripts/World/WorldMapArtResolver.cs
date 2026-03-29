@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Survivalon.World
 {
     /// <summary>
-    /// Resolves the current authored world-map background and node-state sprites.
+    /// Resolves the current authored world-map background and meaning-first node icon sprites.
     /// </summary>
     public sealed class WorldMapArtResolver
     {
@@ -34,27 +34,47 @@ namespace Survivalon.World
                 return false;
             }
 
-            return artRegistry.TryGetNodeSprite(ResolveNodeArtState(nodeOption), out nodeSprite);
+            return artRegistry.TryGetNodeSprite(ResolveNodeIconKind(nodeOption), out nodeSprite);
         }
 
-        private static WorldMapNodeArtStateId ResolveNodeArtState(WorldMapNodeOption nodeOption)
+        public WorldMapNodeIconKind ResolveNodeIconKind(WorldMapNodeOption nodeOption)
         {
+            if (nodeOption == null)
+            {
+                throw new ArgumentNullException(nameof(nodeOption));
+            }
+
             if (nodeOption.IsSelected || nodeOption.IsCurrentContext)
             {
-                return WorldMapNodeArtStateId.Current;
+                return WorldMapNodeIconKind.Current;
             }
 
             if (nodeOption.NodeState == NodeState.Locked)
             {
-                return WorldMapNodeArtStateId.Locked;
+                return WorldMapNodeIconKind.Locked;
             }
 
-            if (nodeOption.NodeState == NodeState.Cleared)
+            if (nodeOption.NodeType == NodeType.ServiceOrProgression)
             {
-                return WorldMapNodeArtStateId.Cleared;
+                return WorldMapNodeIconKind.Service;
             }
 
-            return WorldMapNodeArtStateId.Available;
+            if (nodeOption.NodeType == NodeType.BossOrGate)
+            {
+                return WorldMapNodeIconKind.BossGate;
+            }
+
+            if (!string.IsNullOrWhiteSpace(nodeOption.OptionalChallengeDisplayName))
+            {
+                return WorldMapNodeIconKind.Elite;
+            }
+
+            if (nodeOption.HasRegionMaterialYieldContent)
+            {
+                return WorldMapNodeIconKind.Farm;
+            }
+
+            return WorldMapNodeIconKind.OrdinaryCombat;
         }
     }
 }

@@ -88,6 +88,7 @@ namespace Survivalon.World
                     region.LocationIdentity.DisplayName,
                     worldNodeDisplayNameResolver.Resolve(node),
                     ResolvePathRole(node.NodeId, currentContextNodeId, accessState),
+                    node.RegionMaterialYieldContent != null,
                     worldNodeFarmReadinessResolver.IsFarmReady(worldGraph, worldState, node.NodeId),
                     challengePresentationState.ChallengeDisplayName));
             }

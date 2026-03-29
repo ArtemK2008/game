@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bc1a22e4d3fbfbc409a062ecbb7a5a84
+guid: 6aa2334cec90ca140989f41eea285c45
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1246946423219253457
-    second: current_0
+      213: -4022274406296677812
+    second: boss_gate_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: current_0
+      name: boss_gate_0
       rect:
         serializedVersion: 2
         x: 0
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f2f821ea5d4f1bee0800000000000000
-      internalID: -1246946423219253457
+      spriteID: c429a870db20e28c0800000000000000
+      internalID: -4022274406296677812
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      current_0: -1246946423219253457
+      boss_gate_0: -4022274406296677812
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
