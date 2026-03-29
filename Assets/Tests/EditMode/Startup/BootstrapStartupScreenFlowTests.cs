@@ -240,6 +240,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Routes: 4 enterable | 3 forward | 0 replayable"), Is.True);
             }
             finally
             {
@@ -298,6 +299,7 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(CountActiveComponents<WorldMapScreen>(hostObject), Is.EqualTo(1));
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub (Available) | Selected: none"), Is.True);
+                Assert.That(ContainsText(hostObject, "Routes:"), Is.True);
             }
             finally
             {
@@ -558,7 +560,7 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub (Available) | Selected: none"), Is.True);
-                Assert.That(ContainsText(hostObject, "Forward: Echo Approach, Relic Cache"), Is.True);
+                Assert.That(ContainsText(hostObject, "Routes:"), Is.True);
             }
             finally
             {
@@ -612,10 +614,8 @@ namespace Survivalon.Tests.EditMode.Startup
 
                 Assert.That(ContainsText(hostObject, "Location: Verdant Frontier"), Is.True);
                 Assert.That(ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: none"), Is.True);
-                Assert.That(ContainsText(hostObject, "Forward: Cavern Service Hub, Forest Farm, Raider Holdout"), Is.True);
-                Assert.That(ContainsText(hostObject, "Backtrack: Frontier Entry | Replayable: none"), Is.True);
-                Assert.That(ContainsText(hostObject, "Blocked: Frontier Gate"), Is.True);
-                Assert.That(ContainsText(hostObject, "Node states: Available = enterable"), Is.True);
+                Assert.That(ContainsText(hostObject, "Routes: 4 enterable | 3 forward | 0 replayable"), Is.True);
+                Assert.That(ContainsText(hostObject, "Blocked links: 1"), Is.True);
                 Assert.That(FindButton(hostObject, "EnterSelectedNodeButton").interactable, Is.False);
                 Assert.That(
                     FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
@@ -762,13 +762,16 @@ namespace Survivalon.Tests.EditMode.Startup
             {
                 CreateAndInitializeBootstrap(hostObject, storage);
 
-                Assert.That(ContainsText(hostObject, "Raider Holdout"), Is.True);
-                Assert.That(ContainsText(hostObject, "State: Available | Elite challenge"), Is.True);
-
                 Button eliteButton = FindButton(hostObject, "region_001_node_006_Button");
                 Button serviceButton = FindButton(hostObject, "region_002_node_001_Button");
                 Button gateButton = FindButton(hostObject, "region_001_node_003_Button");
 
+                eliteButton.onClick.Invoke();
+
+                Assert.That(ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: Raider Holdout"), Is.True);
+                Assert.That(
+                    FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Enter Raider Holdout"));
                 Assert.That(eliteButton.interactable, Is.True);
                 Assert.That(serviceButton.interactable, Is.True);
                 Assert.That(gateButton.interactable, Is.False);

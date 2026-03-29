@@ -25,7 +25,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void BuildSummaryText_ShouldMatchExistingWorldMapSummary()
+        public void BuildSummaryText_ShouldMatchCompactWorldMapSummary()
         {
             string summaryText = WorldMapScreenTextBuilder.BuildSummaryText(
                 CreateWorldStateSummary(
@@ -53,11 +53,8 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(summaryText, Is.EqualTo(
                 "Location: Verdant Frontier\n" +
                 "Current: Raider Trail (In progress) | Selected: Forest Farm\n" +
-                "Paths now: 4 enterable | 3 forward | 1 backtrack | 0 replayable | 1 blocked\n" +
-                "Forward: Cavern Service Hub, Forest Farm, Raider Holdout\n" +
-                "Backtrack: Frontier Entry | Replayable: none\n" +
-                "Blocked: Frontier Gate\n" +
-                "Node states: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked"));
+                "Routes: 4 enterable | 3 forward | 0 replayable\n" +
+                "Blocked links: 1"));
         }
 
         [Test]
@@ -80,15 +77,12 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(summaryText, Does.Contain("Location: Verdant Frontier"));
             Assert.That(summaryText, Does.Contain("Current: Raider Trail (In progress) | Selected: none"));
-            Assert.That(summaryText, Does.Contain("Paths now: 1 enterable | 0 forward | 1 backtrack | 0 replayable | 0 blocked"));
-            Assert.That(summaryText, Does.Contain("Forward: none"));
-            Assert.That(summaryText, Does.Contain("Backtrack: Frontier Entry | Replayable: none"));
-            Assert.That(summaryText, Does.Contain("Blocked: none"));
-            Assert.That(summaryText, Does.Contain("Node states: Available = enterable"));
+            Assert.That(summaryText, Does.Contain("Routes: 1 enterable | 0 forward | 0 replayable"));
+            Assert.That(summaryText, Does.Contain("Blocked links: 0"));
         }
 
         [Test]
-        public void BuildCharacterSelectionText_ShouldShowCurrentSelectionAndAvailableCount()
+        public void BuildCharacterSelectionText_ShouldShowCurrentSelection()
         {
             string selectionText = WorldMapScreenTextBuilder.BuildCharacterSelectionText(
                 new[]
@@ -97,9 +91,7 @@ namespace Survivalon.Tests.EditMode.World
                     new PlayableCharacterSelectionOption("character_striker", "Striker", isSelected: true),
                 });
 
-            Assert.That(selectionText, Is.EqualTo(
-                "Selected character: Striker\n" +
-                "Available characters: 2"));
+            Assert.That(selectionText, Is.EqualTo("Selected character: Striker"));
         }
 
         [Test]
@@ -115,7 +107,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void BuildAssignmentText_ShouldShowAssignedPackageAndSummary()
+        public void BuildAssignmentText_ShouldShowAssignedPackageAndGearSummary()
         {
             string assignmentText = WorldMapScreenTextBuilder.BuildAssignmentText(
                 "Vanguard",
@@ -151,10 +143,8 @@ namespace Survivalon.Tests.EditMode.World
                 });
 
             Assert.That(assignmentText, Is.EqualTo(
-                "Selected character build: Vanguard\n" +
                 "Assigned package: Burst Drill\n" +
-                "Primary gear: Training Blade | Support gear: none\n" +
-                "Available packages: 2 | Owned primary gear: 1 | Owned support gear: 1"));
+                "Primary gear: Training Blade | Support gear: none"));
         }
 
         [Test]

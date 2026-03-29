@@ -10,8 +10,8 @@ namespace Survivalon.World
     /// </summary>
     internal sealed class WorldMapOverviewSectionView
     {
-        private const float TitlePreferredHeight = 44f;
-        private const float SummaryPreferredHeight = 214f;
+        private const float TitlePreferredHeight = 38f;
+        private const float SummaryPreferredHeight = 104f;
 
         private readonly Text titleText;
         private readonly Text summaryText;
@@ -38,21 +38,29 @@ namespace Survivalon.World
                 parent,
                 font,
                 "Title",
-                30,
+                24,
                 FontStyle.Bold,
                 TextAnchor.MiddleLeft,
                 Color.white);
-            RuntimeUiSupport.AddLayoutElement(titleText.gameObject, TitlePreferredHeight);
+            RuntimeUiSupport.AddLayoutElement(
+                titleText.gameObject,
+                TitlePreferredHeight,
+                flexibleWidth: 1f,
+                preferredWidth: 0f);
 
             Text summaryText = RuntimeUiSupport.CreateText(
                 parent,
                 font,
                 "Summary",
-                18,
+                16,
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.90f, 0.94f, 1f));
-            RuntimeUiSupport.AddLayoutElement(summaryText.gameObject, SummaryPreferredHeight);
+            RuntimeUiSupport.AddLayoutElement(
+                summaryText.gameObject,
+                SummaryPreferredHeight,
+                flexibleWidth: 1f,
+                preferredWidth: 0f);
 
             return new WorldMapOverviewSectionView(titleText, summaryText);
         }

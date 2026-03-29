@@ -76,7 +76,11 @@ namespace Survivalon.World
                 Color.white);
             ConfigureButtonLabelRect(entryButtonText.rectTransform);
 
-            RuntimeUiSupport.AddLayoutElement(entryButton.gameObject, EntryButtonPreferredHeight);
+            RuntimeUiSupport.AddLayoutElement(
+                entryButton.gameObject,
+                EntryButtonPreferredHeight,
+                flexibleWidth: 1f,
+                preferredWidth: 0f);
             return new WorldMapEntryActionSectionView(entryButton, entryButtonText);
         }
 

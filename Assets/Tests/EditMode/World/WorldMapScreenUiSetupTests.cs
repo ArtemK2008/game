@@ -39,7 +39,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldCreateStableWorldMapSectionSurfaces()
+        public void Show_ShouldCreateStableWorldMapSectionSurfacesWithMapAsPrimaryArea()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -63,6 +63,12 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(FindButton(hostObject, "EnterSelectedNodeButton"), Is.Not.Null);
                 Assert.That(FindScrollRect(hostObject, "NodeListScrollView"), Is.Not.Null);
                 Assert.That(FindRectTransform(hostObject, "MapBackgroundArt"), Is.Not.Null);
+
+                ForceUiLayout(hostObject);
+
+                RectTransform sidebarRect = FindRectTransform(hostObject, "Sidebar");
+                RectTransform viewportRect = FindRectTransform(hostObject, "NodeListViewport");
+                Assert.That(viewportRect.rect.width, Is.GreaterThan(sidebarRect.rect.width * 1.8f));
             }
             finally
             {
@@ -86,7 +92,7 @@ namespace Survivalon.Tests.EditMode.World
 
                 Image backgroundImage = FindImage(hostObject, "MapBackgroundArt");
                 Image currentNodeIcon = FindChildImage(
-                    FindButton(hostObject, BootstrapWorldScenario.ForestEntryNodeId.Value + "_Button").gameObject,
+                    FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button").gameObject,
                     "StateIcon");
                 Image ordinaryNodeIcon = FindChildImage(
                     FindButton(hostObject, BootstrapWorldScenario.CavernPushNodeId.Value + "_Button").gameObject,
@@ -107,6 +113,8 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(farmNodeIcon.sprite, Is.Not.Null);
                 Assert.That(eliteNodeIcon.sprite, Is.Not.Null);
                 Assert.That(serviceNodeIcon.sprite, Is.Not.Null);
+                Assert.That(currentNodeIcon.rectTransform.rect.width, Is.GreaterThan(100f));
+                Assert.That(currentNodeIcon.rectTransform.rect.height, Is.GreaterThan(100f));
                 Assert.That(currentNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(farmNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(eliteNodeIcon.sprite, Is.Not.SameAs(farmNodeIcon.sprite));
@@ -179,30 +187,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldDisplayFarmReadyMarkerForCompletedCombatContent()
-        {
-            GameObject hostObject = new GameObject("WorldMapScreenHost");
-            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
-
-            try
-            {
-                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
-                worldMapScreen.Show(
-                    WorldFlowTestData.CreateFarmAccessGraph(),
-                    WorldFlowTestData.CreateFarmAccessWorldState(),
-                    gameState: gameState);
-
-                Assert.That(ContainsText(hostObject, "Forest Farm"), Is.True);
-                Assert.That(ContainsText(hostObject, "Farm-ready"), Is.True);
-            }
-            finally
-            {
-                Object.DestroyImmediate(hostObject);
-            }
-        }
-
-        [Test]
-        public void Show_ShouldDisplayEliteChallengeMarkerForOptionalSidePath()
+        public void Show_ShouldLimitAuthoredMapLabelsToCurrentAndSelectedNodes()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -215,8 +200,44 @@ namespace Survivalon.Tests.EditMode.World
                     BootstrapWorldTestData.CreateWorldState(),
                     gameState: gameState);
 
-                Assert.That(ContainsText(hostObject, "Raider Holdout"), Is.True);
-                Assert.That(ContainsText(hostObject, "Elite challenge"), Is.True);
+                Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(1));
+
+                FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").onClick.Invoke();
+
+                Assert.That(
+                    ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: Forest Farm"),
+                    Is.True);
+                Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(2));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldKeepEliteNodeReadableThroughSelectionWithoutAlwaysVisibleMapCaption()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    BootstrapWorldTestData.CreateWorldState(),
+                    gameState: gameState);
+
+                FindButton(hostObject, BootstrapWorldScenario.ForestEliteNodeId.Value + "_Button").onClick.Invoke();
+
+                Assert.That(
+                    ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: Raider Holdout"),
+                    Is.True);
+                Assert.That(FindButton(hostObject, "EnterSelectedNodeButton").interactable, Is.False);
+                Assert.That(
+                    FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Select a reachable node to enter"));
             }
             finally
             {
@@ -317,33 +338,26 @@ namespace Survivalon.Tests.EditMode.World
                 bool containsForwardRouteSummary = false;
                 bool containsReadableLocationSummary = false;
                 bool containsBlockedLinkSummary = false;
-                bool containsStateLegend = false;
+                bool containsRouteSummary = false;
                 bool containsCharacterSelectionSummary = false;
                 bool containsAssignedPackageSummary = false;
                 bool containsPrimaryGearSummary = false;
                 bool containsSupportGearSummary = false;
-                bool containsServiceCaption = false;
-                bool containsChallengeCaption = false;
                 foreach (Text label in labels)
                 {
-                    if (label.text.Contains("Forward: Cavern Service Hub, Forest Farm, Raider Holdout"))
-                    {
-                        containsForwardRouteSummary = true;
-                    }
-
                     if (label.text.Contains("Location: Verdant Frontier"))
                     {
                         containsReadableLocationSummary = true;
                     }
 
-                    if (label.text.Contains("Blocked: Frontier Gate"))
+                    if (label.text.Contains("Current: Raider Trail (In progress) | Selected: none"))
                     {
-                        containsBlockedLinkSummary = true;
+                        containsForwardRouteSummary = true;
                     }
 
-                    if (label.text.Contains("Node states: Available = enterable"))
+                    if (label.text.Contains("Routes: 4 enterable | 3 forward | 0 replayable"))
                     {
-                        containsStateLegend = true;
+                        containsRouteSummary = true;
                     }
 
                     if (label.text.Contains("Selected character: Vanguard"))
@@ -365,28 +379,15 @@ namespace Survivalon.Tests.EditMode.World
                     {
                         containsSupportGearSummary = true;
                     }
-
-                    if (label.text.Contains("Service"))
-                    {
-                        containsServiceCaption = true;
-                    }
-
-                    if (label.text.Contains("Elite challenge"))
-                    {
-                        containsChallengeCaption = true;
-                    }
                 }
 
                 Assert.That(containsForwardRouteSummary, Is.True);
                 Assert.That(containsReadableLocationSummary, Is.True);
-                Assert.That(containsBlockedLinkSummary, Is.True);
-                Assert.That(containsStateLegend, Is.True);
+                Assert.That(containsRouteSummary, Is.True);
                 Assert.That(containsCharacterSelectionSummary, Is.True);
                 Assert.That(containsAssignedPackageSummary, Is.True);
                 Assert.That(containsPrimaryGearSummary, Is.True);
                 Assert.That(containsSupportGearSummary, Is.True);
-                Assert.That(containsServiceCaption, Is.True);
-                Assert.That(containsChallengeCaption, Is.True);
                 Assert.That(FindImage(hostObject, "MapBackgroundArt").sprite, Is.Not.Null);
                 Assert.That(
                     FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestEntryNodeId.Value + "_Button").gameObject, "StateIcon").sprite,
@@ -680,7 +681,7 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldCreateScrollableNodeListViewport()
+        public void Show_ShouldCreateStaticViewportForAuthoredMapSurface()
         {
             GameObject hostObject = new GameObject("WorldMapScreenHost");
             PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
@@ -699,7 +700,7 @@ namespace Survivalon.Tests.EditMode.World
                 RectTransform firstNodeRect = FindRectTransform(hostObject, "region_001_node_002_Button");
                 RectTransform panelRect = FindRectTransform(hostObject, "Panel");
                 Assert.That(scrollRect.horizontal, Is.False);
-                Assert.That(scrollRect.vertical, Is.True);
+                Assert.That(scrollRect.vertical, Is.False);
                 Assert.That(scrollRect.viewport, Is.Not.Null);
                 Assert.That(scrollRect.viewport.gameObject.name, Is.EqualTo("NodeListViewport"));
                 Assert.That(scrollRect.content, Is.Not.Null);
@@ -817,7 +818,7 @@ namespace Survivalon.Tests.EditMode.World
 
                 ScrollRect scrollRect = FindScrollRect(hostObject, "NodeListScrollView");
                 Button nodeButton = FindButton(hostObject, "region_002_node_001_Button");
-                AssertNodeButtonReadableWithinViewport(scrollRect.viewport, nodeButton);
+                AssertHorizontallyContained(scrollRect.viewport, nodeButton.GetComponent<RectTransform>());
 
                 nodeButton.onClick.Invoke();
                 ForceUiLayout(hostObject);
@@ -1077,6 +1078,21 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.Fail($"RectTransform '{objectName}' was not found.");
             return null;
+        }
+
+        private static int CountObjectsNamed(GameObject rootObject, string objectName)
+        {
+            Transform[] transforms = rootObject.GetComponentsInChildren<Transform>(true);
+            int count = 0;
+            foreach (Transform childTransform in transforms)
+            {
+                if (childTransform.gameObject.name == objectName && childTransform.gameObject.activeInHierarchy)
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         private static void ForceUiLayout(GameObject rootObject)

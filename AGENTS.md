@@ -102,3 +102,15 @@ Rules:
 - Always report the exact log/result file paths used.
 - Prefer this script-based workflow over ad hoc Unity commands.
 - See `specs/01_workflow/unity_verification_notes.md` for the helper-artifact caveat and fallback reporting expectations.
+
+Be more verbose in progress updates.
+When working for more than 30–60 seconds, post short status updates about:
+- what you are doing now
+- what command/tool is blocking
+- what artifact/log you are waiting for
+- what I can safely do if the process hangs
+
+For Unity work:
+- explicitly say when Unity compile/import or EditMode tests are running
+- explicitly say whether Codex is waiting for a Unity process to exit
+- if Unity appears stuck, suggest the exact safe recovery step

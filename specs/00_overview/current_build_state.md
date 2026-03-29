@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 106** and follow-ups **096a**, **106a**, and **106b**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
+This summary reflects completed work through **Milestone 106** and follow-ups **096a**, **106a**, **106b**, and **106c**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -93,6 +93,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - compact state/status legends so the placeholder node list reads more clearly at a glance
 - The world map now uses one authored presentation surface instead of a small bottom strip:
   - `Assets/Art/WorldMap/Backgrounds/world_map_background.png` is the main map surface
+  - the authored map surface now occupies the primary large area in the current 16:9 view, while build/details stay in a narrower supporting sidebar
   - current shipped bootstrap nodes use authored positions over that map plus meaning-first authored node icons:
     - `ordinary_combat`
     - `farm`
@@ -103,6 +104,8 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
     - `current`
   - `region_transition` is currently prepared-only canonical art and is not runtime-used yet because the shipped world graph does not expose a separate honest region-transition node meaning
   - current node connections are rendered directly on the map surface using existing world-graph data
+  - current/map labels on the authored bootstrap surface are limited to the current-context node and the currently selected node so captions do not overlap densely on the map itself
+  - the shipped authored bootstrap map no longer relies on scrolling for its main presentation
   - unknown/test graphs still fail closed to the existing vertical scroll fallback layout instead of forcing un-authored map placement
 - The world-map node list now also marks one small derived `Farm-ready` content state:
   - completed ordinary combat nodes are marked as `Farm-ready`

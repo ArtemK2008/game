@@ -60,11 +60,9 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(nodeState.UnlockThreshold, Is.EqualTo(3));
                 Assert.That(nodeState.State, Is.EqualTo(NodeState.Cleared));
 
-                Button clearedNodeButton = FindButton(hostObject, "region_001_node_004_Button");
-                Text clearedNodeLabel = clearedNodeButton.GetComponentInChildren<Text>(true);
-
-                Assert.That(clearedNodeLabel, Is.Not.Null);
-                Assert.That(clearedNodeLabel.text, Does.Contain("State: Cleared"));
+                Assert.That(
+                    ContainsText(hostObject, "Current: Forest Farm (Cleared) | Selected: none"),
+                    Is.True);
             }
             finally
             {
@@ -106,11 +104,14 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(1));
 
                 Button gateNodeButton = FindButton(hostObject, "region_001_node_003_Button");
-                Text gateNodeLabel = gateNodeButton.GetComponentInChildren<Text>(true);
-
                 Assert.That(gateNodeButton.interactable, Is.True);
-                Assert.That(gateNodeLabel, Is.Not.Null);
-                Assert.That(gateNodeLabel.text, Does.Contain("State: Available"));
+                gateNodeButton.onClick.Invoke();
+                Assert.That(
+                    ContainsText(hostObject, "Selected: Frontier Gate"),
+                    Is.True);
+                Assert.That(
+                    FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Enter Frontier Gate"));
             }
             finally
             {
@@ -141,10 +142,14 @@ namespace Survivalon.Tests.EditMode.Startup
                 ReturnToWorldMap(hostObject);
 
                 Button clearedPushNodeButton = FindButton(hostObject, "region_001_node_002_Button");
-                Text clearedPushNodeLabel = clearedPushNodeButton.GetComponentInChildren<Text>(true);
                 Assert.That(clearedPushNodeButton.interactable, Is.True);
-                Assert.That(clearedPushNodeLabel, Is.Not.Null);
-                Assert.That(clearedPushNodeLabel.text, Does.Contain("State: Cleared"));
+                clearedPushNodeButton.onClick.Invoke();
+                Assert.That(
+                    ContainsText(hostObject, "Current: Frontier Entry (Cleared) | Selected: Raider Trail"),
+                    Is.True);
+                Assert.That(
+                    FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Enter Raider Trail"));
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
                 AdvanceToPostRun(hostObject);
@@ -202,12 +207,15 @@ namespace Survivalon.Tests.EditMode.Startup
                 CreateAndInitializeBootstrap(hostObject, storage);
 
                 Button clearedFarmNodeButton = FindButton(hostObject, "region_001_node_002_Button");
-                Text clearedFarmNodeLabel = clearedFarmNodeButton.GetComponentInChildren<Text>(true);
-
                 Assert.That(clearedFarmNodeButton.interactable, Is.True);
-                Assert.That(clearedFarmNodeLabel, Is.Not.Null);
-                Assert.That(clearedFarmNodeLabel.text, Does.Contain("State: Cleared"));
                 Assert.That(ContainsText(hostObject, "Current: Cavern Service Hub"), Is.True);
+                clearedFarmNodeButton.onClick.Invoke();
+                Assert.That(
+                    ContainsText(hostObject, "Current: Cavern Service Hub (Available) | Selected: Raider Trail"),
+                    Is.True);
+                Assert.That(
+                    FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Enter Raider Trail"));
 
                 EnterNodeFromWorldMap(hostObject, "region_001_node_002_Button");
                 AdvanceToPostRun(hostObject);
@@ -280,11 +288,14 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(3));
 
                 Button cavernGateButton = FindButton(hostObject, "region_002_node_002_Button");
-                Text cavernGateLabel = cavernGateButton.GetComponentInChildren<Text>(true);
-
                 Assert.That(cavernGateButton.interactable, Is.True);
-                Assert.That(cavernGateLabel, Is.Not.Null);
-                Assert.That(cavernGateLabel.text, Does.Contain("State: Available"));
+                cavernGateButton.onClick.Invoke();
+                Assert.That(
+                    ContainsText(hostObject, "Selected: Cavern Gate"),
+                    Is.True);
+                Assert.That(
+                    FindButton(hostObject, "EnterSelectedNodeButton").GetComponentInChildren<Text>(true).text,
+                    Is.EqualTo("Enter Cavern Gate"));
             }
             finally
             {

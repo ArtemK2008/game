@@ -173,6 +173,7 @@ id | type | title | status | depends on / note
 096a | follow-up | Implement basic settings surface and persistence | completed | after 096; keeps next numbered target at 097
 106a | follow-up | Improve world map presentation with authored map art and node icons | completed | after 106; keeps next numbered target at 107
 106b | follow-up | Upgrade world map node icons to authored eight-slice set | completed | after 106a; keeps next numbered target at 107
+106c | follow-up | Make world map demo ready at 16:9 | completed | after 106b; keeps next numbered target at 107
 
 ## Refactor Milestones
 id | type | title | status | depends on / note

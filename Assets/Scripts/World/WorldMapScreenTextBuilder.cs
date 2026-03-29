@@ -27,11 +27,8 @@ namespace Survivalon.World
             return
                 $"Location: {worldStateSummary.CurrentLocationDisplayName}\n" +
                 $"Current: {worldStateSummary.CurrentNode.DisplayName} ({PlayerFacingCoreLabelFormatter.FormatNodeState(worldStateSummary.CurrentNodeState)}) | Selected: {selectedNodeLabel}\n" +
-                $"Paths now: {worldStateSummary.SelectableDestinationCount} enterable | {worldStateSummary.ForwardRouteNodes.Count} forward | {worldStateSummary.BacktrackRouteNodes.Count} backtrack | {worldStateSummary.ReplayableFarmNodes.Count} replayable | {worldStateSummary.BlockedLinkedNodes.Count} blocked\n" +
-                $"Forward: {BuildNodeListLabel(worldStateSummary.ForwardRouteNodes)}\n" +
-                $"Backtrack: {BuildNodeListLabel(worldStateSummary.BacktrackRouteNodes)} | Replayable: {BuildNodeListLabel(worldStateSummary.ReplayableFarmNodes)}\n" +
-                $"Blocked: {BuildNodeListLabel(worldStateSummary.BlockedLinkedNodes)}\n" +
-                "Node states: Available = enterable | InProgress = started | Cleared = replayable | Locked = blocked";
+                $"Routes: {worldStateSummary.SelectableDestinationCount} enterable | {worldStateSummary.ForwardRouteNodes.Count} forward | {worldStateSummary.ReplayableFarmNodes.Count} replayable\n" +
+                $"Blocked links: {worldStateSummary.BlockedLinkedNodes.Count}";
         }
 
         public static string BuildCharacterSelectionText(IReadOnlyList<PlayableCharacterSelectionOption> selectionOptions)
@@ -52,8 +49,7 @@ namespace Survivalon.World
             }
 
             return
-                $"Selected character: {selectedCharacterLabel}\n" +
-                $"Available characters: {selectionOptions.Count}";
+                $"Selected character: {selectedCharacterLabel}";
         }
 
         public static string BuildAssignmentText(
@@ -94,10 +90,8 @@ namespace Survivalon.World
                 GearCategory.SecondarySupport);
 
             return
-                $"Selected character build: {selectedCharacterDisplayName}\n" +
                 $"Assigned package: {assignedPackageLabel}\n" +
-                $"Primary gear: {primaryGearLabel} | Support gear: {supportGearLabel}\n" +
-                $"Available packages: {skillPackageOptions.Count} | Owned primary gear: {CountOptionsForCategory(gearAssignmentOptions, GearCategory.PrimaryCombat)} | Owned support gear: {CountOptionsForCategory(gearAssignmentOptions, GearCategory.SecondarySupport)}";
+                $"Primary gear: {primaryGearLabel} | Support gear: {supportGearLabel}";
         }
 
         public static string BuildCharacterButtonLabel(PlayableCharacterSelectionOption selectionOption)
@@ -251,22 +245,6 @@ namespace Survivalon.World
                 : $" | {nodeOption.OptionalChallengeDisplayName}";
         }
 
-        private static int CountOptionsForCategory(
-            IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions,
-            GearCategory gearCategory)
-        {
-            int count = 0;
-            for (int index = 0; index < gearAssignmentOptions.Count; index++)
-            {
-                if (gearAssignmentOptions[index].GearCategory == gearCategory)
-                {
-                    count++;
-                }
-            }
-
-            return count;
-        }
-
         private static string ResolveEquippedGearDisplayName(
             IReadOnlyList<PlayableCharacterGearAssignmentOption> gearAssignmentOptions,
             GearCategory gearCategory)
@@ -281,27 +259,6 @@ namespace Survivalon.World
             }
 
             return "none";
-        }
-
-        private static string BuildNodeListLabel(IReadOnlyList<WorldMapNodeReferenceDisplayState> nodes)
-        {
-            if (nodes == null)
-            {
-                throw new ArgumentNullException(nameof(nodes));
-            }
-
-            if (nodes.Count == 0)
-            {
-                return "none";
-            }
-
-            string[] labels = new string[nodes.Count];
-            for (int index = 0; index < nodes.Count; index++)
-            {
-                labels[index] = nodes[index].DisplayName;
-            }
-
-            return string.Join(", ", labels);
         }
     }
 }

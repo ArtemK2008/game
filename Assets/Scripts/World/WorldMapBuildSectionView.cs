@@ -12,11 +12,11 @@ namespace Survivalon.World
     /// </summary>
     internal sealed class WorldMapBuildSectionView
     {
-        private const float CharacterSelectionSummaryPreferredHeight = 44f;
-        private const float CharacterSelectionButtonPreferredHeight = 40f;
-        private const float BuildAssignmentSummaryPreferredHeight = 104f;
-        private const float SkillPackageAssignmentButtonPreferredHeight = 36f;
-        private const float GearAssignmentButtonPreferredHeight = 36f;
+        private const float CharacterSelectionSummaryPreferredHeight = 28f;
+        private const float CharacterSelectionButtonPreferredHeight = 36f;
+        private const float BuildAssignmentSummaryPreferredHeight = 54f;
+        private const float SkillPackageAssignmentButtonPreferredHeight = 34f;
+        private const float GearAssignmentButtonPreferredHeight = 34f;
 
         private readonly Font uiFont;
         private readonly Text characterSelectionText;
@@ -57,15 +57,17 @@ namespace Survivalon.World
                 parent,
                 font,
                 "CharacterSelectionSummary",
-                18,
-                FontStyle.Normal,
+                16,
+                FontStyle.Bold,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.90f, 0.94f, 1f));
             RuntimeUiSupport.AddLayoutElement(
                 characterSelectionText.gameObject,
-                CharacterSelectionSummaryPreferredHeight);
+                CharacterSelectionSummaryPreferredHeight,
+                flexibleWidth: 1f,
+                preferredWidth: 0f);
 
-            RectTransform characterSelectionContainer = CreateChoiceRowContainer(
+            RectTransform characterSelectionContainer = CreateChoiceListContainer(
                 parent,
                 "CharacterSelectionList");
 
@@ -73,18 +75,20 @@ namespace Survivalon.World
                 parent,
                 font,
                 "BuildAssignmentSummary",
-                18,
+                16,
                 FontStyle.Normal,
                 TextAnchor.UpperLeft,
                 new Color(0.88f, 0.90f, 0.94f, 1f));
             RuntimeUiSupport.AddLayoutElement(
                 buildAssignmentText.gameObject,
-                BuildAssignmentSummaryPreferredHeight);
+                BuildAssignmentSummaryPreferredHeight,
+                flexibleWidth: 1f,
+                preferredWidth: 0f);
 
-            RectTransform skillPackageAssignmentContainer = CreateChoiceRowContainer(
+            RectTransform skillPackageAssignmentContainer = CreateChoiceListContainer(
                 parent,
                 "SkillPackageAssignmentList");
-            RectTransform gearAssignmentContainer = CreateChoiceRowContainer(
+            RectTransform gearAssignmentContainer = CreateChoiceListContainer(
                 parent,
                 "GearAssignmentList");
 
@@ -250,6 +254,9 @@ namespace Survivalon.World
             buttonRectTransform.localScale = Vector3.one;
 
             LayoutElement layoutElement = buttonObject.GetComponent<LayoutElement>();
+            layoutElement.minWidth = 0f;
+            layoutElement.preferredWidth = 0f;
+            layoutElement.flexibleWidth = 1f;
             layoutElement.minHeight = preferredHeight;
             layoutElement.preferredHeight = preferredHeight;
 
@@ -272,26 +279,32 @@ namespace Survivalon.World
                 buttonObject.transform,
                 uiFont,
                 "Label",
-                16,
+                14,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
                 Color.white);
             buttonText.text = label;
+            buttonText.resizeTextForBestFit = true;
+            buttonText.resizeTextMinSize = 11;
+            buttonText.resizeTextMaxSize = 14;
+            buttonText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            buttonText.verticalOverflow = VerticalWrapMode.Truncate;
 
             ConfigureButtonLabelRect(buttonText.rectTransform);
             return button;
         }
 
-        private static RectTransform CreateChoiceRowContainer(Transform parent, string objectName)
+        private static RectTransform CreateChoiceListContainer(Transform parent, string objectName)
         {
             GameObject rowObject = new GameObject(
                 objectName,
                 typeof(RectTransform),
-                typeof(HorizontalLayoutGroup),
-                typeof(ContentSizeFitter));
+                typeof(VerticalLayoutGroup),
+                typeof(ContentSizeFitter),
+                typeof(LayoutElement));
             rowObject.transform.SetParent(parent, false);
 
-            HorizontalLayoutGroup rowLayout = rowObject.GetComponent<HorizontalLayoutGroup>();
+            VerticalLayoutGroup rowLayout = rowObject.GetComponent<VerticalLayoutGroup>();
             rowLayout.spacing = 8f;
             rowLayout.childAlignment = TextAnchor.UpperLeft;
             rowLayout.childControlWidth = true;
@@ -302,6 +315,11 @@ namespace Survivalon.World
             ContentSizeFitter rowFitter = rowObject.GetComponent<ContentSizeFitter>();
             rowFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             rowFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            LayoutElement rowLayoutElement = rowObject.GetComponent<LayoutElement>();
+            rowLayoutElement.minWidth = 0f;
+            rowLayoutElement.preferredWidth = 0f;
+            rowLayoutElement.flexibleWidth = 1f;
 
             RectTransform rowRectTransform = rowObject.GetComponent<RectTransform>();
             rowRectTransform.anchorMin = new Vector2(0f, 1f);

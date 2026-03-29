@@ -11,12 +11,12 @@ namespace Survivalon.World
     /// </summary>
     internal sealed class WorldMapSurfaceSectionView
     {
-        private const float NodeButtonWidth = 172f;
-        private const float NodeButtonHeight = 150f;
-        private const float NodeBackingSize = 88f;
-        private const float HighlightBackingSize = 100f;
-        private const float NodeIconSize = 88f;
-        private const float ConnectionThickness = 6f;
+        private const float NodeButtonWidth = 184f;
+        private const float NodeButtonHeight = 188f;
+        private const float NodeBackingSize = 116f;
+        private const float HighlightBackingSize = 136f;
+        private const float NodeIconSize = 112f;
+        private const float ConnectionThickness = 8f;
 
         private readonly Font uiFont;
         private readonly RectTransform scrollViewRectTransform;
@@ -83,9 +83,11 @@ namespace Survivalon.World
             scrollViewRectTransform.localScale = Vector3.one;
 
             Image scrollViewImage = scrollViewObject.GetComponent<Image>();
-            scrollViewImage.color = new Color(0.05f, 0.06f, 0.08f, 0.72f);
+            scrollViewImage.color = new Color(0.04f, 0.05f, 0.07f, 0.56f);
 
             LayoutElement layoutElement = scrollViewObject.GetComponent<LayoutElement>();
+            layoutElement.minWidth = 720f;
+            layoutElement.preferredWidth = 920f;
             layoutElement.flexibleWidth = 1f;
             layoutElement.flexibleHeight = 1f;
 
@@ -339,7 +341,10 @@ namespace Survivalon.World
 
             CreateNodeBacking(buttonObject.transform, nodeOption);
             CreateNodeIcon(buttonObject.transform, nodeOption, artResolver);
-            CreateNodeLabel(buttonObject.transform, nodeOption);
+            if (ShouldShowNodeLabel(nodeOption))
+            {
+                CreateNodeLabel(buttonObject.transform, nodeOption);
+            }
             ConfigureButtonColors(button, nodeOption);
             return buttonRectTransform;
         }
@@ -356,7 +361,7 @@ namespace Survivalon.World
             backingRectTransform.anchorMin = new Vector2(0.5f, 1f);
             backingRectTransform.anchorMax = new Vector2(0.5f, 1f);
             backingRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            backingRectTransform.anchoredPosition = new Vector2(0f, -46f);
+            backingRectTransform.anchoredPosition = new Vector2(0f, -58f);
             backingRectTransform.sizeDelta = Vector2.one *
                 (nodeOption.IsSelected || nodeOption.IsCurrentContext ? HighlightBackingSize : NodeBackingSize);
             backingRectTransform.localScale = Vector3.one;
@@ -382,7 +387,7 @@ namespace Survivalon.World
             iconRectTransform.anchorMin = new Vector2(0.5f, 1f);
             iconRectTransform.anchorMax = new Vector2(0.5f, 1f);
             iconRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            iconRectTransform.anchoredPosition = new Vector2(0f, -46f);
+            iconRectTransform.anchoredPosition = new Vector2(0f, -58f);
             iconRectTransform.sizeDelta = Vector2.one * NodeIconSize;
             iconRectTransform.localScale = Vector3.one;
 
@@ -412,23 +417,32 @@ namespace Survivalon.World
             labelPlateRectTransform.anchorMin = new Vector2(0.5f, 0f);
             labelPlateRectTransform.anchorMax = new Vector2(0.5f, 0f);
             labelPlateRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            labelPlateRectTransform.anchoredPosition = new Vector2(0f, 30f);
-            labelPlateRectTransform.sizeDelta = new Vector2(164f, 54f);
+            labelPlateRectTransform.anchoredPosition = currentLayout.UsesNormalizedPositions
+                ? new Vector2(0f, 22f)
+                : new Vector2(0f, 30f);
+            labelPlateRectTransform.sizeDelta = currentLayout.UsesNormalizedPositions
+                ? new Vector2(176f, 34f)
+                : new Vector2(164f, 54f);
             labelPlateRectTransform.localScale = Vector3.one;
 
             Image labelPlateImage = labelPlateObject.GetComponent<Image>();
-            labelPlateImage.color = new Color(0.05f, 0.07f, 0.10f, 0.84f);
+            labelPlateImage.color = currentLayout.UsesNormalizedPositions
+                ? new Color(0.05f, 0.07f, 0.10f, 0.92f)
+                : new Color(0.05f, 0.07f, 0.10f, 0.84f);
             labelPlateImage.raycastTarget = false;
 
             Text labelText = RuntimeUiSupport.CreateText(
                 labelPlateObject.transform,
                 uiFont,
                 "Label",
-                14,
+                currentLayout.UsesNormalizedPositions ? 13 : 14,
                 FontStyle.Bold,
                 TextAnchor.MiddleCenter,
                 Color.white);
             labelText.text = BuildNodeSurfaceLabel(nodeOption);
+            labelText.resizeTextForBestFit = currentLayout.UsesNormalizedPositions;
+            labelText.resizeTextMinSize = 11;
+            labelText.resizeTextMaxSize = 13;
 
             RectTransform labelRectTransform = labelText.rectTransform;
             labelRectTransform.anchorMin = Vector2.zero;
@@ -438,8 +452,13 @@ namespace Survivalon.World
             labelRectTransform.localScale = Vector3.one;
         }
 
-        private static string BuildNodeSurfaceLabel(WorldMapNodeOption nodeOption)
+        private string BuildNodeSurfaceLabel(WorldMapNodeOption nodeOption)
         {
+            if (currentLayout.UsesNormalizedPositions)
+            {
+                return nodeOption.NodeDisplayName;
+            }
+
             string caption = WorldMapScreenTextBuilder.BuildNodeMapCaption(nodeOption);
             if (string.IsNullOrWhiteSpace(caption))
             {
@@ -447,6 +466,16 @@ namespace Survivalon.World
             }
 
             return $"{nodeOption.NodeDisplayName}\n{caption}";
+        }
+
+        private bool ShouldShowNodeLabel(WorldMapNodeOption nodeOption)
+        {
+            if (!currentLayout.UsesNormalizedPositions)
+            {
+                return true;
+            }
+
+            return nodeOption.IsSelected || nodeOption.IsCurrentContext;
         }
 
         private static void ConfigureButtonColors(Button button, WorldMapNodeOption nodeOption)

@@ -267,13 +267,15 @@ namespace Survivalon.World
             panelRectTransform.localScale = Vector3.one;
 
             HorizontalLayoutGroup panelLayout = panelObject.GetComponent<HorizontalLayoutGroup>();
-            panelLayout.padding = new RectOffset(16, 16, 16, 16);
-            panelLayout.spacing = 16f;
+            panelLayout.padding = new RectOffset(18, 18, 18, 18);
+            panelLayout.spacing = 18f;
             panelLayout.childAlignment = TextAnchor.UpperLeft;
             panelLayout.childControlWidth = true;
             panelLayout.childControlHeight = true;
             panelLayout.childForceExpandWidth = false;
             panelLayout.childForceExpandHeight = true;
+
+            surfaceSectionView = WorldMapSurfaceSectionView.Create(panelObject.transform, uiFont);
 
             GameObject sidebarObject = new GameObject(
                 "Sidebar",
@@ -287,16 +289,16 @@ namespace Survivalon.World
             sidebarRectTransform.localScale = Vector3.one;
 
             Image sidebarImage = sidebarObject.GetComponent<Image>();
-            sidebarImage.color = new Color(0.06f, 0.08f, 0.10f, 0.86f);
+            sidebarImage.color = new Color(0.05f, 0.07f, 0.09f, 0.88f);
 
             LayoutElement sidebarLayoutElement = sidebarObject.GetComponent<LayoutElement>();
-            sidebarLayoutElement.preferredWidth = 400f;
-            sidebarLayoutElement.minWidth = 360f;
+            sidebarLayoutElement.preferredWidth = 312f;
+            sidebarLayoutElement.minWidth = 296f;
             sidebarLayoutElement.flexibleHeight = 1f;
 
             VerticalLayoutGroup sidebarLayout = sidebarObject.GetComponent<VerticalLayoutGroup>();
             sidebarLayout.padding = new RectOffset(16, 16, 16, 16);
-            sidebarLayout.spacing = 10f;
+            sidebarLayout.spacing = 8f;
             sidebarLayout.childAlignment = TextAnchor.UpperLeft;
             sidebarLayout.childControlWidth = true;
             sidebarLayout.childControlHeight = true;
@@ -309,7 +311,6 @@ namespace Survivalon.World
                 uiFont,
                 HandleNodeEntryRequest);
             buildSectionView = WorldMapBuildSectionView.Create(sidebarObject.transform, uiFont);
-            surfaceSectionView = WorldMapSurfaceSectionView.Create(panelObject.transform, uiFont);
             systemMenuButton = CompactSystemMenuUiFactory.CreateSystemMenuButton(
                 transform,
                 uiFont,
