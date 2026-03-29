@@ -17,13 +17,18 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void ResolveNodeIconKind_ShouldReturnCurrentForSelectedAndCurrentContextNodes()
+        public void ResolveNodeIconKind_ShouldKeepMeaningFirstIconsForSelectedAndCurrentContextNodes()
         {
-            WorldMapNodeOption selectedNode = CreateNodeOption(NodeType.Combat, NodeState.Available, isSelected: true);
+            WorldMapNodeOption selectedNode = CreateNodeOption(
+                NodeType.Combat,
+                NodeState.Available,
+                isSelected: true,
+                hasRegionMaterialYieldContent: true,
+                isFarmReady: true);
             WorldMapNodeOption currentNode = CreateNodeOption(NodeType.ServiceOrProgression, NodeState.Available, isCurrentContext: true);
 
-            Assert.That(artResolver.ResolveNodeIconKind(selectedNode), Is.EqualTo(WorldMapNodeIconKind.Current));
-            Assert.That(artResolver.ResolveNodeIconKind(currentNode), Is.EqualTo(WorldMapNodeIconKind.Current));
+            Assert.That(artResolver.ResolveNodeIconKind(selectedNode), Is.EqualTo(WorldMapNodeIconKind.Farm));
+            Assert.That(artResolver.ResolveNodeIconKind(currentNode), Is.EqualTo(WorldMapNodeIconKind.Service));
         }
 
         [Test]

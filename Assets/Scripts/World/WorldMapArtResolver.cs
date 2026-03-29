@@ -44,11 +44,6 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(nodeOption));
             }
 
-            if (nodeOption.IsSelected || nodeOption.IsCurrentContext)
-            {
-                return WorldMapNodeIconKind.Current;
-            }
-
             if (nodeOption.NodeState == NodeState.Locked)
             {
                 return WorldMapNodeIconKind.Locked;

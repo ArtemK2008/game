@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 106** and follow-ups **096a**, **106a**, **106b**, **106c**, **106d**, **106e**, and **106f**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
+This summary reflects completed work through **Milestone 106** and follow-ups **096a**, **106a**, **106b**, **106c**, **106d**, **106e**, **106f**, and **106g**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**. Milestone `102` was closed by auditing already-shipped roster behavior rather than by adding new runtime code in the closeout pass.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while exiting play mode safely in the Unity Editor and staying test-safe.
@@ -96,9 +96,10 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - the authored map surface now occupies the primary large area in the current 16:9 view, while build/details stay in a narrower supporting sidebar
   - authored-map node presentation is now compact and icon-first:
     - the live authored bootstrap map no longer renders large visible square node backings over the map art
-    - current and selected nodes use restrained visual highlights instead, with selected remaining strongest and current now using a clearer cyan-style highlight than generic enterable nodes
+    - icon art now primarily communicates node meaning, while node state is carried by separate restrained marker rings instead of relying mainly on recoloring the icon art itself
+    - selected and current nodes use explicit outer state-marker rings, with selected remaining strongest and current using a clearly distinct cyan ring
     - hit targets stay generous while remaining centered on the visible node icon art
-    - reachable nodes now use a brighter restrained availability accent, while replayable cleared nodes use a subtler replay/readability accent
+    - reachable nodes now use a restrained green state-marker ring, while replayable cleared nodes use a softer teal ring
     - locked nodes are visibly dimmer than enterable nodes, and current vs selected nodes remain distinct through their separate highlight treatments
   - current shipped bootstrap nodes use authored positions over that map plus meaning-first authored node icons:
     - `ordinary_combat`
@@ -107,7 +108,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
     - `boss_gate`
     - `service`
     - `locked`
-    - `current`
+  - the prepared `current` node icon remains available in authored assets, but the live map now uses explicit state-marker rings rather than a current-specific icon override
   - `region_transition` is currently prepared-only canonical art and is not runtime-used yet because the shipped world graph does not expose a separate honest region-transition node meaning
   - current node connections are rendered directly on the map surface using existing world-graph data
   - on-map labels on the authored bootstrap surface are limited to the currently selected node; the current-context node uses visual highlighting without a persistent map nameplate

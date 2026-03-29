@@ -414,20 +414,30 @@ namespace Survivalon.Tests.EditMode.World
 
             Assert.That(lockedTint.a, Is.LessThan(selectableTint.a));
             Assert.That(replayableTint, Is.Not.EqualTo(selectableTint));
-            Assert.That(currentTint, Is.Not.EqualTo(selectableTint));
+            Assert.That(currentTint, Is.EqualTo(Color.white));
             Assert.That(selectedTint, Is.EqualTo(Color.white));
         }
 
         [Test]
-        public void TryResolveNodeAccent_ShouldHighlightSelectableAndReplayableNodesButNotLockedCurrentOrSelectedNodes()
+        public void TryResolveNodeStateMarkerStyle_ShouldSeparateSelectedCurrentSelectableReplayableAndLockedStates()
         {
             Assert.That(
-                WorldMapScreenStateResolver.TryResolveNodeAccent(
-                    CreateNodeOption("selectable", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: false),
-                    out Color selectableAccent),
+                WorldMapScreenStateResolver.TryResolveNodeStateMarkerStyle(
+                    CreateNodeOption("selected", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: true),
+                    out WorldMapNodeStateMarkerStyle selectedMarker),
                 Is.True);
             Assert.That(
-                WorldMapScreenStateResolver.TryResolveNodeAccent(
+                WorldMapScreenStateResolver.TryResolveNodeStateMarkerStyle(
+                    CreateNodeOption("current", NodeState.Available, isSelectable: false, isCurrentContext: true, isSelected: false),
+                    out WorldMapNodeStateMarkerStyle currentMarker),
+                Is.True);
+            Assert.That(
+                WorldMapScreenStateResolver.TryResolveNodeStateMarkerStyle(
+                    CreateNodeOption("selectable", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: false),
+                    out WorldMapNodeStateMarkerStyle selectableMarker),
+                Is.True);
+            Assert.That(
+                WorldMapScreenStateResolver.TryResolveNodeStateMarkerStyle(
                     CreateNodeOption(
                         "replayable",
                         NodeState.Cleared,
@@ -435,25 +445,19 @@ namespace Survivalon.Tests.EditMode.World
                         isCurrentContext: false,
                         isSelected: false,
                         isFarmReady: true),
-                    out Color replayableAccent),
+                    out WorldMapNodeStateMarkerStyle replayableMarker),
                 Is.True);
             Assert.That(
-                WorldMapScreenStateResolver.TryResolveNodeAccent(
+                WorldMapScreenStateResolver.TryResolveNodeStateMarkerStyle(
                     CreateNodeOption("locked", NodeState.Locked, isSelectable: false, isCurrentContext: false, isSelected: false),
                     out _),
                 Is.False);
-            Assert.That(
-                WorldMapScreenStateResolver.TryResolveNodeAccent(
-                    CreateNodeOption("current", NodeState.Available, isSelectable: false, isCurrentContext: true, isSelected: false),
-                    out _),
-                Is.False);
-            Assert.That(
-                WorldMapScreenStateResolver.TryResolveNodeAccent(
-                    CreateNodeOption("selected", NodeState.Available, isSelectable: true, isCurrentContext: false, isSelected: true),
-                    out _),
-                Is.False);
 
-            Assert.That(selectableAccent, Is.Not.EqualTo(replayableAccent));
+            Assert.That(selectedMarker.Size, Is.GreaterThan(currentMarker.Size));
+            Assert.That(currentMarker.Size, Is.GreaterThan(selectableMarker.Size));
+            Assert.That(selectableMarker.Size, Is.GreaterThan(replayableMarker.Size));
+            Assert.That(currentMarker.Color, Is.Not.EqualTo(selectableMarker.Color));
+            Assert.That(selectableMarker.Color, Is.Not.EqualTo(replayableMarker.Color));
         }
 
         private static void AssertButtonState(WorldMapScreenButtonState buttonState, string expectedLabel, bool expectedInteractable)

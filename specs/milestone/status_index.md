@@ -177,6 +177,7 @@ id | type | title | status | depends on / note
 106d | follow-up | Clean up world map node visuals for demo presentation | completed | after 106c; keeps next numbered target at 107
 106e | follow-up | Clarify world map node availability and hitbox alignment | completed | after 106d; keeps next numbered target at 107
 106f | follow-up | Strengthen current-node readability on the world map | completed | after 106e; keeps next numbered target at 107
+106g | follow-up | Separate world map node state markers from icon meaning | completed | after 106f; keeps next numbered target at 107
 
 ## Refactor Milestones
 id | type | title | status | depends on / note

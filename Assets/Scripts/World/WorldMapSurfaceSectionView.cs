@@ -12,9 +12,6 @@ namespace Survivalon.World
     internal sealed class WorldMapSurfaceSectionView
     {
         private const float AuthoredNodeHitAreaSize = 108f;
-        private const float AuthoredNodeAccentSize = 84f;
-        private const float AuthoredSelectedGlowSize = 112f;
-        private const float AuthoredCurrentGlowSize = 102f;
         private const float AuthoredNodeIconSize = 76f;
         private const float AuthoredConnectionThickness = 5f;
 
@@ -36,6 +33,7 @@ namespace Survivalon.World
         private readonly AspectRatioFitter contentAspectFitter;
         private readonly Dictionary<NodeId, RectTransform> nodeButtonRectsById = new Dictionary<NodeId, RectTransform>();
         private readonly List<ConnectionVisual> connectionVisuals = new List<ConnectionVisual>();
+        private static Sprite stateMarkerRingSprite;
 
         private WorldMapSurfaceLayout currentLayout;
 
@@ -355,8 +353,7 @@ namespace Survivalon.World
 
             if (currentLayout.UsesNormalizedPositions)
             {
-                CreateNodeAccent(buttonObject.transform, nodeOption, nodeSprite);
-                CreateNodeHighlight(buttonObject.transform, nodeOption, nodeSprite);
+                CreateNodeStateMarker(buttonObject.transform, nodeOption);
             }
             else
             {
@@ -397,65 +394,32 @@ namespace Survivalon.World
             backingImage.raycastTarget = false;
         }
 
-        private void CreateNodeHighlight(Transform parent, WorldMapNodeOption nodeOption, Sprite nodeSprite)
+        private void CreateNodeStateMarker(Transform parent, WorldMapNodeOption nodeOption)
         {
-            if ((!nodeOption.IsSelected && !nodeOption.IsCurrentContext) || nodeSprite == null)
+            if (!WorldMapScreenStateResolver.TryResolveNodeStateMarkerStyle(nodeOption, out WorldMapNodeStateMarkerStyle markerStyle))
             {
                 return;
             }
 
-            GameObject highlightObject = new GameObject(
-                "StateGlow",
+            GameObject markerObject = new GameObject(
+                "StateMarkerRing",
                 typeof(RectTransform),
                 typeof(Image));
-            highlightObject.transform.SetParent(parent, false);
+            markerObject.transform.SetParent(parent, false);
 
-            RectTransform highlightRectTransform = highlightObject.GetComponent<RectTransform>();
-            highlightRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            highlightRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            highlightRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            highlightRectTransform.anchoredPosition = Vector2.zero;
-            highlightRectTransform.sizeDelta = Vector2.one *
-                (nodeOption.IsSelected ? AuthoredSelectedGlowSize : AuthoredCurrentGlowSize);
-            highlightRectTransform.localScale = Vector3.one;
+            RectTransform markerRectTransform = markerObject.GetComponent<RectTransform>();
+            markerRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+            markerRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            markerRectTransform.pivot = new Vector2(0.5f, 0.5f);
+            markerRectTransform.anchoredPosition = Vector2.zero;
+            markerRectTransform.sizeDelta = Vector2.one * markerStyle.Size;
+            markerRectTransform.localScale = Vector3.one;
 
-            Image highlightImage = highlightObject.GetComponent<Image>();
-            highlightImage.sprite = nodeSprite;
-            highlightImage.preserveAspect = true;
-            highlightImage.raycastTarget = false;
-
-            Color highlightColor = WorldMapScreenStateResolver.ResolveNodeColor(nodeOption);
-            float alpha = nodeOption.IsSelected ? 0.34f : 0.30f;
-            highlightImage.color = new Color(highlightColor.r, highlightColor.g, highlightColor.b, alpha);
-        }
-
-        private void CreateNodeAccent(Transform parent, WorldMapNodeOption nodeOption, Sprite nodeSprite)
-        {
-            if (nodeSprite == null ||
-                !WorldMapScreenStateResolver.TryResolveNodeAccent(nodeOption, out Color accentColor))
-            {
-                return;
-            }
-
-            GameObject accentObject = new GameObject(
-                "StateAccent",
-                typeof(RectTransform),
-                typeof(Image));
-            accentObject.transform.SetParent(parent, false);
-
-            RectTransform accentRectTransform = accentObject.GetComponent<RectTransform>();
-            accentRectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-            accentRectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-            accentRectTransform.pivot = new Vector2(0.5f, 0.5f);
-            accentRectTransform.anchoredPosition = Vector2.zero;
-            accentRectTransform.sizeDelta = Vector2.one * AuthoredNodeAccentSize;
-            accentRectTransform.localScale = Vector3.one;
-
-            Image accentImage = accentObject.GetComponent<Image>();
-            accentImage.sprite = nodeSprite;
-            accentImage.preserveAspect = true;
-            accentImage.raycastTarget = false;
-            accentImage.color = accentColor;
+            Image markerImage = markerObject.GetComponent<Image>();
+            markerImage.sprite = GetStateMarkerRingSprite();
+            markerImage.preserveAspect = true;
+            markerImage.raycastTarget = false;
+            markerImage.color = markerStyle.Color;
         }
 
         private void CreateNodeIcon(Transform parent, WorldMapNodeOption nodeOption, Sprite nodeSprite)
@@ -636,6 +600,49 @@ namespace Survivalon.World
 
             Vector3 worldCenter = (worldCorners[0] + worldCorners[2]) * 0.5f;
             return contentRectTransform.InverseTransformPoint(worldCenter);
+        }
+
+        private static Sprite GetStateMarkerRingSprite()
+        {
+            if (stateMarkerRingSprite != null)
+            {
+                return stateMarkerRingSprite;
+            }
+
+            const int textureSize = 64;
+            const float outerRadius = 31f;
+            const float innerRadius = 23f;
+
+            Texture2D texture = new Texture2D(textureSize, textureSize, TextureFormat.ARGB32, false);
+            texture.name = "WorldMapStateMarkerRing";
+            texture.wrapMode = TextureWrapMode.Clamp;
+            texture.filterMode = FilterMode.Bilinear;
+
+            Vector2 center = new Vector2((textureSize - 1) * 0.5f, (textureSize - 1) * 0.5f);
+            Color[] pixels = new Color[textureSize * textureSize];
+
+            for (int y = 0; y < textureSize; y++)
+            {
+                for (int x = 0; x < textureSize; x++)
+                {
+                    float distance = Vector2.Distance(new Vector2(x, y), center);
+                    float outerFalloff = Mathf.Clamp01(outerRadius - distance);
+                    float innerFalloff = Mathf.Clamp01(distance - innerRadius);
+                    float alpha = outerFalloff * innerFalloff;
+
+                    pixels[(y * textureSize) + x] = new Color(1f, 1f, 1f, alpha);
+                }
+            }
+
+            texture.SetPixels(pixels);
+            texture.Apply(updateMipmaps: false, makeNoLongerReadable: false);
+
+            stateMarkerRingSprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, textureSize, textureSize),
+                new Vector2(0.5f, 0.5f),
+                textureSize);
+            return stateMarkerRingSprite;
         }
 
         private static RectTransform CreateStretchLayer(Transform parent, string objectName)

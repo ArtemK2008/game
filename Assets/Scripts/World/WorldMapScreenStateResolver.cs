@@ -89,16 +89,6 @@ namespace Survivalon.World
                 throw new ArgumentNullException(nameof(nodeOption));
             }
 
-            if (nodeOption.IsSelected)
-            {
-                return Color.white;
-            }
-
-            if (nodeOption.IsCurrentContext)
-            {
-                return new Color(0.72f, 0.95f, 1f, 1f);
-            }
-
             if (nodeOption.NodeState == NodeState.Locked)
             {
                 return new Color(0.42f, 0.44f, 0.48f, 0.52f);
@@ -106,43 +96,65 @@ namespace Survivalon.World
 
             if (IsReplayableNode(nodeOption))
             {
-                return new Color(0.84f, 0.93f, 0.94f, 0.90f);
+                return new Color(0.92f, 0.94f, 0.95f, 0.90f);
             }
 
-            if (nodeOption.IsSelectable)
+            if (nodeOption.IsSelected || nodeOption.IsCurrentContext || nodeOption.IsSelectable)
             {
-                return new Color(1f, 1f, 1f, 0.98f);
+                return Color.white;
             }
 
-            return new Color(0.72f, 0.76f, 0.81f, 0.74f);
+            return new Color(0.84f, 0.87f, 0.90f, 0.78f);
         }
 
-        public static bool TryResolveNodeAccent(WorldMapNodeOption nodeOption, out Color accentColor)
+        public static bool TryResolveNodeStateMarkerStyle(
+            WorldMapNodeOption nodeOption,
+            out WorldMapNodeStateMarkerStyle markerStyle)
         {
             if (nodeOption == null)
             {
                 throw new ArgumentNullException(nameof(nodeOption));
             }
 
-            if (nodeOption.IsSelected || nodeOption.IsCurrentContext || nodeOption.NodeState == NodeState.Locked)
+            if (nodeOption.IsSelected)
             {
-                accentColor = default;
+                markerStyle = new WorldMapNodeStateMarkerStyle(
+                    new Color(0.92f, 0.74f, 0.24f, 0.96f),
+                    size: 110f);
+                return true;
+            }
+
+            if (nodeOption.IsCurrentContext)
+            {
+                markerStyle = new WorldMapNodeStateMarkerStyle(
+                    new Color(0.18f, 0.82f, 1f, 0.90f),
+                    size: 96f);
+                return true;
+            }
+
+            if (nodeOption.NodeState == NodeState.Locked)
+            {
+                markerStyle = default;
                 return false;
             }
 
             if (IsReplayableNode(nodeOption))
             {
-                accentColor = new Color(0.33f, 0.72f, 0.80f, 0.16f);
+                markerStyle = new WorldMapNodeStateMarkerStyle(
+                    new Color(0.34f, 0.72f, 0.80f, 0.62f),
+                    size: 78f);
                 return true;
             }
 
             if (nodeOption.IsSelectable)
             {
-                accentColor = new Color(0.50f, 0.90f, 0.42f, 0.22f);
+                markerStyle = new WorldMapNodeStateMarkerStyle(
+                    new Color(0.48f, 0.90f, 0.40f, 0.76f),
+                    size: 84f);
                 return true;
             }
 
-            accentColor = default;
+            markerStyle = default;
             return false;
         }
 
@@ -152,6 +164,19 @@ namespace Survivalon.World
                 nodeOption.IsFarmReady ||
                 nodeOption.PathRole == WorldMapPathRole.ReplayableFarmNode;
         }
+    }
+
+    public readonly struct WorldMapNodeStateMarkerStyle
+    {
+        public WorldMapNodeStateMarkerStyle(Color color, float size)
+        {
+            Color = color;
+            Size = size;
+        }
+
+        public Color Color { get; }
+
+        public float Size { get; }
     }
 
     public readonly struct WorldMapScreenButtonState

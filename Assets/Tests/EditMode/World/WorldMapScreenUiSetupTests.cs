@@ -109,9 +109,8 @@ namespace Survivalon.Tests.EditMode.World
                 Button availableNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button");
                 Button lockedNodeButton = FindButton(hostObject, BootstrapWorldScenario.CavernGateNodeId.Value + "_Button");
                 Button currentNodeButton = FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button");
-                Image currentNodeGlow = FindChildImage(currentNodeButton.gameObject, "StateGlow");
-                Image availableNodeAccent = FindChildImage(availableNodeButton.gameObject, "StateAccent");
-
+                Image currentNodeMarker = FindChildImage(currentNodeButton.gameObject, "StateMarkerRing");
+                Image availableNodeMarker = FindChildImage(availableNodeButton.gameObject, "StateMarkerRing");
                 Assert.That(backgroundImage.sprite, Is.Not.Null);
                 Assert.That(currentNodeIcon.sprite, Is.Not.Null);
                 Assert.That(ordinaryNodeIcon.sprite, Is.Not.Null);
@@ -120,21 +119,19 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(serviceNodeIcon.sprite, Is.Not.Null);
                 Assert.That(currentNodeIcon.rectTransform.rect.width, Is.InRange(64f, 88f));
                 Assert.That(currentNodeIcon.rectTransform.rect.height, Is.InRange(64f, 88f));
-                Assert.That(currentNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
+                Assert.That(currentNodeIcon.sprite, Is.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(farmNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(eliteNodeIcon.sprite, Is.Not.SameAs(farmNodeIcon.sprite));
                 Assert.That(serviceNodeIcon.sprite, Is.Not.SameAs(ordinaryNodeIcon.sprite));
                 Assert.That(CountObjectsNamed(hostObject, "StateBacking"), Is.EqualTo(0));
-                Assert.That(CountObjectsNamed(hostObject, "StateGlow"), Is.EqualTo(1));
-                Assert.That(FindChildImage(availableNodeButton.gameObject, "StateAccent"), Is.Not.Null);
-                Assert.That(TryFindChildImage(lockedNodeButton.gameObject, "StateAccent"), Is.Null);
-                Assert.That(TryFindChildImage(currentNodeButton.gameObject, "StateAccent"), Is.Null);
-                Assert.That(currentNodeGlow, Is.Not.Null);
+                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing"), Is.GreaterThanOrEqualTo(3));
+                Assert.That(availableNodeMarker, Is.Not.Null);
+                Assert.That(TryFindChildImage(lockedNodeButton.gameObject, "StateMarkerRing"), Is.Null);
+                Assert.That(currentNodeMarker, Is.Not.Null);
                 Assert.That(FindChildImage(lockedNodeButton.gameObject, "StateIcon").color.a, Is.LessThan(0.7f));
-                Assert.That(FindChildImage(availableNodeButton.gameObject, "StateIcon").color.a, Is.GreaterThan(0.9f));
-                Assert.That(currentNodeGlow.color.a, Is.GreaterThan(availableNodeAccent.color.a));
-                Assert.That(currentNodeGlow.rectTransform.rect.width, Is.GreaterThan(availableNodeAccent.rectTransform.rect.width));
-                Assert.That(currentNodeIcon.color, Is.Not.EqualTo(FindChildImage(availableNodeButton.gameObject, "StateIcon").color));
+                Assert.That(currentNodeIcon.color, Is.EqualTo(Color.white));
+                Assert.That(currentNodeMarker.color, Is.Not.EqualTo(availableNodeMarker.color));
+                Assert.That(currentNodeMarker.rectTransform.rect.width, Is.GreaterThan(availableNodeMarker.rectTransform.rect.width));
             }
             finally
             {
@@ -247,7 +244,7 @@ namespace Survivalon.Tests.EditMode.World
                     gameState: gameState);
 
                 Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(0));
-                Assert.That(CountObjectsNamed(hostObject, "StateGlow"), Is.EqualTo(1));
+                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing"), Is.GreaterThanOrEqualTo(3));
 
                 FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").onClick.Invoke();
 
@@ -255,10 +252,14 @@ namespace Survivalon.Tests.EditMode.World
                     ContainsText(hostObject, "Current: Raider Trail (In progress) | Selected: Forest Farm"),
                     Is.True);
                 Assert.That(CountObjectsNamed(hostObject, "LabelPlate"), Is.EqualTo(1));
-                Assert.That(CountObjectsNamed(hostObject, "StateGlow"), Is.EqualTo(2));
+                Assert.That(CountObjectsNamed(hostObject, "StateMarkerRing"), Is.GreaterThanOrEqualTo(3));
                 Assert.That(
-                    FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").gameObject, "StateGlow").rectTransform.rect.width,
-                    Is.GreaterThan(FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button").gameObject, "StateGlow").rectTransform.rect.width));
+                    FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").gameObject, "StateMarkerRing").rectTransform.rect.width,
+                    Is.GreaterThan(FindChildImage(FindButton(hostObject, BootstrapWorldScenario.ForestPushNodeId.Value + "_Button").gameObject, "StateMarkerRing").rectTransform.rect.width));
+                Text selectedLabel = FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button")
+                    .GetComponentInChildren<Text>(true);
+                Assert.That(selectedLabel, Is.Not.Null);
+                Assert.That(selectedLabel.raycastTarget, Is.False);
             }
             finally
             {
@@ -318,6 +319,38 @@ namespace Survivalon.Tests.EditMode.World
                 Assert.That(entryButton.interactable, Is.True);
                 Assert.That(entryButtonLabel, Is.Not.Null);
                 Assert.That(entryButtonLabel.text, Is.EqualTo("Replay Forest Farm"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(hostObject);
+            }
+        }
+
+        [Test]
+        public void Show_ShouldUseDistinctMarkersForReachableAndReplayableNodes()
+        {
+            GameObject hostObject = new GameObject("WorldMapScreenHost");
+            PersistentGameState gameState = CreateClearedFarmBranchGameState();
+
+            try
+            {
+                WorldMapScreen worldMapScreen = hostObject.AddComponent<WorldMapScreen>();
+                worldMapScreen.Show(
+                    BootstrapWorldTestData.CreateWorldGraph(),
+                    gameState.WorldState,
+                    gameState: gameState);
+
+                Image replayableNodeMarker = FindChildImage(
+                    FindButton(hostObject, BootstrapWorldScenario.ForestFarmNodeId.Value + "_Button").gameObject,
+                    "StateMarkerRing");
+                Image reachableNodeMarker = FindChildImage(
+                    FindButton(hostObject, BootstrapWorldScenario.ForestEliteNodeId.Value + "_Button").gameObject,
+                    "StateMarkerRing");
+
+                Assert.That(replayableNodeMarker, Is.Not.Null);
+                Assert.That(reachableNodeMarker, Is.Not.Null);
+                Assert.That(reachableNodeMarker.color, Is.Not.EqualTo(replayableNodeMarker.color));
+                Assert.That(reachableNodeMarker.rectTransform.rect.width, Is.GreaterThan(replayableNodeMarker.rectTransform.rect.width));
             }
             finally
             {
@@ -1241,6 +1274,19 @@ namespace Survivalon.Tests.EditMode.World
             {
                 new NodeId("region_002_node_001"),
             });
+            return gameState;
+        }
+
+        private static PersistentGameState CreateClearedFarmBranchGameState()
+        {
+            PersistentGameState gameState = BootstrapWorldTestData.CreateGameState();
+            NodeId farmNodeId = BootstrapWorldScenario.ForestFarmNodeId;
+            PersistentNodeState farmNodeState = gameState.WorldState.GetOrAddNodeState(
+                farmNodeId,
+                unlockThreshold: 3,
+                initialState: NodeState.Available);
+
+            farmNodeState.ApplyUnlockProgress(3);
             return gameState;
         }
 
