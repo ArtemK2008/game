@@ -165,9 +165,52 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(placeholderState.NodeDisplayName, Is.EqualTo("Cavern Gate"));
             Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.EchoCaverns));
             Assert.That(placeholderState.LocationIdentity.IsFallbackIdentity, Is.False);
+            Assert.That(placeholderState.BossProgressionGate, Is.Not.Null);
+            Assert.That(
+                placeholderState.BossProgressionGate.UnlockedNodeId,
+                Is.EqualTo(BootstrapWorldScenario.SunscorchEntryNodeId));
             Assert.That(placeholderState.BossRewardContent, Is.Not.Null);
             Assert.That(placeholderState.BossRewardContent.PersistentProgressionMaterialBonus, Is.EqualTo(1));
             Assert.That(placeholderState.BossRewardContent.GearRewardId, Is.Null);
+        }
+
+        [Test]
+        public void ShouldCarryBootstrapSunscorchLocationIdentityIntoPlaceholderState()
+        {
+            WorldGraph worldGraph = BootstrapWorldTestData.CreateWorldGraph();
+            PersistentWorldState worldState = BootstrapWorldTestData.CreateWorldState();
+            WorldNodeEntryFlowController controller = new WorldNodeEntryFlowController(worldGraph, worldState);
+
+            worldState.ReplaceNodeStates(new[]
+            {
+                PersistentStateTestData.CreateNodeState(
+                    BootstrapWorldScenario.CavernGateNodeId,
+                    unlockThreshold: 3,
+                    nodeState: NodeState.Available,
+                    unlockProgress: 0),
+                PersistentStateTestData.CreateNodeState(
+                    BootstrapWorldScenario.SunscorchEntryNodeId,
+                    unlockThreshold: 3,
+                    nodeState: NodeState.Available,
+                    unlockProgress: 0),
+            });
+            worldState.SetCurrentNode(BootstrapWorldScenario.CavernGateNodeId);
+            worldState.SetLastSafeNode(BootstrapWorldScenario.CavernApproachNodeId);
+            worldState.ReplaceReachableNodes(new[]
+            {
+                BootstrapWorldScenario.CavernApproachNodeId,
+                BootstrapWorldScenario.CavernGateNodeId,
+            });
+
+            bool entered = controller.TryEnterNode(BootstrapWorldScenario.SunscorchEntryNodeId, out NodePlaceholderState placeholderState);
+
+            Assert.That(entered, Is.True);
+            Assert.That(placeholderState, Is.Not.Null);
+            Assert.That(placeholderState.NodeDisplayName, Is.EqualTo("Scorched Approach"));
+            Assert.That(placeholderState.LocationIdentity, Is.SameAs(LocationIdentityCatalog.SunscorchRuins));
+            Assert.That(placeholderState.LocationIdentity.RewardSourceDisplayName, Is.EqualTo("Sunscorch salvage"));
+            Assert.That(placeholderState.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Scorched raiders"));
+            Assert.That(placeholderState.SupportsRegionMaterialRewards, Is.True);
         }
 
         [Test]

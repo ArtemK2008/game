@@ -1,6 +1,6 @@
 # Milestone Status Index
 
-Current next implementation target: Milestone 099
+Current next implementation target: Milestone 100
 
 This file is a navigation index only. Use `specs/00_overview/current_build_state.md` for current shipped behavior and individual milestone notes for full history/detail.
 
@@ -124,6 +124,7 @@ id | type | title | status | depends on / note
 096 | feature | Implement compact pause/system menu | completed | phase 24
 097 | feature | Implement basic audio/display settings persistence | completed | phase 24; closed by 096a shipped work and hardening verification
 098 | feature | Add more nodes to prove world structure depth | completed | phase 25
+099 | feature | Add another region/location with distinct value | completed | phase 25
 
 ## Follow-Ups And Acceptance Notes
 id | type | title | status | depends on / note

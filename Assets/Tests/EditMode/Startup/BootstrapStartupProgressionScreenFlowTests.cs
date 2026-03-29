@@ -487,9 +487,17 @@ namespace Survivalon.Tests.EditMode.Startup
                 Assert.That(ContainsText(hostObject, "Location: Echo Caverns"), Is.True);
                 Assert.That(ContainsText(hostObject, "Reward source: Cavern relic caches"), Is.True);
                 Assert.That(ContainsText(hostObject, "Boss spike rewards: Persistent progression material x3"), Is.True);
+                Assert.That(ContainsText(hostObject, "Unlock outcomes: Scorched approach opened"), Is.True);
 
                 FindButton(hostObject, "ReturnToWorldMapButton").onClick.Invoke();
 
+                Assert.That(
+                    storage.SavedGameState.WorldState.TryGetNodeState(
+                        BootstrapWorldScenario.SunscorchEntryNodeId,
+                        out PersistentNodeState sunscorchEntryNodeState),
+                    Is.True);
+                Assert.That(sunscorchEntryNodeState.State, Is.EqualTo(NodeState.Available));
+                Assert.That(FindButton(hostObject, "region_003_node_001_Button").interactable, Is.True);
                 Assert.That(storage.SavedGameState.ResourceBalances.GetAmount(ResourceCategory.PersistentProgressionMaterial), Is.EqualTo(6));
             }
             finally

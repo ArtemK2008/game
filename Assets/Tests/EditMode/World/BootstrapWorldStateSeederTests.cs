@@ -16,7 +16,7 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(worldState.CurrentNodeId, Is.EqualTo(BootstrapWorldScenario.ForestPushNodeId));
             Assert.That(worldState.LastSafeNodeId, Is.EqualTo(BootstrapWorldScenario.ForestEntryNodeId));
             Assert.That(worldState.ReachableNodeIdValues, Is.EqualTo(new[] { BootstrapWorldScenario.ForestEntryNodeId.Value }));
-            Assert.That(worldState.NodeStates.Count, Is.EqualTo(9));
+            Assert.That(worldState.NodeStates.Count, Is.EqualTo(12));
 
             AssertPersistentNodeState(worldState, BootstrapWorldScenario.ForestEntryNodeId, NodeState.Cleared, 3, 3);
             AssertPersistentNodeState(worldState, BootstrapWorldScenario.ForestPushNodeId, NodeState.InProgress, 1, 3);
@@ -27,6 +27,9 @@ namespace Survivalon.Tests.EditMode.World
             AssertPersistentNodeState(worldState, BootstrapWorldScenario.CavernFarmNodeId, NodeState.Available, 0, 3);
             AssertPersistentNodeState(worldState, BootstrapWorldScenario.CavernApproachNodeId, NodeState.Available, 0, 3);
             AssertPersistentNodeState(worldState, BootstrapWorldScenario.CavernGateNodeId, NodeState.Locked, 0, 3);
+            AssertPersistentNodeState(worldState, BootstrapWorldScenario.SunscorchEntryNodeId, NodeState.Locked, 0, 3);
+            AssertPersistentNodeState(worldState, BootstrapWorldScenario.SunscorchPushNodeId, NodeState.Locked, 0, 3);
+            AssertPersistentNodeState(worldState, BootstrapWorldScenario.SunscorchFarmNodeId, NodeState.Locked, 0, 3);
             Assert.That(worldState.TryGetNodeState(BootstrapWorldScenario.CavernServiceNodeId, out _), Is.False);
         }
 

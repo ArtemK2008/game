@@ -11,6 +11,8 @@ namespace Survivalon.Tests.EditMode.World
     {
         private static readonly BossProgressionGateDefinition ForestGateProgressionGate =
             new BossProgressionGateDefinition(BootstrapWorldScenario.CavernGateNodeId);
+        private static readonly BossProgressionGateDefinition CavernGateProgressionGate =
+            new BossProgressionGateDefinition(BootstrapWorldScenario.SunscorchEntryNodeId);
         private static readonly BossRewardContentDefinition ForestGateBossRewardContent =
             new BossRewardContentDefinition(0, GearIds.GatebreakerBlade);
         private static readonly BossRewardContentDefinition CavernGateBossRewardContent =
@@ -131,9 +133,24 @@ namespace Survivalon.Tests.EditMode.World
                 NodeState.Available,
                 BootstrapWorldScenario.CavernServiceNodeId,
                 CombatBossEncounterCatalog.GateBossEncounter,
+                CavernGateProgressionGate,
                 locationIdentity: LocationIdentityCatalog.EchoCaverns,
                 bossRewardContent: CavernGateBossRewardContent,
                 nodeDisplayName: "Cavern Gate");
+        }
+
+        public static NodePlaceholderState CreateSunscorchCombatPlaceholderState()
+        {
+            return new NodePlaceholderState(
+                BootstrapWorldScenario.SunscorchEntryNodeId,
+                BootstrapWorldScenario.SunscorchRegionId,
+                NodeType.Combat,
+                NodeState.Available,
+                BootstrapWorldScenario.CavernGateNodeId,
+                CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                locationIdentity: LocationIdentityCatalog.SunscorchRuins,
+                supportsRegionMaterialRewards: true,
+                nodeDisplayName: "Scorched Approach");
         }
 
         public static NodePlaceholderState CreatePushCombatPlaceholderState()

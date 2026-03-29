@@ -20,6 +20,14 @@ namespace Survivalon.Data.World
                 "Persistent progression gains",
                 "Gate guardians");
 
+        public static readonly LocationIdentityDefinition SunscorchRuins =
+            new LocationIdentityDefinition(
+                "location_identity_sunscorch_ruins",
+                "Sunscorch Ruins",
+                "Sunscorch salvage",
+                "Late region-material recovery",
+                "Scorched raiders");
+
         public static LocationIdentityDefinition CreateFallback(RegionId regionId)
         {
             return new LocationIdentityDefinition(

@@ -192,6 +192,11 @@ namespace Survivalon.Run
                 return "Cavern gate opened";
             }
 
+            if (unlockedNodeId == BootstrapWorldScenario.SunscorchEntryNodeId)
+            {
+                return "Scorched approach opened";
+            }
+
             return $"{unlockedNodeId.Value} unlocked";
         }
     }

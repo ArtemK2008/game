@@ -76,10 +76,11 @@ namespace Survivalon.Tests.EditMode.World
         }
 
         [Test]
-        public void Show_ShouldUseDistinctCombatBackgroundsForVerdantFrontierAndEchoCaverns()
+        public void Show_ShouldUseDistinctCombatBackgroundsForVerdantFrontierEchoCavernsAndSunscorchRuins()
         {
             GameObject frontierHostObject = new GameObject("NodePlaceholderHost_Frontier");
             GameObject cavernHostObject = new GameObject("NodePlaceholderHost_Cavern");
+            GameObject sunscorchHostObject = new GameObject("NodePlaceholderHost_Sunscorch");
 
             try
             {
@@ -97,19 +98,32 @@ namespace Survivalon.Tests.EditMode.World
                     runResult => { },
                     runResult => { });
 
+                NodePlaceholderScreen sunscorchPlaceholderScreen = sunscorchHostObject.AddComponent<NodePlaceholderScreen>();
+                sunscorchPlaceholderScreen.Show(
+                    CreateWorldGraph(),
+                    NodePlaceholderTestData.CreateSunscorchCombatPlaceholderState(),
+                    runResult => { },
+                    runResult => { });
+
                 Sprite frontierBackground = FindImage(frontierHostObject, "CombatShellBackgroundArt").sprite;
                 Sprite cavernBackground = FindImage(cavernHostObject, "CombatShellBackgroundArt").sprite;
+                Sprite sunscorchBackground = FindImage(sunscorchHostObject, "CombatShellBackgroundArt").sprite;
 
                 Assert.That(frontierBackground, Is.Not.Null);
                 Assert.That(cavernBackground, Is.Not.Null);
+                Assert.That(sunscorchBackground, Is.Not.Null);
                 Assert.That(frontierBackground, Is.Not.SameAs(cavernBackground));
+                Assert.That(frontierBackground, Is.Not.SameAs(sunscorchBackground));
+                Assert.That(cavernBackground, Is.Not.SameAs(sunscorchBackground));
                 Assert.That(ContainsText(frontierHostObject, "Verdant Frontier | Forest Farm"), Is.True);
                 Assert.That(ContainsText(cavernHostObject, "Echo Caverns | Cavern Gate"), Is.True);
+                Assert.That(ContainsText(sunscorchHostObject, "Sunscorch Ruins | Scorched Approach"), Is.True);
             }
             finally
             {
                 Object.DestroyImmediate(frontierHostObject);
                 Object.DestroyImmediate(cavernHostObject);
+                Object.DestroyImmediate(sunscorchHostObject);
             }
         }
 

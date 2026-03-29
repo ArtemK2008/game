@@ -11,6 +11,8 @@ namespace Survivalon.World
     {
         private static readonly OptionalChallengeContentDefinition ForestEliteChallengeContent =
             new OptionalChallengeContentDefinition("Elite challenge");
+        private static readonly RegionMaterialYieldContentDefinition SunscorchFarmYieldContent =
+            new RegionMaterialYieldContentDefinition(1);
 
         public WorldGraph Create()
         {
@@ -92,8 +94,31 @@ namespace Survivalon.World
                     NodeType.BossOrGate,
                     NodeState.Locked,
                     CombatBossEncounterCatalog.GateBossEncounter,
+                    new BossProgressionGateDefinition(BootstrapWorldScenario.SunscorchEntryNodeId),
                     bossRewardContent: new BossRewardContentDefinition(1),
                     displayName: "Cavern Gate"),
+                new WorldNode(
+                    BootstrapWorldScenario.SunscorchEntryNodeId,
+                    BootstrapWorldScenario.SunscorchRegionId,
+                    NodeType.Combat,
+                    NodeState.Locked,
+                    CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                    displayName: "Scorched Approach"),
+                new WorldNode(
+                    BootstrapWorldScenario.SunscorchPushNodeId,
+                    BootstrapWorldScenario.SunscorchRegionId,
+                    NodeType.Combat,
+                    NodeState.Locked,
+                    CombatStandardEncounterCatalog.BulwarkRaiderEncounter,
+                    displayName: "Ruin Span"),
+                new WorldNode(
+                    BootstrapWorldScenario.SunscorchFarmNodeId,
+                    BootstrapWorldScenario.SunscorchRegionId,
+                    NodeType.Combat,
+                    NodeState.Locked,
+                    CombatStandardEncounterCatalog.EnemyUnitEncounter,
+                    regionMaterialYieldContent: SunscorchFarmYieldContent,
+                    displayName: "Ash Cache"),
             };
 
             List<WorldRegion> regions = new List<WorldRegion>
@@ -128,6 +153,19 @@ namespace Survivalon.World
                     ResourceCategory.PersistentProgressionMaterial,
                     "depths",
                     LocationIdentityCatalog.EchoCaverns),
+                new WorldRegion(
+                    BootstrapWorldScenario.SunscorchRegionId,
+                    2,
+                    BootstrapWorldScenario.SunscorchEntryNodeId,
+                    new[]
+                    {
+                        BootstrapWorldScenario.SunscorchEntryNodeId,
+                        BootstrapWorldScenario.SunscorchPushNodeId,
+                        BootstrapWorldScenario.SunscorchFarmNodeId,
+                    },
+                    ResourceCategory.RegionMaterial,
+                    "sunscorch",
+                    LocationIdentityCatalog.SunscorchRuins),
             };
 
             List<WorldNodeConnection> connections = new List<WorldNodeConnection>
@@ -142,6 +180,9 @@ namespace Survivalon.World
                 new WorldNodeConnection(BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernFarmNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.CavernPushNodeId, BootstrapWorldScenario.CavernApproachNodeId),
                 new WorldNodeConnection(BootstrapWorldScenario.CavernApproachNodeId, BootstrapWorldScenario.CavernGateNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.CavernGateNodeId, BootstrapWorldScenario.SunscorchEntryNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.SunscorchEntryNodeId, BootstrapWorldScenario.SunscorchPushNodeId),
+                new WorldNodeConnection(BootstrapWorldScenario.SunscorchEntryNodeId, BootstrapWorldScenario.SunscorchFarmNodeId),
             };
 
             return new WorldGraph(regions, nodes, connections);

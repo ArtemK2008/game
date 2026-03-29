@@ -4,7 +4,7 @@
 This file is a rolling summary of what is already implemented in the current build. It is intended as a compact handoff/reference for future Codex runs so they can see the current shipped prototype state without rereading the full milestone chain first.
 
 ## Completed milestone range
-This summary reflects completed work through **Milestone 098** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
+This summary reflects completed work through **Milestone 099** and follow-up **096a**, plus the accepted cleanup/refactor milestones **042b** through **042h**, **047a**, **050a**, **052a**, **056a**, **059a**, **061a**, **063a**, **065a**, **067a**, **068a**, **069a**, **070a**, **072a**, **073a**, **073b**, **077a**, **078a**, **079a**, **081a**, **refactor01**, **refactor02**, **refactor03**, **refactor04**, **refactor05**, **refactor06**, **refactor06b**, and **refactor07**.
 
 ## Current playable loop
 On startup, the bootstrap scene opens a compact main menu. `Start` begins a fresh bootstrap-world session, `Continue` resumes the last persisted safe world or town/service context when one exists, `Settings` opens one compact real settings surface, and `Quit` requests application shutdown in player builds while staying safe in editor/test contexts.
@@ -56,14 +56,16 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 
 ### World map and node entry
 - A runtime world graph exists with regions, nodes, explicit connections, and limited branching.
-- The shipped bootstrap world graph now has ten authored nodes across the two current regions, keeping the immediate forest opening readable while proving deeper route structure beyond the first service hub.
-- The shipped bootstrap content now has two explicit location identities attached through world content data:
+- The shipped bootstrap world graph now has thirteen authored nodes across three current regions, keeping the immediate forest opening readable while proving deeper route structure and one additional later region.
+- The shipped bootstrap content now has three explicit location identities attached through world content data:
   - `Verdant Frontier`
   - `Echo Caverns`
+  - `Sunscorch Ruins`
 - World regions/nodes now carry that location identity explicitly through node-entry state instead of relying only on raw region ids.
 - The shipped location identities now also carry small gameplay-facing emphasis data:
   - `Verdant Frontier` is the region-material farming / raider-emphasis location
   - `Echo Caverns` is the progression-focused / gate-guardian-emphasis location
+  - `Sunscorch Ruins` is the deeper region-material recovery / scorched-raider-emphasis location
 - Reachability supports forward movement and backtracking from current world context.
 - The world map shows friendly node identity, node type, node state, current/selectable status, and a small summary of current context.
 - The shipped bootstrap nodes now carry authored friendly player-facing names, and the main world-map surfaces use those names instead of raw internal node ids:
@@ -90,6 +92,12 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - `Relic Cache` opens as a second ordinary combat side path in the same region
   - `Gate Antechamber` extends the combat path before the current `Cavern Gate`
   - the existing `Frontier Gate -> Cavern Gate` boss-unlock target remains intact for current progression readability, so the added cavern depth does not replace the current boss-gate milestone path
+- The shipped world now also has one additional later region with distinct route/value identity:
+  - `Sunscorch Ruins` opens behind `Cavern Gate`
+  - `Scorched Approach` is the first readable forward step into that region
+  - `Ruin Span` continues the push path
+  - `Ash Cache` is the local side-farm branch
+  - this keeps the graph breadth growing without adding a new enemy family, a new service hub, or a broader world-map redesign
 - The same world-map entry action now also supports one low-friction repeat path only after an explicit in-session return to the world map:
   - after `post-run -> return to world` or `town/service -> return to world`, the existing entry button temporarily becomes a one-click `Replay <current combat node>` or `Return to <current service node>` action
   - ordinary startup/load into the world map, safe resume, and first world-map entry do not show that shortcut
@@ -121,7 +129,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
 - Runs use explicit lifecycle states: `RunStart`, `RunActive`, `RunResolved`, and `PostRun`.
 - Post-run shows a compact summary and allows replay, return to world, or stop session.
 - The post-run summary now presents rewards and progress changes in a more clearly grouped aggregated format.
-- The post-run summary now also shows a compact explicit boss-gate unlock line when a boss defeat opens new forward progression.
+- The post-run summary now also shows a compact explicit boss-gate unlock line when a boss defeat opens new forward progression, including the new `Scorched approach opened` unlock moment after `Cavern Gate`.
 - The post-run panel now also exposes one compact next-action guidance area that clarifies the current practical decision using existing actions only:
   - replay the same node
   - return to world to push forward
@@ -495,7 +503,7 @@ Manual movement, manual attacks, and manual combat stepping are not required in 
   - current combat VFX remain intentionally sheet-based canonical source assets under `Assets/Art/VFX/Combat/`
 - Current runtime hookup status:
   - player and enemy combat-state sprites are now wired into the live combat shell
-  - combat location backgrounds are now wired into the live combat shell for `Verdant Frontier` and `Echo Caverns`
+  - combat location backgrounds are now wired into the live combat shell for `Verdant Frontier`, `Echo Caverns`, and `Sunscorch Ruins`
   - the current `Cavern Service Hub` service background is now wired into the live town/service shell
   - the current combat VFX sheets are now wired directly into the live combat shell for restrained impact, `Burst Strike`, low-health danger, and defeat readability cues
   - portraits and world icons are still prepared-only and not wired into runtime yet

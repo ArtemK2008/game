@@ -41,6 +41,7 @@ Use:
 ### Combat backgrounds
 - `Assets/Art/Locations/VerdantFrontier/Backgrounds/combat_background.png`
 - `Assets/Art/Locations/EchoCaverns/Backgrounds/combat_background.png`
+- `Assets/Art/Locations/SunscorchRuins/Backgrounds/combat_background.png`
 
 ### Service / town-safe background
 - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
@@ -58,7 +59,7 @@ For current prototype prep, these background files should be import-ready for 2D
 - no slicing
 
 ## Current interpretation
-- `VerdantFrontier` and `EchoCaverns` are the current combat-space place backgrounds.
+- `VerdantFrontier`, `EchoCaverns`, and `SunscorchRuins` are the current combat-space place backgrounds.
 - `CavernServiceHub` is the current safe planning/service-space background.
 
 The current repo keeps the service hub under the same `Locations` root so place identity remains easy to track.

@@ -280,6 +280,48 @@ namespace Survivalon.Tests.EditMode.Startup
         }
 
         [Test]
+        public void ShouldRestoreSunscorchUnlockTargetFromCompletedPersistentCavernBossNodeOnStartup()
+        {
+            MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();
+            PersistentGameState persistedGameState = new PersistentGameState();
+            persistedGameState.WorldState.SetCurrentNode(BootstrapWorldScenario.CavernGateNodeId);
+            persistedGameState.WorldState.SetLastSafeNode(BootstrapWorldScenario.CavernApproachNodeId);
+            persistedGameState.WorldState.ReplaceReachableNodes(new[]
+            {
+                BootstrapWorldScenario.CavernApproachNodeId,
+                BootstrapWorldScenario.CavernGateNodeId,
+            });
+            persistedGameState.SafeResumeState.MarkWorldMap(BootstrapWorldScenario.CavernGateNodeId);
+            persistedGameState.WorldState.ReplaceNodeStates(new[]
+            {
+                PersistentNodeStateFactory.Create(
+                    BootstrapWorldScenario.CavernGateNodeId,
+                    unlockThreshold: 3,
+                    initialState: NodeState.Cleared,
+                    initialProgress: 3),
+            });
+            storage.Seed(persistedGameState);
+
+            SafeResumePersistenceService persistenceService = new SafeResumePersistenceService(storage);
+            BootstrapStartupStateFactory stateFactory = new BootstrapStartupStateFactory(persistenceService);
+
+            BootstrapStartupState startupState = stateFactory.Create(new BootstrapWorldMapFactory());
+
+            Assert.That(
+                startupState.GameState.WorldState.TryGetNodeState(
+                    BootstrapWorldScenario.SunscorchEntryNodeId,
+                    out PersistentNodeState sunscorchNodeState),
+                Is.True);
+            Assert.That(sunscorchNodeState.State, Is.EqualTo(NodeState.Available));
+            Assert.That(
+                startupState.NodeEntryFlowController.TryEnterNode(
+                    BootstrapWorldScenario.SunscorchEntryNodeId,
+                    out NodePlaceholderState placeholderState),
+                Is.True);
+            Assert.That(placeholderState.NodeId, Is.EqualTo(BootstrapWorldScenario.SunscorchEntryNodeId));
+        }
+
+        [Test]
         public void ShouldNormalizePlayableCharacterSelectionWhenPersistedStateHasNoActiveSelectableCharacter()
         {
             MemoryPersistentGameStateStorage storage = new MemoryPersistentGameStateStorage();

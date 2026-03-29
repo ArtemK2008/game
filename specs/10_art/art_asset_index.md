@@ -63,6 +63,7 @@ Root:
 Current canonical files:
 - `Assets/Art/Locations/VerdantFrontier/Backgrounds/combat_background.png`
 - `Assets/Art/Locations/EchoCaverns/Backgrounds/combat_background.png`
+- `Assets/Art/Locations/SunscorchRuins/Backgrounds/combat_background.png`
 - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
 
 ### Combat VFX
@@ -86,7 +87,7 @@ Current canonical sheet assets:
 
 ## Current hookup status
 - Milestone `091` now wires the current canonical player and enemy combat-state sprites into the live combat shell.
-- Milestone `092` now wires the current canonical combat backgrounds for `VerdantFrontier` and `EchoCaverns` into the live combat shell.
+- Milestone `092` and `099` now wire the current canonical combat backgrounds for `VerdantFrontier`, `EchoCaverns`, and `SunscorchRuins` into the live combat shell.
 - Milestone `093` now wires the current canonical `CavernServiceHub` service background into the live town/service shell.
 - That runtime hookup currently uses only the combat-state files under:
   - `Assets/Art/Characters/<CharacterName>/Sprites/`
@@ -94,6 +95,7 @@ Current canonical sheet assets:
 - plus the combat background files under:
   - `Assets/Art/Locations/VerdantFrontier/Backgrounds/combat_background.png`
   - `Assets/Art/Locations/EchoCaverns/Backgrounds/combat_background.png`
+  - `Assets/Art/Locations/SunscorchRuins/Backgrounds/combat_background.png`
 - plus the current service background file under:
   - `Assets/Art/Locations/CavernServiceHub/Backgrounds/service_background.png`
 - Portraits and world icons remain prepared assets only and are not wired into runtime yet.

@@ -17,3 +17,5 @@ MonoBehaviour:
     backgroundSprite: {fileID: 4363930180419652903, guid: e8ffd1e374c3464ca7f5b8efc5cb0715, type: 3}
   - locationIdentityId: location_identity_echo_caverns
     backgroundSprite: {fileID: 1580040259881246205, guid: eed6b50b17d74d47a1190dfd919ae40e, type: 3}
+  - locationIdentityId: location_identity_sunscorch_ruins
+    backgroundSprite: {fileID: 4363930180419652903, guid: eaa4b71b97f3433699db21a715da79aa, type: 3}

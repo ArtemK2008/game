@@ -14,8 +14,12 @@ namespace Survivalon.World
         public static readonly NodeId CavernPushNodeId = new NodeId("region_002_node_003");
         public static readonly NodeId CavernFarmNodeId = new NodeId("region_002_node_004");
         public static readonly NodeId CavernApproachNodeId = new NodeId("region_002_node_005");
+        public static readonly NodeId SunscorchEntryNodeId = new NodeId("region_003_node_001");
+        public static readonly NodeId SunscorchPushNodeId = new NodeId("region_003_node_002");
+        public static readonly NodeId SunscorchFarmNodeId = new NodeId("region_003_node_003");
         public static readonly RegionId ForestRegionId = new RegionId("region_001");
         public static readonly RegionId CavernRegionId = new RegionId("region_002");
+        public static readonly RegionId SunscorchRegionId = new RegionId("region_003");
     }
 }
 

@@ -7,9 +7,11 @@ namespace Survivalon.Tests.EditMode.Data
     public sealed class LocationIdentityCatalogTests
     {
         [Test]
-        public void ShouldExposeTwoDistinctShippedLocationIdentities()
+        public void ShouldExposeThreeDistinctShippedLocationIdentities()
         {
             Assert.That(LocationIdentityCatalog.VerdantFrontier.LocationIdentityId, Is.Not.EqualTo(LocationIdentityCatalog.EchoCaverns.LocationIdentityId));
+            Assert.That(LocationIdentityCatalog.EchoCaverns.LocationIdentityId, Is.Not.EqualTo(LocationIdentityCatalog.SunscorchRuins.LocationIdentityId));
+            Assert.That(LocationIdentityCatalog.VerdantFrontier.LocationIdentityId, Is.Not.EqualTo(LocationIdentityCatalog.SunscorchRuins.LocationIdentityId));
             Assert.That(LocationIdentityCatalog.VerdantFrontier.DisplayName, Is.EqualTo("Verdant Frontier"));
             Assert.That(LocationIdentityCatalog.VerdantFrontier.RewardSourceDisplayName, Is.EqualTo("Frontier salvage"));
             Assert.That(LocationIdentityCatalog.VerdantFrontier.RewardFocusDisplayName, Is.EqualTo("Region material farming"));
@@ -20,6 +22,11 @@ namespace Survivalon.Tests.EditMode.Data
             Assert.That(LocationIdentityCatalog.EchoCaverns.RewardFocusDisplayName, Is.EqualTo("Persistent progression gains"));
             Assert.That(LocationIdentityCatalog.EchoCaverns.EnemyEmphasisDisplayName, Is.EqualTo("Gate guardians"));
             Assert.That(LocationIdentityCatalog.EchoCaverns.IsFallbackIdentity, Is.False);
+            Assert.That(LocationIdentityCatalog.SunscorchRuins.DisplayName, Is.EqualTo("Sunscorch Ruins"));
+            Assert.That(LocationIdentityCatalog.SunscorchRuins.RewardSourceDisplayName, Is.EqualTo("Sunscorch salvage"));
+            Assert.That(LocationIdentityCatalog.SunscorchRuins.RewardFocusDisplayName, Is.EqualTo("Late region-material recovery"));
+            Assert.That(LocationIdentityCatalog.SunscorchRuins.EnemyEmphasisDisplayName, Is.EqualTo("Scorched raiders"));
+            Assert.That(LocationIdentityCatalog.SunscorchRuins.IsFallbackIdentity, Is.False);
         }
 
         [Test]

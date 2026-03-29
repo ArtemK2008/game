@@ -16,9 +16,9 @@ namespace Survivalon.Tests.EditMode.World
         {
             WorldGraph worldGraph = new BootstrapWorldGraphBuilder().Create();
 
-            Assert.That(worldGraph.Regions.Count, Is.EqualTo(2));
-            Assert.That(worldGraph.Nodes.Count, Is.EqualTo(10));
-            Assert.That(worldGraph.Connections.Count, Is.EqualTo(10));
+            Assert.That(worldGraph.Regions.Count, Is.EqualTo(3));
+            Assert.That(worldGraph.Nodes.Count, Is.EqualTo(13));
+            Assert.That(worldGraph.Connections.Count, Is.EqualTo(13));
 
             AssertNode(worldGraph, BootstrapWorldScenario.ForestEntryNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.Cleared);
             AssertNode(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestRegionId, NodeType.Combat, NodeState.InProgress);
@@ -30,6 +30,9 @@ namespace Survivalon.Tests.EditMode.World
             AssertNode(worldGraph, BootstrapWorldScenario.CavernFarmNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.Combat, NodeState.Available);
             AssertNode(worldGraph, BootstrapWorldScenario.CavernApproachNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.Combat, NodeState.Available);
             AssertNode(worldGraph, BootstrapWorldScenario.CavernGateNodeId, BootstrapWorldScenario.CavernRegionId, NodeType.BossOrGate, NodeState.Locked);
+            AssertNode(worldGraph, BootstrapWorldScenario.SunscorchEntryNodeId, BootstrapWorldScenario.SunscorchRegionId, NodeType.Combat, NodeState.Locked);
+            AssertNode(worldGraph, BootstrapWorldScenario.SunscorchPushNodeId, BootstrapWorldScenario.SunscorchRegionId, NodeType.Combat, NodeState.Locked);
+            AssertNode(worldGraph, BootstrapWorldScenario.SunscorchFarmNodeId, BootstrapWorldScenario.SunscorchRegionId, NodeType.Combat, NodeState.Locked);
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).CombatEncounter,
                 Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
@@ -149,7 +152,10 @@ namespace Survivalon.Tests.EditMode.World
                 Is.EqualTo("Cavern Gate"));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossProgressionGate,
-                Is.Null);
+                Is.Not.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossProgressionGate.UnlockedNodeId,
+                Is.EqualTo(BootstrapWorldScenario.SunscorchEntryNodeId));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossRewardContent,
                 Is.Not.Null);
@@ -159,6 +165,30 @@ namespace Survivalon.Tests.EditMode.World
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).BossRewardContent.GearRewardId,
                 Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchEntryNodeId).CombatEncounter,
+                Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchEntryNodeId).DisplayName,
+                Is.EqualTo("Scorched Approach"));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchPushNodeId).CombatEncounter,
+                Is.SameAs(CombatStandardEncounterCatalog.BulwarkRaiderEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchPushNodeId).DisplayName,
+                Is.EqualTo("Ruin Span"));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchFarmNodeId).CombatEncounter,
+                Is.SameAs(CombatStandardEncounterCatalog.EnemyUnitEncounter));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchFarmNodeId).DisplayName,
+                Is.EqualTo("Ash Cache"));
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchFarmNodeId).RegionMaterialYieldContent,
+                Is.Not.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchFarmNodeId).RegionMaterialYieldContent.RegionMaterialBonus,
+                Is.EqualTo(1));
             Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestEntryNodeId).RegionMaterialYieldContent,
                 Is.Null);
@@ -181,6 +211,12 @@ namespace Survivalon.Tests.EditMode.World
                 worldGraph.GetNode(BootstrapWorldScenario.CavernGateNodeId).RegionMaterialYieldContent,
                 Is.Null);
             Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchEntryNodeId).RegionMaterialYieldContent,
+                Is.Null);
+            Assert.That(
+                worldGraph.GetNode(BootstrapWorldScenario.SunscorchPushNodeId).RegionMaterialYieldContent,
+                Is.Null);
+            Assert.That(
                 worldGraph.GetNode(BootstrapWorldScenario.ForestGateNodeId).CombatEncounter.EncounterType,
                 Is.EqualTo(CombatEncounterType.Boss));
             Assert.That(
@@ -189,6 +225,7 @@ namespace Survivalon.Tests.EditMode.World
 
             WorldRegion forestRegion = worldGraph.Regions.Single(region => region.RegionId == BootstrapWorldScenario.ForestRegionId);
             WorldRegion cavernRegion = worldGraph.Regions.Single(region => region.RegionId == BootstrapWorldScenario.CavernRegionId);
+            WorldRegion sunscorchRegion = worldGraph.Regions.Single(region => region.RegionId == BootstrapWorldScenario.SunscorchRegionId);
 
             Assert.That(forestRegion.ProgressionOrder, Is.EqualTo(0));
             Assert.That(forestRegion.EntryNodeId, Is.EqualTo(BootstrapWorldScenario.ForestEntryNodeId));
@@ -226,6 +263,22 @@ namespace Survivalon.Tests.EditMode.World
                 BootstrapWorldScenario.CavernGateNodeId,
             }));
 
+            Assert.That(sunscorchRegion.ProgressionOrder, Is.EqualTo(2));
+            Assert.That(sunscorchRegion.EntryNodeId, Is.EqualTo(BootstrapWorldScenario.SunscorchEntryNodeId));
+            Assert.That(sunscorchRegion.ResourceCategory, Is.EqualTo(ResourceCategory.RegionMaterial));
+            Assert.That(sunscorchRegion.DifficultyBand, Is.EqualTo("sunscorch"));
+            Assert.That(sunscorchRegion.LocationIdentity, Is.SameAs(LocationIdentityCatalog.SunscorchRuins));
+            Assert.That(sunscorchRegion.LocationIdentity.IsFallbackIdentity, Is.False);
+            Assert.That(sunscorchRegion.LocationIdentity.DisplayName, Is.EqualTo("Sunscorch Ruins"));
+            Assert.That(sunscorchRegion.LocationIdentity.RewardSourceDisplayName, Is.EqualTo("Sunscorch salvage"));
+            Assert.That(sunscorchRegion.LocationIdentity.EnemyEmphasisDisplayName, Is.EqualTo("Scorched raiders"));
+            Assert.That(sunscorchRegion.NodeIds, Is.EqualTo(new[]
+            {
+                BootstrapWorldScenario.SunscorchEntryNodeId,
+                BootstrapWorldScenario.SunscorchPushNodeId,
+                BootstrapWorldScenario.SunscorchFarmNodeId,
+            }));
+
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestEntryNodeId, BootstrapWorldScenario.ForestPushNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestGateNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.ForestPushNodeId, BootstrapWorldScenario.ForestFarmNodeId);
@@ -236,6 +289,9 @@ namespace Survivalon.Tests.EditMode.World
             AssertConnection(worldGraph, BootstrapWorldScenario.CavernServiceNodeId, BootstrapWorldScenario.CavernFarmNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.CavernPushNodeId, BootstrapWorldScenario.CavernApproachNodeId);
             AssertConnection(worldGraph, BootstrapWorldScenario.CavernApproachNodeId, BootstrapWorldScenario.CavernGateNodeId);
+            AssertConnection(worldGraph, BootstrapWorldScenario.CavernGateNodeId, BootstrapWorldScenario.SunscorchEntryNodeId);
+            AssertConnection(worldGraph, BootstrapWorldScenario.SunscorchEntryNodeId, BootstrapWorldScenario.SunscorchPushNodeId);
+            AssertConnection(worldGraph, BootstrapWorldScenario.SunscorchEntryNodeId, BootstrapWorldScenario.SunscorchFarmNodeId);
         }
 
         private static void AssertNode(

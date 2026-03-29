@@ -32,6 +32,9 @@ namespace Survivalon.World
                 CreateNodeState(BootstrapWorldScenario.CavernFarmNodeId, combatThreshold, NodeState.Available, 0),
                 CreateNodeState(BootstrapWorldScenario.CavernApproachNodeId, combatThreshold, NodeState.Available, 0),
                 CreateNodeState(BootstrapWorldScenario.CavernGateNodeId, bossThreshold, NodeState.Locked, 0),
+                CreateNodeState(BootstrapWorldScenario.SunscorchEntryNodeId, combatThreshold, NodeState.Locked, 0),
+                CreateNodeState(BootstrapWorldScenario.SunscorchPushNodeId, combatThreshold, NodeState.Locked, 0),
+                CreateNodeState(BootstrapWorldScenario.SunscorchFarmNodeId, combatThreshold, NodeState.Locked, 0),
             };
         }
 

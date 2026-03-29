@@ -106,5 +106,33 @@ namespace Survivalon.Tests.EditMode.Run
                 Is.EqualTo("Forward route opened; Cavern gate opened"));
             Assert.That(presentationState.ProgressSummary, Is.EqualTo("node +1 this run; tracked total 3 / 3; persistent +0"));
         }
+
+        [Test]
+        public void ShouldResolveReadableSunscorchBossGateUnlockPresentation()
+        {
+            PostRunResultPresentationStateResolver resolver = new PostRunResultPresentationStateResolver();
+            RunResult runResult = new RunResult(
+                BootstrapWorldScenario.CavernGateNodeId,
+                RunResolutionState.Succeeded,
+                RunRewardPayload.Empty,
+                1,
+                1,
+                3,
+                0,
+                false,
+                new RunNextActionContext(
+                    canReplayNode: true,
+                    canChooseAnotherNode: true,
+                    canStopSession: true),
+                BossProgressionGateUnlockResult.CreateUnlocked(BootstrapWorldScenario.SunscorchEntryNodeId));
+            PostRunStateController postRunStateController = new PostRunStateController(
+                NodePlaceholderTestData.CreateCavernGateBossPlaceholderState(),
+                runResult);
+
+            PostRunResultPresentationState presentationState =
+                resolver.Resolve(postRunStateController, runResult);
+
+            Assert.That(presentationState.UnlockOutcomeSummary, Is.EqualTo("Scorched approach opened"));
+        }
     }
 }
